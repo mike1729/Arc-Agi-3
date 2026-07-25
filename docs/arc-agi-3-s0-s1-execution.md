@@ -36,11 +36,18 @@ consider later.
 Mostly waiting and account admin; it does not need a focused day, and front-loading it protects Day 1.
 
 - [x] Kaggle account, competition rules accepted, team registered. *(Rules acceptance is yours to click.)*
-- [ ] ARC-AGI-3 API credentials issued and a `GET` against a public game returns 200 from your machine.
-- [ ] Clone the official starter, run it locally once, confirm it plays at least one action.
-- [ ] Inventory the accelerator you will actually develop on — model, VRAM, driver, CUDA. Write it down;
-      Day 1's reference freeze depends on it.
-- [ ] Create the repo scaffold (§8).
+- [x] **Kaggle CLI installed and authenticated** — `kaggle competitions list` returns without an auth
+      error. Not only for submitting: Day 6's offline bundling publishes the weights as a Kaggle
+      dataset/model artifact (§4.7), so the CLI is on the critical path before S1-f, not just S0.
+      *(CLI 2.2.4, `auth_method: ACCESS_TOKEN`; see `notes/s1-verification.md`, "Pre-flight Kaggle CLI
+      access". The Kaggle MCP server was evaluated and not adopted — reasons recorded there.)*
+- [x] ARC-AGI-3 API credentials issued and a `GET` against a public game returns 200 from your machine.
+- [x] Clone the official starter, run it locally once, confirm it plays at least one action.
+- [x] Inventory the accelerator you will actually develop on — model, VRAM, driver, CUDA. Write it down;
+      Day 1's reference freeze depends on it. *(`notes/s1-verification.md`, "Pre-flight accelerator
+      inventory". Apple M5 Pro / 64 GB unified / Metal 4 / **no CUDA** — the no-CUDA finding is a screen
+      on Day 1's reference candidates, not a footnote.)*
+- [x] Create the repo scaffold (§8).
 
 **Exit:** you can reach the API and run the starter locally. Nothing else.
 
@@ -86,14 +93,14 @@ remainder. Three of the resolved ones **changed the plan** and are marked ⚠.
 | V2 | ✅⚠ **Nov 8 is the official paper deadline.** ~Nov 5 is an *internal* tie-break buffer, never cite it as official; ties favour the earlier entry | §9 paper cadence |
 | V3 | ✅ Oct 26 entry **and** team-merge — now publicly listed, no longer notes-only | Registration deadline |
 | V4 | Feature freeze Oct 18 — project-internal target, not official; nothing to verify | The ~8.4 construction weeks |
-| V5 | **Competition mode: level resets only** | Reset experiment design (§4.4) |
-| V6 | **One environment creation per game** | You get one shot per game per scorecard — the reset experiment must be designed around this, not discover it |
-| V7 | **Hidden in-flight scorecards** | You cannot read score during play. Materially constrains exploration strategy *and* forces the reset experiment to be close-then-read |
-| V8 | Scoring: (human actions / agent actions)², cap 1.15, level-position weighted, equal across games | Reverse-engineering the action denominator in §4.4 |
-| V9 | Rate limit — 600 req/min documented; any Kaggle-local cap | Per-action latency budget |
-| V10 | Runtime envelope — ~8 h wall-clock, ~10 actions/s are *assumptions* | The viability threshold on latency |
+| V5 | ✅ **Competition mode: level resets only; game resets become level resets** | Reset experiment design (§4.4) |
+| V6 | ✅ **One `make()` call per environment in competition mode** | You get one shot per game per scorecard — the reset experiment must be designed around this, not discover it |
+| V7 | ✅ **One scorecard; in-flight scorecards are hidden** | You cannot read score during play. Materially constrains exploration strategy *and* forces the reset experiment to be close-then-read |
+| V8 | ✅ Scoring: (human actions / agent actions)², cap 1.15, level-position weighted, equal across games | Reverse-engineering the action denominator in §4.4 |
+| V9 | ◐ **600 req/min confirmed for the online API; no separate Kaggle-local cap found** | Per-action latency budget |
+| V10 | ⚠ Runtime envelope — ~8 h wall-clock and ~10 actions/s remain *working assumptions*, not verified constants | The viability threshold on latency must be derived from the starter and reference runs |
 | V11 | ✅⚠ **Licensing is four buckets, not one.** Entrant-authored code/methods → CC0/MIT-0 · third-party material → its own separate sharing requirements · models and weights → Kaggle's specific rules · winner license → CC-BY 4.0 | Day 1 PM license screen. **Weights that are not CC0/MIT-0 no longer disqualify a reference** — the earlier flat reading would have wrongly eliminated candidates |
-| V12 | ACTION7/Undo exposure on local vs Kaggle paths | Action-space parity between the two |
+| V12 | ✅ **ACTION7 is present in the local enum and the untouched Kaggle starter uses the same dynamic `arcengine.GameAction` interface; per-game availability remains observation-dependent** | Action-space parity between the two |
 | V13 | ✅⚠ **1 submission/day, 2 final submissions** — not 5/day | Rewrites §4.7's repair branch and §7 item 0: no same-day retry, so a failed submission costs a day |
 | V14 | ✅ **Confirmed: a reproduced baseline does *not* discharge the Paper Prize requirement** — the submission must demonstrate the paper's approach | §9's method-bearing submission path is a requirement, not a contingency. Under 1/day, warming it late is expensive |
 

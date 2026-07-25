@@ -219,3 +219,7 @@ __marimo__/
 
 # Local-only working context (not part of the CC0/MIT-0 release)
 CLAUDE.md
+
+# S1 runtime logs are local evidence and may contain large frame/context payloads.
+/logs/*
+!/logs/.gitkeep

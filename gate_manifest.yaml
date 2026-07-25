@@ -419,23 +419,69 @@ verification:
       source: "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview"
       date: 2026-07-25
     V2_paper_deadline:
-      claim: "OFFICIAL deadline is Nov 8; ties favour the earlier entry. ~Nov 5 is an INTERNAL
-              target chosen for the tie-break buffer and must never be cited as official"
-      verified: true
-      source: "https://arcprize.org/competitions/2026/paper"
+      claim: "CONFLICTED — the official paper deadline is either Nov 8 or Nov 9 23:59; two sources of
+              comparable standing disagree and neither has been shown to govern.
+              NOT in dispute and unchanged: ties favour the earlier entry, and ~Nov 5 is an INTERNAL
+              target chosen for the tie-break buffer that must never be cited as official"
+      verified: "conflicted — downgraded from `true` on 2026-07-25 when a contradicting source of
+                 comparable standing was found. Do not cite a paper deadline as official until resolved"
+      sources:
+        - url: "https://arcprize.org/competitions/2026/paper"
+          reports: "Nov 8"
+          date: 2026-07-25
+        - url: "https://www.kaggle.com/competitions/arc-prize-2026-paper-track"
+          reports: "2026-11-09 23:59:00, as rendered by `kaggle competitions list -s arc-prize-2026`"
+          date: 2026-07-25
+      source: "see `sources` — conflicted; citing either one alone is the error this entry records"
       date: 2026-07-25
+      note: "The same API call renders the main competition as 2026-11-02 23:59:00, which matches V1's
+             'Nov 2, 23:59 UTC' exactly. That rendering therefore appears to be consistent UTC, which
+             makes the Nov 9 reading hard to dismiss as a timezone artifact"
+      resolution: "Day 1 §3.2 — read the Kaggle paper-track overview page AND the ARC Prize paper page,
+                   record which governs, and restore a single source. Schedule exposure is small either
+                   way: the internal ~Nov 5 target precedes both candidate dates. The reason to resolve
+                   it is that `verified: true` alongside a known contradiction is exactly the failure
+                   this pre-registration exists to prevent"
+      evidence_ref: "notes/s1-verification.md — 'Pre-flight Kaggle CLI access', conflict subsection"
     V3_entry_team_merge:
       claim: "Oct 26 — entry deadline AND team-merge deadline; publicly listed, no longer notes-only"
       verified: true
       source: "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview"
       date: 2026-07-25
     V4_feature_freeze: {claim: "Oct 18 (project-internal target, not official)", verified: "n/a — internal", source: null, date: null}
-    V5_competition_mode_resets: {claim: "level resets only", verified: null, source: null, date: null}
-    V6_env_creation: {claim: "one environment creation per game", verified: null, source: null, date: null}
-    V7_hidden_scorecards: {claim: "in-flight scorecards hidden", verified: null, source: null, date: null}
-    V8_scoring: {claim: "(human/agent actions)^2, cap 1.15, level-position weighted, equal across games", verified: null, source: null, date: null}
-    V9_rate_limit: {claim: "600 req/min documented; Kaggle-local cap unknown", verified: null, source: null, date: null}
-    V10_runtime_envelope: {claim: "~8 h wall-clock, ~10 actions/s — ASSUMPTIONS", verified: null, source: null, date: null}
+    V5_competition_mode_resets:
+      claim: "competition mode permits level resets only; game resets are not allowed and become level resets"
+      verified: true
+      source: "https://docs.arcprize.org/toolkit/competition_mode"
+      date: 2026-07-25
+    V6_env_creation:
+      claim: "competition mode permits one call to make() per environment"
+      verified: true
+      source: "https://docs.arcprize.org/toolkit/competition_mode"
+      date: 2026-07-25
+    V7_hidden_scorecards:
+      claim: "competition mode permits one scorecard and does not expose an in-flight scorecard"
+      verified: true
+      source: "https://docs.arcprize.org/toolkit/competition_mode"
+      date: 2026-07-25
+    V8_scoring:
+      claim: "per-level score is (human_baseline_actions / ai_actions)^2 capped at 1.15; game score is
+              level-index weighted; total score is the average of game scores"
+      verified: true
+      source: "https://docs.arcprize.org/methodology"
+      date: 2026-07-25
+    V9_rate_limit:
+      claim: "online ARC API is capped at 600 req/min; no separate Kaggle-local request cap is documented"
+      verified: "partial — 600 RPM confirmed; separate Kaggle-local cap not found"
+      source: "https://docs.arcprize.org/rate_limits"
+      date: 2026-07-25
+    V10_runtime_envelope:
+      claim: "~8 h wall-clock and ~10 actions/s are WORKING ASSUMPTIONS, not verified platform constants"
+      verified: false
+      source: null
+      date: 2026-07-25
+      consequence: "derive the actual runtime and throughput envelope from the starter submission and
+                    measured reference runs; do not use 8 h or 10 actions/s as facts"
     V11_license:
       # The flat claim "CC0/MIT-0 release required" was WRONG and would mis-screen candidates.
       # Four separate buckets; the Day-1 reference screen resolves each independently.
@@ -447,7 +493,16 @@ verification:
       date: 2026-07-25
       consequence: "a reference whose weights are not CC0/MIT-0 is NOT automatically disqualified —
                     that inference was wrong. Screen the four buckets separately"
-    V12_action7: {claim: "ACTION7/Undo exposure may differ local vs Kaggle", verified: null, source: null, date: null}
+    V12_action7:
+      claim: "ACTION7 is exposed through the same arcengine.GameAction interface locally and in the
+              untouched Kaggle starter; per-game Undo availability is still observation-dependent"
+      verified: true
+      source: "https://docs.arcprize.org/actions + official starter commit
+               10213de83f01df0ef4f0149ee9f8408dcc3772fb + Kaggle pinned starter V13
+               https://www.kaggle.com/code/inversion/arc3-sample-submission-random-agent?scriptVersionId=306264908"
+      date: 2026-07-25
+      evidence: "local arcengine 0.9.3 enum dump contains ACTION7=7; Kaggle starter imports GameAction
+                 from arcengine and enumerates it dynamically rather than using a reduced list"
     V13_submissions:
       claim: "1 submission per day, and 2 final submissions. NOT 5/day"
       verified: true
