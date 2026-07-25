@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local-only working context (not part of the CC0/MIT-0 release)
+CLAUDE.md

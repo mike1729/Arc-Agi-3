@@ -1,0 +1,475 @@
+# gate_manifest.yaml — pre-registration for the Stage 0 screening sprint
+#
+# Authority: docs/arc-agi-3-decision-experiments.md §10.
+# Schedule:  docs/arc-agi-3-s0-s1-execution.md
+#
+# RULES
+#   - A block with `status: DRAFT` is edited freely. Once `status: frozen`, every change is a dated
+#     entry in `errata` — never an in-place edit. Append-only protects the pre-registration, not the
+#     drafting.
+#   - Every block must be `status: frozen` with numbers filled BEFORE the step it governs begins.
+#   - `PROPOSED` marks a value this file suggests but that has not been accepted. Every PROPOSED
+#     value in the s1 block must be accepted or replaced on Day 1 PM (S1-a) before S1-b starts.
+
+meta:
+  sprint: "Stage 0 — Score-Oriented Screening Sprint"
+  created: 2026-07-25
+  hard_stop: 2026-08-22
+  utility_ordering: "leaderboard score primary; paper is a continuous by-product, not a fallback"
+
+errata: []
+
+# =====================================================================================
+# S1 — Baseline reproduction.  Freeze on Day 1 PM (Mon Jul 27) before S1-b begins.
+# =====================================================================================
+s1:
+  status: DRAFT            # -> frozen on Day 1 PM
+  frozen_on: null
+
+  # -----------------------------------------------------------------------------
+  # Frozen baseline specification (§4, "Freeze the reference before starting")
+  # Two references. The alternate exists so that Day-4 escalation goes to a real
+  # second candidate rather than to the template.
+  # -----------------------------------------------------------------------------
+  reference_primary:
+    repository_url: null
+    commit_hash: null
+    model: null
+    weights_url: null
+    weights_license: null
+    license_interpretation: null       # written argument against the CC0/MIT-0 requirement, not a verdict
+    quantization: null
+    accelerator: null
+    batching_pattern: null             # N parallel stateless game threads over one shared GPU
+    expected_public_behaviour: null
+    reproduction_target: null          # known score, or an explicit target if none is published
+    permitted_deviations: []           # enumerated in advance; anything outside this list is a logged deviation
+
+  # The alternate is frozen to the SAME schema as the primary, on Day 1, under the same criteria.
+  # A Day-4 escalation that lands on a half-specified alternate introduces an unfrozen configuration
+  # at exactly the moment there is no time to freeze one.
+  reference_alternate:
+    repository_url: null
+    commit_hash: null
+    model: null
+    weights_url: null
+    weights_license: null
+    license_interpretation: null
+    quantization: null
+    accelerator: null
+    batching_pattern: null
+    expected_public_behaviour: null
+    reproduction_target: null
+    permitted_deviations: []
+    selection_rationale: null          # why this one is second and not first
+
+  # -----------------------------------------------------------------------------
+  # Viability thresholds.  Read once at S1-g; pass/fail, no hedging.
+  # -----------------------------------------------------------------------------
+  viability_thresholds:
+    legal_action_validity:
+      threshold: 0.95                  # PROPOSED — fraction of emitted actions the API accepts
+      measured_at: "full Day-5 run, not the Day-3 single episode"
+      on_fail: "interface work becomes build item #1 after Aug 22 regardless of failure-frequency ranking"
+
+    per_action_latency:
+      # Derived, not absolute: the working envelope (~8 h wall-clock, ~10 actions/s) is an
+      # ASSUMPTION pending V10. State the threshold against the measured envelope.
+      threshold_p50_ms: null           # fill from V9/V10 on Day 1
+      threshold_p95_ms: null
+      wall_clock_margin_required: 0.25  # PROPOSED — ≥25% margin on a full-length run
+      on_fail: "the per-candidate inference cost in S3 question 5 has no headroom; latency becomes a
+                first-order constraint on every component priced after Aug 22"
+
+    reproduction_fidelity:
+      levels: "≥1 scored level on the same public games the reference reports"   # PROPOSED
+      score_relative_tolerance: 0.25   # PROPOSED — within 25% of the reference's reported public score
+      on_fail: "the gap must be quantified and explained before the baseline is used as a reference
+                point; an unexplained gap means something other than the reference was reproduced"
+
+    hardware_fit:
+      peak_vram_headroom: 0.15         # PROPOSED — with compact models co-resident
+      throughput_degradation_max: 0.20 # PROPOSED — over a full-length run vs first 10 min
+      on_fail: "re-quantize or drop to the alternate; record which"
+
+    license:
+      # Four independent buckets (V11). A single pass/fail here was the wrong model and would have
+      # disqualified references that are in fact usable.
+      entrant_authored_code: {requirement: "CC0 / MIT-0", verdict: null}
+      third_party_material: {requirement: "its own separate sharing requirements — NOT CC0/MIT-0", verdict: null}
+      models_and_weights: {requirement: "Kaggle's specific rules for models and weights", verdict: null}
+      winner_license: {requirement: "CC-BY 4.0", verdict: null}
+      on_fail: "identify WHICH bucket failed. Only a models-and-weights or entrant-code failure forces
+                a different Day-6 payload; a third-party-material question is usually a compliance step,
+                not a disqualification. Must be known on Day 1, not Day 6"
+
+    packaging:
+      requirement: "offline install reproduces the environment; zero network calls on the runtime path;
+                    hidden rerun passes"
+      on_fail: "blocking — S0 exists specifically to have already excluded the path itself as a cause"
+
+  # -----------------------------------------------------------------------------
+  # Reset and action accounting (§4.4 of the execution plan).
+  # Gates nothing, configures everything. Recorded as a RESULT, not a note.
+  # -----------------------------------------------------------------------------
+  reset_experiment:
+    design:
+      # IDENTIFIABILITY: the arms must differ in exactly one thing — whether a reset preceded the
+      # scored completion. Different games have different human-action baselines H and different
+      # level weights, so a cross-game comparison confounds reset accounting with both and is NOT
+      # identifiable. Same game, same level, independent scorecards. Then H and the weight cancel:
+      #     sqrt(score_A / score_B) = N_B / N_A     and H never needs to be known.
+      same_game: true
+      same_level: true
+      independent_scorecards: true
+      cross_game_comparison_permitted: false        # explicitly prohibited — not identifiable
+      scripted_prefix_required: true                # a stochastic policy makes the arms incomparable
+      read_by_closing: true                         # forced by V7 (hidden in-flight scorecards)
+      run_order: "R1 before R2 — R2's estimator is invalid if the level re-randomizes"
+      repetitions_per_arm: 3                        # PROPOSED — median ratio is the statistic
+      a_actions: null                               # target a ~= 1.5 * H so arm A scores ~0.44, clear of the cap
+      w_wasted_actions: null                        # set w = a, putting the hypotheses at ratio 1.0 vs 2.0
+
+    preconditions:
+      per_level_score_exposed:
+        required_because: "level-position weighting mixes levels into one number; without per-level
+                           scores the ratio is underdetermined"
+        fallback: "restrict both arms to level 1 and close immediately; if still not separable,
+                   record r2 as `blocked` rather than forcing a reading"
+        satisfied: null
+      v6_permits_same_game_repeat:
+        required_because: "the whole design rests on repeating one game across scorecards"
+        fallback: "if `one environment creation per game` is per-team-ever rather than per-scorecard,
+                   no same-game design exists — run in practice / non-competition mode and record
+                   explicitly that the result may not transfer to competition mode"
+        satisfied: null
+      cap_not_saturated:
+        required_because: "the 1.15 cap collapses the ratio"
+        method: "verify from the arm-A score BEFORE running arm B"
+        satisfied: null
+
+    r1_knowledge_preservation:
+      question: "after RESET, does an identical scripted action prefix produce an identical
+                 observation sequence?"
+      # One prefix replayed once shows only that ONE prefix was repeatable ONCE. It supports no claim
+      # about the level, the game, or the environment class — and R1 selects the global controller.
+      sampling:                        # PROPOSED
+        games: 2                       # >=2 distinct public games; one game cannot ground a class claim
+        prefixes_per_game: 2           # one short (~10 actions), one longer (~40) so depth-only divergence is reachable
+        replays_per_prefix: 3          # 1 original + 2 replays
+      comparison_criterion: "exact frame-sequence equality at every step; on failure record the
+                             first-divergence step index — a divergence at step 0 means a re-randomized
+                             initial state, later divergence means stochastic dynamics, and those imply
+                             different agents"
+      outcomes:
+        deterministic: "every prefix, every game, every replay identical — claim only that TESTED
+                        prefixes replay exactly, NOT that 'everything learned transfers'"
+        mixed: "deterministic in some games, not others -> the property is per-game and NO global
+                controller is correct; runtime determinism detection becomes a build item"
+        re_randomizes: "divergence everywhere -> only structural knowledge transfers"
+        inconclusive: "divergence not reproducible across replays -> something else varies; do not
+                       proceed to R2 on an unstable base"
+      result: null                     # deterministic | mixed | re_randomizes | inconclusive
+
+    r2_action_accounting:
+      question: "does the scored action count accumulate across resets, or restart?"
+      runs_only_if: "r1 == deterministic. Under r1 == mixed, may be run on a game that tested
+                     deterministic and reported as game-specific, never as a global finding"
+
+      # N_B = a + w + c_reset, where c_reset in {0,1} is whether RESET is itself scored — unknown, and
+      # absorbed rather than resolved: require a >= 20 so 1/a <= 0.05, well inside tolerance.
+      c_reset_handling: "absorbed by requiring a >= 20; accumulate hypothesis sits at [2.00, 2.05] at w = a"
+      min_a: 20
+
+      # THE CONFOUND THAT INVERTS THE ANSWER: if the w wasted actions are rejected as illegal, or are
+      # no-ops the scorer does not count, arm B scores like arm A and R2 reads `restarts` when the truth
+      # is `accumulates` — selecting the aggressive controller in a world where every probe costs score.
+      waste_validity_check:
+        requirement: "every one of the w actions must be ACCEPTED by the API and produce an OBSERVABLE
+                      STATE CHANGE, verified from arm B's own transition log BEFORE any score is read"
+        on_fail: "arm is void — rebuild the waste sequence from actions already observed to change
+                  state, and rerun. Never read the score of an unvalidated arm"
+        accepted_and_changed_count: null   # recorded as evidence
+
+      estimator: "r = sqrt( median(score_A) / median(score_B) ) — a RATIO OF MEDIANS, not a median of
+                  paired ratios: the 3 repetitions per arm are independent scorecards with no natural
+                  pairing, so pairing them would be arbitrary"
+      within_arm_spread: "(max - min) / median over that arm's 3 per-repetition scores"
+
+      classification:                  # PROPOSED tolerances — preregistered, not fitted after the fact
+        restarts_if: "r in [0.85, 1.15]"
+        accumulates_if: "r in [1.85, 2.20]   # (a+w+c_reset)/a +/- 0.15 at w = a, a >= 20"
+        inconclusive_if: "neither band, OR either arm's within_arm_spread > 0.10, OR the
+                          waste_validity_check failed"
+      note: "`restarts` and `only the successful attempt is scored` are indistinguishable here and
+             imply the same controller; they diverge only with multiple completions in one episode,
+             which is out of S1 scope"
+      result: null                     # restarts | accumulates | inconclusive | blocked
+
+    controller_fork:
+      # R1 deterministic + R2 restarts   -> aggressive identify-then-execute (explore, then speedrun)
+      # R1 deterministic + R2 accumulates-> surgical information-per-action
+      # R1 mixed                         -> no global controller; runtime determinism detection + switch
+      # R1 re-randomizes + either        -> speedrun unavailable; exploration must generalize
+      # inconclusive / blocked           -> DEFAULT TO SURGICAL. The conservative branch is merely
+      #                                     suboptimal if wrong; the aggressive branch is catastrophic
+      #                                     if wrong. Re-run the probe at the first slack in S2.
+      selected: null
+
+  # -----------------------------------------------------------------------------
+  # Failure taxonomy — operational definitions (§10 requires these before S1-d).
+  # Multi-label, confidence ∈ {low, med, high}, evidence stored per label.
+  # Each definition must be decidable from the log alone.
+  # -----------------------------------------------------------------------------
+  failure_taxonomy:
+    labelling_scheme:
+      multi_label: true
+      confidence_values: [low, med, high]
+      evidence_required_per_label: true   # a label with no stored evidence cannot be re-rated blind
+
+      failure_episode_definition: "a level attempt that terminated without level advancement, or was
+                                   abandoned. Successful levels produce no episode. This is the
+                                   denominator for every frequency below"
+
+      # Required because the re-rate sample is stratified on it AND the build order is ranked by it.
+      primary_label:
+        required: true                    # exactly one per episode
+        rule: "rater-designates the label judged CAUSALLY EARLIEST in the chain — the one that, had it
+               not occurred, would have made the rest moot"
+        tie_break: "highest confidence; then the fixed category order as listed under `categories`
+                    below, so the rule is always decidable"
+
+      # `count`/`share` are ambiguous with multi-label data, and the ambiguity changes the build order.
+      frequency_measures:
+        primary_share:
+          definition: "episodes where the category is primary_label / total failure episodes"
+          sums_to: 1.0
+          role: "RANKS THE BUILD ORDER"
+        episode_share:
+          definition: "episodes carrying the label at all, any confidence / total failure episodes"
+          sums_to: ">1.0 — expected under multi-label"
+          role: "reported beside primary_share. A category often present but rarely primary is a
+                 CONTRIBUTING factor, not a root cause; building for it first would fix something that
+                 was never the bottleneck"
+
+    categories:
+      goal_unknown:
+        definition: "the agent's stated or inferred objective at the terminal step does not match the
+                     level's actual win condition, or no objective is representable in the log"
+        evidence: "agent goal field + the transition that actually advanced the level"
+        confound: "not separable from planning_depth by behaviour alone — see blind_rerate"
+
+      action_semantics_unknown:
+        definition: "the agent's predicted effect of an action differs from the observed effect, for an
+                     action whose semantics are stable and were observed at least once earlier in the episode"
+        evidence: "predicted delta vs observed delta"
+
+      perception_parsing:
+        definition: "the agent's state description omits or misstates a feature that is present in the
+                     frame and is causally relevant to the transition it then chose"
+        evidence: "frame + parsed state description"
+
+      hidden_state_aliasing_or_memory:
+        definition: "two observationally identical states required different actions, and the agent
+                     selected by the same rule in both"
+        evidence: "both frames, both actions, both outcomes"
+
+      coordinate_unreachable:
+        definition: "a required ACTION6 coordinate was never present in the candidate set"
+        evidence: "candidate set at the step + the coordinate that later worked"
+        note: "separates proposal-omitted from ranker-ordered-wrongly; no planner result is
+               interpretable without it"
+
+      planning_depth:
+        definition: "goal and action semantics were both correct, the successful sequence exists in the
+                     candidate space, and its length exceeded the agent's effective search horizon"
+        evidence: "shortest known successful sequence length vs the agent's effective horizon"
+        confound: "not separable from goal_unknown by behaviour alone — see blind_rerate"
+
+      exploration_or_probe_selection:
+        definition: "with unresolved uncertainty present, the agent chose an action of low information
+                     yield when a higher-yield legal action was available"
+        evidence: "action taken + its no-op or redundant outcome + the available alternative"
+
+      progress_signal_misinterpretation:
+        definition: "the agent treated a non-progress change as progress, or discarded a real progress event"
+        evidence: "score/level marker vs the agent's recorded belief"
+
+      irreversible_mistake:
+        definition: "a transition after which the level became unwinnable or required a reset"
+        evidence: "the transition + the subsequent dead-end"
+
+      invalid_output_interface:
+        definition: "malformed action, illegal action, schema violation, or API rejection"
+        evidence: "raw agent output + the rejection"
+
+      retrieval_or_context:
+        definition: "information sufficient to avoid the failure existed in the agent's own logs or
+                     context store and was not retrieved, or was truncated away"
+        evidence: "the stored record + the context snapshot that omitted it"
+
+      reasoning_inconsistency:
+        definition: "the chosen action contradicts the agent's own stated reasoning at the same step"
+        evidence: "reasoning text + action"
+
+      latency_or_budget:
+        definition: "the episode ended or the action was degraded because wall-clock, token, or
+                     action-count budget was exhausted, rather than because of a decision error"
+        evidence: "timing and budget counters at the terminal step"
+
+  # -----------------------------------------------------------------------------
+  # Blind re-rate rule (§4).  The first pass is descriptive, not causal.
+  # -----------------------------------------------------------------------------
+  blind_rerate:
+    sample_size: 30                    # PROPOSED
+    # ORDER MATTERS: label first, then sample, then blind. Stratification needs the very labels that
+    # blinding removes, so a sample "set aside unlabelled" cannot be stratified or re-rated against.
+    procedure:
+      - "1. first-pass label the full Day-5 run"
+      - "2. draw a sample stratified by primary_label, oversampling goal_unknown and planning_depth"
+      - "3. produce a BLINDED COPY: strip labels/confidences/notes, preserve all evidence"
+      - "4. re-rate after the cooling period; report per-category agreement"
+    stratification: "by first-pass primary_label; oversample goal_unknown and planning_depth"
+
+    # BLIND TO THE LABELS, NOT TO THE EVIDENCE. Stripping agent rationale would remove the sole
+    # evidence for reasoning_inconsistency and the recorded-goal evidence for goal_unknown, i.e. the
+    # procedure would delete what its own categories are defined on. It would also mean the two
+    # passes rate different evidence, which makes any agreement statistic uninterpretable.
+    stripped_before_rerate: ["first-pass labels", "first-pass confidences", "rater notes"]
+    preserved_at_rerate: "the complete original evidence packet, unchanged — including reasoning_text"
+    rationale_caveat: "agent rationale is SELF-REPORT. It establishes what the agent said, not what was
+                       true. Decisive for reasoning_inconsistency (which is defined on it); treat as
+                       weak and anchoring for goal_unknown"
+
+    cooling_period_hours: 48           # PROPOSED — sample drawn Day 5, re-rated Day 7
+
+    # Naming matters: with one rater this is intra-rater agreement over time, not inter-rater
+    # reliability. Cohen's kappa is still the right statistic; the claim it supports is weaker.
+    agreement_type: "delayed test-retest (same rater)"     # -> "inter-rater" only if a second independent rater is used
+    agreement_metric: "Cohen's kappa, per category"
+    agreement_floor: 0.40              # PROPOSED
+    on_below_floor: "that category's frequency is reported as unreliable and DOES NOT drive build order"
+    interpretation_limit: "test-retest agreement bounds label STABILITY, not label correctness. A
+                           category can be perfectly stable and still wrong — notably the
+                           goal_unknown / planning_depth confound, which a single rater can reproduce
+                           consistently in both passes"
+
+  # -----------------------------------------------------------------------------
+  # Escalation — pre-registered so that Day-4 pressure does not choose for you (§7).
+  # -----------------------------------------------------------------------------
+  escalation:
+    day2_exit: "≥1 scored public-game level locally, with its transition log on disk"
+    day3_slip_allowance_days: 0.5
+    day4_am_hard_decision: "if no scored public level by end of Day 3, switch to reference_alternate"
+    template_fallback: "permitted from Day 5 ONLY with an explicit written note in the close-out that
+                        S1's question was not answered and the build order derives from a degraded source"
+    never_cut: [s0, reference_freeze, reset_experiment, day6_submission]
+    overrun_source: "explicitly record whether overrun past Day 7 is charged to S3 or S4; S4 is the only
+                     measurement that can retain or kill JEPA on operational grounds"
+
+  # -----------------------------------------------------------------------------
+  # Results — filled at S1-g (Day 7 AM).
+  # -----------------------------------------------------------------------------
+  results:
+    submission_branch: null            # PASS | REPAIR | DEGRADED  (see execution plan §4.7)
+    hidden_score: null
+    degraded_consequences: null        # required iff DEGRADED: what S4's retention decision now rests on,
+                                       # given no baseline for the closed-loop advisor delta
+
+    # One verdict per frozen threshold, each with an evidence reference. A single aggregate verdict
+    # hides WHICH threshold failed, and the build order depends on knowing that.
+    threshold_verdicts:
+      legal_action_validity:  {verdict: null, measured: null, evidence_ref: null}
+      per_action_latency_p50: {verdict: null, measured: null, evidence_ref: null}
+      per_action_latency_p95: {verdict: null, measured: null, evidence_ref: null}
+      wall_clock_margin:      {verdict: null, measured: null, evidence_ref: null}
+      reproduction_fidelity:  {verdict: null, measured: null, evidence_ref: null, gap_explanation: null}
+      hardware_fit_vram:      {verdict: null, measured: null, evidence_ref: null}
+      hardware_fit_throughput: {verdict: null, measured: null, evidence_ref: null}
+      license_entrant_code:   {verdict: null, measured: null, evidence_ref: null}
+      license_third_party:    {verdict: null, measured: null, evidence_ref: null}
+      license_weights:        {verdict: null, measured: null, evidence_ref: null}
+      license_winner_cc_by:   {verdict: null, measured: null, evidence_ref: null}
+      packaging:              {verdict: null, measured: null, evidence_ref: null}
+
+    latency_table_ref: null
+
+    # Field availability from the Day-2 schema check (execution plan §4.2.1). A category whose
+    # required evidence the reference never exposed is `unavailable`, NEVER zero-frequency —
+    # an unobservable failure mode that silently ranks last would misdirect the whole build order.
+    field_availability: {}             # {field_name: available | absent | added_by_patch}
+    categories_unobservable: []        # categories excluded from the ranking for missing evidence
+
+    total_failure_episodes: null       # the denominator for both shares below
+    failure_frequency_ranking: []      # [{category, primary_count, primary_share, episode_count,
+                                       #   episode_share, survives_agreement_floor, addressed_by}]
+                                       # ranked by primary_share; episode_share reported alongside
+    build_order: []
+    viability_verdict: null            # roll-up ONLY; never a substitute for threshold_verdicts
+
+# =====================================================================================
+# Verification items (§2 of the sprint doc). Answered Day 1 AM; each needs source + date.
+# =====================================================================================
+verification:
+  status: DRAFT
+  items:
+    V1_final_submission:
+      claim: "Nov 2, 23:59 UTC"
+      verified: true
+      source: "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview"
+      date: 2026-07-25
+    V2_paper_deadline:
+      claim: "OFFICIAL deadline is Nov 8; ties favour the earlier entry. ~Nov 5 is an INTERNAL
+              target chosen for the tie-break buffer and must never be cited as official"
+      verified: true
+      source: "https://arcprize.org/competitions/2026/paper"
+      date: 2026-07-25
+    V3_entry_team_merge:
+      claim: "Oct 26 — entry deadline AND team-merge deadline; publicly listed, no longer notes-only"
+      verified: true
+      source: "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview"
+      date: 2026-07-25
+    V4_feature_freeze: {claim: "Oct 18 (project-internal target, not official)", verified: "n/a — internal", source: null, date: null}
+    V5_competition_mode_resets: {claim: "level resets only", verified: null, source: null, date: null}
+    V6_env_creation: {claim: "one environment creation per game", verified: null, source: null, date: null}
+    V7_hidden_scorecards: {claim: "in-flight scorecards hidden", verified: null, source: null, date: null}
+    V8_scoring: {claim: "(human/agent actions)^2, cap 1.15, level-position weighted, equal across games", verified: null, source: null, date: null}
+    V9_rate_limit: {claim: "600 req/min documented; Kaggle-local cap unknown", verified: null, source: null, date: null}
+    V10_runtime_envelope: {claim: "~8 h wall-clock, ~10 actions/s — ASSUMPTIONS", verified: null, source: null, date: null}
+    V11_license:
+      # The flat claim "CC0/MIT-0 release required" was WRONG and would mis-screen candidates.
+      # Four separate buckets; the Day-1 reference screen resolves each independently.
+      claim: "entrant-authored code and methods -> CC0/MIT-0; third-party material -> its own separate
+              sharing requirements (NOT required to be CC0/MIT-0); models and weights -> Kaggle's
+              specific rules; winner license -> CC-BY 4.0"
+      verified: true
+      source: "https://arcprize.org/competitions/2026 + https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/rules"
+      date: 2026-07-25
+      consequence: "a reference whose weights are not CC0/MIT-0 is NOT automatically disqualified —
+                    that inference was wrong. Screen the four buckets separately"
+    V12_action7: {claim: "ACTION7/Undo exposure may differ local vs Kaggle", verified: null, source: null, date: null}
+    V13_submissions:
+      claim: "1 submission per day, and 2 final submissions. NOT 5/day"
+      verified: true
+      source: "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/rules"
+      date: 2026-07-25
+      consequence: "first-order planning constraint. A rejected submission cannot be retried until the
+                    next calendar day, so a failed submission costs a DAY. ~59 submissions exist between
+                    Aug 22 and the Oct 18 freeze — each is scarce, which is why the per-submission
+                    ablation ledger (§9) is load-bearing rather than tidy"
+    V14_paper_prize_requirement:
+      claim: "a reproduced baseline does NOT discharge the Paper Prize submission requirement —
+              the submission must demonstrate the paper's approach"
+      verified: true
+      source: "https://arcprize.org/competitions/2026/paper"
+      date: 2026-07-25
+      consequence: "CONFIRMED. One method-bearing submission path stays warm from now (§9) — a
+                    requirement, not a contingency. Under a 1/day quota, warming it late is expensive"
+
+# =====================================================================================
+# Later stages — stubs. Freeze each before its step, per §10.
+# =====================================================================================
+s2: {status: NOT_STARTED}   # value/distance-to-goal criterion per family; F1 three-ceiling margins; F3 delay length and bit sparsity
+s3: {status: NOT_STARTED}   # primary metric + threshold per screening question; T_v, T_r; rescue coefficients; evaluator-doing-the-work criterion
+s4: {status: NOT_STARTED}   # JEPA retention threshold — what advisor improvement at what latency cost
+s5: {status: NOT_STARTED}   # B/M/U/C pattern mapping to each §11 branch

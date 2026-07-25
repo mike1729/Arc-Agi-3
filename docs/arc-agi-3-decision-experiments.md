@@ -297,8 +297,15 @@ S1's failure-frequency ranking. The candidate set, from
 transitions · object/delta modelling · active probing · ACTION6 candidate recall · context-conditioned
 archive with node splitting · verified search · belief ledger.
 
-Submit regularly — 5 submissions/day, and iteration is where score comes from. Every submission is an
-ablation entry per §9.
+Submit regularly. Every submission is an ablation entry per §9.
+
+**Corrected 2026-07-25:** the quota is **1 submission per day, 2 final submissions** — not 5/day, as this
+section previously stated (source: Kaggle competition rules, checked 2026-07-25). This changes the
+iteration argument rather than merely a number. Roughly 59 submissions exist between Aug 22 and the Oct 18
+freeze, a rejected one cannot be retried until the next calendar day, and there is no room for a
+submit-and-see loop. Iteration still produces the score, but each submission must be *chosen*, which makes
+the §9 rule — every submission linked to the ablation it represents — the mechanism that keeps a scarce
+resource informative rather than a bookkeeping nicety.
 
 **JEPA retention gate.** It stays in the agent only if S4's advisor test shows improvement at acceptable
 latency, re-measured after integration. Otherwise the encoder is retained for retrieval only, or dropped.
