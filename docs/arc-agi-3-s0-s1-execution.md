@@ -83,14 +83,14 @@ exists. Escalation in §7 item 0.
 `notes/s1-verification.md` with the URL and date you read it, because several are load-bearing for
 decisions made later this week.
 
-**Six are already resolved** (checked 2026-07-25 against the Kaggle overview, Kaggle rules, and the
-official Paper Prize page) and are recorded as verified in `gate_manifest.yaml`. Day 1 covers the
-remainder. Three of the resolved ones **changed the plan** and are marked ⚠.
+The register below was checked on 2026-07-25 against the Kaggle overview, Kaggle rules, ARC
+documentation, and the Paper Prize sources. Verified, partial, conflicted, and measurement-derived
+answers are distinguished explicitly rather than collapsing unresolved items into a pass.
 
 | # | Item | Consequence if different than assumed |
 |---|---|---|
 | V1 | ✅ Final submission Nov 2, 23:59 UTC — confirmed | Whole-sprint calendar |
-| V2 | ✅⚠ **Nov 8 is the official paper deadline.** ~Nov 5 is an *internal* tie-break buffer, never cite it as official; ties favour the earlier entry | §9 paper cadence |
+| V2 | ⚠ **CONFLICTED:** ARC Prize reports Nov 8; the Kaggle paper-track API reports Nov 9, 23:59. ~Nov 5 remains the internal buffer; do not cite either external date as governing until reconciled | §9 paper cadence |
 | V3 | ✅ Oct 26 entry **and** team-merge — now publicly listed, no longer notes-only | Registration deadline |
 | V4 | Feature freeze Oct 18 — project-internal target, not official; nothing to verify | The ~8.4 construction weeks |
 | V5 | ✅ **Competition mode: level resets only; game resets become level resets** | Reset experiment design (§4.4) |

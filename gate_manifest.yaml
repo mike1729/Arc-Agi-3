@@ -20,6 +20,30 @@ meta:
 errata: []
 
 # =====================================================================================
+# S0 — External execution-path proof.
+# =====================================================================================
+s0:
+  status: COMPLETE
+  completed_on: 2026-07-26
+  starter:
+    source_notebook: "https://www.kaggle.com/code/inversion/arc3-sample-submission-random-agent?scriptVersionId=306264908"
+    source_version: 13
+    copy_diff: "+0/-0"
+    submitted_notebook: "https://www.kaggle.com/code/michalswietek/arc3-sample-submission-random-agent-1b8360?scriptVersionId=337941384"
+  visible_validation:
+    verdict: PASS
+    run_id: 337941208
+    runtime_seconds: 20.3
+  hidden_rerun:
+    verdict: PASS
+    status: "Succeeded"
+    public_score: 0.06
+    terminal_observed_at: "2026-07-26 05:20 UTC"
+    wall_clock_bound: "approximately 4 h 42 min–5 h 41 min; Kaggle exposed only rounded relative completion time"
+    warnings: []
+  evidence_ref: "notes/s1-verification.md — S0 Kaggle starter path proof; submissions/ledger.md"
+
+# =====================================================================================
 # S1 — Baseline reproduction.  Freeze on Day 1 PM (Mon Jul 27) before S1-b begins.
 # =====================================================================================
 s1:

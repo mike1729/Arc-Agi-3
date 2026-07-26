@@ -5,7 +5,7 @@ ones.
 
 | Date (UTC) | Submission ID | Commit | Config diff vs previous | Ablation | Hypothesis | Result | Wall-clock to result | Warnings |
 |---|---|---|---|---|---|---|---|---|
-| 2026-07-25 | Kaggle notebook Version 2, `scriptVersionId=337941384` | Official pinned starter V13, `scriptVersionId=306264908` (`+0/-0`; local repo HEAD `01fc46a7e86d12a43f32680b1f855aa3d59e321d` was not the submitted payload) | First submission; untouched copy of the official pinned Random Agent | — (path proof) | The official starter passes both Kaggle's visible validation and hidden competition rerun without payload changes | Visible validation: **PASS** — Version 1 run `337941208`, 20.3 s; submitted Version 2 visible run: **PASS**; hidden rerun: **RUNNING**; public score: pending | `>33 min`, still running when last checked at 2026-07-25 21:12 UTC | None reported while running |
+| 2026-07-25 | Kaggle notebook Version 2, `scriptVersionId=337941384` | Official pinned starter V13, `scriptVersionId=306264908` (`+0/-0`; local repo HEAD `01fc46a7e86d12a43f32680b1f855aa3d59e321d` was not the submitted payload) | First submission; untouched copy of the official pinned Random Agent | — (path proof) | The official starter passes both Kaggle's visible validation and hidden competition rerun without payload changes | Visible validation: **PASS** — Version 1 run `337941208`, 20.3 s; submitted Version 2 visible run: **PASS**; hidden rerun: **PASS** — `Succeeded`; public score: `0.06` | Approximately `4 h 42 min`–`5 h 41 min`; bounded from Kaggle's rounded `Succeeded · 3h ago` at 2026-07-26 05:20 UTC | None reported |
 
 ## Column rules
 

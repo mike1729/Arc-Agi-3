@@ -1,7 +1,8 @@
 # S1 Verification Record
 
-**Status:** S0 in progress — pre-flight API access, official-starter smoke test, accelerator inventory,
-and the visible Kaggle validation pass are complete. The hidden Kaggle rerun is still running.
+**Status:** S0 complete — the untouched official starter passed the visible Kaggle run and the hidden
+competition rerun. The verification register is recorded, with V2 conflicted, V9 partial, and V10
+remaining measurement-derived rather than promoted to platform facts.
 
 ## Pre-flight smoke test — 2026-07-25
 
@@ -82,6 +83,10 @@ pre-registered reset/action-accounting experiment rather than silently normalizi
 - The untouched starter's visible Kaggle commit run completed successfully in `20.3 s` on a CPU-only
   session. This is evidence for packaging/boot latency, not a bound on a hidden multi-game rerun and not
   evidence for the `10 actions/s` assumption.
+- The hidden rerun later succeeded. Kaggle showed `Succeeded · 3h ago` when checked at
+  `2026-07-26 05:20 UTC`; relative-time rounding bounds the submission-to-result interval to roughly
+  `4 h 42 min`–`5 h 41 min`. This is one workload measurement, not verification of an `~8 h` platform
+  limit.
 
 ### V12 — ACTION7 parity
 
@@ -132,9 +137,14 @@ pre-registered reset/action-accounting experiment rather than silently normalizi
 - Kaggle confirmed one submission remaining immediately before submission; this consumed the day's
   only slot.
 - Visible Version 2 notebook run: **PASS**.
-- Hidden rerun: **RUNNING** at the time of this entry.
-- Public score: pending.
-- Warning text: none reported so far.
+- Hidden rerun: **PASS** — Kaggle status `Succeeded`.
+- Public score: `0.06`.
+- Terminal result observed: `2026-07-26 05:20 UTC`; Kaggle displayed `Succeeded · 3h ago`, so the
+  wall-clock interval is bounded to approximately `4 h 42 min`–`5 h 41 min` rather than asserted to
+  false precision.
+- Warning text: none reported.
+- **S0 exit verdict: PASS** — the untouched starter passed both required execution paths and the
+  submission is recorded in `submissions/ledger.md`.
 
 ---
 
