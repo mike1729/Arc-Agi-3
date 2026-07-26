@@ -27,6 +27,7 @@ import argparse
 import collections
 import glob
 import json
+import re
 from pathlib import Path
 
 # Fixed category order — the manifest's tie-break for primary_label depends on it being stable.
@@ -47,6 +48,11 @@ def _counts(acts):
     return collections.Counter(str(r.get("action_display")) for r in acts)
 
 
+def game_of(pass_key: str) -> str:
+    """`bp35-0a0ad940_p0` -> `bp35-0a0ad940`. The pass suffix is `_p<N>`."""
+    return re.sub(r"_p\d+$", "", pass_key)
+
+
 def load_events(run_dir: Path):
     out = {}
     for f in sorted(glob.glob(str(run_dir / "artifacts" / "*_events.jsonl"))):
@@ -55,10 +61,20 @@ def load_events(run_dir: Path):
     return out
 
 
-def load_requests(run_dir: Path):
-    """analysis_step -> the model's reasoning and tool calls, from D6/D6b response rows."""
+def load_requests(run_dir: Path, pass_key: str):
+    """analysis_step -> the model's reasoning and tool calls, for ONE PASS ONLY.
+
+    MUST be scoped to the pass. The harness writes one request log per pass — `<game>_p<N>_requests.jsonl`
+    — and globbing `*requests.jsonl` pools every game in the chunk into shared `analysis_step` buckets,
+    so episode evidence for one game would carry three other games' reasoning at the same step number.
+    The evidence packet is the sole basis for a rater's label, and those labels rank the build order.
+    The glob also swept up the run-level `requests.jsonl`, which is a different stream entirely.
+
+    Invisible before 2026-07-26 because every earlier run held a single game.
+    """
     by_step = {}
-    for f in glob.glob(str(run_dir / "*requests.jsonl")):
+    files = [run_dir / f"{pass_key}_requests.jsonl"]
+    for f in [p for p in files if p.exists()]:
         for line in open(f):
             try:
                 r = json.loads(line)
@@ -84,21 +100,35 @@ def load_requests(run_dir: Path):
 
 
 def extract_episodes(run_dir: Path):
-    """One episode per level ATTEMPT that did not advance. A level the agent cleared yields no episode."""
+    """One episode per level ATTEMPT that did not advance. A level the agent cleared yields no episode.
+
+    Every per-game quantity is resolved PER PASS, by game id. Reading `game_runs[0]` stamped the whole
+    chunk with one game's identity, human baseline and terminal state — and `game_runs` is not even
+    ordered like the event files, so it was not reliably "the first game". The damage was silent and
+    specific: `human_baseline` drives `action_ratio_vs_baseline`, and `game` drives the S1-E4
+    eligibility filter, so a keyboard chunk could have its `exploration_or_probe_selection` stratum
+    emptied by mislabelling.
+    """
     bj = run_dir / "benchmark.json"
     b = json.loads(bj.read_text()) if bj.exists() else {}
-    gr = (b.get("game_runs") or [{}])[0]
-    game = gr.get("game_id", run_dir.name)
-    apl = gr.get("actions_per_level") or []
-    bal = gr.get("base_actions_per_level") or []
-    completed = int(gr.get("levels_completed") or 0)
-    state = gr.get("state")
+    runs_by_game = {gr.get("game_id"): gr for gr in (b.get("game_runs") or []) if gr.get("game_id")}
 
     events_by_pass = load_events(run_dir)
-    requests = load_requests(run_dir)
     episodes = []
+    games_seen = {}
 
     for pass_key, rows in events_by_pass.items():
+        game = game_of(pass_key)
+        gr = runs_by_game.get(game, {})
+        if game not in runs_by_game:
+            print(f"  WARNING {pass_key}: no game_run for {game!r} in benchmark.json — "
+                  f"baseline and terminal state unavailable for its episodes")
+        apl = gr.get("actions_per_level") or []
+        bal = gr.get("base_actions_per_level") or []
+        state = gr.get("state")
+        completed = int(gr.get("levels_completed") or 0)
+        requests = load_requests(run_dir, pass_key)
+        games_seen[game] = {"state": state, "levels_completed": completed, "actions_per_level": apl}
         # Segment the event stream by the level marker; a segment that never advances is an episode.
         segs, cur, cur_level = [], [], None
         for r in rows:
@@ -153,8 +183,10 @@ def extract_episodes(run_dir: Path):
                 },
             })
     return {
-        "run": run_dir.name, "game": game, "state": state,
-        "levels_completed": completed, "actions_per_level": apl,
+        "run": run_dir.name,
+        # Per-game, not per-run: a chunk directory holds several games.
+        "games": games_seen,
+        "n_games": len(games_seen),
         "categories_labelable": LABELABLE,
         "categories_unobservable": sorted(UNOBSERVABLE),
         "unobservable_rule": ("excluded from failure_frequency_ranking and build_order; NEVER recorded "
@@ -245,8 +277,10 @@ def main() -> int:
     out = args.out or f"logs/s1d_episodes_{run_dir.name}.json"
     Path(out).write_text(json.dumps(data, indent=2) + "\n")
 
-    print(f"run      : {data['run']}  game={data['game']}  state={data['state']}")
-    print(f"levels   : {data['levels_completed']} completed, actions_per_level={data['actions_per_level']}")
+    print(f"run      : {data['run']}   {data['n_games']} game(s)")
+    for g, meta in sorted(data["games"].items()):
+        print(f"   {g:20s} state={meta['state']} levels={meta['levels_completed']} "
+              f"apl={meta['actions_per_level']}")
     print(f"episodes : {len(data['episodes'])} failure episode(s)")
     for e in data["episodes"]:
         print(f"   {e['episode_id']}")

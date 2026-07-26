@@ -220,6 +220,39 @@ errata:
                                 check — which is exactly what the floor exists to prevent. State this
                                 in the close-out if it is still open at S1-g."
 
+  - id: S1-E8
+    date: 2026-07-26
+    scope: ["s1.failure_taxonomy.failure_episode_definition", "s1.blind_rerate.sample_size"]
+    filed_before: "any labelling corpus existed — the S1-e breadth run was still in flight when this was
+                   written. An episode INCLUSION criterion decided after seeing labels is not a
+                   pre-registration, so it is recorded here first."
+    correction: "The frozen definition — 'a level attempt that terminated without level advancement, or
+                 was abandoned' — is silent on runs that never concluded. It must exclude them
+                 explicitly. The reference harness defines
+                 COMPLETED_GAME_RUN_STATES = {gave_up, won} (inference/tools/eval.py). A game in state
+                 `playing` was interrupted; `cancelled` was cancelled by the harness. Neither
+                 terminated NOR was abandoned by the agent: the data is CENSORED, not failed."
+    evidence_ref: "notes/s1-code-inspection.md; agent/harness/s1d_build_corpus.py"
+    measured_2026_07_26:
+      kaggle_reference: "25 episodes, 25/25 gave_up — all admissible"
+      local_runs_all: "47 episodes, 0 completed (23 playing, 13 cancelled, 11 no state) — NONE
+                       admissible. The entire local corpus at that date was censored."
+    effective_replacements:
+      failure_episode_definition: "a level attempt, IN A GAME RUN THAT REACHED gave_up OR won, that did
+                                   not advance a level. Episodes from runs in any other state are
+                                   excluded and reported as censored, never counted as failures."
+      why: "counting censored episodes would rank the build order on the operator's kill decisions and
+            the wall-clock budget rather than the agent's competence, and would load that mass onto
+            `latency_or_budget` specifically — 'ran out of time' is what an interrupted run looks like.
+            That category would then appear to be the top build priority as a pure artifact."
+      corpus_ceiling: "the achievable episode count is the number of games that CONCLUDE, not 25. This
+                       tightens S1-E7: the re-rate sample ceiling is bounded below the 25 recorded
+                       there, and the actual figure is not known until the breadth run finishes."
+      enforcement: "s1d_build_corpus.py excludes censored episodes BY DEFAULT and reports the exclusion
+                    by state; run_resumable.py counts only gave_up/won as concluded and returns censored
+                    games to the queue rather than retiring them."
+    note: "this narrows what counts as data; it does not change any threshold, arm, or contrast."
+
 # =====================================================================================
 # S0 — External execution-path proof.
 # =====================================================================================

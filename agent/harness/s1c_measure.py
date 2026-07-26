@@ -24,19 +24,26 @@ import re
 import statistics
 from pathlib import Path
 
-# The duck emits game actions by calling action([...]) inside its Python tool.
-# The duck calls action(actions=[...]) with a KEYWORD argument, not positionally.
-_ACTION_CALL = re.compile(r"action\s*\(\s*(?:actions\s*=\s*)?\[", re.S)
-_ACTION_DICT = re.compile(r"\{\s*['\"]action['\"]\s*:", re.S)
+def game_of(pass_key: str) -> str:
+    """`bp35-0a0ad940_p0` -> `bp35-0a0ad940`."""
+    return re.sub(r"_p\d+$", "", pass_key)
 
 
-def load_history(run_dir: Path):
+def load_game_runs(run_dir: Path):
+    """Every game in the directory, keyed by id.
+
+    A chunk directory holds N games. Reading `game_runs[0]` reported one game's state, levels and
+    baseline as though they were the run's, and `game_runs` is not ordered like the event files, so
+    it was not even consistently the first game alphabetically. Single-game runs hid this entirely.
+
+    A `game_run` entry means the game was SCHEDULED, not that it ran: the killed 25-game directory
+    lists 25 entries against 4 event files. Games with no history are reported as not-run.
+    """
     bj = run_dir / "benchmark.json"
     if not bj.exists():
-        return [], {}
+        return {}
     b = json.loads(bj.read_text())
-    gr = (b.get("game_runs") or [{}])[0]
-    return gr.get("history") or [], gr
+    return {gr.get("game_id"): gr for gr in (b.get("game_runs") or []) if gr.get("game_id")}
 
 
 def latency_stats(history, batch_gap_s=0.25):
@@ -84,7 +91,7 @@ def latency_stats(history, batch_gap_s=0.25):
     }
 
 
-def legal_action_reliability(run_dir: Path, executed_events: int):
+def legal_action_reliability(run_dir: Path, executed_events: int, pass_key: str | None = None):
     """Requested vs executed, read from the harness's OWN action results.
 
     CORRECTED: an earlier version parsed action() calls out of the tool source and concluded the
@@ -103,8 +110,12 @@ def legal_action_reliability(run_dir: Path, executed_events: int):
     # The action result is delivered to the model as a TOOL message whose content is pretty-printed
     # JSON. Parse the request row, walk its messages, and read the tool payloads — a regex over the
     # raw line fails because the payload is escaped JSON inside a JSON string.
+    # Scoped to ONE pass. Globbing `*requests.jsonl` pooled every game in a chunk directory, plus the
+    # run-level `requests.jsonl`, into one tally.
+    files = ([run_dir / f"{pass_key}_requests.jsonl"] if pass_key
+             else [Path(p) for p in glob.glob(str(run_dir / "*requests.jsonl"))])
     seen = set()
-    for f in glob.glob(str(run_dir / "*requests.jsonl")):
+    for f in [p for p in files if p.exists()]:
         for line in open(f):
             try:
                 row = json.loads(line)
@@ -116,7 +127,11 @@ def legal_action_reliability(run_dir: Path, executed_events: int):
                 content = msg.get("content")
                 if not isinstance(content, str) or '"executed"' not in content:
                     continue
-                if content in seen:      # history repeats every tool result in each later prompt
+                # Dedup is by CONTENT because each prompt replays the whole conversation, so every
+                # earlier tool result reappears in every later request. Cost: two genuinely distinct
+                # calls with byte-identical results collapse to one, undercounting both sides of the
+                # ratio. Measured on the c01 chunk: 20 distinct payloads across 124 occurrences.
+                if content in seen:
                     continue
                 seen.add(content)
                 try:
@@ -200,11 +215,7 @@ def main() -> int:
     args = ap.parse_args()
     run_dir = Path(args.run_dir)
 
-    history, gr = load_history(run_dir)
-    events = glob.glob(str(run_dir / "artifacts" / "*_events.jsonl"))
-    executed = 0
-    for f in events:
-        executed += sum(1 for l in open(f) if json.loads(l).get("type") == "action")
+    runs_by_game = load_game_runs(run_dir)
 
     cfg = {}
     rc = run_dir / "run_config.json"
@@ -213,31 +224,63 @@ def main() -> int:
             cfg = json.loads(rc.read_text())
         except Exception:  # noqa: BLE001
             cfg = {}
+    # Freeze §5: every latency figure carries the concurrency it was measured at. `effective_` is the
+    # value the harness actually applied; the requested one can be clamped.
+    conc = cfg.get("effective_concurrent_jobs") or cfg.get("concurrent_jobs") or cfg.get("concurrency")
+    if conc is None:
+        print("WARNING: no concurrency recorded — a latency figure without it is not comparable.")
 
+    per_game = {}
+    for f in sorted(glob.glob(str(run_dir / "artifacts" / "*_events.jsonl"))):
+        pass_key = Path(f).name.split("_events")[0]
+        game = game_of(pass_key)
+        gr = runs_by_game.get(game, {})
+        history = gr.get("history") or []
+        executed = sum(1 for l in open(f) if json.loads(l).get("type") == "action")
+        per_game[pass_key] = {
+            "game": game,
+            "state": gr.get("state"),
+            "levels_completed": gr.get("levels_completed"),
+            "actions_per_level": gr.get("actions_per_level"),
+            "base_actions_per_level": gr.get("base_actions_per_level"),
+            "executed_action_events": executed,
+            "per_action_latency": latency_stats(history),
+            "legal_action_reliability": legal_action_reliability(run_dir, executed, pass_key),
+            "throughput_degradation": throughput_degradation(history),
+            "token_accounting": token_accounting(history),
+        }
+
+    scheduled_not_run = sorted(g for g in runs_by_game
+                               if g not in {v["game"] for v in per_game.values()})
     out = {
         "run": run_dir.name,
-        # Freeze §5: every latency figure carries the concurrency it was measured at.
-        "concurrency": cfg.get("concurrent_jobs") or cfg.get("concurrency"),
-        "model": cfg.get("model"),
-        "state": gr.get("state"),
-        "levels_completed": gr.get("levels_completed"),
-        "actions_per_level": gr.get("actions_per_level"),
-        "base_actions_per_level": gr.get("base_actions_per_level"),
-        "per_action_latency": latency_stats(history),
-        "legal_action_reliability": legal_action_reliability(run_dir, executed),
-        "throughput_degradation": throughput_degradation(history),
-        "token_accounting": token_accounting(history),
+        "concurrency": conc,
+        "concurrency_source": "run_config.json effective_concurrent_jobs",
+        "model": cfg.get("model") or (cfg.get("deployment") or {}).get("model"),
+        "n_games_measured": len(per_game),
+        "scheduled_but_not_run": scheduled_not_run,
+        "note": ("every figure is per game. A chunk directory holds several games and they are NOT "
+                 "interchangeable: each has its own human baseline. Latency is comparable only within "
+                 "one concurrency setting."),
+        "per_game": per_game,
     }
     out_path = args.out or f"logs/s1c_{run_dir.name}.json"
     Path(out_path).write_text(json.dumps(out, indent=2) + "\n")
 
     print(f"run        : {out['run']}")
     print(f"concurrency: {out['concurrency']}   model: {str(out['model']).split('/')[-1]}")
-    print(f"state      : {out['state']}  levels={out['levels_completed']}")
-    for k in ("per_action_latency", "legal_action_reliability", "throughput_degradation", "token_accounting"):
-        print(f"\n{k}:")
-        for kk, vv in (out[k] or {}).items():
-            print(f"   {kk:34s} {vv}")
+    print(f"games      : {out['n_games_measured']} measured"
+          + (f", {len(scheduled_not_run)} scheduled but never ran" if scheduled_not_run else ""))
+    for pk, v in sorted(per_game.items()):
+        lat = v["per_action_latency"] or {}
+        dec = (lat.get("per_decision") or {})
+        rel = v["legal_action_reliability"]
+        print(f"\n{v['game']}  state={v['state']} levels={v['levels_completed']} "
+              f"actions={v['executed_action_events']}")
+        print(f"   per_decision p50={dec.get('p50_s')}s p95={dec.get('p95_s')}s n={dec.get('n')}"
+              f"   batched_frac={lat.get('batched_fraction')}")
+        print(f"   validity={rel['validity']} ({rel['executed_actions']}/{rel['requested_actions']})"
+              f"   rejections={rel['rejection_taxonomy'] or '{}'}")
     print(f"\nwrote {out_path}")
     return 0
 

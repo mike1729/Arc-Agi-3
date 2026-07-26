@@ -31,7 +31,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-TERMINAL = {"won", "gave_up", "cancelled", "crashed"}
+
+# The reference harness's own definition (inference/tools/eval.py): only these two mean the game run
+# CONCLUDED. A `cancelled` or `crashed` game produced censored data — the agent did not finish, so its
+# episode cannot be labelled as a failure and the game must be RETRIED, not recorded as done.
+# This previously treated all four as terminal, which would silently retire a game on a cancellation
+# and leave the breadth run looking complete while holding unusable episodes for those games.
+COMPLETED = {"won", "gave_up"}
+TERMINAL = COMPLETED | {"cancelled", "crashed"}
+MAX_ATTEMPTS = 3        # a game that will not conclude must not loop forever
 
 # The 25 public games, from the bundle's own DUCK_HARNESS_PUBLIC_GAME_IDS.
 PUBLIC = [
@@ -73,6 +81,7 @@ def harvest(run_dir: Path) -> dict:
         if gr.get("state") in TERMINAL:
             out[gr.get("game_id")] = {
                 "state": gr.get("state"),
+                "completed": gr.get("state") in COMPLETED,
                 "levels_completed": gr.get("levels_completed"),
                 "actions_per_level": gr.get("actions_per_level"),
                 "run_dir": run_dir.name,
@@ -98,9 +107,22 @@ def main() -> int:
 
     state_path = REPO / args.state
     st = load_state(state_path)
-    todo = [g for g in games if g not in st["finished"]]
+    st.setdefault("attempts", {})
 
-    print(f"total {len(games)} games | finished {len(st['finished'])} | outstanding {len(todo)}")
+    # Outstanding = not yet CONCLUDED, and still within the retry budget. A game recorded as
+    # `cancelled` is censored data, so it goes back in the queue rather than counting as done.
+    def outstanding(g):
+        rec = st["finished"].get(g)
+        if rec and rec.get("completed"):
+            return False
+        return st["attempts"].get(g, 0) < MAX_ATTEMPTS
+
+    todo = [g for g in games if outstanding(g)]
+    done = [g for g in games if (st["finished"].get(g) or {}).get("completed")]
+    exhausted = [g for g in games if not outstanding(g) and g not in done]
+
+    print(f"total {len(games)} games | concluded {len(done)} | outstanding {len(todo)}"
+          + (f" | retry-exhausted {len(exhausted)}: {', '.join(exhausted)}" if exhausted else ""))
     if not todo:
         print("nothing to do — the set is complete.")
         return 0
@@ -108,33 +130,54 @@ def main() -> int:
         print("outstanding:", ", ".join(todo))
         return 0
 
-    chunks = [todo[i:i + args.chunk] for i in range(0, len(todo), args.chunk)]
-    for i, chunk in enumerate(chunks, 1):
-        name = f"{args.run_prefix}-c{len(st['chunks']) + 1:02d}"
-        print(f"\n=== chunk {i}/{len(chunks)}: {', '.join(chunk)}  -> run-name {name}", flush=True)
-        t0 = time.monotonic()
-        cmd = ["bash", str(REPO / "agent/harness/run_local.sh"),
-               "--game", ",".join(chunk), "--run-name", name]
-        log = REPO / f"logs/{name}.log"
-        with open(log, "w") as fh:
-            rc = subprocess.call(cmd, cwd=str(REPO), stdout=fh, stderr=subprocess.STDOUT)
-        dt = time.monotonic() - t0
 
-        run_dirs = sorted((REPO / "logs/runs").glob(f"*_{name}"))
-        got = harvest(run_dirs[-1]) if run_dirs else {}
-        st["finished"].update(got)
-        st["chunks"].append({"name": name, "games": chunk, "returncode": rc,
-                             "elapsed_s": round(dt, 1), "harvested": sorted(got),
-                             "at": datetime.now(timezone.utc).isoformat()})
-        save_state(state_path, st)
+    # Outer loop: a censored game returns to the queue, so an unattended overnight run retries it
+    # itself instead of waiting for someone to re-invoke the command.
+    while True:
+        todo = [g for g in games if outstanding(g)]
+        if not todo:
+            break
+        chunks = [todo[i:i + args.chunk] for i in range(0, len(todo), args.chunk)]
+        for i, chunk in enumerate(chunks, 1):
+            name = f"{args.run_prefix}-c{len(st['chunks']) + 1:02d}"
+            print(f"\n=== chunk {i}/{len(chunks)}: {', '.join(chunk)}  -> run-name {name}", flush=True)
+            t0 = time.monotonic()
+            cmd = ["bash", str(REPO / "agent/harness/run_local.sh"),
+                   "--game", ",".join(chunk), "--run-name", name]
+            log = REPO / f"logs/{name}.log"
+            with open(log, "w") as fh:
+                rc = subprocess.call(cmd, cwd=str(REPO), stdout=fh, stderr=subprocess.STDOUT)
+            dt = time.monotonic() - t0
 
-        print(f"    rc={rc} elapsed={dt/60:.1f}m harvested={len(got)}/{len(chunk)} "
-              f"| total finished {len(st['finished'])}/{len(games)}", flush=True)
-        missed = [g for g in chunk if g not in got]
-        if missed:
-            print(f"    NOT harvested (will be retried on resume): {', '.join(missed)}", flush=True)
+            run_dirs = sorted((REPO / "logs/runs").glob(f"*_{name}"))
+            got = harvest(run_dirs[-1]) if run_dirs else {}
+            st["finished"].update(got)
+            for g in chunk:
+                st["attempts"][g] = st["attempts"].get(g, 0) + 1
+            st["chunks"].append({"name": name, "games": chunk, "returncode": rc,
+                                 "elapsed_s": round(dt, 1), "harvested": sorted(got),
+                                 "concluded": sorted(g for g, v in got.items() if v["completed"]),
+                                 "at": datetime.now(timezone.utc).isoformat()})
+            save_state(state_path, st)
 
-    print(f"\ndone. finished {len(st['finished'])}/{len(games)}. state: {state_path}")
+            concluded = [g for g, v in got.items() if v["completed"]]
+            total = sum(1 for g in games if (st["finished"].get(g) or {}).get("completed"))
+            print(f"    rc={rc} elapsed={dt/60:.1f}m concluded={len(concluded)}/{len(chunk)} "
+                  f"| total {total}/{len(games)}", flush=True)
+            censored = [f"{g}({got[g]['state']})" for g in chunk
+                        if g in got and not got[g]["completed"]]
+            if censored:
+                print(f"    CENSORED, will retry: {', '.join(censored)}", flush=True)
+            missed = [g for g in chunk if g not in got]
+            if missed:
+                print(f"    NOT harvested, will retry: {', '.join(missed)}", flush=True)
+
+    total_done = sum(1 for g in games if (st["finished"].get(g) or {}).get("completed"))
+    never = [g for g in games if not (st["finished"].get(g) or {}).get("completed")]
+    print(f"\ndone. CONCLUDED {total_done}/{len(games)}. state: {state_path}")
+    if never:
+        print(f"never concluded after {MAX_ATTEMPTS} attempts: {', '.join(never)}")
+        print("Their episodes are censored and must NOT enter the labelling corpus.")
     return 0
 
 
