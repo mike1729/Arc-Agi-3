@@ -411,7 +411,35 @@ s1:
         re_randomizes: "divergence everywhere -> only structural knowledge transfers"
         inconclusive: "divergence not reproducible across replays -> something else varies; do not
                        proceed to R2 on an unstable base"
-      result: null                     # deterministic | mixed | re_randomizes | inconclusive
+      # RESULT, filled 2026-07-26. Filling a `result:` slot is the intended use of the block, not an
+      # amendment to the pre-registration — the sampling and criterion above are unchanged.
+      result: deterministic
+      result_recorded_on: 2026-07-26
+      evidence_ref: "logs/r1_determinism.json; agent/harness/r1_determinism.py"
+      measured:
+        games: ["ft09-0d8bbf25", "ls20-9607627b"]
+        prefix_lengths: [10, 40]
+        replays_per_prefix: 3
+        all_replays_byte_identical: true
+        first_divergence: null
+      falsification_check: "REQUIRED, and passed: a digest that never changes would make `identical`
+                            trivially true. Distinct observations WITHIN each replay — ft09 11/11 steps
+                            at prefix 10 and 34/41 at prefix 40; ls20 9/11 and 31/41. The grids genuinely
+                            vary step to step, so the agreement across replays is real"
+      scope_limit: "OFFLINE competition environment files — the same game implementations Kaggle's
+                    VISIBLE path uses. This is evidence about the GAME CODE. It is NOT a test of
+                    competition mode, whose scorecard and one-make() restrictions (V5-V7) differ, and it
+                    licenses only the claim that THESE TESTED PREFIXES replay exactly offline"
+      overclaim_guard: "Do NOT restate this as 'everything learned transfers'. Two games, two prefix
+                        lengths, three replays is what was tested and is all that is supported"
+
+      # A bug caught before this result was recorded, kept because it would have inverted the finding:
+      # the first implementation hashed `FrameDataRaw.model_dump()`, which SILENTLY OMITS the `frame`
+      # field holding the numpy grids. It therefore compared metadata only and never looked at a pixel.
+      # It also included `full_reset` — True on the first reset after make(), False after — which made
+      # every first replay "diverge at step 0" for a reason unrelated to determinism. That run reported
+      # `inconclusive`. The corrected digest hashes the grids and excludes per-call metadata.
+      superseded_first_run: "reported `inconclusive` from a metadata-only digest; discarded, not reported"
 
     r2_action_accounting:
       question: "does the scored action count accumulate across resets, or restart?"

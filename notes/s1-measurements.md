@@ -262,6 +262,52 @@ gives a first handle on (2) via per-game outcomes.
 
 ## Reset and action accounting
 
-- R1 result:
+### R1 — knowledge preservation across RESET. **Result: `deterministic`** (2026-07-26)
+
+Script `agent/harness/r1_determinism.py`; raw `logs/r1_determinism.json`. Sampling exactly as
+pre-registered: 2 distinct public games (`ft09-0d8bbf25`, `ls20-9607627b`), 2 prefixes each (10 and 40
+scripted actions), 3 replays per prefix, exact frame-sequence equality.
+
+| Game | Prefix | Replays | Verdict |
+|---|---:|---:|---|
+| ft09-0d8bbf25 | 10 | 3 | identical |
+| ft09-0d8bbf25 | 40 | 3 | identical |
+| ls20-9607627b | 10 | 3 | identical |
+| ls20-9607627b | 40 | 3 | identical |
+
+No divergence anywhere, so no first-divergence index to record.
+
+**Falsification check — required, because "identical" is trivially true if nothing ever changes.**
+Distinct observations *within* each replay: ft09 **11/11** steps at prefix 10 and **34/41** at prefix 40;
+ls20 **9/11** and **31/41**. The grids genuinely change step to step, so agreement across replays is a
+real property and not an artefact of a static board. (ls20's repeats are no-op actions — incidentally
+useful evidence for `exploration_or_probe_selection` later.)
+
+**Scope — do not overclaim.** This ran against the **OFFLINE competition environment files**, the same
+game implementations Kaggle's *visible* path uses. It is evidence about the **game code**. It is **not** a
+test of competition mode, whose scorecard and one-`make()` restrictions (V5–V7) differ. The supported
+claim is exactly: *these tested prefixes replay exactly, offline.* Not "everything learned transfers".
+
+#### ⚠ A bug that would have inverted this result, caught before it was recorded
+
+The first implementation hashed `FrameDataRaw.model_dump()`. That method **silently omits the `frame`
+field holding the numpy grids**, so the digest compared metadata only and never looked at a single pixel.
+It also included `full_reset` — `True` on the first reset after `make()`, `False` on every later one —
+which made the first replay of each prefix "diverge at step 0" for a reason with nothing to do with
+determinism. That run reported **`inconclusive`**, and it was wrong in both directions at once: a false
+divergence on the short prefixes, and a meaningless "identical" on the long ones.
+
+It was caught only because the pattern was internally contradictory — diverging at step 0 on a 10-action
+prefix while a 40-action prefix on the same environment matched. **A metadata-only digest that had
+happened to agree everywhere would have produced a confident `deterministic` with no pixel ever
+compared.** The falsification check above now exists to make that failure mode impossible to repeat.
+
+### R2 — action accounting
+
+**Unblocked**: R2's precondition is `r1 == deterministic`, which now holds. Not yet run — it needs live
+scorecards (close-then-read, forced by V7) and the three preconditions checked before any score is read.
+
+- R1 result: `deterministic` — see above
+- R2 result:
 - R2 result:
 - Controller selected:
