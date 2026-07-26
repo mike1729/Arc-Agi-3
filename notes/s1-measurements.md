@@ -420,6 +420,53 @@ purely our misconfiguration, but the difference between a 1% and a 62% failure r
 between an occasional retry and a harness that cannot measure anything. Raising it locally remains
 required; the reference's own value should be recorded as marginal rather than correct.
 
+### Kaggle reference — per-game behavioural baseline (the S1-E5 mitigation)
+
+`agent/harness/analyse_reference_run.py` → `logs/kaggle-reference/per_game_analysis.json`. This is the
+only data we hold on how the **true reference model** behaves across all 25 games, and erratum S1-E5
+names it as the check on the local model substitution.
+
+| measure | value |
+|---|---|
+| games clearing ≥1 level | **15 / 25** |
+| games clearing ≥2 levels | **3 / 25** (ft09, vc33, re86) |
+| games clearing ≥3 levels | **0 / 25** |
+| efficiency on cleared levels | **median 1.19× human baseline** |
+| actions spent on the level it stalled on | **median 2.1× human baseline** |
+
+Where it stalls: **level 1** in 10 games, **level 2** in 12, level 3 in 3.
+
+#### Three findings that shape what S1-e should be looking for
+
+**1. Level 1 is soft; level 2 is the wall.** 15 of 25 games clear level 1 but only 3 clear level 2, and
+*none* clear level 3. This corroborates AERA's benchmark-validity claim from an independent direction:
+first levels fall to shallow strategies, and the real difficulty begins immediately after. **A build
+order derived mostly from level-1 episodes would be optimising the easy case.** The Day-5 labelling
+should weight — or at least separate — level-1 from level-≥2 episodes.
+
+**2. The reference fails FAST, and that is diagnostic.** It spends a median of only **2.1× the human
+baseline** on the level it cannot solve, then stops. It is not thrashing; it reaches a state where it
+has no further idea. That points at `goal_unknown` or exploration exhaustion rather than
+`planning_depth` or `latency_or_budget` — and `planning_depth` is unobservable here anyway.
+
+**3. It is near-human-efficient when it succeeds** (median 1.19×). So the gap to a competitive score is
+**not** efficiency on solved levels — it is *how many levels get solved at all*. Under the surgical
+controller (R2 = `accumulates`), that matters: optimising action efficiency would chase a 1.19× → 1.0×
+gain while the real loss is the 22 of 25 games that never reach level 3.
+
+#### Direct contrast with the local runs — the substitution check S1-E5 asked for
+
+| | stalled-level actions vs baseline |
+|---|---:|
+| Kaggle reference (27B FP8) | **2.1×** median |
+| local dense (27B MLX 4-bit), vc33 L2 | **1.06×** |
+| local MoE (35B-A3B), vc33 L1 | **106×** |
+
+The dense port sits in the reference's regime. **The MoE is two orders of magnitude outside it** — it
+fails by thrashing where the reference fails by stopping. That is a *different failure mode*, not a
+worse score on the same one, and it is the concrete form of the S1-E5 hazard. It confirms the decision
+to run S1-e on the dense model.
+
 ### 🔴 The development/submission divergence — a consequence of local-only, and a caveat on S1-d
 
 Kaggle provides CUDA. A Day-6 payload therefore runs **vLLM + FP8 on an RTX PRO 6000** — the reference

@@ -165,6 +165,28 @@ errata:
                  reference model on all 25 games. Comparing per-game level counts between it and the
                  local MoE run bounds how far the substitution moves behaviour."
 
+  - id: S1-E6
+    date: 2026-07-26
+    scope: ["verification.items.V10_runtime_envelope"]
+    correction: "V10 recorded `~8 h wall-clock` and `~10 actions/s` as UNVERIFIED working assumptions, to
+                 be derived from measured reference runs. The actions/s half is now measured and the
+                 assumption was WRONG BY ~21x."
+    measured:
+      source: "Kaggle reference run, notebook unmodified, FP8 on RTX PRO 6000, ~32-way concurrency"
+      games: 25
+      actions_total: 3806
+      wall_clock_h: 2.21
+      actions_per_second: 0.478
+      actions_per_game_mean: 152
+      evidence_ref: "logs/kaggle-reference/benchmark.json; logs/kaggle-reference/summary.txt"
+    consequence: "0.478 actions/s is the REFERENCE-STACK figure — the best case available to us, on
+                  hardware we do not develop on. `~10 actions/s` would have implied throughput is a
+                  non-issue; at 0.478 it is a first-order planning constraint. Any later estimate of
+                  'actions available within the competition wall-clock' must use the measured figure.
+                  The ~8 h wall-clock half of V10 remains UNVERIFIED — our notebook ran 2 h 13 m for 25
+                  games, which bounds nothing about the hidden competition set."
+    note: "the local figure is worse again by the stack penalty and must not be conflated with this one."
+
 # =====================================================================================
 # S0 — External execution-path proof.
 # =====================================================================================
