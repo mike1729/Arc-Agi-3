@@ -219,3 +219,86 @@ criterion chosen after seeing labels is not a pre-registration.
   `--save-request-logs` defaulted off: 0/25 episodes support `reasoning_inconsistency`, `goal_unknown`
   or `retrieval_or_context`. `goal_unknown` is an oversampled re-rate stratum. This bounds what the
   reference episodes can be used for regardless of the repair above.
+
+---
+
+## S1-E8 rests on a distinction that does not exist — found 2026-07-26, late
+
+**S1-E8, which I pre-registered this evening, is mechanically wrong.** It admits episodes from runs
+reaching `gave_up`/`won` and excludes `cancelled` as censored, on the reasoning that the first means the
+agent concluded and the second means something cut it off. That distinction does not survive contact
+with the data.
+
+### What the states actually mean
+
+`solver.py::_finish_if_needed` → `game.py::finish_game`:
+
+```python
+if self.stop_event.is_set() and run.state == "playing":
+    run.state = "cancelled"
+...
+self.game_run.state = "cancelled" if cancelling else "gave_up"
+```
+
+`cancelled` is assigned when a stop/cancel is outstanding *at the moment the game finishes*. Both states
+are reached through the **same clean exit path** — both our runs and all 25 reference runs carry
+`solver_note='tokens=...'`, which is written only on that path.
+
+### The measurement that settles it
+
+| | budget | wall-clock | early? | state |
+|---|---:|---:|---:|---|
+| reference, 25 games | 7920 s (132 min) | 7920.8–7921.3 s | **0 of 25** | `gave_up` |
+| local `s1e-kb2-c01` | 2700 s (45 min) | 2700.8–2700.9 s | 0 of 2 | `cancelled` |
+
+**No reference game finished early.** All 25 were terminated by their budget, exactly as ours were. The
+reference did not "halt rather than thrash" by choice — it ran out of time.
+
+### Why the same event was recorded differently
+
+`request_timeout_seconds()` uses `min(analyzer_timeout, time_remaining)`, so the per-request timeout
+shrinks as the deadline approaches. From our own chunk log:
+
+```
+analyzer request failed at action 6:  Read timed out. (read timeout=6.852964)
+analyzer request failed at action 40: Read timed out. (read timeout=431.437778)
+```
+
+Our generations run for minutes, so one is almost always in flight at the deadline; it is killed by the
+shrinking timeout and that path sets `stop_event` → `cancelled`. The reference's generations ran in
+seconds, so its last request completed inside the shrinking window and the loop exited cleanly via
+`runtime_limit_reached()` → `gave_up`.
+
+**The state records generation length, not agent behaviour.** Raising the local budget to 132 minutes
+would not change it.
+
+### Consequences
+
+1. **S1-E8 as written makes the local corpus permanently empty.** Not slow to fill — empty, at any
+   budget. The stopped run would have spent **49.5 h** across `MAX_ATTEMPTS=3` retries without producing
+   one admissible episode.
+2. **H4 is refuted in its stated form.** "The reference halts rather than thrashes" was read off
+   `gave_up` plus a median ~2× human budget. The reference did not halt; it was cut off. The efficiency
+   ratio stands; the halting claim does not.
+3. **`--max-actions` is not plumbed.** `run_local.sh` never forwards `environment.max_steps`, so
+   `max_actions_per_game=None` and wall-clock was the only stop condition available. Same omission class
+   as the `--analyzer-timeout` bug: the launcher reproduces the Makefile's config→CLI translation
+   incompletely.
+
+### The rule that would be defensible
+
+Admissibility should turn on **whether the termination was uniform and pre-registered**, not on which
+label the harness happened to record:
+
+- **admissible** — terminated by a fixed budget applied identically to every game, whatever the recorded
+  state. Episodes are then *right-censored at a known, uniform bound*, which is a stated experimental
+  condition and is comparable across games.
+- **inadmissible** — terminated by an ad-hoc operator action (my mid-chunk `pkill`s), which is
+  non-uniform and correlates with nothing but my attention.
+
+This preserves S1-E8's actual intent — keep the operator's decisions out of the build-order ranking —
+while dropping a mechanism that does not distinguish what it claimed to. It must also be recorded that
+`latency_or_budget` frequency is then partly a property of the budget, and every reported episode must
+carry the bound it was censored at.
+
+**Not applied.** Amending a pre-registration is the operator's call, not mine.
