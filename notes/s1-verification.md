@@ -272,3 +272,89 @@ standing. `verification.status` is still `DRAFT`, so correcting it is an edit ra
 Practical exposure is small either way: the internal ~Nov 5 target sits ahead of both dates, and ties
 favour the earlier entry. The reason to fix it is that a constant marked `verified: true` with a known
 contradiction is the failure mode the manifest exists to prevent.
+
+---
+
+## S1-a verification pass — 2026-07-26
+
+Performed during the reference freeze (`notes/s1-reference-freeze.md`). Three changes: V2 resolved,
+V8 **corrected**, V15 opened. `verification.status` was still `DRAFT`, so all three are edits, not errata.
+
+### ✅ V2 — paper deadline — RESOLVED (as a governing choice, not as agreement between sources)
+
+Both sources re-read 2026-07-26. **They still disagree, and that is now recorded as the finding rather
+than as an open conflict:**
+
+| Source | Reports | Standing |
+|---|---|---|
+| <https://arcprize.org/competitions/2026> | "November 8, 2026 – Papers due" | The **prize programme's** own timeline |
+| Kaggle API, `arc-prize-2026-paper-track` | `2026-11-09 23:59:00` | The **hosting platform's** submission cutoff |
+
+Resolution: **Nov 8 governs planning.** Two independent reasons, neither of which requires deciding which
+page is "more official":
+
+1. It is the earlier of the two, so meeting it satisfies both. The later date can only ever be a grace
+   period we do not need.
+2. The tie-break rule is confirmed verbatim from the ARC Prize paper page: *"In the event of a tie, the
+   paper entered first will be the winner."* Under an explicit earlier-entry tie-break, planning to the
+   later date is strictly dominated.
+
+The internal ~Nov 5 target is unchanged and remains **internal** — it is the tie-break buffer, and is
+still never to be cited as an official date. V2's `verified` flag moves from an overstated `true` to a
+recorded resolution with both sources named.
+
+### ⚠ V8 — scoring — **CORRECTED. The earlier entry was wrong.**
+
+**Source, re-read 2026-07-26:** <https://docs.arcprize.org/methodology>
+
+The 2026-07-25 entry recorded the cap as applying to the squared score: "`(human/ai)^2`, capped at
+`1.15`". The documentation states the cap applies **to the ratio, before squaring**:
+
+```
+level_score = min(human_baseline_actions / ai_actions, 1.15) ** 2      # max 1.3225, not 1.15
+```
+
+So the **maximum per-level score is `1.15² = 1.3225`.** Also recorded from the same read, and not
+previously captured:
+
+- **No partial credit for incomplete levels.**
+- A game's maximum score is bounded by `(sum of completed level indices) / (sum of all level indices)` —
+  i.e. to unlock the full game score the agent must complete *every* level, including the last.
+- Per-game aggregation is the weighted mean over levels using the 1-indexed level number as the weight;
+  the total is the unweighted mean across games.
+
+**Why this mattered immediately:** it was the discriminator that rejected AERA as the S1 reference. AERA's
+`run_eval.py` caps the *ratio* at `1.0` and estimates per-level action counts by dividing total actions by
+level count, so its published `0.2116` is a surrogate metric and not a reproduction target. Had V8 been
+left uncorrected, that defect would not have been visible.
+
+### 🔴 V15 — **NEW, OPEN** — the leaderboard scale is not explained by the documented methodology
+
+Opened 2026-07-26. This is a genuine unresolved discrepancy between two of our own sources, and it is
+load-bearing for `reproduction_fidelity`.
+
+Under V8 as corrected, per-level ≤ `1.3225` ⇒ per-game weighted mean ≤ `1.3225` ⇒ cross-game mean
+≤ `1.3225`. Two observations contradict that ceiling:
+
+1. **Public leaderboard top is `1.86`** (checked via `kaggle competitions leaderboard -c
+   arc-prize-2026-arc-agi-3`, 2026-07-25 submissions; top ~20 span `1.45`–`1.86`). `1.86 > 1.3225`.
+2. **Our own S0 random agent scored `0.06`** on Kaggle having completed **zero** levels — which the
+   "no partial credit for incomplete levels" rule does not permit.
+
+Both cannot hold simultaneously with the documented formula. Candidate explanations — **none adopted, do
+not propagate any of these as fact**: the leaderboard applies a different aggregation than the
+methodology page describes; the hidden set is scored with partial credit; the cap is not applied on the
+leaderboard path; or the scale carries a factor the docs omit.
+
+**Consequences already applied**, rather than deferred:
+
+- The S1 reproduction target against Tufa's LB `1.21` is **reported, not gated** — a tolerance band on a
+  number whose scale is not understood would manufacture a verdict. See the freeze §3.4.
+- `viability_thresholds.reproduction_fidelity.score_relative_tolerance` was **removed** rather than
+  accepted at its `PROPOSED` value of `0.25`.
+
+**To resolve on Day 2**, in this order, cheapest first: (a) re-read the Kaggle overview/evaluation tab
+directly in a browser — the page is JS-rendered and `WebFetch` returns only the title, which is why it is
+still open; (b) compute our own score from the S0 recording with the documented formula and compare
+against the `0.06` Kaggle returned; (c) ask on the competition discussion forum. Record the answer here
+before any fidelity number is quoted.
