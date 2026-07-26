@@ -119,6 +119,48 @@ Two consequences to check before Day 5, not after:
 
 ## Latency
 
+### D11 — local model switched to the MoE. ~5.2× faster, and it closes the stack gap
+
+Operator decision: *"we need some benchmark, don't need exact reproduction; better to have fast one."*
+The reference is a benchmark to instrument, not an artefact to reproduce byte-for-byte.
+
+`mlx-community/Qwen3.6-27B-4bit` (dense) → **`mlx-community/Qwen3.6-35B-A3B-4bit`** (MoE, 256 experts,
+8 active ≈ 3 B active params). Erratum **S1-E5**.
+
+| context (prompt tokens) | dense wall | MoE wall | speedup |
+|---:|---:|---:|---:|
+| 137 | 8.2 s | 1.8 s | 4.6× |
+| 1,293 | 10.5 s | 2.1 s | 5.0× |
+| 5,135 | 19.0 s | 3.8 s | 5.0× |
+| 10,269 | 31.8 s | **6.1 s** | **5.2×** |
+
+At 10 k context: **decode 85.4 tok/s** (dense 16.2), **prefill 2,264 tok/s** (dense 431), prefill time
+**4.5 s** (dense 23.8 s). A uniform ~5.2× on *both* phases, matching the ~5× active-parameter ratio —
+so this is memory traffic, exactly as predicted, not a tuning artefact.
+
+**Capability preserved, and this determined which build was chosen.** The `OptiQ` MoE variant was
+rejected: it drops `vision_config`, and the harness runs `multimodal.context: current_grid`. The plain
+4-bit build keeps vision, keeps the `qwen3_coder` tool parser, is Apache-2.0, and **passes the D5 probe**
+with a usable `python` tool call.
+
+**Concurrency (synthetic, 256-token generations):** 84.4 tok/s at N=1 → **198.3 at N=4** → 218 at N=6.
+That N=4 figure *matches the Kaggle reference's 194.1 tok/s aggregate*.
+
+> ⚠ **Do not quote 198 tok/s as the agent's throughput.** It is the same short-prompt synthetic benchmark
+> that misled me once already; the real-workload figure will be lower. The like-for-like number must come
+> from the agent run now in flight. What the sweep supports is a *ratio*, not an absolute.
+
+**Revised Day-5 estimate.** The dense stack penalty was ~14.7× and put a full-breadth run at ~33 h. At
+~5.2× faster that becomes roughly **6–7 h**, which makes a local breadth run tractable without renting
+CUDA — pending confirmation from real-workload measurement.
+
+**The accepted cost, stated plainly.** The Day-5 taxonomy will be gathered on a model that is **neither
+the reference nor the submission** (which runs Qwen3.6-27B dense at FP8 on Kaggle CUDA). This compounds
+the D2 concern rather than resolving it: a model that changes *which* failures dominate would misrank the
+build order. The mitigation is the completed Kaggle reference run — per-game outcomes for the true
+reference model across all 25 games — against which the local MoE run can be compared to bound how far
+the substitution moves behaviour.
+
 ### Concurrency scaling — measured 2026-07-26 (S1-c work pulled forward into S1-b)
 
 Script: `agent/harness/concurrency_sweep.py`. Raw: `logs/concurrency_sweep.json`,

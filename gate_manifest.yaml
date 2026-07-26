@@ -134,6 +134,37 @@ errata:
     reason: "external review: the rule as written did not encode the restriction its own accompanying
              note described."
 
+  - id: S1-E5
+    date: 2026-07-26
+    scope: ["s1.reference_primary.weights_url", "s1.reference_primary.model",
+            "s1.reference_primary.quantization", "s1.reference_primary.permitted_deviations"]
+    correction: "D11 — the LOCAL SUBSTITUTE MODEL changes from mlx-community/Qwen3.6-27B-4bit (dense) to
+                 mlx-community/Qwen3.6-35B-A3B-4bit (MoE, 256 experts, 8 active). The reference itself is
+                 unchanged: Qwen3.6-27B-FP8 remains what the Kaggle path runs and what the notebook
+                 measurement used."
+    decision_basis: "operator decision 2026-07-26: 'we need some benchmark, do not need exact
+                     reproduction; better to have fast one if possible'. S1's question is which failures
+                     look improvable, and the solver, harness, prompts and instrumentation are identical
+                     across the two models — only the model differs."
+    measured_justification:
+      dense_27b:  {decode_tok_s: 16.2, prefill_tok_s: 431, wall_s_at_10k_ctx: 31.8}
+      moe_35b_a3b: {decode_tok_s: 85.4, prefill_tok_s: 2264, wall_s_at_10k_ctx: 6.1}
+      speedup: "~5.2x on BOTH prefill and decode, matching the ~5x active-parameter ratio"
+      aggregate_concurrency_4: "198.3 tok/s synthetic — matching the Kaggle reference's 194.1 tok/s
+                                aggregate. NOTE: synthetic short-prompt benchmark; the real-workload
+                                figure is lower and must be re-measured from an agent run"
+      capability_preserved: "vision_config present (the OptiQ MoE variant lacks it and was rejected);
+                             tool_parser qwen3_coder unchanged; D5 probe PASSES with a usable python
+                             tool call. Apache-2.0, same as the dense build"
+    accepted_cost: "THE DAY-5 TAXONOMY WILL BE GATHERED ON A MODEL THAT IS NEITHER THE REFERENCE NOR THE
+                    SUBMISSION. The submission runs Qwen3.6-27B dense at FP8 on Kaggle CUDA. This
+                    compounds rather than resolves the D2 quantization concern: a model that changes
+                    WHICH failures dominate would misrank the build order. State this in the close-out
+                    as a limitation on the ranking, not as a footnote."
+    mitigation: "the Kaggle reference run (logs/kaggle-reference/) gives per-game outcomes for the TRUE
+                 reference model on all 25 games. Comparing per-game level counts between it and the
+                 local MoE run bounds how far the substitution moves behaviour."
+
 # =====================================================================================
 # S0 — External execution-path proof.
 # =====================================================================================

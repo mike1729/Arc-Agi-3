@@ -23,7 +23,7 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 
 BASE_URL = "http://127.0.0.1:1234/v1"
-MODEL = os.path.expanduser("~/models/mlx/Qwen3.6-27B-4bit")
+MODEL = os.path.expanduser(os.environ.get("MLX_MODEL_PATH", "~/models/mlx/Qwen3.6-27B-4bit"))
 
 # A prompt that reliably generates to the token cap rather than stopping early, so completion_tokens is
 # a controlled variable across concurrency levels rather than a property of the answer's length.

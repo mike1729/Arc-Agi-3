@@ -24,7 +24,7 @@ sys.path.insert(0, "agent/work/taaf/src/ARC3-Inference")
 from inference.utils.openai_compat import build_chat_payload  # noqa: E402
 
 BASE_URL = "http://127.0.0.1:1234/v1"
-MODEL = os.path.expanduser("~/models/mlx/Qwen3.6-27B-4bit")  # server routes by the path it loaded
+MODEL = os.path.expanduser(os.environ.get("MLX_MODEL_PATH", "~/models/mlx/Qwen3.6-27B-4bit"))  # server routes by the path it loaded
 
 # TAAF's actual tool schema (inference/agent/tool_agent.py::_tools), reproduced exactly.
 TOOLS = [
