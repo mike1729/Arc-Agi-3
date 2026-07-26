@@ -369,3 +369,46 @@ changes.
 **To resolve on Day 2:** recompute S0 from the retained recording with the core formula; compare that
 with the submitted notebook output and Kaggle's `0.06`; then inspect the scorecard/submission aggregation
 path. Use the discussion forum only if those artifacts do not explain the result.
+
+---
+
+### ✅ V15 — RESOLVED 2026-07-26. **The premise was ours, and it was wrong.**
+
+The Day-2 step above resolved it — by invalidating the question rather than answering it.
+
+**The two facts V15 set side by side came from different executions.**
+
+| Claim | What actually ran | Evidence |
+|---|---|---|
+| "zero completed levels" | the **local** smoke test — official random agent on **ls20-9607627b**, 80 actions | recording re-read 2026-07-26: 81 rows, `levels_completed` is `0` throughout, `win_levels` 7, every row `NOT_FINISHED` |
+| "scored 0.06" | the **Kaggle hidden rerun** — pinned Random Agent notebook on the **hidden competition set** | Kaggle public score |
+
+Different runs, different games. **We hold no per-level evidence from the Kaggle rerun at all** — it
+never played ls20. Asserting that it completed zero levels was an inference carried over from an
+unrelated local run, and presenting it as evidence was the error.
+
+**And `0.06` is quantitatively ordinary for a random agent.** Computing the rule as V8 corrects it
+(`level_score = min(115, (baseline/actions)² × 100)`, 1-indexed level weights, game score capped at the
+completed-weight fraction, unweighted mean across games):
+
+| Scenario | Score |
+|---|---|
+| one 7-level game, level 1 only, ~80 actions vs a 22-action baseline | game score **0.270** |
+| that outcome in 4 of 25 games | total **0.043** |
+| that outcome in **6 of 25** games | total **0.065** |
+
+`0.06` is simply what a random agent gets for stumbling through the first level of a handful of games. It
+needs no partial credit, no undocumented aggregation, and no departure from V8.
+
+**Verdict: no discrepancy exists.** V15 is closed as a premise error on our side. Both limbs of the
+original entry are withdrawn — the leaderboard limb as a unit-versus-percent scale confusion, this limb
+as a conflation of two runs.
+
+**What this does not change.** `reproduction_fidelity` stays *reported, not gated*. V15 was never the
+justification; the two reasons that survive intact are the reference author's own failure to reproduce
+the 1.21 with the readable notebook, and our D1/D2/D4 stack delta.
+
+**Method note.** Both halves of V15 were self-inflicted — one from reading a number at the wrong scale,
+one from attributing evidence across runs. Neither would have survived naming *which artifact* each claim
+rested on at the moment it was made. That is now the standing habit: every verification claim names its
+evidence file.

@@ -653,10 +653,12 @@ s1:
 # Verification items (§2 of the sprint doc). Answered Day 1 AM; each needs source + date.
 # =====================================================================================
 verification:
-  # STAYS DRAFT DELIBERATELY: V15 remains open for the S0 nonzero-score discrepancy, and V2/V8 were
-  # edited the same day. Freezing this block while a known open discrepancy sits inside it would be
-  # the exact failure the manifest exists to prevent. Freeze it when V15 resolves (Day 2).
-  status: DRAFT
+  # FROZEN 2026-07-26, once V15 resolved — it was the last open item, and it closed as a premise error
+  # of ours rather than a discrepancy in the competition. V9 (partial) and V10 (unverified, derived from
+  # measurement) stay as they are: those are honest recorded states, not open questions.
+  # From here every change is a dated erratum, including the measurement-derived V10 update in S1-c.
+  status: frozen
+  frozen_on: 2026-07-26
   items:
     V1_final_submission:
       claim: "Nov 2, 23:59 UTC"
@@ -792,28 +794,27 @@ verification:
     # checking the core implementation; only the S0 zero-completion/nonzero-score observation remains.
     # -------------------------------------------------------------------------------
     V15_s0_score_discrepancy:
-      claim: "OPEN — the S0 random agent received Kaggle public score 0.06 despite the retained evidence
-              showing zero completed levels"
-      verified: false
-      opened_on: 2026-07-26
+      claim: "RESOLVED 2026-07-26 — NO DISCREPANCY EXISTS. The entry rested on a premise error of ours:
+              the 'zero completed levels' evidence came from the LOCAL ls20-9607627b smoke test, while
+              the 0.06 came from the KAGGLE HIDDEN RERUN on the hidden competition set. Different runs,
+              different games. We hold NO per-level evidence from the Kaggle rerun; it never played ls20"
+      verified: true
+      resolved_on: 2026-07-26
       evidence:
-        - "WITHDRAWN: the leaderboard top of 1.86 is compatible with the core scorer, which reports on
-           a 0-100 scale. It was incorrectly compared with a unit-scale 1.3225 ceiling"
-        - "our own S0 random agent scored 0.06 on Kaggle having completed ZERO levels, which the
-           core implementation would score as zero"
-      candidate_explanations: "NONE ADOPTED — do not propagate as fact: the retained recording may not
-                               describe every hidden-rerun transition; the Kaggle public score may include
-                               a separate aggregation or rounding path; or the completion evidence may be
-                               incomplete"
-      consequences_already_applied:
-        - "s1.viability_thresholds.reproduction_fidelity.score_relative_tolerance was DELETED rather than
-           accepted at its PROPOSED 0.25. This remains justified by undocumented run-to-run variance and
-           D1/D2/D4 stack changes, NOT by a leaderboard-scale discrepancy"
-        - "the LB-1.21 comparison is recorded as REPORTED, not GATED"
-      resolution: "Day 2: recompute the S0 score from the retained recording with the core formula,
-                   compare it with the submitted notebook's output and Kaggle's 0.06, then inspect the
-                   scorecard/submission aggregation path. Ask on the competition discussion forum only
-                   if those artifacts do not resolve it"
+        - "local recording re-read: 81 rows, levels_completed == 0 throughout, win_levels 7, every row
+           NOT_FINISHED — this describes the LOCAL ls20 run only
+           (ARC-AGI-3-Agents/recordings/ls20-9607627b.random.80.*.recording.jsonl)"
+        - "0.06 is quantitatively ordinary for a random agent under V8 as corrected: one 7-level game
+           clearing level 1 only in ~80 actions against a 22-action baseline scores 0.270; that outcome
+           in 6 of 25 games totals 0.065. No partial credit and no undocumented aggregation required"
+      withdrawn_limbs:
+        - "leaderboard limb (LB 1.86 > ceiling) — withdrawn as a unit-vs-percent scale confusion"
+        - "S0 limb (0.06 with zero levels) — withdrawn as a conflation of two different runs"
+      consequence: "reproduction_fidelity remains REPORTED, NOT GATED — but V15 was never the reason.
+                    The surviving reasons are the reference author's own failure to reproduce the 1.21
+                    with the readable notebook, and our D1/D2/D4 stack delta"
+      method_note: "both limbs were self-inflicted — one a scale misreading, one a cross-run attribution.
+                    Standing habit adopted: every verification claim names the artifact it rests on"
 
 # =====================================================================================
 # Later stages — stubs. Freeze each before its step, per §10.
