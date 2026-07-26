@@ -295,6 +295,42 @@ output requirement. The notebook also forces `bm.n_passes = 1` and sets `TAAF_RU
 `environment_files` the notebook uses in visible mode are exactly the ones we downloaded with the Kaggle
 CLI and pointed `--re-arc-environments-dir` at.
 
+### ✅ Kaggle reference run — the stack penalty, measured
+
+Completed 2026-07-26, 2.38 h GPU. Reference notebook **unmodified**, FP8 on an RTX PRO 6000, vLLM,
+25 public games offline. Evidence: `logs/kaggle-reference/{summary.txt,benchmark.json}`.
+
+| | Reference (Kaggle) | Local (M5 Pro) |
+|---|---|---|
+| Stack | Qwen3.6-27B **FP8**, vLLM, RTX PRO 6000 | Qwen3.6-27B **MLX 4-bit**, mlx_vlm, M5 Pro |
+| Aggregate throughput | **194.1 tok/s** | **13.2 tok/s** (3.3/stream × 4) |
+| **Stack penalty** | — | **≈ 14.7×** |
+
+Best-case local (synthetic short prompts, concurrency 5) reaches 59.9 tok/s → a 3.2× penalty, but that
+prompt is not the agent workload and overstates local capability. **14.7× is the like-for-like figure.**
+
+**Reference result:** 25 games, 1 pass, **0 games won**, 3806 actions, 1,545,935 tokens, 2h 12m wall
+clock, **mean score 2.19** (median 0.13). 14 of 25 games reached ≥1 level; best were ft09 (14.29, 2
+levels), vc33 (10.71, 2 levels), re86 (7.50, 2 levels).
+
+#### Two things this settles
+
+**1. ft09 is tractable — our zero-action result was entirely the timeout.** The reference cleared
+**2 levels of ft09 in 65 actions**. Independent confirmation that the local ft09 failure was the 120 s
+timeout, not the game, the model or the agent.
+
+**2. The Day-5 run at full breadth is ~33 h of local compute.** The reference's 1.55 M tokens at the
+local aggregate rate. That is the number the hybrid decision now rests on, and it is a measurement rather
+than a judgement call.
+
+#### Nuance that refines the timeout finding
+
+**The reference hit 46 timeouts of its own** at the same `analyzer.timeout: 120`. Against roughly 5000
+generations that is ~1%, versus our **62%**. So 120 s is *tight even on reference hardware* — it is not
+purely our misconfiguration, but the difference between a 1% and a 62% failure rate is the difference
+between an occasional retry and a harness that cannot measure anything. Raising it locally remains
+required; the reference's own value should be recorded as marginal rather than correct.
+
 ### 🔴 The development/submission divergence — a consequence of local-only, and a caveat on S1-d
 
 Kaggle provides CUDA. A Day-6 payload therefore runs **vLLM + FP8 on an RTX PRO 6000** — the reference
