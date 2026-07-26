@@ -149,13 +149,21 @@ def extract_episodes(run_dir: Path):
     }
 
 
-def frequencies(episodes):
-    """primary_share ranks the build order; episode_share is reported beside it."""
-    n = len(episodes)
+def _level_band(level):
+    """L1 vs L2+. The reference clears level 1 in 15/25 games and level 2 in only 3, so pooling the two
+    lets easy-case episodes dominate a ranking that is supposed to order eight weeks of construction."""
+    try:
+        return "L1" if int(level or 1) <= 1 else "L2+"
+    except Exception:  # noqa: BLE001
+        return "L1"
+
+
+def _shares(eps):
+    n = len(eps)
     if not n:
-        return {}
+        return {"total_failure_episodes": 0}
     prim, epis = {}, {}
-    for e in episodes:
+    for e in eps:
         if e.get("primary_label"):
             prim[e["primary_label"]] = prim.get(e["primary_label"], 0) + 1
         for l in e.get("labels") or []:
@@ -164,9 +172,50 @@ def frequencies(episodes):
                 epis[c] = epis.get(c, 0) + 1
     return {
         "total_failure_episodes": n,
-        "labelled": sum(1 for e in episodes if e.get("primary_label")),
+        "labelled": sum(1 for e in eps if e.get("primary_label")),
+        # primary_share RANKS THE BUILD ORDER; episode_share is reported beside it. A category often
+        # present but rarely primary is a contributing factor, not a root cause.
         "primary_share": {k: round(v / n, 4) for k, v in sorted(prim.items(), key=lambda x: -x[1])},
         "episode_share": {k: round(v / n, 4) for k, v in sorted(epis.items(), key=lambda x: -x[1])},
+    }
+
+
+def frequencies(episodes):
+    """Stratified by level band, and pooled.
+
+    The pooled figure is reported but MUST NOT be the ranking on its own: if L1 episodes outnumber L2+
+    ones, a pooled ranking optimises the case the reference already solves. Where the two disagree, the
+    disagreement is itself a finding and is surfaced explicitly.
+    """
+    by_band = {}
+    for band in ("L1", "L2+"):
+        eps = [e for e in episodes if _level_band(e.get("level")) == band]
+        if eps:
+            by_band[band] = _shares(eps)
+    pooled = _shares(episodes)
+
+    # Does the top-ranked category differ between pooled and L2+? That is the case the warning exists for.
+    def top(d):
+        ps = (d or {}).get("primary_share") or {}
+        return next(iter(ps), None)
+    divergence = None
+    if "L2+" in by_band and top(pooled) and top(by_band["L2+"]):
+        if top(pooled) != top(by_band["L2+"]):
+            divergence = {
+                "pooled_top": top(pooled),
+                "L2plus_top": top(by_band["L2+"]),
+                "warning": ("the pooled ranking and the L2+ ranking disagree on the top category. "
+                            "RANK ON L2+: the reference already clears level 1 in 15/25 games, so "
+                            "level-1 episodes describe the solved case, not the bottleneck."),
+            }
+
+    return {
+        "pooled": pooled,
+        "by_level_band": by_band,
+        "ranking_rule": ("rank the build order on the L2+ band. Report pooled beside it. Level 1 is "
+                         "soft (reference: 15/25 cleared) and level 2 is the wall (3/25) — see "
+                         "logs/kaggle-reference/per_game_analysis.json"),
+        "band_divergence": divergence,
     }
 
 
