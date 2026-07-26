@@ -9,6 +9,12 @@ Recoverable at any time: `git show <commit>^:agent/harness/<name>.py`. Removal c
 durable archive — but the published repo is built fresh without this history, so anything that must
 survive publication has to live in `notes/`, `paper/` or `gate_manifest.yaml`, not in git history.
 
+**`logs/` IS GITIGNORED.** Every `logs/...json` referenced below exists only on this machine and is in
+no commit. That is why each entry reproduces the actual numbers here rather than pointing at a file:
+a deleted script plus an untracked output would leave no record at all. The same caveat applies to every
+claim elsewhere in `notes/` that cites a `logs/` path as its evidence — the path is a pointer to local
+state, not to a durable artifact, and the raw evidence for all of S1 currently has no off-machine copy.
+
 ---
 
 ## `find_level1_solution.py` → superseded, negative result
@@ -76,15 +82,49 @@ figures are script-generated, so a later reader looking for the generator would 
 empty, and add a second generator here — splitting the figure pipeline across two entry points.
 `make_run_tables.py` is the single entry point.
 
+## `r1_determinism.py` → `logs/r1_determinism.json`, H1
+
+Replay determinism. Two games, two prefix lengths, three replays each, **byte-identical throughout**.
+
+```
+outcome: deterministic
+per_game: ft09-0d8bbf25 True, ls20-9607627b True
+prefix_lengths: [10, 4]
+scope: OFFLINE competition environment files — NOT a test of competition mode
+```
+
+The digest compared actual pixel grids, not metadata: an earlier version built it from `model_dump()`,
+which silently omits the numpy `frame` field, so it compared metadata only and never looked at a pixel.
+The corrected version asserts grids are present before comparing. Outcome recorded as H1 in
+`paper/hypotheses.md`.
+
+## `r2_action_accounting.py` → `logs/r2_action_accounting.json`, H2
+
+Whether the scored action count restarts after a reset or accumulates. **ACCUMULATES**, and the reset is
+itself a scored action:
+
+```
+game tu93-0768757b   a = 28   w = 28   reps = 3   waste_valid: true
+r = 2.0357   verdict: accumulates   (pre-registered band [1.85, 2.20])
+```
+
+Two independent estimators agreed to four decimal places — `√(1.0232 / 0.2469)` and the direct action
+count `57/28`. `c_reset` was pre-registered as unknown and absorbed by requiring `a ≥ 20`; it was
+instead **resolved to 1**. Full derivation in `notes/s1-measurements.md` §R2; outcome as H2 in
+`paper/hypotheses.md`.
+
+Consequence, which outlives the script: the controller is *surgical information-per-action* — every
+probe costs score directly.
+
 ---
 
 ## Kept deliberately
 
 | script | why it stays |
 |---|---|
-| `r1_determinism.py` | pre-registered experiment; determinism may need re-checking against a new bundle or competition mode |
-| `r2_action_accounting.py` | pre-registered experiment; same |
-| `measure_arc_conventions.py` | its output `logs/s2_arc_conventions.json` actively drives the keyboard/ACTION6 split now in use |
+| `measure_arc_conventions.py` | its output drives the keyboard/ACTION6 split now in use, and that output is gitignored — deleting the script would make the split unreproducible from the repo alone |
 
-R1 and R2 are cited in `gate_manifest.yaml`. Deleting a pre-registered experiment's code is different
-from deleting a spent utility: the manifest commits to a method, and the method should remain runnable.
+R1 and R2 were retired on the standing rule: an experiment that has run, and whose result is recorded in
+a tracked file, does not need its code kept. Both are cited in `gate_manifest.yaml`, and the citation
+now points at the recorded result rather than at runnable code. Re-running either would require
+rewriting it from the method description in `notes/s1-measurements.md`.
