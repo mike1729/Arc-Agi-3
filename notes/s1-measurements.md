@@ -145,6 +145,32 @@ a trigger to escalate to hybrid. The measured usable band is 4–5, so local-onl
 margin above 5*, and this is the trigger to re-check after the Day-5 breadth run rather than to treat as
 settled.
 
+#### Why a single game is slow — the reference's own budgets, read from the code
+
+Effective analyzer budgets, dumped from the installed module (`inference.agent.tool_agent`):
+
+| Knob | Value | Meaning |
+|---|---:|---|
+| `_LOCAL_ANALYZER_TOOL_STEPS` | **12** | up to 12 model calls per **one** game action |
+| `_LOCAL_ANALYZER_MAX_OUTPUT` | **0** | → `None`: **no cap** on output tokens per call |
+| `_LOCAL_ANALYZER_ENABLE_THINKING` | True | reasoning tokens on top of the answer |
+| `_LOCAL_ANALYZER_CONTEXT_WINDOW` | 32768 | |
+| `_LOCAL_ANALYZER_TOOL_OUTPUT_TOKENS` | 1024 | tool result truncation |
+
+So one game action costs **up to twelve uncapped generations**. At the measured 13.7 tok/s per stream at
+concurrency 4, that is minutes per game action, and ft09 needs a 43-action level 1 (208 actions across its
+six levels) — before accounting for the agent being less efficient than the human baseline.
+
+**This is the reference's operating point, not a defect of our port.** It is affordable on an RTX PRO
+6000 with FP8 weights and 32-way batching; it is not affordable at 13.7 tok/s. Note also that the
+config's `analyzer.tool_steps: 0` is **not** wired to `_LOCAL_ANALYZER_TOOL_STEPS` — that constant reads
+the `LOCAL_ANALYZER_TOOL_STEPS` environment variable and otherwise takes its code default of 12. Setting
+the config field alone changes nothing; the env var is the real lever.
+
+These are first-class knobs the reference already exposes, so bounding them is a *configuration*
+deviation rather than a code change — but it is still a deviation with a real fidelity cost, and it must
+be measured as its own contrast rather than folded in silently.
+
 #### Still open — the real single-game constraint
 
 Per-game wall-clock is bounded by **tokens per action**, not by parallelism. The first ft09 attempt
