@@ -103,6 +103,58 @@ Two consequences to check before Day 5, not after:
 
 ## Latency
 
+### Concurrency scaling — measured 2026-07-26 (S1-c work pulled forward into S1-b)
+
+Script: `agent/harness/concurrency_sweep.py`. Raw: `logs/concurrency_sweep.json`,
+`logs/concurrency_sweep_merged.json`. Model `mlx-community/Qwen3.6-27B-4bit` on the M5 Pro via
+`mlx_vlm.server` with `--enable-thinking`; 256-token generations; two sweeps (1,2,4,8 then 3,4,5,6).
+
+| Concurrency | Aggregate tok/s | Per-request tok/s |
+|---:|---:|---:|
+| 1 | 17.0 | 17.0 |
+| 2 | 31.8 | 16.0 |
+| 3 | 42.9 | 14.3 |
+| 4 | 54.5 | 13.7 |
+| **5** | **59.9** ← peak | 12.0 |
+| 6 | 54.4 | 9.1 |
+| 8 | 45.9 | 5.7 |
+
+Server RSS held flat at **15.7 GiB** across every level, so the ceiling is compute/scheduling, not
+memory — nowhere near the 44.06 GiB `peak_resident_set_max_gib` threshold. The 17 tok/s at N=1 agrees
+with the ~16.1–16.4 tok/s the server logged during a real game run, so the synthetic prompt is not
+flattering the measurement.
+
+**Aggregate scales ~3.5× to N=5, then regresses. Per-request throughput only ever falls.** Decode is
+memory-bandwidth-bound on the weights: extra streams amortise the weight reads (aggregate rises) but no
+single stream ever speeds up.
+
+#### The consequence that matters for the build
+
+**Concurrency buys breadth, not depth.** The duck's loop *within* one game is strictly sequential — each
+model call is conditioned on the previous one — so `concurrent_jobs` parallelises *games*, never the
+critical path of one game. It is therefore the right lever for the Day-5 run across 25 games and the
+wrong lever for per-game wall-clock, which is what actually stalled the first ft09 attempt.
+
+**Operating point selected: `concurrent_jobs: 4.`** N=5 is the aggregate peak but only ~10% above N=4
+while costing ~12% per-request throughput, and N=4 leaves scheduling room for the Python tool sandbox and
+the instrumentation processes that share the machine. Recorded in `agent/harness/build_local.sh` as the
+default; every latency figure must carry the concurrency it was measured at (freeze §5).
+
+**Escalation trigger #3 does not fire.** The freeze pre-registered "sustainable local concurrency < 4" as
+a trigger to escalate to hybrid. The measured usable band is 4–5, so local-only holds — *but with no
+margin above 5*, and this is the trigger to re-check after the Day-5 breadth run rather than to treat as
+settled.
+
+#### Still open — the real single-game constraint
+
+Per-game wall-clock is bounded by **tokens per action**, not by parallelism. The first ft09 attempt
+generated roughly 7.6k tokens (~7.5 min at 17 tok/s) before its *first* game action, all of it in the
+duck's opening analysis phase. `mlx_vlm.server --thinking-budget` caps that directly, but the reference
+runs `thinking: true` and a budget cap is a **new deviation with a real fidelity cost** — to be measured
+as its own contrast, not folded in silently. Not yet run.
+
+### Per-action latency table — S1-c
+
 Generated table:
 
 ## Hardware fit
