@@ -71,9 +71,32 @@ def load_requests(run_dir: Path, pass_key: str):
     The glob also swept up the run-level `requests.jsonl`, which is a different stream entirely.
 
     Invisible before 2026-07-26 because every earlier run held a single game.
+
+    BUT the harness only splits the log per pass when a directory holds MORE THAN ONE. With a single
+    game — every chunk in the concurrency-1 phase — it writes one run-level `requests.jsonl` and no
+    per-pass file. Scoping strictly to `<pass>_requests.jsonl` therefore found nothing and silently
+    produced evidence-less episodes: the exact defect that makes the Kaggle reference corpus unusable,
+    reintroduced by the fix for the pooling bug.
+
+    So fall back to the run-level log ONLY when the directory holds exactly one pass. With one pass the
+    attribution is unambiguous, which is the sole thing the scoping protects. With several, the
+    run-level file is refused and the loss is reported rather than absorbed.
     """
     by_step = {}
-    files = [run_dir / f"{pass_key}_requests.jsonl"]
+    per_pass = run_dir / f"{pass_key}_requests.jsonl"
+    if per_pass.exists():
+        files = [per_pass]
+    else:
+        passes = glob.glob(str(run_dir / "artifacts" / "*_events.jsonl"))
+        run_level = run_dir / "requests.jsonl"
+        if len(passes) == 1 and run_level.exists():
+            files = [run_level]
+        else:
+            files = []
+            if run_level.exists():
+                print(f"  WARNING {pass_key}: no per-pass request log, and the run holds "
+                      f"{len(passes)} passes — the run-level requests.jsonl cannot be attributed. "
+                      f"Episode evidence will be EMPTY.")
     for f in [p for p in files if p.exists()]:
         for line in open(f):
             try:

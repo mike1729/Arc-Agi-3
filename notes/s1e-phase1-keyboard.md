@@ -70,3 +70,43 @@ class. All other generations finished on `tool_calls`.
   will be empty and the ranking rule cannot be applied to local data at all — only to the reference
   corpus, which carries no reasoning evidence. That would be a live problem for S1-d, and it is worth
   watching rather than discovering at the end.
+
+---
+
+## The `re86` concurrency A/B — concurrency 2 was not the problem
+
+Run at concurrency 1, same model, same 45-minute budget, same config; concurrency the only variable.
+This is the controlled test the earlier concurrency-4 comparison could not be, because that one moved
+concurrency and action class together.
+
+| | concurrency 2 | concurrency 1 |
+|---|---:|---:|
+| actions | **48** | **36** (−25%) |
+| generations | 28 | 40 (+43%) |
+| actions per generation | 1.71 | **0.90** (−47%) |
+| median completion tokens | 520 | 632 |
+| max completion tokens | 1850 | 2356 |
+| levels cleared | 0 | 0 |
+
+**Concurrency 1 produced fewer actions, not more.** Undividing the accelerator did exactly what it
+should to *throughput* — 43% more generations — and the game still went backwards, because each
+generation committed roughly half as many actions.
+
+The generations also got longer (median 520 → 632 tokens, max 1850 → 2356). With more compute per
+request the model reasons further per turn and commits fewer actions per turn, and the second effect is
+larger than the first. Actions are what the score is computed from; generations are not.
+
+**Consequences.**
+
+1. The hypothesis that `re86` suffered from concurrency 2 is **refuted**. Its gap to the reference
+   (48 actions and 0 levels against 251 and 2) is not a concurrency artifact.
+2. By extension, concurrency 2 is not the reason the other keyboard games underperformed, so the
+   phase-1 numbers stand as measured.
+3. **This questions the phase-2 design.** All 19 ACTION6 games are scheduled at concurrency 1 on the
+   reasoning that long-generation games need the whole accelerator. That reasoning predicted more
+   actions and the one measurement available says the opposite — for a keyboard game. Whether it
+   transfers to ACTION6 games is untested, and assuming it does would repeat the original error in
+   mirror image. Worth an equivalent A/B on one click game before spending 14 h on the assumption.
+
+Recorded as measurement, not acted on: changing phase 2 mid-run is a scheduling decision for the
+operator, and the run is producing admissible episodes either way.

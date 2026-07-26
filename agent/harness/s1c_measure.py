@@ -112,8 +112,18 @@ def legal_action_reliability(run_dir: Path, executed_events: int, pass_key: str 
     # raw line fails because the payload is escaped JSON inside a JSON string.
     # Scoped to ONE pass. Globbing `*requests.jsonl` pooled every game in a chunk directory, plus the
     # run-level `requests.jsonl`, into one tally.
-    files = ([run_dir / f"{pass_key}_requests.jsonl"] if pass_key
-             else [Path(p) for p in glob.glob(str(run_dir / "*requests.jsonl"))])
+    # Same single-game fallback as s1d_label.load_requests: with one pass in the directory the
+    # run-level log is unambiguously that pass's, and the harness writes no per-pass file.
+    if pass_key:
+        per_pass = run_dir / f"{pass_key}_requests.jsonl"
+        if per_pass.exists():
+            files = [per_pass]
+        else:
+            passes = glob.glob(str(run_dir / "artifacts" / "*_events.jsonl"))
+            run_level = run_dir / "requests.jsonl"
+            files = [run_level] if (len(passes) == 1 and run_level.exists()) else []
+    else:
+        files = [Path(p) for p in glob.glob(str(run_dir / "*requests.jsonl"))]
     seen = set()
     for f in [p for p in files if p.exists()]:
         for line in open(f):
