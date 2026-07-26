@@ -88,6 +88,13 @@ cfg["environment"]["exclude_tags"] = []
 cfg["environment"]["environments_dir"] = os.environ.get(
     "ARC_ENV_FILES", str(pathlib.Path.cwd() / "data/environment_files"))
 cfg["analyzer"]["save_request_logs"] = True             # D6
+# D10 — analyzer timeout 120 -> 900 s. THE BUG THAT INVALIDATED EVERY EARLIER LOCAL RUN.
+# The reference's 120 s is calibrated for FP8 on an RTX PRO 6000. Measured here: generation durations
+# median 142 s, max 426 s, with 62% exceeding 120 s — so most requests were cut off mid-generation and
+# retried, and the "analysis" events in those runs ARE the failures. 900 s is ~2x the measured max.
+# (The reference hit 46 timeouts of its own at 120 s, ~1% of its generations, so 120 s is marginal even
+# on reference hardware — but 1% is a retry and 62% is a harness that cannot measure anything.)
+cfg["analyzer"]["timeout"] = 900                        # D10
 cfg["experiments"]["root_dir"] = "logs/runs/{username}"
 cfg["deployment"]["target"] = "inline"
 cfg["deployment"]["slurm"]["start_local_server"] = False
