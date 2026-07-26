@@ -753,7 +753,23 @@ s1:
       per_action_latency_p50: {verdict: null, measured: null, evidence_ref: null}
       per_action_latency_p95: {verdict: null, measured: null, evidence_ref: null}
       wall_clock_margin:      {verdict: null, measured: null, evidence_ref: null}
-      reproduction_fidelity:  {verdict: null, measured: null, evidence_ref: null, gap_explanation: null}
+      reproduction_fidelity:
+        # GATED criterion only. The LB-1.21 comparison stays reported-not-gated (see
+        # viability_thresholds.reproduction_fidelity).
+        verdict: PASS
+        measured: ">=1 scored public-game level completed locally with the vendored solver.
+                   vc33-5430563c level 1 cleared in 14 actions (human baseline 7) via
+                   ACTION6 MOUSE(row=33, col=61) at step 14; level-1 score
+                   min(115,(7/14)^2*100) = 25.00; agent advanced to level 2. 18 min wall-clock,
+                   single-stream (concurrency 1), MLX 4-bit."
+        evidence_ref: "logs/runs/20260726_093320_s1b-vc33-single/artifacts/vc33-5430563c_p0_events.jsonl"
+        gap_explanation: "n/a for the gated criterion. Note the run was at the code-default
+                          tool_steps=12 rather than the reference's unlimited (Makefile bypass), but the
+                          cap did not bind — max 5 calls/turn, mean 1.89 — so behaviour was effectively
+                          at the reference operating point."
+        note: "S1-b HARD EXIT MET. Also demonstrates the agent can localise ACTION6 clicks, which the
+               coordinate_unreachable category cannot itself evidence (no coordinate candidate set)."
+
       hardware_fit_vram:      {verdict: null, measured: null, evidence_ref: null}
       hardware_fit_throughput: {verdict: null, measured: null, evidence_ref: null}
       license_entrant_code:   {verdict: null, measured: null, evidence_ref: null}

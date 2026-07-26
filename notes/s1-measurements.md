@@ -324,6 +324,38 @@ gives a first handle on (2) via per-game outcomes.
 
 ## Public-game progress
 
+### ✅ S1-b hard exit MET — 2026-07-26
+
+First scored public-game level completed locally with the vendored solver.
+
+| | |
+|---|---|
+| Game | `vc33-5430563c` |
+| Level 1 cleared | step **14**, action `MOUSE(row=33, col=61)` (ACTION6) |
+| Human baseline | 7 actions → agent used **2× baseline** |
+| Level-1 score | `min(115, (7/14)² × 100)` = **25.00** |
+| Wall-clock | 18 min, single-stream (concurrency 1), MLX 4-bit |
+| Evidence | `logs/runs/20260726_093320_s1b-vc33-single/artifacts/vc33-5430563c_p0_events.jsonl` |
+
+Agent advanced to level 2 and continues.
+
+Two things this establishes beyond the exit criterion:
+
+- **The agent can localise ACTION6 clicks.** It cleared a click-only game by choosing a specific
+  coordinate. That is worth recording precisely because `coordinate_unreachable` is `unavailable` as a
+  category — there is no coordinate candidate set to evidence it from, so behavioural evidence like this
+  is the only signal available on that axis.
+- **Game choice dominated everything else.** The same stack made no progress on ft09 (43-action level 1)
+  across three runs and ~80 minutes, and cleared vc33 (7-action level 1) in 18. The binding constraint
+  for reaching a scored level locally was never the model or the port — it was the per-action cost
+  multiplied by the level's action requirement.
+
+*Caveat on operating point:* this run used the code-default `tool_steps=12` rather than the reference's
+unlimited (the Makefile bypass, since fixed by `agent/harness/run_local.sh`). The cap did not bind —
+max 5 calls/turn, mean 1.89 — so behaviour was effectively at the reference operating point.
+
+### Reproduction target
+
 - Frozen target:
 - Observed result:
 - Gap:
