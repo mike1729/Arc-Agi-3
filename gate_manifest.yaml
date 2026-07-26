@@ -829,9 +829,36 @@ s1:
     # One verdict per frozen threshold, each with an evidence reference. A single aggregate verdict
     # hides WHICH threshold failed, and the build order depends on knowing that.
     threshold_verdicts:
-      legal_action_validity:  {verdict: null, measured: null, evidence_ref: null}
-      per_action_latency_p50: {verdict: null, measured: null, evidence_ref: null}
-      per_action_latency_p95: {verdict: null, measured: null, evidence_ref: null}
+      legal_action_validity:
+        verdict: "NOT MEASURABLE AS PRE-REGISTERED — no rejections observed"
+        measured: "742 actions executed, 0 api_error records, no rejection evidence in any artifact.
+                   Static parsing of emitted actions gives 102 attempts across 72 action() calls, i.e.
+                   a ratio of 7.27 — ABOVE 1.0, which is proof the parse undercounts rather than
+                   evidence of extra actions"
+        why_not_measurable: "the threshold is `fraction of emitted actions the API accepts`. The agent
+                             builds action lists PROGRAMMATICALLY inside its Python tool (loops,
+                             computed coordinates), so `emitted` cannot be recovered from the tool
+                             source. An exact figure needs a runtime patch logging every action passed
+                             to action() — call it D12 if it is wanted"
+        practical_reading: "the threshold exists so that a low value makes interface work build item #1.
+                            No rejection was observed anywhere, so on the available evidence the
+                            interface is NOT a bottleneck. Recorded as such rather than as a number"
+        evidence_ref: "logs/s1c_20260726_151043_s1b-vc33-moe.json" 
+      per_action_latency_p50:
+        verdict: "MEASURED — but the frozen UNIT is wrong for this agent. See note"
+        measured: "MoE run, concurrency 4: per_action p50 0.62 s / p95 21.54 s;
+                   per_decision p50 0.74 s / p95 22.42 s. 19% of actions were committed inside batches"
+        evidence_ref: "logs/s1c_20260726_151043_s1b-vc33-moe.json; agent/harness/s1c_measure.py"
+        unit_problem: "the threshold names PER-ACTION latency, which assumes one model call per action.
+                       The duck calls action(actions=[a,b,c,...]), so several actions commit from one
+                       decision and intra-batch deltas are ~0. Reporting per-action p50 flatters the
+                       agent by an order of magnitude. GATE ON per_decision"
+        status: "not gated yet — this is a MoE run and S1-e will run dense" 
+      per_action_latency_p95:
+        verdict: "MEASURED — see per_action_latency_p50 for the unit caveat"
+        measured: "per_decision p95 22.42 s (MoE, concurrency 4); max 141.17 s"
+        evidence_ref: "logs/s1c_20260726_151043_s1b-vc33-moe.json"
+        status: "not gated yet — S1-e will run dense" 
       wall_clock_margin:      {verdict: null, measured: null, evidence_ref: null}
       reproduction_fidelity:
         # GATED criterion only. The LB-1.21 comparison stays reported-not-gated.
@@ -850,7 +877,15 @@ s1:
         note: "S1-b HARD EXIT MET. Also demonstrates the agent can localise ACTION6 clicks, which
                coordinate_unreachable cannot itself evidence (no coordinate candidate set)."
       hardware_fit_vram:      {verdict: null, measured: null, evidence_ref: null}
-      hardware_fit_throughput: {verdict: null, measured: null, evidence_ref: null}
+      hardware_fit_throughput:
+        verdict: "NOT INTERPRETABLE from this run"
+        measured: "actions/min 6.8 in the first 10 min vs 18.62 across the whole run -> degradation
+                   -1.74, i.e. the run got FASTER, not slower"
+        why: "the metric is confounded by task phase, not thermals: the agent explores slowly early and
+              then emits large action batches. A thermal signal cannot be separated from a behavioural
+              one on a single agent run. Measure it on a fixed synthetic workload of constant shape, or
+              read it from the sustained S1-e run with power/ambient recorded"
+        evidence_ref: "logs/s1c_20260726_151043_s1b-vc33-moe.json" 
       license_entrant_code:
         verdict: CLEAR
         measured: "everything we author (harness, instrumentation, patches, labelling pipeline) is ours
