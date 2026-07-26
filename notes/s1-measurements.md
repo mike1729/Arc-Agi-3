@@ -420,6 +420,37 @@ purely our misconfiguration, but the difference between a 1% and a 62% failure r
 between an occasional retry and a harness that cannot measure anything. Raising it locally remains
 required; the reference's own value should be recorded as marginal rather than correct.
 
+### 🔴 D13 — the 2048-token server default. My "click games are slow locally" conclusion was WRONG.
+
+`mlx_vlm`'s `DEFAULT_MAX_TOKENS = 2048` (`generate/dispatch.py:38`) applies whenever the client sends no
+`max_tokens`. The reference config sets `analyzer.max_output: 0`, which means *unbounded* to the client —
+so nothing is sent, and the **server's** default silently caps generation at 2048.
+
+Keyboard games never noticed: `wa30` peaked at 952 completion tokens. Coordinate reasoning on a 64×64
+grid routinely exceeds 2048, so click games were **truncated mid-reasoning**, returned
+`finish_reason: length`, emitted no tool call, and appeared to be running slowly.
+
+| `lp85-305b61c3` | generations | `length` truncations | actions | level 1 |
+|---|---:|---:|---:|---|
+| 2048 cap (default) | 7 | **3** | 1 in 30 min | not cleared |
+| **16384 cap (D13)** | 12 | **0** | **6** | **cleared** |
+
+Post-fix, lp85 cleared level 1 in **6 actions against a human baseline of 17** — a level score of
+**115, saturating the cap**. The reference spent 79 actions on that game for one level.
+
+**What this retracts.** I concluded twice — and recommended stopping the breadth run partly on the
+strength of it — that click games were inherently unviable locally and that action rate was dominated by
+action *type*. Both were wrong. The asymmetry was entirely this server default. Fifteen of the 25 public
+games are ACTION6 and were all affected.
+
+**Class of error, repeated.** This is the third instance of the same failure: a value that is harmless on
+the reference stack and wrong on ours, inherited without audit — after the 120 s `analyzer.timeout`
+(D10) and the Makefile bypass. The correct action when substituting the serving layer (D1) was to audit
+**every** server-side default at that moment, not to discover them one failure at a time.
+
+**What it does NOT change.** Erratum S1-E7 stands on its own arithmetic: one pass over a game yields at
+most one failure episode, so 25 games yield at most 25 against a pre-registered sample of 30.
+
 ### Kaggle reference — per-game behavioural baseline (the S1-E5 mitigation)
 
 `agent/harness/analyse_reference_run.py` → `logs/kaggle-reference/per_game_analysis.json`. This is the
