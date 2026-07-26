@@ -1154,3 +1154,40 @@ default to under doubt — but here it is not a default, it is the measured outc
 - Controller selected: **surgical information-per-action**
 - R2 result:
 - Controller selected:
+
+---
+
+## S1-e, 2026-07-26: non-convergent generation — distinct from D13 truncation
+
+First `finish_reason: length` since `analyzer.max_output` was raised to 16384. It is **not** a
+recurrence of D13, and the distinction matters because the two imply opposite fixes.
+
+`g50t-5849a774`, analysis step 1, concurrency 2:
+
+```
+completion_tokens  16384  (cap)     median for this game: 410, for ls20: 892
+tool_calls         0
+reasoning          0 chars
+content            49,532 chars
+```
+
+**D13 was a cap set too low** — 2048 by the server default — cutting off legitimate coordinate reasoning
+mid-thought. **This is a generation that does not converge.** The content is coherent and
+non-degenerate: 705 lines, 625 distinct, 11.3% repetition. The model segments the maze, enumerates the
+pixel extents of each white passage, and traces candidate paths — real work, continued past any point
+where it could have committed an action.
+
+Raising the cap again would most likely buy more enumeration rather than a tool call, so the config is
+**not** being changed mid-run.
+
+**This is legitimate failure data, not a harness artifact.** An agent that reasons for 16k tokens and
+emits no action has failed in a way the taxonomy is meant to capture, and `g50t` is expected to conclude
+`gave_up` with near-zero actions. Contrast the harness-induced censoring that S1-E8 excludes: there the
+run was interrupted; here the agent ran freely and failed on its own terms.
+
+Cost: roughly 15–20 minutes of `g50t`'s 45-minute budget on a single generation. Under a per-game
+wall-clock budget, one non-convergent generation is close to a whole game.
+
+Same chunk, same settings, for contrast: `ls20-9607627b` reached **39 actions in 30 minutes** with 16
+generations, median 892 tokens, max 3099 — the batching burst arriving on schedule, matching `wa30`'s
+6-actions-at-20-min → 201-at-45-min trajectory.
