@@ -26,19 +26,22 @@ crashed}`. Also `transcripts/<game>_p<pass>.txt` and `prompts/prompt.log`.
 `analysis_step`, `action` and `request_index_within_turn` — i.e. the `prompt_context_snapshot` and
 `raw_model_output` several categories are defined on.
 
-> ⚠ **CORRECTED 2026-07-26.** An earlier version of this note said D6 was "enabled in
-> `build_local.sh`" via the config file. **It was not, and the first two ft09 runs produced no
-> `requests.jsonl` at all.** `analyzer.save_request_logs` in the JSON config is never read;
-> `inference/framework/run.py` sources it from the **CLI flag `--save-request-logs`**, which is an
-> `argparse.BooleanOptionalAction` defaulting to `False`.
+> ⚠ **CORRECTED TWICE, 2026-07-26.**
+> **(a)** The table first claimed D6 was already enabled. It was not — the first two ft09 runs produced
+> no `requests.jsonl`, so the four categories marked "available with D6" had no supporting evidence.
+> **(b)** The correction to (a) then over-generalised, asserting the JSON config "is not a complete
+> control surface" and that `analyzer.save_request_logs` "is never read". **That was wrong.** The
+> reference's `Makefile` *does* read it — `ANALYZER_SAVE_REQUEST_LOGS ?= $(CONFIG_VALUE)
+> analyzer.save_request_logs false` (line 153) — and converts it into `--save-request-logs`. The same
+> applies to `analyzer.tool_steps` (line 145). **The field is not inert; we bypassed the Makefile** by
+> invoking `python -m inference.framework.run` directly, so nothing translated config into flags.
 
-**Generalised caution — the JSON config is not a complete control surface.** This is now the *second*
-setting found to be inert in the config file, after `analyzer.tool_steps` (which is read from the
-`LOCAL_ANALYZER_TOOL_STEPS` environment variable and otherwise defaults to 12 in code). Both look
-configured and neither is. **Before relying on any config field, verify it reaches the running object** —
-either from the `HarnessSolver(...)` repr the runner prints at startup, or by importing the module and
-reading the constant. Assuming the config is authoritative would silently produce runs that are not the
-configuration we believe we pre-registered, which is precisely the failure the manifest exists to catch.
+**The actual lesson, which is narrower and more useful:** `Makefile` is the reference's real entry
+point and holds the config→CLI translation layer. Driving `inference.framework.run` directly silently
+drops every config-sourced setting to its argparse/code default. **A canonical local launcher that
+reproduces the Makefile's translation is needed** — until then, every run must pass the flags
+explicitly, and the effective values must be verified from the `HarnessSolver(...)` repr rather than
+assumed from the JSON.
 
 **The model's reasoning is exposed.** The MLX server returns `reasoning_content` separately from
 `content` (591 and 665 chars in the two D5 probes), so `reasoning_text` is available verbatim.
@@ -66,13 +69,13 @@ Verdicts: `available` · `partial` (say which half) · `unavailable`.
 | 2 | `action_semantics_unknown` | predicted delta vs observed delta | **partial** — observed delta `available` (consecutive `board`s); **no `predicted_delta` field.** Predictions appear only as prose, when the model happens to state one | no — same objection as #1 | — |
 | 3 | `perception_parsing` | frame + parsed state description | **available** — `board` + `board_ascii` + the segmentation view the agent is given, against its own description in `reasoning_content` | — | — |
 | 4 | `hidden_state_aliasing_or_memory` | both frames, both actions, both outcomes | **available** — full grids per step make observationally-identical states directly detectable | — | — |
-| 5 | `coordinate_unreachable` | candidate set at the step + the coordinate that later worked | **available with D6** — `valid_actions` is in the prompt, captured by `requests.jsonl` | **NOT yet enabled — needs `--save-request-logs`** | D6 |
+| 5 | `coordinate_unreachable` | candidate set at the step + the coordinate that later worked | **UNAVAILABLE** (corrected) — `valid_actions` is *a list of action **names*** (`prompts.py`: "the current list of valid action names"; sandbox coerces with `[str(item) for item in ...]`). There is **no coordinate candidate set** anywhere, so "a required ACTION6 coordinate was never present in the candidate set" is not decidable from any log | no — would need solver-side coordinate proposal logging | — |
 | 6 | `planning_depth` | shortest known successful sequence length vs the agent's effective horizon | **UNAVAILABLE** — see the callout below | no | — |
-| 7 | `exploration_or_probe_selection` | action taken + its no-op/redundant outcome + the available alternative | **available with D6** — no-op detectable from board equality; alternatives from `valid_actions` | **NOT yet enabled — needs `--save-request-logs`** | D6 |
+| 7 | `exploration_or_probe_selection` | action taken + its no-op/redundant outcome + the available alternative | **partial** (corrected) — no-op is `available` (board equality). Alternatives are available only at **action-name granularity**; for ACTION6 games the "higher-yield alternative" is a *coordinate*, which is not enumerable. So: usable on simple-action games, weak on click games | partly | D6 |
 | 8 | `progress_signal_misinterpretation` | score/level marker vs the agent's recorded belief | **partial** — markers `available` (`score`, `level`, `reward`); belief is prose only | no | — |
 | 9 | `irreversible_mistake` | the transition + the subsequent dead-end | **available** — boards plus terminal `state` | — | — |
-| 10 | `invalid_output_interface` | raw agent output + the rejection | **available with D6** — `finish_reason`, raw `tool_calls`, and the harness's own `_recover_tool_calls_from_markup` path flags malformed output | **NOT yet enabled — needs `--save-request-logs`** | D6 |
-| 11 | `retrieval_or_context` | the stored record + the context snapshot that omitted it | **available with D6** — `requests.jsonl` stores the full `messages` array, which *is* the context snapshot | **NOT yet enabled — needs `--save-request-logs`** | D6 |
+| 10 | `invalid_output_interface` | raw agent output + the rejection | **partial** (corrected) — `_append_request_snapshot` never writes `result.message`, so no response payload is logged. But raw output **is recoverable from the accumulated history**: assistant turns carry `content`, `tool_calls` *and* `reasoning` in the *next* request's `messages` (verified: 49 assistant messages with all three). **Two gaps: the final turn of each episode never reappears, and API rejection bodies are never captured** | rejection half needs a patch to the vendored core | D6 |
+| 11 | `retrieval_or_context` | the stored record + the context snapshot that omitted it | **available** — `requests.jsonl` stores the full `messages` array, which *is* the context snapshot | enabled via `--save-request-logs` | D6 |
 | 12 | `reasoning_inconsistency` | reasoning text + action | **available** — `reasoning_content` verbatim, paired with the executed action via `analysis_step` | — | — |
 | 13 | `latency_or_budget` | timing and budget counters at the terminal step | **available** — `ActionRecord.wallclock_seconds`, `generated_tokens`, `uncached_input_tokens`, against `max_actions` / `max_runtime_minutes` | — | — |
 
@@ -132,8 +135,11 @@ Script: `agent/harness/concurrency_sweep.py`. Raw: `logs/concurrency_sweep.json`
 | 6 | 54.4 | 9.1 |
 | 8 | 45.9 | 5.7 |
 
-Server RSS held flat at **15.7 GiB** across every level, so the ceiling is compute/scheduling, not
-memory — nowhere near the 44.06 GiB `peak_resident_set_max_gib` threshold. The 17 tok/s at N=1 agrees
+Server RSS read **15.7 GiB** at every level. ⚠ **This does NOT establish peak memory and does NOT clear
+the 44.06 GiB escalation trigger.** RSS was sampled *after each concurrency batch completed*, so transient
+KV-cache growth during generation is invisible to it, and RSS under unified memory is a poor proxy for
+peak GPU working set in any case. The honest reading is only that *steady-state* RSS is far below the
+threshold. `hardware_fit_vram` remains **unmeasured** and needs a sampler that polls during generation. The 17 tok/s at N=1 agrees
 with the ~16.1–16.4 tok/s the server logged during a real game run, so the synthetic prompt is not
 flattering the measurement.
 
@@ -184,6 +190,25 @@ These are first-class knobs the reference already exposes, so bounding them is a
 deviation rather than a code change — but it is still a deviation with a real fidelity cost, and it must
 be measured as its own contrast rather than folded in silently.
 
+#### ⚠ D9's baseline was misidentified — correction before the result below
+
+The D9 entry described the reference operating point as `tool_steps = 12`. **That is wrong.** The
+reference's `Makefile` sources it from the config — `LOCAL_ANALYZER_TOOL_STEPS ?= $(CONFIG_VALUE)
+analyzer.tool_steps 0` (line 145) — and `inference.json` sets `analyzer.tool_steps: 0`, which
+`ToolAgent` interprets as **unlimited** (`self._tool_steps = None if _LOCAL_ANALYZER_TOOL_STEPS <= 0`).
+
+So the reference operating point is **unlimited model calls per game action**, not 12. The `12` we
+measured against was the *argparse/code fallback* we landed on by driving
+`inference.framework.run` directly and bypassing the Makefile — the same bypass that silently disabled
+D6. **D9 was therefore "unlimited → 4" against a baseline that was itself an unintended `12`, not the
+clean "12 → 4" the commit message claims.**
+
+Also unapplied by the bypass: `analyzer.yield_seconds` (Makefile default 60), which we never set at all.
+
+**What survives this correction:** the *mechanism* is unaffected. Measured usage is **mean 1.97 calls per
+turn**, so neither 4, nor 12, nor unlimited binds — the agent simply does not use many calls per turn.
+The negative result stands; its framing did not.
+
 #### D9 (analysis-budget reduction) — NEGATIVE RESULT, and the deviation was reverted
 
 Ran `tool_steps` 12→4 and `max_output` uncapped→1024 on ft09, 4 passes at concurrency 4, 25 min.
@@ -197,7 +222,7 @@ Ran `tool_steps` 12→4 and `max_output` uncapped→1024 on ft09, 4 passes at co
 
 | Knob | Reference | D9 cap | Actual usage |
 |---|---|---|---|
-| `tool_steps` | 12 | 4 | **mean 1.97 calls/turn**; only 13% of turns reach 4 |
+| `tool_steps` | **unlimited** (`0`, via Makefile) — *not* 12 | 4 | **mean 1.97 calls/turn**; only 13% of turns reach 4 |
 | `max_output` | uncapped | 1024 | **median 350 tokens**; binds only at the tail |
 
 `tool_steps: 12` is a *ceiling the agent rarely approaches*, not a target, so cutting it to 4 could only

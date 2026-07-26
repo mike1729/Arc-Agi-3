@@ -58,9 +58,9 @@ patch -s -p0 -d "$REPO_ROOT" < "$PATCHES/D8-guard-re_arc-import.patch"
 # ---------------------------------------------------------------------------
 echo "==> writing configs/inference.local-mlx.json (D3 + D4 + D6)"
 MODEL_PATH="${MLX_MODEL_PATH:-$HOME/models/mlx/Qwen3.6-27B-4bit}"
-CONCURRENCY="${LOCAL_CONCURRENT_JOBS:-2}"
+CONCURRENCY="${LOCAL_CONCURRENT_JOBS:-4}"
 python3 - "$WORK" "$MODEL_PATH" "$CONCURRENCY" <<'PY'
-import json, sys, pathlib
+import json, os, sys, pathlib
 work, model, concurrency = sys.argv[1], sys.argv[2], int(sys.argv[3])
 cfgdir = pathlib.Path(work) / "src/ARC3-Inference/configs"
 cfg = json.loads((cfgdir / "inference.json").read_text())
@@ -69,12 +69,19 @@ cfg["shared"]["base_url"] = "http://127.0.0.1:1234/v1"  # unchanged — referenc
 cfg["shared"]["provider"] = "vllm"                      # unchanged — MLX accepts this payload branch
 cfg["environment"]["concurrent_jobs"] = concurrency     # D4
 cfg["environment"]["n_passes"] = 1                      # D4
+# Without re_arc, tag/dataset selection is unanswerable (D8 raises on it), and the "__auto__"
+# environments_dir sentinel resolves via `import re_arc` in taaf/game_api.py::_resolve_environments_dir.
+# The generated config must therefore encode BOTH, or it is not runnable as written.
+cfg["environment"]["include_tags"] = []                 # D8: tag selection needs re_arc
+cfg["environment"]["exclude_tags"] = []
+cfg["environment"]["environments_dir"] = os.environ.get(
+    "ARC_ENV_FILES", str(pathlib.Path.cwd() / "data/environment_files"))
 cfg["analyzer"]["save_request_logs"] = True             # D6
 cfg["experiments"]["root_dir"] = "logs/runs/{username}"
 cfg["deployment"]["target"] = "inline"
 cfg["deployment"]["slurm"]["start_local_server"] = False
 (cfgdir / "inference.local-mlx.json").write_text(json.dumps(cfg, indent=2) + "\n")
-print(f"    model={model}  concurrent_jobs={concurrency}  save_request_logs=True")
+print(f"    model={model}  concurrent_jobs={concurrency}  env_dir={cfg['environment']['environments_dir']}")
 PY
 
 echo "==> done. Work copy ready at $WORK"

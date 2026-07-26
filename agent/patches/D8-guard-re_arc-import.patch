@@ -1,6 +1,6 @@
 --- agent/reference/taaf/src/ARC3-Inference/inference/framework/run.py	2026-07-26 07:50:12
 +++ agent/work/taaf/src/ARC3-Inference/inference/framework/run.py	2026-07-26 08:02:28
-@@ -19,7 +19,19 @@
+@@ -19,7 +19,24 @@
  from typing import Any
  
  from dotenv import load_dotenv
@@ -16,7 +16,12 @@
 +# (hardcoded DUCK_HARNESS_PUBLIC_GAME_IDS) is unaffected.
 +try:  # pragma: no cover - depends on deployment bundle contents
 +    from re_arc import EnvSampler
-+except ModuleNotFoundError:  # re-arc-3 snapshot absent (share bundle)
++except ModuleNotFoundError as _exc:  # re-arc-3 snapshot absent (share bundle)
++    # Only swallow a MISSING re_arc. A ModuleNotFoundError raised from INSIDE re_arc (a missing
++    # transitive dependency) is a broken installation and must surface, not be silently
++    # downgraded to 'the bundle ships without it'.
++    if _exc.name != "re_arc":
++        raise
 +    EnvSampler = None
  
  import taaf.benchmark

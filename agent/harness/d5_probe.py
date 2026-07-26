@@ -58,7 +58,7 @@ PROMPT = (
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--provider", default="openrouter", choices=["vllm", "openrouter"])
+    ap.add_argument("--provider", default="vllm", choices=["vllm", "openrouter"])  # match the local config
     ap.add_argument("--timeout", type=float, default=300.0)
     args = ap.parse_args()
 
@@ -111,12 +111,23 @@ def main() -> int:
     usage = body.get("usage") or {}
     print(f"usage              : {usage}")
 
-    verdict = "PASS" if tool_calls else "FAIL"
-    print(f"\nD5 VERDICT: {verdict} — server-side tool-call parsing "
-          f"{'works' if tool_calls else 'did NOT return tool_calls'}")
-    if not tool_calls:
+    # A non-empty tool_calls array is NOT sufficient: a wrong function name, malformed JSON, or a
+    # missing `code` argument would all pass that test while leaving the solver unable to act.
+    usable = False
+    if tool_calls:
+        fn = tool_calls[0].get("function", {})
+        if fn.get("name") == "python":
+            try:
+                usable = isinstance(json.loads(fn.get("arguments", "")).get("code"), str)
+            except Exception:  # noqa: BLE001
+                usable = False
+    verdict = "PASS" if usable else "FAIL"
+    print(f"\nD5 VERDICT: {verdict} — a USABLE `python` tool call with JSON-valid `code` "
+          f"{'was returned' if usable else 'was NOT returned'} "
+          f"(raw tool_calls present: {bool(tool_calls)})")
+    if not usable:
         print("content preview:", (msg.get("content") or "")[:600])
-    return 0 if tool_calls else 2
+    return 0 if usable else 2
 
 
 if __name__ == "__main__":
