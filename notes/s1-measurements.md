@@ -403,6 +403,23 @@ taxonomy, and it should be labelled on the Day-5 run rather than treated as a la
 **Consequently the D9 comparison compared analysis throughput, not action throughput**, and every
 seconds-per-action figure quoted for ft09 in this file and in commit messages is withdrawn.
 
+#### Preliminary mechanism — one observed instance, NOT a frequency claim
+
+During a four-turn stall on vc33 (actions static at 25 while analysis went 17→20), the D6 request log
+shows the agent issuing a segmentation inspection and then **repeating the byte-identical inspection**
+before eventually acting. A redundant probe with zero information yield.
+
+**Precision that matters for the taxonomy:** these are *tool* calls, not game actions. Under the surgical
+controller (R2 = `accumulates`, `c_reset` = 1), wasted **game** actions cost score directly; wasted
+**tool** calls cost only wall-clock. So this instance is a **latency** pathology, not a scoring one, and
+labelling it `exploration_or_probe_selection` — a category defined on *actions* — would be a category
+error unless the definition is read as covering tool-level probing too. **Resolve that scoping question
+before Day-5 labelling**, or the frequency table will mix two different costs.
+
+This is `n = 1`. It is recorded as a hypothesis for the mechanism behind the ft09 zero-action stall
+(loop on identical inspections, never converge, never act), to be tested against the full Day-5 run —
+not as a measured frequency.
+
 ### Reproduction target
 
 - Frozen target:
