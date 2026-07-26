@@ -84,38 +84,81 @@ def latency_stats(history, batch_gap_s=0.25):
     }
 
 
-def legal_action_reliability(run_dir: Path, executed: int):
-    """Attempted vs executed. The agent may emit actions the environment refuses or that never reach it.
+def legal_action_reliability(run_dir: Path, executed_events: int):
+    """Requested vs executed, read from the harness's OWN action results.
 
-    Attempted is counted from the tool code the model actually sent (D6 request logs): each
-    {'action': ...} dict inside an action([...]) call is one attempt."""
-    attempted = 0
-    calls = 0
+    CORRECTED: an earlier version parsed action() calls out of the tool source and concluded the
+    threshold was unmeasurable, because the agent builds action lists programmatically. That was
+    looking in the wrong place. `_compact_action_result` emits `requested_count`, `executed_count`,
+    `stopped_early` and `stop_reason` directly, and those payloads are fed back to the model as tool
+    output — so they are captured verbatim in the D6 request logs.
+
+    One subtlety: the fields are only emitted when `batch_size > 1 or stopped_early` (tool_agent.py
+    ~1437). A single action that executed normally carries neither, and counts 1/1 implicitly.
+    """
+    requested = executed = 0
+    explicit_batches = implicit_singles = 0
+    stops: dict[str, int] = {}
+
+    # The action result is delivered to the model as a TOOL message whose content is pretty-printed
+    # JSON. Parse the request row, walk its messages, and read the tool payloads — a regex over the
+    # raw line fails because the payload is escaped JSON inside a JSON string.
+    seen = set()
     for f in glob.glob(str(run_dir / "*requests.jsonl")):
         for line in open(f):
             try:
-                r = json.loads(line)
+                row = json.loads(line)
             except Exception:  # noqa: BLE001
                 continue
-            if r.get("event") != "response":
-                continue
-            msg = r.get("response_message") or {}
-            for tc in (msg.get("tool_calls") or []):
+            for msg in (row.get("messages") or []):
+                if msg.get("role") != "tool":
+                    continue
+                content = msg.get("content")
+                if not isinstance(content, str) or '"executed"' not in content:
+                    continue
+                if content in seen:      # history repeats every tool result in each later prompt
+                    continue
+                seen.add(content)
                 try:
-                    code = json.loads(tc.get("function", {}).get("arguments", "")).get("code", "")
+                    payload = json.loads(content)
                 except Exception:  # noqa: BLE001
                     continue
-                if _ACTION_CALL.search(code):
-                    calls += 1
-                    attempted += len(_ACTION_DICT.findall(code))
-    validity = (executed / attempted) if attempted else None
+                # Shape is {"tool": ..., "returncode": ..., "result": {<action result>}}.
+                res = None
+                if isinstance(payload, dict):
+                    for key in ("result", "action_result"):
+                        cand = payload.get(key)
+                        if isinstance(cand, dict) and "executed" in cand:
+                            res = cand
+                            break
+                    if res is None and "executed" in payload:
+                        res = payload
+                if not isinstance(res, dict):
+                    continue
+                if "requested_count" in res or "executed_count" in res:
+                    requested += int(res.get("requested_count") or 0)
+                    executed += int(res.get("executed_count") or 0)
+                    explicit_batches += 1
+                    if res.get("stopped_early"):
+                        k = str(res.get("stop_reason") or "unknown")
+                        stops[k] = stops.get(k, 0) + 1
+                else:
+                    requested += 1
+                    executed += 1 if res.get("executed") else 0
+                    implicit_singles += 1
+
+    validity = (executed / requested) if requested else None
     return {
-        "attempted_actions_parsed": attempted,
-        "action_calls": calls,
+        "requested_actions": requested,
         "executed_actions": executed,
         "validity": round(validity, 4) if validity is not None else None,
-        "caveat": ("`attempted` is parsed from the tool code the model emitted, so a loop or a computed "
-                   "list is undercounted. Treat validity > 1.0 as evidence of that, not of extra actions."),
+        "explicit_batch_results": explicit_batches,
+        "implicit_single_results": implicit_singles,
+        "rejection_taxonomy": stops or {},
+        "executed_action_events": executed_events,
+        "method": ("read from the harness's own requested_count/executed_count in action results, "
+                   "captured verbatim in the D6 request logs. Single non-early-stopped actions omit "
+                   "the fields and count 1/1."),
     }
 
 

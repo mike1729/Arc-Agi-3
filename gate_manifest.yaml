@@ -852,20 +852,25 @@ s1:
     # hides WHICH threshold failed, and the build order depends on knowing that.
     threshold_verdicts:
       legal_action_validity:
-        verdict: "NOT MEASURABLE AS PRE-REGISTERED — no rejections observed"
-        measured: "742 actions executed, 0 api_error records, no rejection evidence in any artifact.
-                   Static parsing of emitted actions gives 102 attempts across 72 action() calls, i.e.
-                   a ratio of 7.27 — ABOVE 1.0, which is proof the parse undercounts rather than
-                   evidence of extra actions"
-        why_not_measurable: "the threshold is `fraction of emitted actions the API accepts`. The agent
-                             builds action lists PROGRAMMATICALLY inside its Python tool (loops,
-                             computed coordinates), so `emitted` cannot be recovered from the tool
-                             source. An exact figure needs a runtime patch logging every action passed
-                             to action() — call it D12 if it is wanted"
-        practical_reading: "the threshold exists so that a low value makes interface work build item #1.
-                            No rejection was observed anywhere, so on the available evidence the
-                            interface is NOT a bottleneck. Recorded as such rather than as a number"
-        evidence_ref: "logs/s1c_20260726_151043_s1b-vc33-moe.json" 
+        # CORRECTED 2026-07-26 (twice). First recorded as NOT MEASURABLE. That was wrong: the harness
+        # itself emits requested_count / executed_count / stopped_early / stop_reason in every action
+        # result, and those payloads reach the model as TOOL messages, so D6 captures them verbatim.
+        # The first attempt parsed action() calls out of tool SOURCE (undercounts — the agent builds
+        # lists programmatically); the second looked for the wrong nesting. The payload sits at
+        # {"tool":..., "returncode":..., "result": {<action result>}}.
+        verdict: "MEASURABLE — awaiting the S1-e breadth run for a verdict"
+        measured: "live S1-e chunk 1, partial: 12 requested / 11 executed -> validity 0.9167.
+                   SAMPLE FAR TOO SMALL to compare against the 0.95 threshold; recorded only to show
+                   the extractor works on the run now in flight"
+        method: "agent/harness/s1c_measure.py::legal_action_reliability — sums requested_count and
+                 executed_count from action results. Single non-early-stopped actions omit both fields
+                 and count 1/1 (tool_agent.py emits them only when batch_size > 1 or stopped_early)"
+        rejection_taxonomy_source: "stop_reason on stopped_early results; empty so far"
+        no_patch_needed: "D12 (runtime action logging) was considered and is NOT required — the data is
+                          already captured by the running instrumentation. The S1-e run does not need
+                          restarting"
+        evidence_ref: "logs/s1c_20260726_164355_s1e-dense-c01.json"
+
       per_action_latency_p50:
         verdict: "MEASURED — but the frozen UNIT is wrong for this agent. See note"
         measured: "MoE run, concurrency 4: per_action p50 0.62 s / p95 21.54 s;
