@@ -161,6 +161,53 @@ build order. The mitigation is the completed Kaggle reference run — per-game o
 reference model across all 25 games — against which the local MoE run can be compared to bound how far
 the substitution moves behaviour.
 
+### 🔴 D11 evaluation — the MoE is a throughput vehicle, NOT a taxonomy vehicle
+
+The speed gain is real and so is the cost. Same game (`vc33`), same harness, same prompts, same
+instrumentation — only the model differs.
+
+| configuration | levels | actions | game score |
+|---|---:|---:|---:|
+| **Kaggle reference** (27B dense, FP8) | **2/7** | 49 | **10.71** |
+| **local dense** (27B, MLX 4-bit) | 1/7 | **9** | 2.16 |
+| **local MoE** (35B-A3B, MLX 4-bit) | **0/7** | **229+** | **0.00** |
+
+*(The reference's 10.71 is exactly the completed-weight cap `(1+2)/28 × 100`, so it saturated — an
+independent confirmation that V8-as-corrected models the scorer correctly.)*
+
+**Behavioural signature of the MoE run:** 229 actions across only **20 distinct coordinates**, the most
+frequent used 45 times (20% of all actions). Brute-force repetition over a narrow set rather than
+exploration. **Zero timeouts** — the harness is sound; this is the model.
+
+Repeated identical actions are not inherently wrong here (AERA documents 8 of 25 public games as solvable
+by "repeated actions with sufficient budget"). But under R2 = `accumulates` with `c_reset` = 1, **every
+repetition is a scored action**, and score is `(baseline/actions)²` — so this is the single most
+expensive failure mode the metric can punish.
+
+#### What this means for the substitution
+
+**Keep it for throughput; do not gather the taxonomy on it.** The switch did what it was chosen for:
+~5.2× faster, timeout fix validated, harness exercised end-to-end. But S1's actual question is *which
+failures look improvable*, and this model fails in a visibly different way from the reference — the exact
+hazard recorded in S1-E5 ("a model that changes WHICH failures dominate would misrank the build order"),
+observed within minutes rather than at Day 5.
+
+**Recommended split:**
+
+| purpose | model |
+|---|---|
+| harness work, throughput, latency, iteration | **MoE** — fast, and none of it depends on agent quality |
+| the Day-5 failure taxonomy that ranks the build order | **dense 27B** (local or rented CUDA) |
+
+That is a smaller concession than it appears: the taxonomy is **one run**, not the iteration loop. The
+~5× penalty applies only to that run, and the Kaggle reference run already gives the true-reference
+per-game baseline to compare it against.
+
+**Caveat: `n = 1` game, one pass.** vc33 is ACTION6-only, which may suit the dense model's spatial
+handling better than the MoE's. Before treating "MoE is worse" as general, it should be checked on at
+least one simple-action game (`tu93` or `ls20`). The recommendation above is robust to that check
+either way, because it only requires that the two models *differ*, which is already established.
+
 ### Concurrency scaling — measured 2026-07-26 (S1-c work pulled forward into S1-b)
 
 Script: `agent/harness/concurrency_sweep.py`. Raw: `logs/concurrency_sweep.json`,
