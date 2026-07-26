@@ -8,5 +8,4 @@ Makefile) instead got the code default of 12.
 
 | run | turns | mean calls/turn | max | distribution |
 |---|---:|---:|---:|---|
-| `20260726_090736_s1b-ft09-d9-logged` | 43 | 1.91 | 4 | 1:24, 2:4, 3:10, 4:5 |
-| `20260726_093320_s1b-vc33-single` | 18 | 1.72 | 5 | 1:9, 2:7, 3:1, 5:1 |
+| `20260726_090736_s1b-ft09-d9-logged` | 24 | 2.62 | 4 | 1:5, 2:4, 3:10, 4:5 |

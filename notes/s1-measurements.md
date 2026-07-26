@@ -356,33 +356,42 @@ gives a first handle on (2) via per-game outcomes.
 
 ### ✅ S1-b hard exit MET — 2026-07-26
 
-First scored public-game level completed locally with the vendored solver.
+> ⚠ **CORRECTED.** First recorded as "14 actions, score 25.00". That counted **event rows**, which
+> interleave `analysis` reasoning snapshots with executed `action` records. `benchmark.json`'s
+> `actions_per_level` is authoritative. The score was **understated by 2.4×**.
 
 | | |
 |---|---|
 | Game | `vc33-5430563c` |
-| Level 1 cleared | step **14**, action `MOUSE(row=33, col=61)` (ACTION6) |
-| Human baseline | 7 actions → agent used **2× baseline** |
-| Level-1 score | `min(115, (7/14)² × 100)` = **25.00** |
-| Wall-clock | 18 min, single-stream (concurrency 1), MLX 4-bit |
-| Evidence | `logs/runs/20260726_093320_s1b-vc33-single/artifacts/vc33-5430563c_p0_events.jsonl` |
+| Level 1 cleared in | **9 actions** (not 14) |
+| Human baseline | 7 → agent used **1.29× baseline** |
+| Level-1 score | `min(115, (7/9)² × 100)` = **60.49** (not 25.00) |
+| Evidence | `benchmark.json`: `actions_per_level [9, 11, …]` vs `base_actions_per_level [7, 18, …]` |
 
-Agent advanced to level 2 and continues.
+Agent advanced to level 2.
 
-Two things this establishes beyond the exit criterion:
+### 🔴 The ft09 runs executed ZERO game actions — the whole ft09 narrative was wrong
 
-- **The agent can localise ACTION6 clicks.** It cleared a click-only game by choosing a specific
-  coordinate. That is worth recording precisely because `coordinate_unreachable` is `unavailable` as a
-  category — there is no coordinate candidate set to evidence it from, so behavioural evidence like this
-  is the only signal available on that axis.
-- **Game choice dominated everything else.** The same stack made no progress on ft09 (43-action level 1)
-  across three runs and ~80 minutes, and cleared vc33 (7-action level 1) in 18. The binding constraint
-  for reaching a scored level locally was never the model or the port — it was the per-action cost
-  multiplied by the level's action requirement.
+The corrected table (`paper/figures/s1_run_summary.md`) reports **0 executed actions** for all three
+ft09 runs. Their event streams contain only `initial` and `analysis` records — **not one `action`**.
 
-*Caveat on operating point:* this run used the code-default `tool_steps=12` rather than the reference's
-unlimited (the Makefile bypass, since fixed by `agent/harness/run_local.sh`). The cap did not bind —
-max 5 calls/turn, mean 1.89 — so behaviour was effectively at the reference operating point.
+Everything previously said about ft09 was therefore measuring the wrong quantity:
+
+| Claim made earlier | Reality |
+|---|---|
+| "284 s per game action" | there were **no game actions**; that was seconds per *analysis snapshot* |
+| "6.5 actions per pass projected" | 0 actions in 65 minutes across three runs |
+| "level 1 needs ~3.4 h per pass at this rate" | unsupported — no action rate was ever measured on ft09 |
+| "the constraint is per-action cost" | the constraint is that **the agent never committed to an action at all** |
+
+**This is a qualitatively different failure and a more interesting one.** The duck spent 65 minutes
+across three runs analysing ft09 and never executed a single game action, while on vc33 it acted 20
+times in the same order of wall-clock. That is not a throughput problem — it is the agent failing to
+converge on a decision. It plausibly belongs to `exploration_or_probe_selection` or `goal_unknown` in the
+taxonomy, and it should be labelled on the Day-5 run rather than treated as a latency observation.
+
+**Consequently the D9 comparison compared analysis throughput, not action throughput**, and every
+seconds-per-action figure quoted for ft09 in this file and in commit messages is withdrawn.
 
 ### Reproduction target
 
