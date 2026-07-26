@@ -184,6 +184,49 @@ These are first-class knobs the reference already exposes, so bounding them is a
 deviation rather than a code change — but it is still a deviation with a real fidelity cost, and it must
 be measured as its own contrast rather than folded in silently.
 
+#### D9 (analysis-budget reduction) — NEGATIVE RESULT, and the deviation was reverted
+
+Ran `tool_steps` 12→4 and `max_output` uncapped→1024 on ft09, 4 passes at concurrency 4, 25 min.
+
+| | Reference budgets | D9 tuned |
+|---|---|---|
+| rate | 284 s/action @ 28 min | 317 s/action @ 22 min, 324 @ 24 min |
+| levels | 0 | 0 |
+
+**No measurable speedup.** The request logs (D6) explain it mechanistically — neither knob binds:
+
+| Knob | Reference | D9 cap | Actual usage |
+|---|---|---|---|
+| `tool_steps` | 12 | 4 | **mean 1.97 calls/turn**; only 13% of turns reach 4 |
+| `max_output` | uncapped | 1024 | **median 350 tokens**; binds only at the tail |
+
+`tool_steps: 12` is a *ceiling the agent rarely approaches*, not a target, so cutting it to 4 could only
+affect the small tail of turns near the cap. This was the mechanism predicted before the run, and the run
+confirmed it.
+
+**D9 was reverted.** A deviation that buys nothing costs fidelity for free. `tool_steps` is back to 12 and
+`max_output` to uncapped; `agent/harness/local.env` is retained only as the record of what was tested.
+The negative result stays; the deviation does not.
+
+#### ⚠ Correction — the concurrency sweep was measured on an unrepresentative prompt
+
+`agent/harness/concurrency_sweep.py` used 256-token generations on a short prompt and reported **13.7
+tok/s per request at concurrency 4**. Under the real workload — a 12.4k-character system prompt plus
+accumulated history — median decode is **3.3 tok/s** at the same concurrency, roughly 4× worse.
+
+The sweep's *shape* (aggregate scales to ~5, per-request declines monotonically, memory is not the
+ceiling) still holds and still selected the right operating point. Its *absolute numbers* do not transfer
+to the agent workload and must not be quoted as the agent's latency. The freeze's own §5 requirement —
+measure "under the *actual* batching pattern" — is what this violated, and any latency figure that gates
+a threshold has to come from an agent run, not a synthetic probe.
+
+#### Where the time actually goes
+
+Decomposing 317 s/action at concurrency 4: ~193 s is decode (1.97 calls × 97.9 s median), leaving
+**~124 s (39%) in prefill, tool execution and overhead**. The cost driver is **per-call long-context
+processing**, not call count or generation length — which is precisely what neither D9 knob could touch,
+and precisely what FP8 on a datacentre GPU with working prefix caching addresses.
+
 #### Still open — the real single-game constraint
 
 Per-game wall-clock is bounded by **tokens per action**, not by parallelism. The first ft09 attempt
