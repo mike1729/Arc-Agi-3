@@ -448,6 +448,24 @@ the reference stack and wrong on ours, inherited without audit — after the 120
 (D10) and the Makefile bypass. The correct action when substituting the serving layer (D1) was to audit
 **every** server-side default at that moment, not to discover them one failure at a time.
 
+**Closed-run confirmation.** lp85 ran to its cap with D13 in place:
+
+| | local dense (D13) | Kaggle reference |
+|---|---:|---:|
+| levels cleared | 1 of 8 | 1 of 8 |
+| actions | **31** | 79 |
+| **game score** | **2.7778** | **2.78** |
+
+The scores match exactly because both cleared one level of eight and the game score is capped at
+`completed_weight / total_weight × 100 = 1/36 × 100 = 2.7778`. Efficiency does not show through that
+cap. **Local dense reproduced the reference's outcome on this game exactly**, using 2.5× fewer actions.
+That is the third independent confirmation that V8-as-corrected models the scorer.
+
+**Latency, concurrency 1, post-D13:** per-decision p50 **158 s**, p95 **878 s**, max 877.94 s — against
+a 900 s timeout. The D10 ceiling is still *nearly* binding; a slower game or a longer context would trip
+it. 77% of actions were committed in batches, which is why the per-action p50 reads 0.09 s and must not
+be quoted as the model cost.
+
 **What it does NOT change.** Erratum S1-E7 stands on its own arithmetic: one pass over a game yields at
 most one failure episode, so 25 games yield at most 25 against a pre-registered sample of 30.
 
