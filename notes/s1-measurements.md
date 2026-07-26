@@ -24,8 +24,21 @@ crashed}`. Also `transcripts/<game>_p<pass>.txt` and `prompts/prompt.log`.
 **`save_request_logs` (D6) is the load-bearing instrumentation flag.** Set true it writes
 `requests.jsonl` carrying the full `messages` array, `tools`, `tool_choice`, `finish_reason`,
 `analysis_step`, `action` and `request_index_within_turn` — i.e. the `prompt_context_snapshot` and
-`raw_model_output` several categories are defined on. It is a **config flag, not a code patch**, and it
-is off by default. It is enabled in `agent/harness/build_local.sh`.
+`raw_model_output` several categories are defined on.
+
+> ⚠ **CORRECTED 2026-07-26.** An earlier version of this note said D6 was "enabled in
+> `build_local.sh`" via the config file. **It was not, and the first two ft09 runs produced no
+> `requests.jsonl` at all.** `analyzer.save_request_logs` in the JSON config is never read;
+> `inference/framework/run.py` sources it from the **CLI flag `--save-request-logs`**, which is an
+> `argparse.BooleanOptionalAction` defaulting to `False`.
+
+**Generalised caution — the JSON config is not a complete control surface.** This is now the *second*
+setting found to be inert in the config file, after `analyzer.tool_steps` (which is read from the
+`LOCAL_ANALYZER_TOOL_STEPS` environment variable and otherwise defaults to 12 in code). Both look
+configured and neither is. **Before relying on any config field, verify it reaches the running object** —
+either from the `HarnessSolver(...)` repr the runner prints at startup, or by importing the module and
+reading the constant. Assuming the config is authoritative would silently produce runs that are not the
+configuration we believe we pre-registered, which is precisely the failure the manifest exists to catch.
 
 **The model's reasoning is exposed.** The MLX server returns `reasoning_content` separately from
 `content` (591 and 665 chars in the two D5 probes), so `reasoning_text` is available verbatim.
@@ -53,13 +66,13 @@ Verdicts: `available` · `partial` (say which half) · `unavailable`.
 | 2 | `action_semantics_unknown` | predicted delta vs observed delta | **partial** — observed delta `available` (consecutive `board`s); **no `predicted_delta` field.** Predictions appear only as prose, when the model happens to state one | no — same objection as #1 | — |
 | 3 | `perception_parsing` | frame + parsed state description | **available** — `board` + `board_ascii` + the segmentation view the agent is given, against its own description in `reasoning_content` | — | — |
 | 4 | `hidden_state_aliasing_or_memory` | both frames, both actions, both outcomes | **available** — full grids per step make observationally-identical states directly detectable | — | — |
-| 5 | `coordinate_unreachable` | candidate set at the step + the coordinate that later worked | **available with D6** — `valid_actions` is in the prompt, captured by `requests.jsonl` | already enabled (config flag) | D6 |
+| 5 | `coordinate_unreachable` | candidate set at the step + the coordinate that later worked | **available with D6** — `valid_actions` is in the prompt, captured by `requests.jsonl` | **NOT yet enabled — needs `--save-request-logs`** | D6 |
 | 6 | `planning_depth` | shortest known successful sequence length vs the agent's effective horizon | **UNAVAILABLE** — see the callout below | no | — |
-| 7 | `exploration_or_probe_selection` | action taken + its no-op/redundant outcome + the available alternative | **available with D6** — no-op detectable from board equality; alternatives from `valid_actions` | already enabled | D6 |
+| 7 | `exploration_or_probe_selection` | action taken + its no-op/redundant outcome + the available alternative | **available with D6** — no-op detectable from board equality; alternatives from `valid_actions` | **NOT yet enabled — needs `--save-request-logs`** | D6 |
 | 8 | `progress_signal_misinterpretation` | score/level marker vs the agent's recorded belief | **partial** — markers `available` (`score`, `level`, `reward`); belief is prose only | no | — |
 | 9 | `irreversible_mistake` | the transition + the subsequent dead-end | **available** — boards plus terminal `state` | — | — |
-| 10 | `invalid_output_interface` | raw agent output + the rejection | **available with D6** — `finish_reason`, raw `tool_calls`, and the harness's own `_recover_tool_calls_from_markup` path flags malformed output | already enabled | D6 |
-| 11 | `retrieval_or_context` | the stored record + the context snapshot that omitted it | **available with D6** — `requests.jsonl` stores the full `messages` array, which *is* the context snapshot | already enabled | D6 |
+| 10 | `invalid_output_interface` | raw agent output + the rejection | **available with D6** — `finish_reason`, raw `tool_calls`, and the harness's own `_recover_tool_calls_from_markup` path flags malformed output | **NOT yet enabled — needs `--save-request-logs`** | D6 |
+| 11 | `retrieval_or_context` | the stored record + the context snapshot that omitted it | **available with D6** — `requests.jsonl` stores the full `messages` array, which *is* the context snapshot | **NOT yet enabled — needs `--save-request-logs`** | D6 |
 | 12 | `reasoning_inconsistency` | reasoning text + action | **available** — `reasoning_content` verbatim, paired with the executed action via `analysis_step` | — | — |
 | 13 | `latency_or_budget` | timing and budget counters at the terminal step | **available** — `ActionRecord.wallclock_seconds`, `generated_tokens`, `uncached_input_tokens`, against `max_actions` / `max_runtime_minutes` | — | — |
 

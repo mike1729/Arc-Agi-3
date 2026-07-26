@@ -48,8 +48,13 @@ patch -s -p0 -d "$REPO_ROOT" < "$PATCHES/D8-guard-re_arc-import.patch"
 # D4: concurrency 32 -> 2 and n_passes 20 -> 1. One 20-core GPU cannot hold 32 concurrent 32k-context
 #     streams. THIS CHANGES THE BATCHING FACTOR the latency budget rests on — the concurrency actually
 #     used must be recorded beside every latency figure (freeze §5).
-# D6: save_request_logs -> true, so requests.jsonl carries the prompt context and raw model output
-#     that the §4.2.1 transition schema needs. A config flag, not a code change.
+# D6: save_request_logs is written here for completeness, but BE WARNED — IT IS INERT IN THE CONFIG.
+#     run.py sources it from the CLI flag `--save-request-logs` (BooleanOptionalAction, default False)
+#     and never reads the JSON field. The first two ft09 runs produced no requests.jsonl because of
+#     this. YOU MUST PASS `--save-request-logs` ON THE RUN COMMAND.
+#     Same class of trap as analyzer.tool_steps, which is read from LOCAL_ANALYZER_TOOL_STEPS and
+#     otherwise defaults to 12 in code. The JSON config is NOT a complete control surface: verify every
+#     setting reaches the running object, via the HarnessSolver(...) repr the runner prints at startup.
 # ---------------------------------------------------------------------------
 echo "==> writing configs/inference.local-mlx.json (D3 + D4 + D6)"
 MODEL_PATH="${MLX_MODEL_PATH:-$HOME/models/mlx/Qwen3.6-27B-4bit}"
@@ -73,4 +78,5 @@ print(f"    model={model}  concurrent_jobs={concurrency}  save_request_logs=True
 PY
 
 echo "==> done. Work copy ready at $WORK"
+echo "    REMINDER: pass --save-request-logs on the run command; the config field is inert."
 echo "    Reference snapshot left untouched at $REF"
