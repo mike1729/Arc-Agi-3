@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# Rebuild the local working copy of the frozen reference from the pristine vendored snapshot.
+#
+# agent/reference/taaf/  is the unmodified Kaggle dataset snapshot and is NEVER edited in place.
+# agent/work/taaf/       is a throwaway working copy, rebuilt by this script.
+# agent/patches/*.patch  is the audit trail — the diff IS the record of every deviation.
+#
+# Deviations applied here are the ones enumerated in notes/s1-reference-freeze.md §3.5. Anything not
+# on that list and not applied by this script is an unlogged deviation, which is the thing the
+# vendoring convention exists to prevent.
+#
+# Usage:  bash agent/harness/build_local.sh
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+REF="$REPO_ROOT/agent/reference/taaf"
+WORK="$REPO_ROOT/agent/work/taaf"
+PATCHES="$REPO_ROOT/agent/patches"
+
+echo "==> rebuilding $WORK from $REF"
+rm -rf "$WORK"
+mkdir -p "$(dirname "$WORK")"
+cp -R "$REF" "$WORK"
+
+# ---------------------------------------------------------------------------
+# D8 — guard the top-level `from re_arc import EnvSampler` in run.py.
+#
+# NOT in the original frozen deviation list (D1-D7): discovered on Day 2 and logged as a new
+# deviation, per the freeze's rule that anything outside the list is a deviation to log.
+#
+# `re_arc` (arc-agi-3-local) is private Tufa Labs code: not on PyPI, and
+# github.com/Tufalabs/re-arc-3 returns 404. It is also deliberately excluded from this very bundle
+# (taaf/deploy_kaggle.py: _SHARE_EXCLUDE_REPOS = ("re-arc-3",)), and taaf/game_api.py already imports
+# it lazily "so the package stays importable in deployments that ship without the re-arc-3 snapshot".
+# run.py did not, which makes the shared bundle unimportable. The guard restores the authors' own
+# stated intent rather than changing behaviour: re_arc is used ONLY for game-id enumeration, never
+# for gameplay.
+# ---------------------------------------------------------------------------
+echo "==> applying D8-guard-re_arc-import.patch"
+patch -s -p0 -d "$REPO_ROOT" < "$PATCHES/D8-guard-re_arc-import.patch"
+
+# ---------------------------------------------------------------------------
+# D3 + D4 — local inference config.
+#
+# D3: point base_url/model_name at the local MLX server. `provider` deliberately stays "vllm":
+#     probing showed the MLX server accepts the vLLM payload branch unchanged (top_k,
+#     chat_template_kwargs, seed), so keeping it minimises the deviation surface.
+# D4: concurrency 32 -> 2 and n_passes 20 -> 1. One 20-core GPU cannot hold 32 concurrent 32k-context
+#     streams. THIS CHANGES THE BATCHING FACTOR the latency budget rests on — the concurrency actually
+#     used must be recorded beside every latency figure (freeze §5).
+# D6: save_request_logs -> true, so requests.jsonl carries the prompt context and raw model output
+#     that the §4.2.1 transition schema needs. A config flag, not a code change.
+# ---------------------------------------------------------------------------
+echo "==> writing configs/inference.local-mlx.json (D3 + D4 + D6)"
+MODEL_PATH="${MLX_MODEL_PATH:-$HOME/models/mlx/Qwen3.6-27B-4bit}"
+CONCURRENCY="${LOCAL_CONCURRENT_JOBS:-2}"
+python3 - "$WORK" "$MODEL_PATH" "$CONCURRENCY" <<'PY'
+import json, sys, pathlib
+work, model, concurrency = sys.argv[1], sys.argv[2], int(sys.argv[3])
+cfgdir = pathlib.Path(work) / "src/ARC3-Inference/configs"
+cfg = json.loads((cfgdir / "inference.json").read_text())
+cfg["shared"]["model_name"] = model                     # D3
+cfg["shared"]["base_url"] = "http://127.0.0.1:1234/v1"  # unchanged — reference is already local
+cfg["shared"]["provider"] = "vllm"                      # unchanged — MLX accepts this payload branch
+cfg["environment"]["concurrent_jobs"] = concurrency     # D4
+cfg["environment"]["n_passes"] = 1                      # D4
+cfg["analyzer"]["save_request_logs"] = True             # D6
+cfg["experiments"]["root_dir"] = "logs/runs/{username}"
+cfg["deployment"]["target"] = "inline"
+cfg["deployment"]["slurm"]["start_local_server"] = False
+(cfgdir / "inference.local-mlx.json").write_text(json.dumps(cfg, indent=2) + "\n")
+print(f"    model={model}  concurrent_jobs={concurrency}  save_request_logs=True")
+PY
+
+echo "==> done. Work copy ready at $WORK"
+echo "    Reference snapshot left untouched at $REF"

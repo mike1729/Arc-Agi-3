@@ -223,3 +223,12 @@ CLAUDE.md
 # S1 runtime logs are local evidence and may contain large frame/context payloads.
 /logs/*
 !/logs/.gitkeep
+
+# S1-b: throwaway working copy of the vendored reference. Rebuilt by
+# agent/harness/build_local.sh from agent/reference/ + agent/patches/. Never edit it directly.
+/agent/work/
+
+# S1-b: ARC-AGI-3 competition environment files, fetched with the Kaggle CLI
+# (`kaggle competitions download -c arc-prize-2026-arc-agi-3 -f environment_files/...`).
+# Competition data — redistribution is governed by the competition rules, so it is not committed.
+/data/

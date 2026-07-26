@@ -58,8 +58,9 @@ The Kaggle leaderboard, not arXiv, is where these live. Every strong one serves 
   all. Any positive result measured only on public games is therefore weak evidence for the JEPA thesis
   specifically, because the thing being tested need not have been used.
 
-  **Do not cite AERA's `0.2116` as an ARC score.** Its `run_eval.py` caps the ratio at 1.0 rather than
-  1.15, applies the cap before squaring, and estimates per-level action counts as
+  **Do not cite AERA's `0.2116` as an ARC score.** Its `run_eval.py` caps the ratio at 1.0 before
+  squaring and reports on a 0–1 scale; the official core implementation squares the ratio on a 0–100
+  scale and then caps the result at 115. AERA also estimates per-level action counts as
   `total_actions / n_levels`. The figure is a local surrogate metric. This was the finding that removed
   AERA from reference consideration (`notes/s1-reference-freeze.md` §1.1).
 

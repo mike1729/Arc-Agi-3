@@ -41,9 +41,10 @@ agent_per_level = result.total_actions / n_levels             # per-level action
 if not result.solved: return 0.0                              # no credit for partial progress
 ```
 
-Three independent departures from the official rule (§2 below): the cap is 1.0 rather than 1.15, it is
-applied to the ratio in a codebase whose own docs elsewhere report `1.3225 = 1.15²`, and per-level action
-counts are *approximated by dividing total actions by level count* rather than measured. Its
+Three independent departures from the official rule (§2 below): it caps the ratio at 1.0 before
+squaring rather than capping the squared percentage score at 115, it reports on a 0–1 scale rather than
+the core implementation's 0–100 scale, and per-level action counts are *approximated by dividing total
+actions by level count* rather than measured. Its
 `efficiency_score` is a local surrogate. **`0.2116` is therefore not a reproduction target**, and adopting
 it would have silently corrupted the S1-g `reproduction_fidelity` verdict.
 
@@ -60,23 +61,27 @@ the failure taxonomy. It is cited in `paper/related-work.md`, not vendored.
 
 ---
 
-## 2. Correction to the scoring rule (V8) — carried into the manifest
+## 2. Correction to the scoring rule (V8) — core implementation governs
 
-`docs.arcprize.org/methodology`, re-read 2026-07-26: **the 1.15 cap applies to the ratio *before*
-squaring**, so the maximum per-level score is `1.15² = 1.3225`, not `1.15`. Our own V8 entry said
-"capped at 1.15" against the squared score. Corrected in `notes/s1-verification.md` and in the manifest
-(`verification.status` was still `DRAFT`, so this is an edit, not an erratum).
+Corrected 2026-07-26 against `arc_agi.scorecard.EnvironmentScoreCalculator` and the reference's vendored
+mirror in `agent/reference/taaf/src/tufa-arc-agi-framework/src/taaf/game.py`:
+
+```python
+level_score = min(115.0, (human_baseline_actions / ai_actions) ** 2 * 100)
+```
+
+The implementation squares first and caps the resulting percent-scale score at 115. On a unit scale this
+is `min(1.15, (human/ai)²)`, with maximum **1.15**, not 1.3225. The game score is capped again at the
+completed-level weight fraction × 100.
 
 Also recorded from the same source: **no partial credit for incomplete levels**, and a game's maximum is
-bounded by `(sum of completed level indices) / (sum of all level indices)`.
+bounded by `(sum of completed level indices) / (sum of all level indices) × 100`.
 
-**New open item — V15, and it matters for this freeze.** The documented rule cannot produce the observed
-leaderboard. Per-level max `1.3225` ⇒ weighted per-game mean ≤ `1.3225` ⇒ cross-game mean ≤ `1.3225`. The
-public leaderboard top on 2026-07-25 is **1.86**. Separately, our own S0 random agent scored **0.06** on
-Kaggle while completing zero levels, which the "no partial credit" rule does not permit either. **The
-mapping from the documented methodology to the leaderboard number is not established.** Do not treat
-`1.21` and any locally computed score as commensurable until V15 is resolved — this is why §5's fidelity
-threshold is *reported*, not *gated*.
+**V15 narrowed.** The public leaderboard's **1.86** is on the scorer's 0–100 scale and is therefore not
+a contradiction. The remaining open discrepancy is our S0 random agent's Kaggle score of **0.06** despite
+the retained evidence showing zero completed levels. The LB `1.21` comparison remains reported rather
+than gated because the readable notebook did not reproduce its milestone score and our D1/D2/D4 stack
+differs—not because the score scale is unknown.
 
 ---
 
@@ -156,14 +161,13 @@ thinking enabled, prefix caching on, multimodal `context: current_grid, upscale:
 log on disk.
 
 **Reported, not gated:** the gap against LB **1.21**, stated together with the stack delta that confounds
-it. Three independent reasons a tolerance band on 1.21 would be false precision:
+it. Two independent reasons a tolerance band on 1.21 would be false precision:
 
 1. The author states plainly that the readable notebook did **not** reproduce the milestone score — *"we
    haven't had the same lucky result with this one."* Run-to-run variance is large and undocumented.
 2. We run a different quantization (FP8 → 4-bit) on a different serving stack on a different accelerator.
-3. V15 — the leaderboard scale is not yet explained by the documented methodology.
 
-Gating on a number none of these three permits us to interpret would manufacture a verdict. The gap is
+Gating on a number neither of these permits us to interpret would manufacture a verdict. The gap is
 quantified and explained per the manifest's `on_fail` text; it does not produce a pass/fail.
 
 ### 3.5 Permitted deviations — enumerated in advance
@@ -251,7 +255,7 @@ it is taken. Escalating is **not** a descope — it buys fidelity back; the day 
 | **Backend** | vLLM (`philipvonderlind/vllm-deps`, `mbmmurad/vllm-0-23-0-tf5-wheelhouse`) |
 | **Accelerator** | `machine_shape: NvidiaRtxPro6000`, `enable_internet: false` |
 | **Self-contained** | Yes — no external solver dataset; the notebook carries its own logic (103 KB source) |
-| **Reproduction target** | LB **0.86**, subject to the same V15 caveat as the primary |
+| **Reproduction target** | LB **0.86**, reported on the scorer's 0–100 scale |
 | **Local substitute weights** | a 4-bit MLX Gemma-4-31B build — **must be identified and its license checked on the day it is needed**, not assumed |
 | **Permitted deviations** | D1–D6 as above, with the Gemma model substituted for Qwen |
 

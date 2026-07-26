@@ -17,7 +17,36 @@ meta:
   hard_stop: 2026-08-22
   utility_ordering: "leaderboard score primary; paper is a continuous by-product, not a fallback"
 
-errata: []
+errata:
+  - id: S1-E1
+    date: 2026-07-26
+    scope:
+      - "s1.reference_primary.reproduction_target"
+      - "s1.reference_alternate.reproduction_target"
+      - "s1.viability_thresholds.reproduction_fidelity"
+      - "s1.reset_experiment.design.cap_check_note"
+    correction: "The frozen S1 text misread the 1.15 cap as applying to the efficiency ratio before
+                 squaring. The official core implementation applies the square first, expresses the
+                 result on a 0-100 scale, and caps that result at 115."
+    authority:
+      official_core: "arc_agi.scorecard.EnvironmentScoreCalculator.add_level"
+      vendored_reference_mirror: "agent/reference/taaf/src/tufa-arc-agi-framework/src/taaf/game.py
+                                  :: GameRun._compute_final_score"
+      formula_percent_scale: "level_score = min(115.0, (human_baseline_actions / ai_actions)^2 * 100)"
+      formula_unit_scale: "level_score = min(1.15, (human_baseline_actions / ai_actions)^2)"
+      game_cap: "min(weighted level-score mean, completed_level_weight / total_level_weight * 100)"
+    effective_replacements:
+      per_level_max_percent: 115.0
+      per_level_max_unit: 1.15
+      r2_cap_check: "check saturation against 1.15 on the unit scale (or 115 on the percent scale);
+                     the chosen a = 1.5H produces approximately 0.444 (44.4), so remains clear"
+      v15_leaderboard_claim: "WITHDRAWN — leaderboard values such as 1.86 are on the scorer's 0-100
+                              scale and do not exceed the maximum"
+      reproduction_fidelity_rationale: "The LB comparison remains reported rather than gated because
+                                        the readable reference notebook did not reproduce its milestone
+                                        score and D1/D2/D4 change the stack; V15 is no longer a reason"
+    note: "verification is still DRAFT and is corrected in place below. Frozen S1 values are not edited
+           in place; this dated entry is their authoritative override."
 
 # =====================================================================================
 # S0 — External execution-path proof.
@@ -624,7 +653,7 @@ s1:
 # Verification items (§2 of the sprint doc). Answered Day 1 AM; each needs source + date.
 # =====================================================================================
 verification:
-  # STAYS DRAFT DELIBERATELY: V15 was opened 2026-07-26 and is unresolved, and V2/V8 were
+  # STAYS DRAFT DELIBERATELY: V15 remains open for the S0 nonzero-score discrepancy, and V2/V8 were
   # edited the same day. Freezing this block while a known open discrepancy sits inside it would be
   # the exact failure the manifest exists to prevent. Freeze it when V15 resolves (Day 2).
   status: DRAFT
@@ -686,21 +715,27 @@ verification:
       source: "https://docs.arcprize.org/toolkit/competition_mode"
       date: 2026-07-25
     V8_scoring:
-      # CORRECTED 2026-07-26. The 2026-07-25 claim placed the cap on the SQUARED score. It is on the
-      # RATIO, before squaring, so per-level max is 1.15^2 = 1.3225 — not 1.15.
-      claim: "per-level score is min(human_baseline_actions / ai_actions, 1.15)^2, so the per-level
-              MAXIMUM IS 1.3225. Game score is the level-index-weighted mean of level scores; total is
-              the unweighted mean across games. NO PARTIAL CREDIT for incomplete levels, and a game's
-              maximum is bounded by (sum of completed level indices)/(sum of all level indices)"
+      # CORRECTED 2026-07-26 against the implementation, after an intermediate reading incorrectly
+      # placed the cap on the ratio before squaring.
+      claim: "On the scorer's 0-100 scale, per-level score is
+              min(115, (human_baseline_actions / ai_actions)^2 * 100), so the per-level maximum is 115
+              (1.15 on a unit scale), NOT 132.25 (1.3225). Game score is the level-index-weighted mean,
+              capped again at completed_level_weight / total_level_weight * 100; total is the
+              unweighted mean across games. Incomplete levels score zero."
       verified: true
       corrected_on: 2026-07-26
-      superseded_claim: "'(human/ai)^2 capped at 1.15' — wrong: it placed the cap on the squared value"
-      source: "https://docs.arcprize.org/methodology"
+      superseded_claim: "min(human/ai, 1.15)^2 with maximum 1.3225 — wrong: it placed the cap before
+                         squaring and omitted the scorer's percent scale and game-level cap"
+      source: "https://docs.arcprize.org/methodology;
+               https://github.com/arcprize/ARC-AGI/blob/main/arc_agi/scorecard.py;
+               agent/reference/taaf/src/tufa-arc-agi-framework/src/taaf/game.py"
       date: 2026-07-26
-      consequence: "This correction is what rejected AERA as the S1 reference: its run_eval.py caps the
-                    RATIO at 1.0 and estimates per-level action counts as total_actions/n_levels, so its
-                    published 0.2116 is a surrogate metric, not a reproduction target. Also re-check the
-                    R2 cap-saturation precondition against 1.3225, not 1.15"
+      core_implementation: "level_score = min(115.0, (baseline / actions)^2 * 100);
+                            score = min(weighted_mean, completed_weight / total_weight * 100)"
+      consequence: "AERA remains unsuitable as a score reproduction target: it caps the ratio at 1.0
+                    before squaring, uses a 0-1 scale, and estimates per-level actions as
+                    total_actions/n_levels. Check R2 cap saturation against 1.15 on the unit scale
+                    (or 115 on the percent scale), not 1.3225"
     V9_rate_limit:
       claim: "online ARC API is capped at 600 req/min; no separate Kaggle-local request cap is documented"
       verified: "partial — 600 RPM confirmed; separate Kaggle-local cap not found"
@@ -753,32 +788,32 @@ verification:
                     requirement, not a contingency. Under a 1/day quota, warming it late is expensive"
 
     # -------------------------------------------------------------------------------
-    # OPENED 2026-07-26 during S1-a. A discrepancy between two of OUR OWN sources.
+    # OPENED 2026-07-26 during S1-a. The original leaderboard-ceiling argument was withdrawn after
+    # checking the core implementation; only the S0 zero-completion/nonzero-score observation remains.
     # -------------------------------------------------------------------------------
-    V15_leaderboard_scale:
-      claim: "OPEN — the Kaggle leaderboard score scale is NOT explained by the documented methodology"
+    V15_s0_score_discrepancy:
+      claim: "OPEN — the S0 random agent received Kaggle public score 0.06 despite the retained evidence
+              showing zero completed levels"
       verified: false
       opened_on: 2026-07-26
       evidence:
-        - "under V8 as corrected, per-level <= 1.3225 => per-game weighted mean <= 1.3225 => cross-game
-           mean <= 1.3225. The public leaderboard top on 2026-07-25 is 1.86, with the top ~20 spanning
-           1.45-1.86. 1.86 > 1.3225"
+        - "WITHDRAWN: the leaderboard top of 1.86 is compatible with the core scorer, which reports on
+           a 0-100 scale. It was incorrectly compared with a unit-scale 1.3225 ceiling"
         - "our own S0 random agent scored 0.06 on Kaggle having completed ZERO levels, which the
-           'no partial credit for incomplete levels' rule does not permit"
-      candidate_explanations: "NONE ADOPTED — do not propagate any of these as fact: the leaderboard may
-                               aggregate differently than the methodology page describes; the hidden set
-                               may award partial credit; the cap may not be applied on the leaderboard
-                               path; or the scale may carry a factor the docs omit"
+           core implementation would score as zero"
+      candidate_explanations: "NONE ADOPTED — do not propagate as fact: the retained recording may not
+                               describe every hidden-rerun transition; the Kaggle public score may include
+                               a separate aggregation or rounding path; or the completion evidence may be
+                               incomplete"
       consequences_already_applied:
         - "s1.viability_thresholds.reproduction_fidelity.score_relative_tolerance was DELETED rather than
-           accepted at its PROPOSED 0.25 — a tolerance band on a number whose scale is not understood
-           would manufacture a verdict"
+           accepted at its PROPOSED 0.25. This remains justified by undocumented run-to-run variance and
+           D1/D2/D4 stack changes, NOT by a leaderboard-scale discrepancy"
         - "the LB-1.21 comparison is recorded as REPORTED, not GATED"
-      resolution: "Day 2, cheapest first: (a) read the Kaggle overview/evaluation tab in a BROWSER — the
-                   page is JS-rendered and WebFetch returns only the title, which is why this is still
-                   open; (b) recompute our own score from the S0 recording with the documented formula and
-                   compare against the 0.06 Kaggle returned; (c) ask on the competition discussion forum.
-                   Record the answer before ANY fidelity number is quoted"
+      resolution: "Day 2: recompute the S0 score from the retained recording with the core formula,
+                   compare it with the submitted notebook's output and Kaggle's 0.06, then inspect the
+                   scorecard/submission aggregation path. Ask on the competition discussion forum only
+                   if those artifacts do not resolve it"
 
 # =====================================================================================
 # Later stages — stubs. Freeze each before its step, per §10.

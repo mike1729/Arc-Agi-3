@@ -1,0 +1,42 @@
+--- agent/reference/taaf/src/ARC3-Inference/inference/framework/run.py	2026-07-26 07:50:12
++++ agent/work/taaf/src/ARC3-Inference/inference/framework/run.py	2026-07-26 08:02:28
+@@ -19,7 +19,19 @@
+ from typing import Any
+ 
+ from dotenv import load_dotenv
+-from re_arc import EnvSampler
++
++# D8: `re_arc` (arc-agi-3-local) is private Tufa Labs code — not on PyPI and
++# github.com/Tufalabs/re-arc-3 returns 404. It is also deliberately excluded from this share
++# bundle (taaf/deploy_kaggle.py: _SHARE_EXCLUDE_REPOS = ("re-arc-3",)). taaf/game_api.py already
++# imports it lazily "so the package stays importable in deployments that ship without the
++# re-arc-3 snapshot"; this module did not, which makes the share bundle unimportable. Guarding
++# the import restores the authors' own stated intent. re_arc is only used for game-id
++# ENUMERATION (_list_re_arc_game_ids), never for gameplay, so --kaggle-duck-public-harness
++# (hardcoded DUCK_HARNESS_PUBLIC_GAME_IDS) is unaffected.
++try:  # pragma: no cover - depends on deployment bundle contents
++    from re_arc import EnvSampler
++except ModuleNotFoundError:  # re-arc-3 snapshot absent (share bundle)
++    EnvSampler = None
+ 
+ import taaf.benchmark
+ import taaf.deploy
+@@ -93,6 +105,18 @@
+         kwargs["include_tags"] = include_tags
+     if exclude_tags:
+         kwargs["exclude_tags"] = exclude_tags
++    if EnvSampler is None:
++        # Without re_arc we cannot enumerate arbitrary datasets, but the 25 public competition
++        # games are hardcoded in this same bundle. Fall back to them for an unfiltered listing so
++        # that an explicit `--game <public id>` resolves; a dataset/tag query genuinely cannot be
++        # answered and still raises.
++        if datasets or datasets_dir or include_tags or exclude_tags:
++            raise RuntimeError(
++                "Dataset/tag game selection needs the re_arc package (arc-agi-3-local), which is "
++                "not present in this bundle. Select games explicitly with --game, or use "
++                "--kaggle-duck-public-harness for the full public set."
++            )
++        return list(DUCK_HARNESS_PUBLIC_GAME_IDS)
+     try:
+         return list(EnvSampler.list_game_ids(**kwargs))
+     except TypeError as exc:

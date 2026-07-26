@@ -29,3 +29,17 @@ clear (Qwen3.6-27B is Apache-2.0).
 The competition requires entrants to open-source their own solutions under permissive terms; that
 obligation covers **our** code (bucket 1), and does not by itself grant us the right to redistribute
 someone else's. Tracked as an **S1-f blocker**.
+
+## Scoring implementation used by the reference
+
+The local score calculation is implemented in
+`taaf/src/tufa-arc-agi-framework/src/taaf/game.py::GameRun._compute_final_score`, documented there as a
+mirror of `arc_agi.scorecard.EnvironmentScoreCalculator` v0.9.8:
+
+```python
+level_score = min(115.0, (baseline / actions) ** 2 * 100)
+game_score = min(weighted_level_mean, completed_weight / total_weight * 100)
+```
+
+The square is applied before the per-level cap. The maximum per-level score is therefore 115 on the
+implementation's 0–100 scale, or 1.15 on a unit scale—not 132.25 / 1.3225.

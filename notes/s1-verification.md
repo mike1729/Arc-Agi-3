@@ -278,7 +278,8 @@ contradiction is the failure mode the manifest exists to prevent.
 ## S1-a verification pass — 2026-07-26
 
 Performed during the reference freeze (`notes/s1-reference-freeze.md`). Three changes: V2 resolved,
-V8 **corrected**, V15 opened. `verification.status` was still `DRAFT`, so all three are edits, not errata.
+V8 corrected against the core implementation, V15 narrowed to the S0 score discrepancy.
+`verification.status` was still `DRAFT`, so all three are edits, not errata.
 
 ### ✅ V2 — paper deadline — RESOLVED (as a governing choice, not as agreement between sources)
 
@@ -303,58 +304,68 @@ The internal ~Nov 5 target is unchanged and remains **internal** — it is the t
 still never to be cited as an official date. V2's `verified` flag moves from an overstated `true` to a
 recorded resolution with both sources named.
 
-### ⚠ V8 — scoring — **CORRECTED. The earlier entry was wrong.**
+### ✅ V8 — scoring — **CORRECTED AGAINST THE CORE IMPLEMENTATION**
 
-**Source, re-read 2026-07-26:** <https://docs.arcprize.org/methodology>
+**Sources, read 2026-07-26:**
 
-The 2026-07-25 entry recorded the cap as applying to the squared score: "`(human/ai)^2`, capped at
-`1.15`". The documentation states the cap applies **to the ratio, before squaring**:
+- <https://docs.arcprize.org/methodology>
+- <https://github.com/arcprize/ARC-AGI/blob/main/arc_agi/scorecard.py>
+- vendored TAAF mirror:
+  `agent/reference/taaf/src/tufa-arc-agi-framework/src/taaf/game.py::_compute_final_score`
 
+The scorer implementation is decisive:
+
+```python
+level_score = min(115.0, (human_baseline_actions / ai_actions) ** 2 * 100)
 ```
-level_score = min(human_baseline_actions / ai_actions, 1.15) ** 2      # max 1.3225, not 1.15
+
+Equivalently, on a unit scale:
+
+```python
+level_score = min(1.15, (human_baseline_actions / ai_actions) ** 2)
 ```
 
-So the **maximum per-level score is `1.15² = 1.3225`.** Also recorded from the same read, and not
-previously captured:
+The maximum per-level score is therefore **115 on the implementation's 0–100 scale, or 1.15 on a unit
+scale — not 132.25 / 1.3225.** The game score is then capped again:
+
+```python
+game_score = min(
+    level_index_weighted_mean,
+    completed_level_weight / total_level_weight * 100,
+)
+```
+
+Consequences:
 
 - **No partial credit for incomplete levels.**
-- A game's maximum score is bounded by `(sum of completed level indices) / (sum of all level indices)` —
-  i.e. to unlock the full game score the agent must complete *every* level, including the last.
+- A game's maximum is the completed-level weight fraction on the 0–100 scale.
 - Per-game aggregation is the weighted mean over levels using the 1-indexed level number as the weight;
   the total is the unweighted mean across games.
+- A leaderboard score such as `1.86` is on the same 0–100 scale and does not exceed the maximum.
 
-**Why this mattered immediately:** it was the discriminator that rejected AERA as the S1 reference. AERA's
-`run_eval.py` caps the *ratio* at `1.0` and estimates per-level action counts by dividing total actions by
-level count, so its published `0.2116` is a surrogate metric and not a reproduction target. Had V8 been
-left uncorrected, that defect would not have been visible.
+**AERA remains unsuitable as the S1 score target**, but for the accurately stated reasons: its
+`run_eval.py` caps the ratio at `1.0` before squaring, reports on a 0–1 scale, and estimates per-level
+action counts by dividing total actions by level count. Its `0.2116` is therefore still a surrogate.
 
-### 🔴 V15 — **NEW, OPEN** — the leaderboard scale is not explained by the documented methodology
+### 🔴 V15 — **OPEN, NARROWED** — S0 returned a nonzero score with zero observed completions
 
-Opened 2026-07-26. This is a genuine unresolved discrepancy between two of our own sources, and it is
-load-bearing for `reproduction_fidelity`.
+The original leaderboard-ceiling argument is **withdrawn**. It compared Kaggle's 0–100-scale `1.86`
+with an incorrectly derived unit-scale `1.3225`. The core implementation explains the leaderboard's
+scale, so there is no contradiction there.
 
-Under V8 as corrected, per-level ≤ `1.3225` ⇒ per-game weighted mean ≤ `1.3225` ⇒ cross-game mean
-≤ `1.3225`. Two observations contradict that ceiling:
+One discrepancy remains:
 
-1. **Public leaderboard top is `1.86`** (checked via `kaggle competitions leaderboard -c
-   arc-prize-2026-arc-agi-3`, 2026-07-25 submissions; top ~20 span `1.45`–`1.86`). `1.86 > 1.3225`.
-2. **Our own S0 random agent scored `0.06`** on Kaggle having completed **zero** levels — which the
-   "no partial credit for incomplete levels" rule does not permit.
+**Our S0 random agent received Kaggle public score `0.06` while the retained evidence reports zero
+completed levels.** The core implementation would score zero completed levels as `0.0`.
 
-Both cannot hold simultaneously with the documented formula. Candidate explanations — **none adopted, do
-not propagate any of these as fact**: the leaderboard applies a different aggregation than the
-methodology page describes; the hidden set is scored with partial credit; the cap is not applied on the
-leaderboard path; or the scale carries a factor the docs omit.
+Candidate explanations — **none adopted**: the retained recording may not describe every hidden-rerun
+transition; Kaggle may apply a separate aggregation or rounding path; or the completion evidence may be
+incomplete.
 
-**Consequences already applied**, rather than deferred:
+The LB `1.21` comparison remains **reported, not gated**, but V15 is no longer a reason. The remaining
+reasons are the readable reference notebook's undocumented run-to-run variance and the D1/D2/D4 stack
+changes.
 
-- The S1 reproduction target against Tufa's LB `1.21` is **reported, not gated** — a tolerance band on a
-  number whose scale is not understood would manufacture a verdict. See the freeze §3.4.
-- `viability_thresholds.reproduction_fidelity.score_relative_tolerance` was **removed** rather than
-  accepted at its `PROPOSED` value of `0.25`.
-
-**To resolve on Day 2**, in this order, cheapest first: (a) re-read the Kaggle overview/evaluation tab
-directly in a browser — the page is JS-rendered and `WebFetch` returns only the title, which is why it is
-still open; (b) compute our own score from the S0 recording with the documented formula and compare
-against the `0.06` Kaggle returned; (c) ask on the competition discussion forum. Record the answer here
-before any fidelity number is quoted.
+**To resolve on Day 2:** recompute S0 from the retained recording with the core formula; compare that
+with the submitted notebook output and Kaggle's `0.06`; then inspect the scorecard/submission aggregation
+path. Use the discussion forum only if those artifacts do not explain the result.
