@@ -248,6 +248,14 @@ while costing ~12% per-request throughput, and N=4 leaves scheduling room for th
 the instrumentation processes that share the machine. Recorded in `agent/harness/build_local.sh` as the
 default; every latency figure must carry the concurrency it was measured at (freeze §5).
 
+> **SUPERSEDED 2026-07-26 evening.** The operating point is now set **per action class**: keyboard games
+> at `concurrent_jobs: 2`, ACTION6 games at `concurrent_jobs: 1`
+> (`agent/harness/run_s1e_by_action_class.sh`). This sweep measured a synthetic short-prompt workload;
+> the agent workload is not that shape. ACTION6 generations run ~3.3× longer (median ~871 completion
+> tokens vs ~264) and yield ~0.3 actions per generation instead of ~5 batched, so dividing the
+> accelerator costs them far more than the sweep predicts. N=4 is no longer used for any breadth run.
+> The sweep's own numbers are unaffected — only the operating point they were used to justify.
+
 **Escalation trigger #3 does not fire.** The freeze pre-registered "sustainable local concurrency < 4" as
 a trigger to escalate to hybrid. The measured usable band is 4–5, so local-only holds — *but with no
 margin above 5*, and this is the trigger to re-check after the Day-5 breadth run rather than to treat as

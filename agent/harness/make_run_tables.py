@@ -21,7 +21,6 @@ import glob
 import json
 import os
 import re
-import statistics
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
