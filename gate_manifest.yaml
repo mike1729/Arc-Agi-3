@@ -474,7 +474,61 @@ s1:
       note: "`restarts` and `only the successful attempt is scored` are indistinguishable here and
              imply the same controller; they diverge only with multiple completions in one episode,
              which is out of S1 scope"
-      result: null                     # restarts | accumulates | inconclusive | blocked
+      # RESULT, filled 2026-07-26. Filling a `result:` slot is the intended use of the block.
+      result: accumulates
+      result_recorded_on: 2026-07-26
+      evidence_ref: "logs/r2_action_accounting.json; agent/harness/r2_action_accounting.py"
+      measured:
+        game: "tu93-0768757b"
+        H_level1: 19
+        a: 28
+        w: 28
+        reps_per_arm: 3
+        arm_A: {score: 1.0232426303854876, actions: 28, resets: 0}
+        arm_B: {score: 0.24691358024691357, actions: 57, resets: 1}
+        within_arm_spread: {A: 0.0, B: 0.0}
+        r: 2.0357142857142856
+        classification_band: "accumulates_if r in [1.85, 2.20] -> 2.0357 falls inside"
+
+      # WASTE VALIDITY — checked BEFORE any score was read, exactly as the pre-registration requires.
+      # This is the check that stops R2 reading `restarts` when the truth is `accumulates`.
+      waste_validity_result: "VALID — 84/84 wasted actions ACCEPTED and 84/84 produced an OBSERVABLE
+                              STATE CHANGE across the three arm-B repetitions"
+
+      # c_reset RESOLVED, not merely absorbed. The pre-registration treated it as unknown and absorbed
+      # it by requiring a >= 20. The scorer exposes `actions` directly, so it was measured instead:
+      #     arm B actions 57 = a(28) + w(28) + 1
+      # RESET IS ITSELF A SCORED ACTION. c_reset = 1.
+      c_reset_measured: 1
+
+      corroboration: "two INDEPENDENT measurements agree to 4 decimal places. The pre-registered score
+                      ratio gives r = sqrt(1.0232/0.2469) = 2.0357. The direct action counts give
+                      (a+w+c_reset)/a = 57/28 = 2.0357. Scores also reproduce the V8 formula exactly:
+                      arm A (19/28)^2*100/45 = 1.0232; arm B (19/57)^2*100/45 = 0.2469 (45 = sum of
+                      1..9 level weights for tu93's 9 levels)"
+
+      scope_limits:
+        - "OFFLINE competition environment files, not competition mode — V5-V7 restrictions differ.
+           Same caveat as R1"
+        - "ONE game (tu93-0768757b). R2's design is deliberately single-game for identifiability (H and
+           the level weight must cancel), so this is not a design flaw — but generalisation of the
+           ACCOUNTING RULE across games is untested and must not be asserted"
+        - "within-arm spread is 0.0 because the offline environment is deterministic. The spread <= 0.10
+           criterion therefore did no real work here: the three repetitions checked REPRODUCIBILITY, not
+           sampling noise. The pre-registration anticipated live-API variance, which this run does not
+           exercise"
+
+      precondition_outcomes:
+        per_level_score_exposed: "NOT exposed — `level_scores` came back empty. Satisfied instead via the
+                                  pre-registered FALLBACK: both arms restricted to level 1 and closed
+                                  immediately, so the level weighting is identical across arms and
+                                  cancels from the ratio"
+        v6_permits_same_game_repeat: "satisfied offline — independent scorecards per repetition, one
+                                      make() each. NOT evidence about competition mode"
+        cap_not_saturated: "satisfied and verified from arm A BEFORE arm B was run: 46.0 per-level
+                            against a cap of 115. Note the BFS-shortest completion (18 actions) would
+                            have scored 111.4 and failed this check — which is why `a` was held to the
+                            pre-registered 28 rather than using the shortest solution found"
 
     controller_fork:
       # R1 deterministic + R2 restarts   -> aggressive identify-then-execute (explore, then speedrun)
@@ -484,7 +538,16 @@ s1:
       # inconclusive / blocked           -> DEFAULT TO SURGICAL. The conservative branch is merely
       #                                     suboptimal if wrong; the aggressive branch is catastrophic
       #                                     if wrong. Re-run the probe at the first slack in S2.
-      selected: null
+      # SELECTED 2026-07-26 from R1 = deterministic + R2 = accumulates.
+      selected: "surgical information-per-action"
+      selected_on: 2026-07-26
+      rationale: "R1 deterministic + R2 accumulates is the SURGICAL branch: replay is reliable, but every
+                  probe costs score directly because wasted actions accumulate across resets AND the
+                  RESET itself is scored (c_reset = 1 measured). Information is NOT free, so the
+                  aggressive explore-then-speedrun controller would bleed score on every probe"
+      note: "this is also the conservative branch, which is where the pre-registration says to land when
+             in doubt — merely suboptimal if wrong, rather than catastrophic. Here it is not a default:
+             it is the measured outcome"
 
   # -----------------------------------------------------------------------------
   # Failure taxonomy — operational definitions (§10 requires these before S1-d).

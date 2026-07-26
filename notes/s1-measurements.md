@@ -307,7 +307,73 @@ compared.** The falsification check above now exists to make that failure mode i
 **Unblocked**: R2's precondition is `r1 == deterministic`, which now holds. Not yet run — it needs live
 scorecards (close-then-read, forced by V7) and the three preconditions checked before any score is read.
 
+**Result: `accumulates`** (2026-07-26). Script `agent/harness/r2_action_accounting.py`; raw
+`logs/r2_action_accounting.json`. Game `tu93-0768757b`, H(level 1) = 19, `a = max(20, round(1.5×19)) = 28`,
+`w = a = 28`, 3 repetitions per arm on independent scorecards.
+
+| Arm | Score | `actions` | `resets` |
+|---|---:|---:|---:|
+| A (clean) | 1.02324 | 28 | 0 |
+| B (waste → RESET → same completion) | 0.24691 | **57** | 1 |
+
+`r = √(median_A / median_B) = 2.0357`, inside the pre-registered `accumulates` band `[1.85, 2.20]`.
+Within-arm spread 0.0 for both.
+
+**Waste validity — checked before any score was read**, as the pre-registration demands: **84/84** wasted
+actions accepted *and* **84/84** produced an observable state change. This is the check that prevents R2
+reading `restarts` when the truth is `accumulates`; had the wasted actions been no-ops the two arms would
+have scored alike and the answer would have inverted.
+
+#### Two independent measurements agree to four decimal places
+
+- pre-registered estimator: `√(1.0232 / 0.2469)` = **2.0357**
+- direct action counts: `(a + w + c_reset)/a` = `57/28` = **2.0357**
+
+And the scores reproduce the V8 formula exactly — arm A `(19/28)²×100 / 45 = 1.0232`, arm B
+`(19/57)²×100 / 45 = 0.2469`, where 45 is the sum of tu93's nine level weights. The scorer, the formula
+as V8 corrects it, and both estimators are mutually consistent.
+
+#### `c_reset` resolved, not absorbed
+
+The pre-registration treated `c_reset ∈ {0,1}` as unknown and absorbed it by requiring `a ≥ 20`. The
+scorer exposes `actions` directly, so it was measured instead: **57 = 28 + 28 + 1**, so
+
+> **RESET is itself a scored action. `c_reset = 1`.**
+
+#### Preconditions
+
+| Precondition | Outcome |
+|---|---|
+| per-level score exposed | **Not exposed** — `level_scores` returned empty. Satisfied via the pre-registered *fallback*: both arms restricted to level 1 and closed immediately, so the level weighting is identical across arms and cancels |
+| V6 permits same-game repeat | satisfied offline — independent scorecards, one `make()` each. Not evidence about competition mode |
+| cap not saturated | satisfied, verified from arm A **before** arm B ran: 46.0 per-level against a cap of 115 |
+
+That last one nearly went wrong. The BFS-shortest completion is **18 actions — shorter than the human
+baseline of 19** — which would have scored 111.4 against the 115 cap and failed the precondition outright.
+Holding `a` to the pre-registered 28 rather than using the shortest sequence found is what kept arm A
+clear, and it is exactly what the `a ≈ 1.5H` rule exists for.
+
+#### Scope limits
+
+- **Offline environment files, not competition mode** (V5–V7 differ) — same caveat as R1.
+- **One game.** R2's design is deliberately single-game, because identifiability requires `H` and the
+  level weight to cancel. So this is not a design flaw — but generalisation of the accounting rule across
+  games is untested and must not be asserted.
+- **Spread was 0.0 trivially**, because the offline environment is deterministic. The `spread ≤ 0.10`
+  criterion therefore did no real work: the three repetitions checked reproducibility, not sampling noise.
+  The pre-registration anticipated live-API variance, which this run does not exercise.
+
+### 🎯 Controller fork — RESOLVED
+
+`R1 = deterministic` + `R2 = accumulates` → **surgical information-per-action**.
+
+Replay is reliable, but **every probe costs score directly**: wasted actions accumulate across resets, and
+the RESET itself is scored. Information is not free, so the aggressive explore-then-speedrun controller
+would bleed score on every probe. This is also the conservative branch the pre-registration says to
+default to under doubt — but here it is not a default, it is the measured outcome.
+
 - R1 result: `deterministic` — see above
-- R2 result:
+- R2 result: `accumulates`
+- Controller selected: **surgical information-per-action**
 - R2 result:
 - Controller selected:
