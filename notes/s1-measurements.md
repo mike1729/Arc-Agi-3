@@ -183,6 +183,51 @@ as its own contrast, not folded in silently. Not yet run.
 
 Generated table:
 
+## Submission contract — read from the reference notebook, 2026-07-26 (S1-f prep)
+
+Established without spending the 1/day submission quota, by reading the reference notebook we pushed as
+a private copy. Two execution modes, switched by an environment variable:
+
+| | Visible "Save & Run" | Hidden competition rerun |
+|---|---|---|
+| Selector | `KAGGLE_IS_COMPETITION_RERUN` unset/false | set to `1`/`true` |
+| Games | **bundled offline env files** at `/kaggle/input/competitions/arc-prize-2026-arc-agi-3/.../environment_files` | live competition Arcade via the Kaggle **gateway** at `ARC_BASE_URL` (default `http://gateway:8001/`), `OperationMode.COMPETITION` |
+| Scoring | not scored | through the gateway |
+| Output | **must still write `submission.parquet`** | written by the framework |
+
+`submission.parquet` schema is `["row_id", "game_id", "end_of_game", "score"]`; on the unscored visible
+path the notebook writes a single placeholder row `["1_0", "1", True, 1]` purely to satisfy Kaggle's
+output requirement. The notebook also forces `bm.n_passes = 1` and sets `TAAF_RUN_AS_SUBMISSION` /
+`TAAF_MINIMAL_DIAGNOSTICS` so diagnostics and per-frame logging are suppressed during a real rerun.
+
+**Confirms our local setup is on the reference's own offline path** — the competition
+`environment_files` the notebook uses in visible mode are exactly the ones we downloaded with the Kaggle
+CLI and pointed `--re-arc-environments-dir` at.
+
+### 🔴 The development/submission divergence — a consequence of local-only, and a caveat on S1-d
+
+Kaggle provides CUDA. A Day-6 payload therefore runs **vLLM + FP8 on an RTX PRO 6000** — the reference
+stack unmodified. **D1 and D2 do not propagate to the submission at all**: the MLX 4-bit port is a
+*local development and instrumentation vehicle*, not the submitted artifact.
+
+That is good for the submission's fidelity, and it creates two problems that must not be discovered at
+S1-g:
+
+1. **Local latency and throughput figures do not transfer to Kaggle.** The 13.7 tok/s, the 284 s/action,
+   the concurrency-4 ceiling — all are properties of MLX 4-bit on an M5 Pro and say nothing about the
+   submitted agent's runtime envelope. `per_action_latency` must therefore be read against the
+   *submission* stack before it can gate anything, or its verdict scoped explicitly to local development.
+2. **Failure frequencies labelled locally are labelled on a different model.** The Day-5 run at MLX 4-bit
+   produces the taxonomy that ranks the build order, but the agent that gets submitted is FP8. D2's
+   "unquantified capability loss" was recorded as a fidelity risk; this is where it bites — a quantization
+   that changes *which* failures dominate would misrank §11's construction order. The gap is not
+   currently measured in either direction.
+
+Neither is fatal and neither is a reason to abandon local-only, but both must be stated in the close-out
+rather than absorbed. The cheapest mitigation available is the Kaggle reference run already in flight: it
+produces FP8-on-RTX-6000 numbers for the *same solver*, which bounds the size of gap (1) directly and
+gives a first handle on (2) via per-game outcomes.
+
 ## Hardware fit
 
 - Peak VRAM:
