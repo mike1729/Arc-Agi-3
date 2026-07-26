@@ -85,6 +85,35 @@ errata:
     reason: "discovered on Day 2 during the field-availability check, which exists precisely to surface
              this before Day 5 draws the sample, rather than at Day 7 when the ranking is built."
 
+  - id: S1-E3
+    date: 2026-07-26
+    scope: ["s1.blind_rerate.stratification"]
+    correction: "S1-E2 justified exploration_or_probe_selection as the replacement oversampling stratum
+                 on the grounds that D6 request logs supply the candidate action set. That is only
+                 partly true and S1-E2 overstated it: `valid_actions` is a list of ACTION NAMES, not
+                 ACTION6 coordinates, so on click games the 'higher-yield alternative' the category is
+                 defined against is not enumerable. The corrected field-availability table marks the
+                 category `partial` for exactly this reason, so it cannot serve as an UNQUALIFIED
+                 observable stratum."
+    effective_replacements:
+      stratification: "stratify by primary_label; oversample goal_unknown AND
+                       exploration_or_probe_selection, with the eligibility rule below."
+      eligibility_rule: "episodes are eligible for the exploration_or_probe_selection stratum ONLY if the
+                         episode's game exposes simple actions (ACTION1-5) at the steps being rated.
+                         Click-only games (ACTION6) are INELIGIBLE for that stratum, because the
+                         alternative-action evidence does not exist for them. Record the eligible
+                         fraction alongside the agreement statistic — an agreement number computed on a
+                         subset must say which subset."
+      consequence_if_too_few: "if eligible episodes are too few to stratify, report goal_unknown as the
+                               single oversampled stratum and state that the second stratum was dropped
+                               for lack of observable evidence. Do NOT substitute a category whose
+                               evidence is equally unavailable."
+    note: "6 of 25 public games open with simple actions only (g50t, ls20, re86, tr87, tu93, wa30), so
+           the eligible pool is real but a minority. vc33 — the game that produced the S1-b hard exit —
+           is click-only and therefore INELIGIBLE for this stratum."
+    reason: "raised by external review of the S1-b commits; S1-E2's justification did not survive the
+             taxonomy correction made in the same session."
+
 # =====================================================================================
 # S0 — External execution-path proof.
 # =====================================================================================

@@ -53,6 +53,11 @@ vals = {
     "LOCAL_ANALYZER_YIELD_SECONDS":     g(an, "yield_seconds", 60),  # never applied by the direct-module bypass
     "LOCAL_ANALYZER_ENABLE_THINKING":   str(g(an, "thinking", True)).lower(),
     "LOCAL_ANALYZER_APP_NAME":          g(an, "app_name", "ARC3 Agent Harness"),
+    # Makefile:157-158,204-205 export these. vision_context.py reads MULTIMODAL_CONTEXT with an EMPTY
+    # default, so omitting it silently disables multimodal grid input — and the reference config sets
+    # "current_grid". A launcher that drops them changes what the model sees.
+    "MULTIMODAL_CONTEXT":               g(c.get("multimodal", {}), "context", ""),
+    "MULTIMODAL_UPSCALE":               g(c.get("multimodal", {}), "upscale", 16),
 }
 for k, v in vals.items():
     print(f"export {k}={shlex.quote(str(v))}")
@@ -76,6 +81,7 @@ echo "    tool_steps=$LOCAL_ANALYZER_TOOL_STEPS (0 = UNLIMITED)  max_output=$LOC
 echo "    yield_seconds=$LOCAL_ANALYZER_YIELD_SECONDS  thinking=$LOCAL_ANALYZER_ENABLE_THINKING"
 echo "    request logs: $_SAVE_REQUEST_LOGS_FLAG"
 echo "    n_passes=$_N_PASSES concurrent_jobs=$_CONCURRENT_JOBS max_runtime_min=$_MAX_RUNTIME_MIN"
+echo "    multimodal: context='$MULTIMODAL_CONTEXT' upscale=$MULTIMODAL_UPSCALE"
 
 cd "$WORK"
 export CONFIG_PATH

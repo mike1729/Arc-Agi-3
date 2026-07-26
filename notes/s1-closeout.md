@@ -15,6 +15,10 @@
 **Measured 2026-07-26 across all 25 public games** (not taken from documentation). Close-out item 5;
 the plan calls this "cheap now and expensive on Aug 12", and one item below would have been expensive.
 
+**Reproducible evidence:** `agent/harness/measure_arc_conventions.py` → `logs/s2_arc_conventions.json`.
+Every value in this section regenerates from that script; it was added after review noted the section
+originally carried prose only, which could not be independently checked.
+
 | Convention | Measured value |
 |---|---|
 | Grid shape | **64×64, always**, at reset across all 25 games |

@@ -1,5 +1,5 @@
 --- agent/reference/taaf/src/ARC3-Inference/inference/agent/tool_agent.py	2026-07-26 07:50:12
-+++ agent/work/taaf/src/ARC3-Inference/inference/agent/tool_agent.py	2026-07-26 09:55:22
++++ agent/work/taaf/src/ARC3-Inference/inference/agent/tool_agent.py	2026-07-26 10:19:04
 @@ -788,11 +788,24 @@
      analysis_step: int | None = None,
      action: int | None = None,
@@ -25,7 +25,7 @@
      if event:
          payload["event"] = event
      if tool_choice:
-@@ -1832,8 +1845,38 @@
+@@ -1832,8 +1845,44 @@
                              action=display_action_num,
                              request_index_within_turn=latest_request_index,
                              finish_reason=result.finish_reason,
@@ -38,7 +38,13 @@
 +                    if self._save_request_logs:
 +                        _body = ""
 +                        _status = None
++                        # _chat_completion re-raises as a bare requests.RequestException(message),
++                        # so `exc.response` is absent for ordinary HTTP failures. Fall back to the
++                        # chained cause. The detail text is also already embedded in str(exc),
++                        # which `repr(exc)` below preserves regardless.
 +                        _resp = getattr(exc, "response", None)
++                        if _resp is None:
++                            _resp = getattr(getattr(exc, "__cause__", None), "response", None)
 +                        if _resp is not None:
 +                            _status = getattr(_resp, "status_code", None)
 +                            try:

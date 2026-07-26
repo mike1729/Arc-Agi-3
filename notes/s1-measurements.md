@@ -291,8 +291,18 @@ The consolidated view makes two things plain that the individual runs did not:
 2. **`s1b-ep2` recorded 0 actions** — the run that failed for missing environment files. It is kept in
    the table deliberately; a summary that silently dropped failed runs would misrepresent the day.
 
-Calls per turn (`paper/figures/s1_calls_per_turn.md`): mean **1.91** (ft09) and **1.72** (vc33), max 4–5.
-Neither the D9 cap of 4 nor the code default of 12 — let alone the reference's unlimited — ever bound.
+Calls per turn (`paper/figures/s1_calls_per_turn.md`) — ⚠ **corrected**. The first figures (43 turns,
+mean 1.91, 13% at cap) double-counted: D6 writes a `request` **and** a `response` record sharing the same
+index, so every response with index 1 looked like a new turn. Filtering to `event == "request"`:
+
+| run | turns | mean calls/turn | max | at cap of 4 |
+|---|---:|---:|---:|---:|
+| `s1b-ft09-d9-logged` | 24 | **2.62** | 4 | **5/24 = 21%** |
+| `s1b-vc33-single` | 15 | 2.20 | 5 | — |
+
+So the earlier claim that the cap "did not bind" is **weaker than stated** — a fifth of turns reached it.
+The D9 conclusion still stands, but for a different and now-primary reason: **the ft09 runs executed no
+game actions at all**, so D9 was never comparing action throughput in the first place.
 
 ## Submission contract — read from the reference notebook, 2026-07-26 (S1-f prep)
 
