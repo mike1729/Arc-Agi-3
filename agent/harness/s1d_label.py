@@ -24,6 +24,7 @@ Run:  .venv/bin/python agent/harness/s1d_label.py <run_dir> [--out logs/s1d_epis
 from __future__ import annotations
 
 import argparse
+import collections
 import glob
 import json
 from pathlib import Path
@@ -38,6 +39,12 @@ CATEGORIES = [
 ]
 UNOBSERVABLE = {"coordinate_unreachable", "planning_depth"}
 LABELABLE = [c for c in CATEGORIES if c not in UNOBSERVABLE]
+
+
+def _counts(acts):
+    """Action-display frequencies. Was an O(n^2) nested comprehension; a 742-action episode made that
+    ~27k string comparisons per episode."""
+    return collections.Counter(str(r.get("action_display")) for r in acts)
 
 
 def load_events(run_dir: Path):
@@ -105,8 +112,17 @@ def extract_episodes(run_dir: Path):
         if cur:
             segs.append((cur_level, cur))
 
+        # A level was CLEARED iff the next segment is at a HIGHER level. "A later segment exists" is
+        # wrong: a RESET sends the marker backwards (2 -> 1), and treating that as advancement silently
+        # drops the failed attempt — which is an episode, and this is the build-order denominator.
+        # No non-monotonic markers exist in any data held as of 2026-07-26, but nothing enforces that.
+        levels_seq = [lv for lv, _ in segs]
+        if any((b is not None and a is not None and b < a) for a, b in zip(levels_seq, levels_seq[1:])):
+            print(f"  NOTE {pass_key}: level marker goes backwards {levels_seq} — reset detected; "
+                  f"non-advancing segments are kept as episodes")
         for idx, (lvl, seg) in enumerate(segs):
-            advanced = idx < len(segs) - 1          # a later segment exists => this level was cleared
+            nxt = segs[idx + 1][0] if idx + 1 < len(segs) else None
+            advanced = (nxt is not None and lvl is not None and nxt > lvl)
             if advanced:
                 continue                            # successful levels produce NO episode
             acts = [r for r in seg if r.get("type") == "action"]
@@ -122,11 +138,9 @@ def extract_episodes(run_dir: Path):
                 "action_ratio_vs_baseline": (
                     round(len(acts) / bal[lvl_i], 2) if 0 <= lvl_i < len(bal) and bal[lvl_i] else None),
                 "analysis_turns": len(ana),
-                "distinct_actions": len({str(r.get("action_display")) for r in acts}),
-                "top_action_share": (
-                    round(max([sum(1 for r in acts if str(r.get("action_display")) == a)
-                               for a in {str(x.get("action_display")) for x in acts}]) / len(acts), 3)
-                    if acts else None),
+                "distinct_actions": len(_counts(acts)),
+                "top_action_share": (round(_counts(acts).most_common(1)[0][1] / len(acts), 3)
+                                     if acts else None),
                 # --- rater fields, deliberately empty ---
                 "labels": [],            # [{category, confidence, evidence_ref}]
                 "primary_label": None,   # REQUIRED before the ranking is computed
