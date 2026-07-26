@@ -24,6 +24,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import signal
 import subprocess
 import time
 from datetime import datetime, timezone
@@ -47,6 +49,51 @@ BUDGET_TOLERANCE = 0.98  # ran >= 98% of the budget => budget-terminated, not ki
 # for crashes and early stops only. The earlier value of 3, applied to budget termination, would have
 # turned a 16.5 h breadth run into 49.5 h without producing anything new.
 MAX_ATTEMPTS = 2
+
+# A chunk cannot legitimately outlive the harness's own per-game budget by much: games in a chunk run
+# concurrently, so a chunk is one budget plus start-up and teardown. Anything far past that is wedged
+# (an unresponsive server holding an open connection, a hung child), not slow. Without this the
+# supervisor blocks forever on subprocess.call and an unattended run dies silently.
+CHUNK_TIMEOUT_FACTOR = 1.5
+CHUNK_TIMEOUT_SLACK_S = 900.0
+
+
+def _chunk_timeout_s() -> float:
+    """Derived from the built config, so it tracks the budget instead of being a second hardcoded copy."""
+    cfg = REPO / "agent/work/taaf/src/ARC3-Inference/configs/inference.local-mlx.json"
+    minutes = 45.0
+    try:
+        minutes = float(json.loads(cfg.read_text())["environment"]["max_runtime_minutes"])
+    except Exception:  # noqa: BLE001
+        pass
+    return minutes * 60.0 * CHUNK_TIMEOUT_FACTOR + CHUNK_TIMEOUT_SLACK_S
+
+
+def _run_chunk(cmd, log_path: Path) -> tuple[int, bool]:
+    """Run a chunk, killing it if it wedges. Returns (returncode, timed_out).
+
+    start_new_session puts the harness in its own process group so the whole tree can be signalled;
+    killing only the direct child would leave the inference subprocesses holding the GPU.
+    """
+    timeout = _chunk_timeout_s()
+    with open(log_path, "w") as fh:
+        proc = subprocess.Popen(cmd, cwd=str(REPO), stdout=fh, stderr=subprocess.STDOUT,
+                                start_new_session=True)
+        try:
+            return proc.wait(timeout=timeout), False
+        except subprocess.TimeoutExpired:
+            print(f"    WEDGED: no exit after {timeout/60:.0f}m — killing the process group", flush=True)
+            for sig in (signal.SIGTERM, signal.SIGKILL):
+                try:
+                    os.killpg(os.getpgid(proc.pid), sig)
+                except ProcessLookupError:
+                    break
+                try:
+                    proc.wait(timeout=30)
+                    break
+                except subprocess.TimeoutExpired:
+                    continue
+            return -1, True
 
 # The 25 public games, from the bundle's own DUCK_HARNESS_PUBLIC_GAME_IDS.
 PUBLIC = [
@@ -172,8 +219,7 @@ def main() -> int:
             cmd = ["bash", str(REPO / "agent/harness/run_local.sh"),
                    "--game", ",".join(chunk), "--run-name", name]
             log = REPO / f"logs/{name}.log"
-            with open(log, "w") as fh:
-                rc = subprocess.call(cmd, cwd=str(REPO), stdout=fh, stderr=subprocess.STDOUT)
+            rc, timed_out = _run_chunk(cmd, log)
             dt = time.monotonic() - t0
 
             run_dirs = sorted((REPO / "logs/runs").glob(f"*_{name}"))
@@ -182,6 +228,7 @@ def main() -> int:
             for g in chunk:
                 st["attempts"][g] = st["attempts"].get(g, 0) + 1
             st["chunks"].append({"name": name, "games": chunk, "returncode": rc,
+                                 "timed_out": timed_out,
                                  "elapsed_s": round(dt, 1), "harvested": sorted(got),
                                  "concluded": sorted(g for g, v in got.items() if v["completed"]),
                                  "at": datetime.now(timezone.utc).isoformat()})
