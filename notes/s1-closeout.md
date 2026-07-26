@@ -61,7 +61,46 @@ publishable/not-publishable table: [`PUBLISHING.md`](../PUBLISHING.md).
 Consequence already recorded: the reproduction cannot be the Day-6 payload, so a leaderboard reference
 requires entrant-authored work — otherwise S1 exits on the §4.7 DEGRADED branch.
 
-## Actionable queue while S1-e runs (all CPU-only — must not contend for the GPU)
+## S1-e stopped after one chunk at concurrency 2 — and why
+
+**The local breadth run was stopped deliberately, not abandoned.** Two findings made the remaining
+~8 hours poor value:
+
+**1. Action rate is dominated by action TYPE, not by concurrency.** At concurrency 2, in 16 minutes:
+
+| game | action space | actions |
+|---|---|---:|
+| `wa30-ee6fef47` | keyboard (ACTION1–5) | **59** |
+| `lp85-305b61c3` | click (ACTION6 only) | **1** |
+
+Projected to 45 min: ~166 versus ~3. Keyboard games reach reference-comparable volume (the reference
+averaged 152 actions/game); click games produce stubs at any concurrency reachable locally. Fifteen of
+the 25 public games open with ACTION6.
+
+**2. We already hold better taxonomy data than the run would produce.** The completed Kaggle reference
+run yields **25 failure episodes on the true reference model**, with full evidence packets. The local
+run would have added ~6 keyboard episodes on a *different quantisation*, plus ~15 stubs.
+
+**What the local run is still needed for is narrow:** the S1-c local thresholds. Those need a modest run,
+not 25 games — `legal_action_validity` (0.9545) already came from chunk 1, and latency from earlier runs.
+
+### 🔴 The pre-registration problem this exposed — erratum S1-E7
+
+A failure episode is a level attempt that did not advance, so **one pass over a game yields at most one
+episode.** Twenty-five games therefore yield at most 25. Measured on the reference run: **exactly 25**
+(15 L2+, 10 L1). The manifest pre-registered `blind_rerate.sample_size: 30`.
+
+**30 was never achievable from a single pass**, and the check was available at S1-a — the episode
+definition and the game count were both already known. It was accepted at its PROPOSED value without
+being tested against the achievable count.
+
+Unresolved, and deferred deliberately: it trades runtime against statistical power. **Until it is
+resolved, no re-rate sample should be drawn** — the draw script refuses unlabelled input but will not
+refuse an under-powered one. If it is still open at S1-g, the consequence must be stated: no agreement
+statistic means the `agreement_floor: 0.40` gate cannot be applied, and categories would drive the build
+order with no stability check at all.
+
+## Actionable queue while S1-e runs## Actionable queue while S1-e runs (all CPU-only — must not contend for the GPU)
 
 Ordered by whether S1-e's output depends on them.
 

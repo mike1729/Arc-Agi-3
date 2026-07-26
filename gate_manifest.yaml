@@ -191,6 +191,35 @@ errata:
                   games, which bounds nothing about the hidden competition set."
     note: "the local figure is worse again by the stack penalty and must not be conflated with this one."
 
+  - id: S1-E7
+    date: 2026-07-26
+    scope: ["s1.blind_rerate.sample_size"]
+    correction: "`sample_size: 30` is UNACHIEVABLE from a single pass and always was — this is
+                 arithmetic, not a shortfall in any particular run. A failure episode is a level attempt
+                 that did not advance, so one pass over a game yields at most ONE episode (the level it
+                 stalls on). Twenty-five public games therefore yield at most 25 episodes. Measured on
+                 the completed reference run: exactly 25 episodes, 15 in the L2+ band and 10 in L1."
+    evidence_ref: "logs/s1d_episodes_kaggle_reference.json; agent/harness/s1d_label.py"
+    why_it_was_missed: "the number was accepted at its PROPOSED value during S1-a without checking it
+                        against the achievable episode count. The episode definition and the game count
+                        were both already known, so the check was available and was not made."
+    options_considered:
+      reduce_sample: "re-rate ~20 of 25 — but that approaches re-rating everything, which makes
+                      `sample` close to tautological and inflates apparent agreement"
+      multiple_passes: "n_passes = 4 over 25 games yields up to 100 episodes. This is the principled
+                        fix; the reference's own development config used n_passes = 20. Costs 4x runtime
+                        and is only affordable on the reference stack, not locally"
+      accept_fewer: "report the sample size actually achieved and state the reduced power of the
+                     agreement statistic"
+    resolution: "DEFERRED to the operator — it trades runtime against statistical power and is not a
+                 detail to settle silently. Until resolved, do NOT draw a re-rate sample: the draw
+                 script refuses unlabelled input, but it will not refuse an under-powered one."
+    consequence_if_unresolved: "the blind re-rate cannot be run as pre-registered, so per-category
+                                agreement is unavailable and the `agreement_floor: 0.40` gate cannot be
+                                applied. Categories would then drive build order with NO stability
+                                check — which is exactly what the floor exists to prevent. State this
+                                in the close-out if it is still open at S1-g."
+
 # =====================================================================================
 # S0 — External execution-path proof.
 # =====================================================================================
