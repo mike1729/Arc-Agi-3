@@ -5,6 +5,10 @@
 # agent/work/taaf/       is a throwaway working copy, rebuilt by this script.
 # agent/patches/*.patch  is the audit trail — the diff IS the record of every deviation.
 #
+# ⛔ PUBLISHING: agent/reference/ is an UNLICENSED third-party snapshot. This repository is NEVER made
+#    public — entrant-authored work is released as a new clean repository. Deleting the directory is not
+#    sufficient; git history counts as redistribution. See PUBLISHING.md.
+#
 # Deviations applied here are the ones enumerated in notes/s1-reference-freeze.md §3.5. Anything not
 # on that list and not applied by this script is an unlogged deviation, which is the thing the
 # vendoring convention exists to prevent.

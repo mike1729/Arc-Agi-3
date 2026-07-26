@@ -202,6 +202,11 @@ Day-6 payload.
 | **Models and weights** | `Qwen/Qwen3.6-27B` is **Apache-2.0**; `mlx-community/Qwen3.6-27B-4bit` inherits Apache-2.0. Commercial use, modification and redistribution permitted. This is the bucket the plan calls "the real screen". | **CLEAR** |
 | **Winner license (CC-BY 4.0)** | Applies to a winning submission; affects no candidate choice. | **N/A** |
 
+> ⛔ **PUBLISHING POLICY — see [`PUBLISHING.md`](../PUBLISHING.md).** Bucket 2 is closed by *scope*:
+> the reproduction is never shipped, submitted or published. This repository is **never made public**;
+> entrant-authored work is released as a new clean repository. **Deleting `agent/reference/` is not
+> sufficient — git history counts as redistribution.**
+
 The **weights bucket clears**, which is criterion (1) and the gating one. The open item is bucket 2, and
 it is a redistribution question with a known remedy, not a screen failure. It does **not** block S1-b
 through S1-e; it blocks only the Day-6 payload if TAAF code ships inside it.

@@ -51,6 +51,16 @@ gather the Day-5 taxonomy on the dense 27B.
 
 ---
 
+## ⛔ Publishing policy
+
+**This repository is never made public.** Entrant-authored work is released as a **new, clean
+repository** built from scratch. `agent/reference/` holds an unlicensed third-party snapshot, and
+**deleting it is not sufficient — git history counts as redistribution.** Full policy and the
+publishable/not-publishable table: [`PUBLISHING.md`](../PUBLISHING.md).
+
+Consequence already recorded: the reproduction cannot be the Day-6 payload, so a leaderboard reference
+requires entrant-authored work — otherwise S1 exits on the §4.7 DEGRADED branch.
+
 ## Actionable queue while S1-e runs (all CPU-only — must not contend for the GPU)
 
 Ordered by whether S1-e's output depends on them.

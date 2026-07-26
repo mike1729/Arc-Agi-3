@@ -16,6 +16,10 @@ meta:
   created: 2026-07-25
   hard_stop: 2026-08-22
   utility_ordering: "leaderboard score primary; paper is a continuous by-product, not a fallback"
+  publishing_policy: "THIS REPOSITORY IS NEVER MADE PUBLIC. agent/reference/ holds an unlicensed
+                      third-party snapshot; entrant-authored work is released as a NEW CLEAN REPOSITORY
+                      built from scratch, without importing this history. Deleting the directory is NOT
+                      sufficient — git history counts as redistribution. See PUBLISHING.md"
 
 errata:
   - id: S1-E1
