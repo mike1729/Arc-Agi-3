@@ -1,14 +1,55 @@
 # S1 Close-out
 
-**Status:** Not started.
+**Status: IN PROGRESS.** S1-a complete; S1-b complete with a caveat; S1-c partial; S1-d and S1-e not
+started. This file is written incrementally, not at the end.
 
-## Distance to competitive
+---
 
-## Failure-frequency build order
+## Session log — 2026-07-26
 
-## Controller fork
+### What was established
 
-## Viability verdicts
+| Item | Result |
+|---|---|
+| **S1-a** | Reference frozen (Tufa duck harness, Qwen3.6-27B-FP8) + alternate (mbmmurad Gemma-4-31B). All `PROPOSED` values resolved; manifest frozen |
+| **R1** | `deterministic` — 2 games × 2 prefixes × 3 replays, byte-identical, falsification check passed |
+| **R2** | `accumulates`, `r` = 2.0357, waste validity 84/84. **`c_reset` = 1 measured** (RESET is itself scored) |
+| **Controller fork** | **surgical information-per-action** — every probe costs score |
+| **S1-b hard exit** | vc33 level 1 in **9 actions** (baseline 7), score **60.49**, log on disk |
+| **S2 inheritance** | Measured across all 25 games and reproducible (`measure_arc_conventions.py`) |
+| **Kaggle reference** | Full 25-game run on the true reference: 0 games won, 3806 actions, **mean score 2.19** |
+| **Verification** | V2 resolved, V8 corrected, V15 closed as a premise error. Block frozen |
+
+### The three-way model comparison (same game, same harness)
+
+| configuration | levels | actions | game score |
+|---|---:|---:|---:|
+| Kaggle reference (27B dense FP8) | **2/7** | 49 | **10.71** — saturated the completed-weight cap |
+| local dense (27B MLX 4-bit) | 1/7 | **9** | 2.16 |
+| local MoE (35B-A3B, D11) | 0/7 | **742** | 0.00 |
+
+**Conclusion: the MoE is a throughput vehicle, not a taxonomy vehicle.** ~5.2× faster per action and
+~70× faster in wall-clock per action, with no progress. Use it for harness, latency and iteration work;
+gather the Day-5 taxonomy on the dense 27B.
+
+### Errors made and corrected (kept, because they shaped the work)
+
+1. **120 s analyzer timeout** — the reference's value, calibrated for FP8 on an RTX PRO 6000. Locally
+   **62% of generations exceeded it**, so most requests were cut off and retried. Every earlier local
+   measurement of *agent behaviour* was measuring a misconfigured harness. Fixed as **D10**.
+2. **Makefile bypass** — driving `inference.framework.run` directly drops every config-sourced setting
+   to its code default. This silently disabled D6 request logging and replaced `tool_steps: 0`
+   (unlimited) with 12. Fixed by `agent/harness/run_local.sh`.
+3. **The same bug, in my own launcher** — `--analyzer-timeout` was never passed, so D10 had no effect on
+   its first attempt. Caught because 6 timeouts in 25 minutes is impossible at a 900 s limit.
+4. **Action counts were event-row counts** — `analysis` snapshots counted as actions. The hard-exit score
+   was understated 2.4×, and the ft09 runs reported 24/8/20 actions when they executed **zero**.
+5. **Three successive wrong explanations** for the ft09 stall (identical-inspection looping, then
+   convergence failure) before reading the run log, which had the timeout in plain text throughout.
+6. **Concurrency sweep measured on an unrepresentative prompt** — quoted as agent throughput when it was
+   short-prompt synthetic.
+
+---
 
 ## S2 inheritance — ARC-compatible conventions the generators must match
 
