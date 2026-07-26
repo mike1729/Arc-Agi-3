@@ -48,6 +48,43 @@ errata:
     note: "verification is still DRAFT and is corrected in place below. Frozen S1 values are not edited
            in place; this dated entry is their authoritative override."
 
+  - id: S1-E2
+    date: 2026-07-26
+    scope:
+      - "s1.blind_rerate.stratification"
+      - "s1.failure_taxonomy.categories.planning_depth"
+    correction: "The blind re-rate was pre-registered to stratify by primary_label and OVERSAMPLE
+                 goal_unknown AND planning_depth, because those two are mutually confounded by design.
+                 planning_depth is now established as STRUCTURALLY UNOBSERVABLE for this reference: the
+                 duck writes and executes Python rather than expanding a search tree, so there is no
+                 effective search horizon against which to compare a sequence length. The quantity the
+                 category is defined on does not exist in this architecture, and no patch creates it
+                 without changing the architecture."
+    evidence_ref: "notes/s1-measurements.md — field-availability table, category 6"
+    effective_replacements:
+      planning_depth_disposition: "marked `unavailable` in the Day-7 ranking and EXCLUDED from
+                                   build_order. NEVER recorded as zero-frequency — an unobservable
+                                   failure mode that silently ranked last would steer construction away
+                                   from a lever that was never measured."
+      stratification: "stratify by primary_label; oversample goal_unknown AND
+                       exploration_or_probe_selection (replacing planning_depth)."
+      why_that_replacement: "the replacement must be (a) observable — it is, with D6 request logs
+                             supplying the candidate action set — and (b) genuinely contestable, so the
+                             agreement statistic does real work. exploration_or_probe_selection is
+                             judgement-heavy ('chose an action of low information yield when a
+                             higher-yield legal action was available') and is the nearest thing this
+                             architecture can express to a planning failure.
+                             It is ALSO now the highest-value category to measure well: R2 returned
+                             `accumulates` with c_reset = 1, so the controller is surgical
+                             information-per-action and EVERY PROBE COSTS SCORE. How often the reference
+                             wastes actions on low-yield probes bears directly on the build order."
+      confound_disposition: "the pre-registered goal_unknown / planning_depth confound CANNOT BE MEASURED
+                             on this reference. With one arm unobservable it is not resolved — it is
+                             invisible. State this in the close-out; do NOT report a clean goal_unknown
+                             frequency that silently absorbs it."
+    reason: "discovered on Day 2 during the field-availability check, which exists precisely to surface
+             this before Day 5 draws the sample, rather than at Day 7 when the ranking is built."
+
 # =====================================================================================
 # S0 — External execution-path proof.
 # =====================================================================================
