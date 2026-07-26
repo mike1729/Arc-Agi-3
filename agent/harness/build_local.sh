@@ -40,6 +40,17 @@ echo "==> applying D8-guard-re_arc-import.patch"
 patch -s -p0 -d "$REPO_ROOT" < "$PATCHES/D8-guard-re_arc-import.patch"
 
 # ---------------------------------------------------------------------------
+# D6b — log the response payload and API rejections.
+#
+# The stock request logger writes only the REQUEST. Raw model output is then recoverable solely from the
+# NEXT turn's accumulated history, which loses the final turn of every episode, and an API rejection is
+# never captured at all. Both are evidence `invalid_output_interface` is defined on. Logging only —
+# control flow is unchanged, per D6's constraint that instrumentation must not alter solver behaviour.
+# ---------------------------------------------------------------------------
+echo "==> applying D6b-log-response-and-rejections.patch"
+patch -s -p0 -d "$REPO_ROOT" < "$PATCHES/D6b-log-response-and-rejections.patch"
+
+# ---------------------------------------------------------------------------
 # D3 + D4 — local inference config.
 #
 # D3: point base_url/model_name at the local MLX server. `provider` deliberately stays "vllm":

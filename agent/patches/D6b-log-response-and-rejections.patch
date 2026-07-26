@@ -1,0 +1,66 @@
+--- agent/reference/taaf/src/ARC3-Inference/inference/agent/tool_agent.py	2026-07-26 07:50:12
++++ agent/work/taaf/src/ARC3-Inference/inference/agent/tool_agent.py	2026-07-26 09:55:22
+@@ -788,11 +788,24 @@
+     analysis_step: int | None = None,
+     action: int | None = None,
+     request_index_within_turn: int | None = None,
++    response_message: dict[str, Any] | None = None,
++    usage: dict[str, Any] | None = None,
++    api_error: dict[str, Any] | None = None,
+ ) -> None:
+     payload = {
+         "messages": messages,
+         "tools": tools or [],
+     }
++    # D6b: the stock logger records only the REQUEST. Without the response payload,
++    # `raw_model_output` is recoverable only from the next turn's accumulated history — which
++    # loses the FINAL turn of every episode — and an API rejection is never captured at all.
++    # Both are evidence the `invalid_output_interface` category is defined on.
++    if response_message is not None:
++        payload["response_message"] = response_message
++    if usage is not None:
++        payload["usage"] = usage
++    if api_error is not None:
++        payload["api_error"] = api_error
+     if event:
+         payload["event"] = event
+     if tool_choice:
+@@ -1832,8 +1845,38 @@
+                             action=display_action_num,
+                             request_index_within_turn=latest_request_index,
+                             finish_reason=result.finish_reason,
++                            response_message=result.message,
++                            usage=result.usage,
+                         )
+                 except requests.RequestException as exc:
++                    # D6b: capture the rejection before the context-length recovery branch decides
++                    # whether to re-raise. Logging only — control flow is unchanged.
++                    if self._save_request_logs:
++                        _body = ""
++                        _status = None
++                        _resp = getattr(exc, "response", None)
++                        if _resp is not None:
++                            _status = getattr(_resp, "status_code", None)
++                            try:
++                                _body = _resp.text[:4000]
++                            except Exception:  # noqa: BLE001
++                                _body = "<unreadable>"
++                        _append_request_snapshot(
++                            _resolve_request_log_path(state_path),
++                            messages=latest_request_messages,
++                            tools=latest_request_tools,
++                            event="api_error",
++                            tool_choice=latest_request_tool_choice,
++                            analysis_step=analysis_step,
++                            action=display_action_num,
++                            request_index_within_turn=latest_request_index,
++                            api_error={
++                                "exception": repr(exc),
++                                "status_code": _status,
++                                "body": _body,
++                                "context_length_error": bool(_is_context_length_error(exc)),
++                            },
++                        )
+                     if not _is_context_length_error(exc):
+                         raise
+                     trimmed_messages = self._trim_messages_for_context(
