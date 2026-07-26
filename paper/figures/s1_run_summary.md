@@ -4,13 +4,8 @@
 
 | run | status | passes | actions | levels done | max level | elapsed | s/action/pass |
 |---|---|---:|---:|---:|---:|---:|---:|
-| `20260726_080730_s1b-ep2` | truncated | 1 | 0 | **0** | 1 | 0 min | — |
-| `20260726_082430_s1b-ft09-c4` | truncated | 4 | 0 | **0** | 1 | 28 min | — |
-| `20260726_085334_s1b-ft09-d9-tuned` | truncated | 4 | 0 | **0** | 1 | 12 min | — |
-| `20260726_090736_s1b-ft09-d9-logged` | truncated | 4 | 0 | **0** | 1 | 25 min | — |
-| `20260726_093320_s1b-vc33-single` | closed | 1 | 27 | **1** | 2 | 120 min | 267.2 |
-| `20260726_135809_s1b-vc33-fixed` | truncated | 1 | 7 | **0** | 1 | 36 min | 309.6 |
-| `20260726_151043_s1b-vc33-moe` | closed | 1 | 742 | **0** | 1 | 45 min | 3.7 |
+| `20260726_195515_s1e-d13c2-c02` | closed | 2 | 204 | **0** | 1 | 45 min | 26.7 |
+| `20260726_211306_s1e-c2-c01` | truncated | 2 | 0 | **0** | 1 | 1 min | — |
 
 **actions** counts only `type == "action"` event records — executed game actions.
 `analysis` records are reasoning snapshots and consume no game action.
