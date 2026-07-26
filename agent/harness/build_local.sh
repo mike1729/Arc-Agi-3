@@ -98,7 +98,7 @@ cfg["analyzer"]["save_request_logs"] = True             # D6
 # retried, and the "analysis" events in those runs ARE the failures. 900 s is ~2x the measured max.
 # (The reference hit 46 timeouts of its own at 120 s, ~1% of its generations, so 120 s is marginal even
 # on reference hardware — but 1% is a retry and 62% is a harness that cannot measure anything.)
-cfg["analyzer"]["timeout"] = 900                        # D10
+cfg["analyzer"]["timeout"] = 2400                       # D10, raised after D13
 # D13 — analyzer.max_output 0 -> 16384. `0` means UNBOUNDED to the client, so no max_tokens is sent and
 # mlx_vlm's own DEFAULT_MAX_TOKENS = 2048 applies server-side. That truncated coordinate reasoning on
 # ACTION6 games mid-generation (finish_reason: length, no tool call, no action) while keyboard games
