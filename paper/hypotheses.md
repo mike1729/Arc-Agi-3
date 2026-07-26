@@ -56,7 +56,7 @@ later-level ranking is statistically indistinguishable from the first-level rank
 **Why it matters.** If confirmed, work aimed at action efficiency optimises a 1.2× gap while the actual
 loss is games that never progress. That would reorder the construction queue.
 
-### H4 — The reference halts rather than thrashes
+### H4 — The reference halts rather than thrashes — **REFUTED, 2026-07-26**
 
 **Basis.** On the level it cannot solve, the reference spends a median of roughly twice the human budget
 and then stops.
@@ -66,6 +66,29 @@ ideas, not through budget exhaustion; the latency/budget category will be rare a
 
 **Refutation condition:** the budget category is frequently primary, or episodes routinely run to the
 action cap.
+
+**Outcome: REFUTED, and by the stronger of the two conditions.** The reference does not terminate
+through exhaustion of ideas at all. Measured from its own `benchmark.json`: **0 of 25 games finished
+early.** All 25 ran 7920.8–7921.3 s against a 7920 s per-game budget — every one of them ran to the
+wall-clock limit.
+
+The hypothesis was built on the recorded state `gave_up`, which reads as a decision by the agent. It is
+not. `gave_up` versus `cancelled` is decided by whether a request happened to be in flight when the
+budget expired, which is a function of generation length — see erratum S1-E9. Under that mechanism the
+reference's `gave_up` and our `cancelled` describe the *same* event.
+
+**What survives.** The efficiency measurement is untouched: on the level it stalls on, the reference
+spends a median 2.03× the human action count, and 1.19× on levels it clears. Those are measured ratios
+and do not depend on why the run ended.
+
+**What does not.** "Halts rather than thrashes" — and with it the reading that the latency/budget
+category should be rare. Every reference episode is right-censored at 132 minutes, so *no* claim about
+voluntary stopping can be drawn from this data, in either direction. H3's contrast between "not knowing
+what to do" and "doing it inefficiently" is unaffected, since it rests on category frequencies rather
+than on termination.
+
+**Consequence for the taxonomy.** `latency_or_budget` cannot be interpreted from a budget-terminated
+corpus without stating the bound, because every episode in it hit that bound by construction.
 
 **Already partly informative.** A locally substituted mixture-of-experts model failed the same level by
 expending roughly 100× the human budget without halting — a qualitatively different failure mode, which

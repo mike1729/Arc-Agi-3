@@ -253,6 +253,53 @@ errata:
                     games to the queue rather than retiring them."
     note: "this narrows what counts as data; it does not change any threshold, arm, or contrast."
 
+  - id: S1-E9
+    date: 2026-07-26
+    scope: ["s1.failure_taxonomy.failure_episode_definition"]
+    supersedes: "S1-E8, filed earlier the same day"
+    correction: "S1-E8 admitted `gave_up`/`won` and excluded `cancelled` as censored, on the premise
+                 that the first means the agent concluded and the second means something cut it off.
+                 THE PREMISE IS FALSE. Measured: 0 of 25 reference games finished early — all 25 ran
+                 7920.8-7921.3 s against a 7920 s budget and all recorded `gave_up`. Our local games ran
+                 2700.8-2700.9 s against a 2700 s budget and recorded `cancelled`. Both reached the same
+                 clean exit path; every run carries `solver_note='tokens=...'`, written only on that
+                 path. The reference did not halt of its own accord — it was cut off, exactly as we
+                 were."
+    mechanism: "`request_timeout_seconds()` = min(analyzer_timeout, time_remaining), so the per-request
+                timeout shrinks toward the deadline. Local generations run for MINUTES, so one is nearly
+                always in flight when the budget expires; killing it sets `stop_event`, and
+                `finish_game` then records `cancelled`. Reference generations ran in SECONDS and
+                completed inside the shrinking window, so the loop exited via `runtime_limit_reached()`
+                with no stop pending and recorded `gave_up`. The recorded state is a function of
+                GENERATION LENGTH, not of agent behaviour, and no budget makes local runs record
+                `gave_up`."
+    evidence_ref: "notes/s1-code-inspection.md; logs/s1e-kb2-c01.log shows the shrinking per-request
+                   timeout directly (read timeout=6.852964, read timeout=431.437778)"
+    effective_replacements:
+      failure_episode_definition: "a level attempt that did not advance, in a game run terminated
+                                   EITHER by the agent OR by the uniform pre-registered wall-clock
+                                   budget applied identically to every game. Episodes are then
+                                   right-censored at a known, uniform bound."
+      operational_test: "budget-terminated iff final_wallclock_seconds >= 0.98 * max_runtime_s_per_game.
+                         This is what separates a uniform experimental condition from an ad-hoc operator
+                         kill: both record `cancelled`, but a killed run stops EARLY. The recorded state
+                         alone cannot distinguish them; the wall-clock can."
+      still_inadmissible: "runs stopped before the budget — operator kills, crashes, and any run whose
+                           game never reached the budget. Non-uniform, and correlated with nothing but
+                           the operator's attention."
+      mandatory_reporting: "every episode carries `censored_at_seconds`; `latency_or_budget` frequency
+                            is reported WITH the statement that it is partly a property of the budget
+                            rather than of the agent."
+    consequence_for_h4: "H4 ('the reference halts rather than thrashes') is REFUTED IN ITS STATED FORM.
+                         It was read off `gave_up` plus a median ~2x human budget. The reference did not
+                         halt. The efficiency ratio stands as measured; the halting claim does not, and
+                         paper/hypotheses.md must record the refutation rather than quietly dropping it."
+    retry_rule: "retrying a budget-terminated game is pointless — it terminates identically every time.
+                 MAX_ATTEMPTS applies to `crashed` and to early stops only. The earlier value of 3 would
+                 have turned a 16.5 h breadth run into 49.5 h without producing anything new."
+    note: "this WIDENS what counts as data relative to S1-E8, and it does so before any labelling has
+           occurred. No threshold, arm, or contrast changes."
+
 # =====================================================================================
 # S0 — External execution-path proof.
 # =====================================================================================

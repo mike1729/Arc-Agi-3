@@ -31,14 +31,22 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 
-# The reference harness's own definition (inference/tools/eval.py): only these two mean the game run
-# CONCLUDED. A `cancelled` or `crashed` game produced censored data — the agent did not finish, so its
-# episode cannot be labelled as a failure and the game must be RETRIED, not recorded as done.
-# This previously treated all four as terminal, which would silently retire a game on a cancellation
-# and leave the breadth run looking complete while holding unusable episodes for those games.
-COMPLETED = {"won", "gave_up"}
-TERMINAL = COMPLETED | {"cancelled", "crashed"}
-MAX_ATTEMPTS = 3        # a game that will not conclude must not loop forever
+# S1-E9. The recorded state does NOT distinguish "the agent concluded" from "the budget expired":
+# 0 of 25 reference games finished early, yet all recorded `gave_up`, while our identically
+# budget-terminated games record `cancelled`. The difference is generation length — a long generation is
+# in flight when the deadline lands, gets killed, and that path sets stop_event.
+#
+# So conclusion is decided by WALL-CLOCK, not by the label. A game that ran its full uniform budget was
+# terminated by a pre-registered experimental condition. A game that stopped EARLY was killed or crashed.
+# Both record `cancelled`; only the wall-clock separates them.
+AGENT_FINISHED = {"won", "gave_up"}
+TERMINAL = AGENT_FINISHED | {"cancelled", "crashed"}
+BUDGET_TOLERANCE = 0.98  # ran >= 98% of the budget => budget-terminated, not killed
+
+# Retrying a budget-terminated game is pointless: it terminates identically every time. Retries exist
+# for crashes and early stops only. The earlier value of 3, applied to budget termination, would have
+# turned a 16.5 h breadth run into 49.5 h without producing anything new.
+MAX_ATTEMPTS = 2
 
 # The 25 public games, from the bundle's own DUCK_HARNESS_PUBLIC_GAME_IDS.
 PUBLIC = [
@@ -66,8 +74,20 @@ def save_state(p: Path, st: dict) -> None:
     tmp.replace(p)          # atomic: a kill mid-write must not corrupt the resume contract
 
 
+def _budget_seconds(run_dir: Path) -> float | None:
+    """The uniform per-game budget this run was launched with, from its own run_config.json."""
+    rc = run_dir / "run_config.json"
+    if not rc.exists():
+        return None
+    try:
+        m = json.loads(rc.read_text()).get("max_runtime_minutes_per_game")
+        return float(m) * 60.0 if m else None
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def harvest(run_dir: Path) -> dict:
-    """Terminal game states from a chunk's benchmark.json."""
+    """Per-game outcome, with conclusion decided by wall-clock rather than by the recorded label."""
     bj = run_dir / "benchmark.json"
     if not bj.exists():
         return {}
@@ -75,12 +95,20 @@ def harvest(run_dir: Path) -> dict:
         b = json.loads(bj.read_text())
     except Exception:  # noqa: BLE001
         return {}
+    budget = _budget_seconds(run_dir)
     out = {}
     for gr in b.get("game_runs") or []:
         if gr.get("state") in TERMINAL:
+            wall = gr.get("final_wallclock_seconds")
+            ran_full_budget = bool(
+                budget and wall is not None and wall >= BUDGET_TOLERANCE * budget)
             out[gr.get("game_id")] = {
                 "state": gr.get("state"),
-                "completed": gr.get("state") in COMPLETED,
+                # S1-E9: concluded = the agent finished, OR the uniform budget expired.
+                "completed": (gr.get("state") in AGENT_FINISHED) or ran_full_budget,
+                "budget_terminated": ran_full_budget,
+                "censored_at_seconds": budget if ran_full_budget else None,
+                "final_wallclock_seconds": wall,
                 "levels_completed": gr.get("levels_completed"),
                 "actions_per_level": gr.get("actions_per_level"),
                 "run_dir": run_dir.name,
