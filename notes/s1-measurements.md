@@ -469,6 +469,35 @@ be quoted as the model cost.
 **What it does NOT change.** Erratum S1-E7 stands on its own arithmetic: one pass over a game yields at
 most one failure episode, so 25 games yield at most 25 against a pre-registered sample of 30.
 
+### Why click games under-produce actions — diagnosed, and it is NOT contention alone
+
+Concurrency-2 chunk, `wa30` (keyboard) paired with `lp85` (click), 45 min each:
+
+| | generations | median completion tokens | actions | actions/generation |
+|---|---:|---:|---:|---:|
+| `wa30` | 41 | 264 | **201** (ref 255) | ~5 |
+| `lp85` | 11 | **871** | **3** (ref 79) | ~0.3 |
+
+Median generation at concurrency 2 is **470 s**, so a 45-minute budget affords only ~5–6 generations
+per game. Two independent factors then multiply:
+
+1. **Click generations are 3.3× longer in tokens** — coordinate reasoning on a 64×64 grid — so fewer
+   fit in the budget.
+2. **Keyboard games BATCH.** The agent emits `action(actions=[...])` with runs of repeated moves,
+   ~5 actions per generation. On click games it emits one coordinate at a time and spends most
+   generations inspecting.
+
+Click games therefore need roughly **18× more generations per action**, each costing more. This is
+intrinsic to the action space, not a scheduler artefact — which is why `lp85` alone at concurrency 1
+managed 31 actions: it received the whole budget's worth of generations.
+
+**Consequence for scheduling.** A uniform 45 min/game at uniform concurrency cannot serve both classes.
+Keyboard games reach ~79% of reference volume at concurrency 2; click games need concurrency 1 and/or a
+substantially longer per-game budget. Fifteen of the 25 public games are ACTION6.
+
+**This is not a reason to exclude click games from the taxonomy** — it is a reason their episodes will be
+budget-terminated and must be labelled as such, or the run must be restructured by action class.
+
 ### Kaggle reference — per-game behavioural baseline (the S1-E5 mitigation)
 
 `agent/harness/analyse_reference_run.py` → `logs/kaggle-reference/per_game_analysis.json`. This is the
