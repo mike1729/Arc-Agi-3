@@ -170,7 +170,7 @@ instrumentation — only the model differs.
 |---|---:|---:|---:|
 | **Kaggle reference** (27B dense, FP8) | **2/7** | 49 | **10.71** |
 | **local dense** (27B, MLX 4-bit) | 1/7 | **9** | 2.16 |
-| **local MoE** (35B-A3B, MLX 4-bit) | **0/7** | **229+** | **0.00** |
+| **local MoE** (35B-A3B, MLX 4-bit) | **0/7** | **742** | **0.00** |
 
 *(The reference's 10.71 is exactly the completed-weight cap `(1+2)/28 × 100`, so it saturated — an
 independent confirmation that V8-as-corrected models the scorer correctly.)*
