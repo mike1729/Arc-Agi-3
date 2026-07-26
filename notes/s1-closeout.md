@@ -27,7 +27,7 @@ originally carried prose only, which could not be independently checked.
 | Levels per game | 6–10 (mode 6) |
 | Level-1 human baselines | 6 (vc33 = 7) to 78; across all levels, up to 578 |
 | Action space | `RESET` + `ACTION1`–`ACTION7`; `ACTION6` carries (x, y) |
-| Action availability | **per-game and per-state**, re-read every step. At reset: `ACTION6` in 19/25 games, `ACTION1–4` in ~16–17, `ACTION5` in 9, `ACTION7` in 6 |
+| Action availability | **per-game** (measured). At reset: `ACTION6` in 19/25 games, `ACTION1–4` in ~16–17, `ACTION5` in 9, `ACTION7` in 6. ⚠ **Per-*state* variation is NOT evidenced** — see below |
 
 ### 🔴 The one that would have been expensive: observations are frame *sequences* of varying length
 
@@ -56,6 +56,19 @@ Seven single-frame observations, then **six frames** in one observation. This is
    other than what they claim.
 4. Padding: grids are already uniformly 64×64, so no padding convention is needed — but record that this
    is *verified serialization*, not necessarily the environment's intrinsic grid size.
+
+### ⚠ Correction — "per-state action availability" was asserted, not measured
+
+An earlier version of this table said availability is "per-game **and per-state**, re-read every step".
+Only the per-game half is measured. Probing `ls20-9607627b` for 8 steps records
+`available_actions` unchanged at `[1,2,3,4]` throughout
+(`logs/s2_arc_conventions.json → availability_varies_within_episode: false`).
+
+What is true: the *harness* re-reads `available_actions` every step, and the reference's prompt describes
+it as "the current list of valid action names" — so the interface permits per-state variation. What is
+**not** established is that any game exercises it. A generator built to vary the action set per state
+would be modelling a behaviour we have not observed; one built to hold it fixed per game matches
+everything measured. **Leave this open and widen the probe before S2 commits to either.**
 
 ### Also inherited
 

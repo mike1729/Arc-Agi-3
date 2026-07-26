@@ -52,14 +52,17 @@ def main() -> None:
                          "frames_at_reset": len(fr), "actions_at_reset": a_ids,
                          "tags": meta.get("tags")}
 
-    # Does the frame count vary WITHIN an episode? (the finding prose alone could not evidence)
-    seq = []
+    # Does the frame count vary WITHIN an episode, and does the ACTION SET change per state?
+    # Both are claimed in the close-out; recording only the reset state could not evidence either.
+    seq, avail_seq = [], []
     env = arcade.make("ls20-9607627b", seed=0)
     f = env.reset()
     seq.append(len(getattr(f, "frame", []) or []))
+    avail_seq.append(sorted(int(x) for x in (f.available_actions or [])))
     for _ in range(8):
         f = env.step(arcengine.GameAction.ACTION1)
         seq.append(len(getattr(f, "frame", []) or []))
+        avail_seq.append(sorted(int(x) for x in (f.available_actions or [])))
 
     out = {
         "games": len(per_game),
@@ -67,6 +70,8 @@ def main() -> None:
         "cell_values": {"min": min(vals), "max": max(vals), "distinct": len(vals), "observed": sorted(vals)},
         "frames_per_observation_at_reset": dict(frames_at_reset),
         "frame_count_sequence_ls20_first_8_steps": seq,
+        "available_actions_sequence_ls20_first_8_steps": avail_seq,
+        "availability_varies_within_episode": len({tuple(a) for a in avail_seq}) > 1,
         "levels_per_game": dict(collections.Counter(levels)),
         "action_ids_at_reset_counts": dict(sorted(acts.items())),
         "per_game": per_game,

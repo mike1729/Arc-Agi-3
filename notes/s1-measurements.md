@@ -190,67 +190,35 @@ These are first-class knobs the reference already exposes, so bounding them is a
 deviation rather than a code change — but it is still a deviation with a real fidelity cost, and it must
 be measured as its own contrast rather than folded in silently.
 
-#### ⚠ D9's baseline was misidentified — correction before the result below
+#### 🔴 D9 — WITHDRAWN AS A RESULT. Not a negative result; **not measured**.
 
-The D9 entry described the reference operating point as `tool_steps = 12`. **That is wrong.** The
-reference's `Makefile` sources it from the config — `LOCAL_ANALYZER_TOOL_STEPS ?= $(CONFIG_VALUE)
-analyzer.tool_steps 0` (line 145) — and `inference.json` sets `analyzer.tool_steps: 0`, which
-`ToolAgent` interprets as **unlimited** (`self._tool_steps = None if _LOCAL_ANALYZER_TOOL_STEPS <= 0`).
+Everything previously written here — "no measurable speedup", the 284 vs 317/324 s/action comparison, the
+`mean 1.97 calls/turn` figure, the 193 s decode / 124 s overhead decomposition, and the "cost driver is
+per-call long-context processing" conclusion — **is withdrawn**. Three independent defects, each fatal on
+its own:
 
-So the reference operating point is **unlimited model calls per game action**, not 12. The `12` we
-measured against was the *argparse/code fallback* we landed on by driving
-`inference.framework.run` directly and bypassing the Makefile — the same bypass that silently disabled
-D6. **D9 was therefore "unlimited → 4" against a baseline that was itself an unintended `12`, not the
-clean "12 → 4" the commit message claims.**
+1. **Neither arm executed a game action.** Both the baseline and the D9 runs were ft09, and ft09 produced
+   *zero* `action` records. "No speedup in seconds-per-action" is not a finding when no actions occurred;
+   the quantity was never measured.
+2. **The baseline was not the reference.** It ran at the code-default `tool_steps = 12`, reached via the
+   Makefile bypass. The reference operating point is `analyzer.tool_steps: 0` = **unlimited**. So the
+   comparison was 4-versus-12, not 4-versus-reference.
+3. **The arms were not matched.** The runs were truncated after different durations (12 vs 25 min), so
+   even a valid action count would not have been comparable.
 
-Also unapplied by the bypass: `analyzer.yield_seconds` (Makefile default 60), which we never set at all.
+The `mean 1.97 calls/turn` figure that "explained" the null was itself wrong — it double-counted
+`request` and `response` records. Corrected: **mean 2.62, with 21% of turns reaching the cap of 4**, so
+the cap plausibly *did* bind, which removes the mechanism the null rested on.
 
-**What survives this correction:** the *mechanism* is unaffected. Measured usage is **mean 1.97 calls per
-turn**, so neither 4, nor 12, nor unlimited binds — the agent simply does not use many calls per turn.
-The negative result stands; its framing did not.
+**Defensible statement:** D9's effect on action throughput was **not measured**. Deciding whether to
+retain or revert it on performance grounds requires a **matched-duration rerun against the canonical
+baseline** (`run_local.sh`, `tool_steps = 0`) on a game the agent actually acts in. D9 remains reverted —
+but on fidelity grounds (fewer deviations is better absent evidence), *not* because it was shown useless.
 
-#### D9 (analysis-budget reduction) — NEGATIVE RESULT, and the deviation was reverted
-
-Ran `tool_steps` 12→4 and `max_output` uncapped→1024 on ft09, 4 passes at concurrency 4, 25 min.
-
-| | Reference budgets | D9 tuned |
-|---|---|---|
-| rate | 284 s/action @ 28 min | 317 s/action @ 22 min, 324 @ 24 min |
-| levels | 0 | 0 |
-
-**No measurable speedup.** The request logs (D6) explain it mechanistically — neither knob binds:
-
-| Knob | Reference | D9 cap | Actual usage |
-|---|---|---|---|
-| `tool_steps` | **unlimited** (`0`, via Makefile) — *not* 12 | 4 | **mean 1.97 calls/turn**; only 13% of turns reach 4 |
-| `max_output` | uncapped | 1024 | **median 350 tokens**; binds only at the tail |
-
-`tool_steps: 12` is a *ceiling the agent rarely approaches*, not a target, so cutting it to 4 could only
-affect the small tail of turns near the cap. This was the mechanism predicted before the run, and the run
-confirmed it.
-
-**D9 was reverted.** A deviation that buys nothing costs fidelity for free. `tool_steps` is back to 12 and
-`max_output` to uncapped; `agent/harness/local.env` is retained only as the record of what was tested.
-The negative result stays; the deviation does not.
-
-#### ⚠ Correction — the concurrency sweep was measured on an unrepresentative prompt
-
-`agent/harness/concurrency_sweep.py` used 256-token generations on a short prompt and reported **13.7
-tok/s per request at concurrency 4**. Under the real workload — a 12.4k-character system prompt plus
-accumulated history — median decode is **3.3 tok/s** at the same concurrency, roughly 4× worse.
-
-The sweep's *shape* (aggregate scales to ~5, per-request declines monotonically, memory is not the
-ceiling) still holds and still selected the right operating point. Its *absolute numbers* do not transfer
-to the agent workload and must not be quoted as the agent's latency. The freeze's own §5 requirement —
-measure "under the *actual* batching pattern" — is what this violated, and any latency figure that gates
-a threshold has to come from an agent run, not a synthetic probe.
-
-#### Where the time actually goes
-
-Decomposing 317 s/action at concurrency 4: ~193 s is decode (1.97 calls × 97.9 s median), leaving
-**~124 s (39%) in prefill, tool execution and overhead**. The cost driver is **per-call long-context
-processing**, not call count or generation length — which is precisely what neither D9 knob could touch,
-and precisely what FP8 on a datacentre GPU with working prefix caching addresses.
+**Also withdrawn:** the concurrency conclusion drawn from these runs. The claim that vc33 was "~4× faster
+per action than any ft09 run" divided by an action count of zero. The concurrency *sweep* (synthetic,
+`logs/concurrency_sweep.json`) stands on its own terms; the claim that the agent workload confirmed it
+does not.
 
 #### Still open — the real single-game constraint
 
@@ -298,7 +266,9 @@ index, so every response with index 1 looked like a new turn. Filtering to `even
 | run | turns | mean calls/turn | max | at cap of 4 |
 |---|---:|---:|---:|---:|
 | `s1b-ft09-d9-logged` | 24 | **2.62** | 4 | **5/24 = 21%** |
-| `s1b-vc33-single` | 15 | 2.20 | 5 | — |
+
+*vc33 is omitted: the run is not finalized, and publishing a snapshot of a live run is exactly what the
+non-terminal-run policy forbids.*
 
 So the earlier claim that the cap "did not bind" is **weaker than stated** — a fifth of turns reached it.
 The D9 conclusion still stands, but for a different and now-primary reason: **the ft09 runs executed no
@@ -334,7 +304,7 @@ stack unmodified. **D1 and D2 do not propagate to the submission at all**: the M
 That is good for the submission's fidelity, and it creates two problems that must not be discovered at
 S1-g:
 
-1. **Local latency and throughput figures do not transfer to Kaggle.** The 13.7 tok/s, the 284 s/action,
+1. **Local latency and throughput figures do not transfer to Kaggle.** The 13.7 tok/s, the withdrawn s/action figures,
    the concurrency-4 ceiling — all are properties of MLX 4-bit on an M5 Pro and say nothing about the
    submitted agent's runtime envelope. `per_action_latency` must therefore be read against the
    *submission* stack before it can gate anything, or its verdict scoped explicitly to local development.

@@ -114,6 +114,26 @@ errata:
     reason: "raised by external review of the S1-b commits; S1-E2's justification did not survive the
              taxonomy correction made in the same session."
 
+  - id: S1-E4
+    date: 2026-07-26
+    scope: ["s1.blind_rerate.stratification"]
+    correction: "S1-E3's eligibility rule said an episode qualifies if its game 'exposes simple actions
+                 (ACTION1-5) at the steps being rated'. That is too weak: a MIXED game exposing both
+                 ACTION1-5 and ACTION6 satisfies it, yet on such a game the higher-yield alternative may
+                 be a COORDINATE, which is exactly the evidence that does not exist. The rule admitted
+                 the cases it was written to exclude."
+    effective_replacements:
+      eligibility_rule: "an episode is eligible for the exploration_or_probe_selection stratum ONLY if
+                         ACTION6 is ABSENT from the candidate set at every rated step. Equivalently, at
+                         the game level, only the simple-action-only games qualify:
+                         g50t-5849a774, ls20-9607627b, re86-8af5384d, tr87-cd924810, tu93-0768757b,
+                         wa30-ee6fef47 (6 of 25). Presence of ACTION6 at a rated step makes that step
+                         ineligible regardless of what else is available."
+      reporting: "report the eligible fraction beside the agreement statistic. An agreement number
+                  computed on 6 of 25 games must say so."
+    reason: "external review: the rule as written did not encode the restriction its own accompanying
+             note described."
+
 # =====================================================================================
 # S0 — External execution-path proof.
 # =====================================================================================

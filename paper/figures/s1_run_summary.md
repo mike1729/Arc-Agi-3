@@ -13,6 +13,7 @@
 `analysis` records are reasoning snapshots and consume no game action.
 **levels done** counts completed levels, the S1-b hard-exit criterion — not a leaderboard score.
 
-**status**: `closed` = benchmark closed cleanly; `truncated` = killed mid-run, stable
-but incomplete. Runs still writing are excluded entirely — tabulating them would produce
-evidence that changes on every regeneration.
+**status**: `closed` = benchmark.json closed cleanly. `truncated` = an operator
+asserted the process is dead via a `SNAPSHOT_FINALIZED` marker. Runs with neither are
+excluded. Quiescence is NOT used: measured generation durations reach 306 s here, so a
+live run routinely goes quiet longer than any timeout could safely treat as stopped.
