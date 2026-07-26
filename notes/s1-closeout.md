@@ -51,6 +51,45 @@ gather the Day-5 taxonomy on the dense 27B.
 
 ---
 
+## Actionable queue while S1-e runs (all CPU-only — must not contend for the GPU)
+
+Ordered by whether S1-e's output depends on them.
+
+### Must be done BEFORE S1-e's episodes are labelled
+
+1. **Separate level-1 from level-≥2 episodes in `s1d_label.py`.** The reference analysis showed 15/25
+   games clear level 1 and only 3 clear level 2 — so a frequency ranking pooled across levels would be
+   dominated by the easy case and would rank the *wrong* build order. The episode record already carries
+   `level`; the frequency function must stratify on it.
+2. **Blind re-rate sampling script.** Manifest `blind_rerate` requires: label first → draw a sample
+   stratified by `primary_label`, oversampling `goal_unknown` and (per S1-E4) `exploration_or_probe_selection`
+   restricted to the six simple-action games → produce a blinded copy stripping labels/confidences/notes
+   while preserving the full evidence packet including `reasoning_text`. Needed on Day 5, not Day 7.
+
+### Closes an open threshold
+
+3. **D12 — runtime action logging.** `legal_action_validity` is currently *not measurable*: the agent
+   builds action lists programmatically, so `emitted` cannot be recovered from tool source. A patch
+   logging every action passed to `action()` at runtime would make it a real number. Cheap to write;
+   needs a run to validate, so it would apply to a later run rather than S1-e.
+
+### Standing obligations (§5)
+
+4. **Methods prose** for S1-c and S1-d into `paper/methods/`, written the day they were built.
+5. **`paper/hypotheses.md` / `related-work.md`** — the daily 30 min. Related-work already has the field
+   survey; hypotheses has had nothing added today despite R1/R2 resolving the controller fork.
+
+### Needs a decision or an outward-facing action — NOT mine to take
+
+6. **Bucket-2 licence.** All three Tufa datasets declare no licence. Resolving it means **posting a
+   question on the competition discussion thread under your account**. It blocks the S1-f payload if
+   TAAF code ships, and blocks making this repository public. I have not posted anything.
+7. **Whether to spend today's submission slot.** Untouched since S0. S1-f wants a leaderboard reference,
+   but we have no *own* payload yet, and submitting the reference notebook would be someone else's work
+   under an unresolved licence.
+
+---
+
 ## S2 inheritance — ARC-compatible conventions the generators must match
 
 **Measured 2026-07-26 across all 25 public games** (not taken from documentation). Close-out item 5;
