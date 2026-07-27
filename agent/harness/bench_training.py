@@ -6,6 +6,17 @@ WHY
 ~20M parameters against the reference agent's 27B. That assertion was reasoned, not measured, and the
 open question is whether the machine actually delivers the throughput S3 needs.
 
+THE 20M FIGURE IS A GUESS, AND IT IS NOT PRE-REGISTERED
+--------------------------------------------------------
+Checked 2026-07-27: "20M trainable parameters" appears NOWHERE in `gate_manifest.yaml`. Its sources are
+`docs/arc-agi-3-ship-jepa-x-architecture.md` §20 — "a compact implementation **can target
+approximately** 20 million", in a document CLAUDE.md marks *candidate design, not committed* — and the
+frozen, partly-superseded executive summary, which calls it a "fixed budget".
+
+So this benchmark does NOT ask "can the machine train 20M parameters". That question inherits the guess.
+It SWEEPS parameter counts and reports the feasible frontier, so the size can be chosen against measured
+throughput instead of the reverse.
+
 WHAT S3 NEEDS, AND WHAT IS MISSING
 ----------------------------------
 S3 screens 3 objectives (A latent / B reconstructive / C exact-delta) crossed with rollout on/off — six
@@ -124,7 +135,8 @@ def pick_width(target_m: float, layers: int, heads: int, grid: int, k: int) -> t
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--params", type=float, default=20.0, help="target millions of parameters")
+    ap.add_argument("--sweep", default="5,10,20,50,100",
+                    help="comma-separated parameter counts in millions to sweep")
     ap.add_argument("--k", type=int, default=16, help="transitions in the context window")
     ap.add_argument("--grid", type=int, default=64)
     ap.add_argument("--batch", type=int, default=32)
@@ -146,45 +158,43 @@ def main() -> int:
         print(f"   pids: {busy.split()}")
         return 2
 
-    print(f"target {args.params}M params · K={args.k} · grid {args.grid}x{args.grid} · "
-          f"batch {args.batch} · {args.layers}L/{args.heads}H")
-    d, n_params, model = pick_width(args.params, args.layers, args.heads, args.grid, args.k)
-    print(f"chosen d={d}  ->  {n_params/1e6:.2f}M parameters")
+    print(f"K={args.k} · grid {args.grid}x{args.grid} · batch {args.batch} · "
+          f"{args.layers}L/{args.heads}H · sweep {args.sweep}M params\n")
 
-    opt = optim.AdamW(learning_rate=3e-4)
-    grids = mx.random.randint(0, 16, (args.batch, args.k, args.grid, args.grid))
-    actions = mx.random.randint(0, 8, (args.batch, args.k))
-    target = mx.random.normal((args.batch, args.k, d))
+    results = []
+    for target_m in [float(x) for x in args.sweep.split(",")]:
+        d, n_params, model = pick_width(target_m, args.layers, args.heads, args.grid, args.k)
+        opt = optim.AdamW(learning_rate=3e-4)
+        grids = mx.random.randint(0, 16, (args.batch, args.k, args.grid, args.grid))
+        actions = mx.random.randint(0, 8, (args.batch, args.k))
+        tgt = mx.random.normal((args.batch, args.k, d))
 
-    def loss_fn(m):
-        return ((m(grids, actions) - target) ** 2).mean()
+        def loss_fn(m):
+            return ((m(grids, actions) - tgt) ** 2).mean()
 
-    grad_fn = nn.value_and_grad(model, loss_fn)
+        grad_fn = nn.value_and_grad(model, loss_fn)
+        mx.reset_peak_memory()
+        for _ in range(args.warmup):
+            _, g = grad_fn(model); opt.update(model, g); mx.eval(model.parameters(), opt.state)
+        mx.eval(model.parameters())
+        t0 = time.perf_counter()
+        for _ in range(args.steps):
+            _, g = grad_fn(model); opt.update(model, g); mx.eval(model.parameters(), opt.state)
+        dt = time.perf_counter() - t0
+        sps = args.steps / dt
+        results.append((n_params, d, sps, mx.get_peak_memory() / 1e9))
+        print(f"  {n_params/1e6:6.1f}M (d={d:4d})  {sps:7.2f} steps/s  "
+              f"{dt/args.steps*1000:6.0f} ms/step  peak {mx.get_peak_memory()/1e9:5.2f} GB")
 
-    for _ in range(args.warmup):
-        loss, grads = grad_fn(model)
-        opt.update(model, grads)
-        mx.eval(model.parameters(), opt.state)
-
-    mx.eval(model.parameters())
-    t0 = time.perf_counter()
-    for _ in range(args.steps):
-        loss, grads = grad_fn(model)
-        opt.update(model, grads)
-        mx.eval(model.parameters(), opt.state)
-    dt = time.perf_counter() - t0
-
-    sps = args.steps / dt
-    peak = mx.get_peak_memory() / 1e9
-    print(f"\n  {sps:.2f} steps/s   ({dt/args.steps*1000:.0f} ms/step)")
-    print(f"  {sps * args.batch:.0f} sequences/s")
-    print(f"  peak memory {peak:.2f} GB")
-    print(f"\n  wall-clock per training run, by step budget (NONE is pre-registered):")
-    for steps in (10_000, 50_000, 100_000, 500_000):
-        h = steps / sps / 3600
-        print(f"     {steps:>7,} steps -> {h:6.2f} h/run   ->  12 runs = {h*12:7.1f} h "
-              f"({h*12/24:.1f} days)")
-    print(f"\n  S3 allows 5 days for ~12 runs plus controls. Read the table against that.")
+    print(f"\n  Wall-clock for ~12 S3 runs, by parameter count x step budget.")
+    print(f"  NO step budget is pre-registered — that is the missing number, not this table.\n")
+    print(f"  {'params':>8s} " + " ".join(f"{s//1000:>6d}k" for s in (10_000, 50_000, 100_000, 500_000)))
+    for n_params, d, sps, _ in results:
+        row = " ".join(f"{steps/sps/3600*12:6.1f}h" for steps in (10_000, 50_000, 100_000, 500_000))
+        print(f"  {n_params/1e6:7.1f}M {row}")
+    print(f"\n  S3 allows 5 days (120 h) for ~12 runs plus controls. Cells under ~100 h are")
+    print(f"  reachable locally; the largest such row is the size the machine supports, which is")
+    print(f"  the number to choose a parameter budget AGAINST rather than to check 20M against.")
     return 0
 
 

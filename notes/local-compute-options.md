@@ -27,7 +27,17 @@ adapters 0.7M, reserve 1.0M — **20.0M total**. The archive, graph algorithms, 
 and search are nonparametric.
 
 At 20M parameters, weights are ~80 MB in fp32; with Adam states and activations a training step is
-comfortably under a gigabyte on a machine with **69 GB unified memory**. S2's F1/F3 generators are
+comfortably under a gigabyte on a machine with **69 GB unified memory**.
+
+> **Caveat added 2026-07-27: 20M is itself a guess, and it is not pre-registered.** The figure appears
+> nowhere in `gate_manifest.yaml`. Its sources are the architecture doc — "a compact implementation *can
+> target approximately* 20 million", in a document marked *candidate design, not committed* — and the
+> frozen, partly-superseded executive summary, which calls it a "fixed budget". Nor is any **training**
+> budget registered: "matched optimization budget" is required with no number attached, so the arms could
+> be trained to different budgets without violating anything written down. The claim that local is
+> "comfortable" therefore rests on a guessed model size and an absent step count. `bench_training.py`
+> sweeps parameter counts rather than assuming 20M, so the size can be chosen against measured
+> throughput instead of the reverse. S2's F1/F3 generators are
 synthetic sequence producers, and S3 screens three objectives (A latent / B reconstructive / C
 exact-delta) over them. **None of that touches an LLM.**
 
