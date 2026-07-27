@@ -149,3 +149,72 @@ eleven categories.
 Zero levels cleared in phase 2 so far. The L2+ band is still empty across all local data, so the S1-E2
 rank-on-L2+ rule remains inapplicable locally — see the phase-1 note. `lp85` and `vc33`, the two games
 that cleared level 1 locally under superseded configs, are both pure-ACTION6 and are still queued.
+
+---
+
+## Why the "should have cleared L1" games failed — measured on `tn36`
+
+Eight games were cleared at level 1 by the reference and not by local. They split by whether local
+spent a human's worth of actions at all:
+
+| | game | local actions ÷ L1 human baseline |
+|---|---|---:|
+| acted and failed | `tu93` | 8.05× |
+| | `vc33` | 3.29× |
+| | `re86` | 1.38× |
+| | `sp80` | 1.23× |
+| | `bp35` | 1.14× |
+| **barely acted** | `r11l` | 0.86× |
+| | `lp85` | **0.24×** |
+| | `tn36` | **0.12×** |
+
+Three of eight failed without ever spending a human's action budget. `tn36` and `lp85` produced **four
+actions in forty-five minutes**.
+
+### It is not a throughput problem
+
+The obvious explanation — the local model is slow, so it runs out of clock — is wrong, and the
+measurement says so plainly:
+
+| `tn36` | generations | actions | actions/generation |
+|---|---:|---:|---:|
+| local, 45 min, conc 1 | **33** | 4 | **0.12** |
+| reference, 132 min, conc 32 | **30** | 82 | **2.73** |
+
+**Local received MORE model calls than the reference — 33 against 30 — and converted them into 4
+actions instead of 82.** Near-identical opportunity, twenty-fold difference in yield.
+
+### What it did with them
+
+```
+gen 1–4    inspect segmentation                       no action
+gen 5      click (42,21)                              ACTION
+gen 6–14   compare frames, parse ASCII, re-inspect    no action
+```
+
+Twenty-nine of thirty-three generations committed nothing. **Forty of the forty-five minutes went to
+inspection.** The reasoning itself is coherent — comparing the initial frame against the current one
+after a click is exactly right — but it never converts into a decision to act.
+
+### Consequences
+
+1. **A hypothesis I was about to record is refuted by this.** I had been assembling the explanation
+   that the reference's inspect-heavy policy is affordable at FP8 speed and unaffordable at 4-bit —
+   same policy, different economics. Local had the *same number of turns* and used them differently.
+   The difference is behavioural, not economic.
+2. **Direct mechanistic evidence for H5.** Not a shift in the magnitude of a failure but in its kind:
+   the substituted model declines to act, given equal opportunity.
+3. **"45 minutes is too short" is the wrong diagnosis** for `tn36`, `lp85` and `r11l`. More wall-clock
+   buys more inspection at a 12% action rate. The binding constraint is actions-per-generation.
+4. **Build-order implication.** On these games the bottleneck is not understanding the puzzle. It is
+   that the model will not commit to an action, preferring another look at the frame. That is a
+   different lever from anything in the world-model direction.
+
+### Caveat on the concurrency A/B recorded above
+
+`analyzer.temperature = 0.6`, `top_p = 0.95`, `top_k = 20`, no seed — generation is **stochastic**.
+The `re86` comparison (48 actions at concurrency 2 versus 36 at concurrency 1) is therefore two draws
+from a noisy policy, not a controlled A/B, and 48 vs 36 sits well inside plausible sampling variance.
+Calling the concurrency hypothesis "refuted" on one paired observation was an over-claim of the same
+kind as the original concurrency-4 confound. The manifest already sets the right standard elsewhere —
+R2 uses `repetitions_per_arm: 3` because the median is the statistic, and S3 pre-registers two seeds.
