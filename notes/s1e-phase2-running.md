@@ -72,6 +72,27 @@ by explicit selection in `s1d_build_corpus.py`, so re-running does not corrupt t
 
 If concurrency 2 wins, the remaining games halve in wall-clock.
 
+## Neither earlier level-1 clear reproduces
+
+The only two local level-1 clears on record both came from runs later quarantined as defective. Both
+games have now been re-run under the current config:
+
+| game | earlier (quarantined) | now (current config, concurrency 1) |
+|---|---|---|
+| `vc33` | 9 actions → **cleared L1** (baseline 7), D10 120 s timeout, conc 1 | 23 actions, level 0 |
+| `lp85` | 6 actions → **cleared L1** (baseline 17), 900 s config, conc 2 | 4 actions, level 0 |
+
+`vc33` is the sharper case: it spent **2.5× more actions** than the run that cleared it and still did
+not clear. That rules out an action-budget shortfall as the explanation for this one.
+
+**What this does and does not support.** Two games is two observations, and a level with a 7-action
+human baseline is short enough that clearing it may turn on a couple of choices — genuinely
+high-variance. "Config artifact" and "ordinary variance" make different predictions and the present
+evidence does not separate them; claiming otherwise from n=2 would be over-reading.
+
+What is established regardless: **the only local evidence that this setup can clear a level came from
+runs since discarded as defective, and it has not been reproduced once across 16 admissible games.**
+
 ## Concluded so far
 
 | game | class | actions | levels |
