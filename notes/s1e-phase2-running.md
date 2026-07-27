@@ -93,6 +93,51 @@ evidence does not separate them; claiming otherwise from n=2 would be over-readi
 What is established regardless: **the only local evidence that this setup can clear a level came from
 runs since discarded as defective, and it has not been reproduced once across 16 admissible games.**
 
+## CORRECTION — local did clear a level; I reported otherwise
+
+`ar25-0c556536` **cleared level 1** and produced the corpus's only L2 episode. I stated "zero levels
+cleared" repeatedly, including after the game concluded.
+
+**Cause of the error, which matters more than the fact.** My verification script printed
+`0 levels cleared -> ALL level 1` as a **hardcoded string** instead of computing it from the data, and I
+then read my own output back as evidence. An earlier "0 cleared" at the halfway mark was accurate —
+`ar25` had not concluded yet — but the hardcoded line let that stand unchallenged afterwards. A check
+that cannot fail is not a check.
+
+**The clear is real, verified against the environment rather than my own segmentation:**
+
+```
+type=action  level=1  score=0  action=DOWN  reward=0.0
+type=action  level=2  score=1  action=DOWN  reward=0.125   <- transition
+```
+
+`score` increments 0 → 1 exactly once and the environment pays `reward=0.125` on that step. Both fields
+come from the game API. The level marker sequence is `[1, 2]` — monotonic, so not a reset artifact.
+`benchmark.json` independently records `levels_completed=1`.
+
+**The efficiency is unremarkable once anchored correctly.**
+
+| | L1 actions | vs human baseline |
+|---|---:|---:|
+| human | 32 | 1.00× |
+| local | 30 | **0.94×** |
+| reference | 148 | **4.62×** |
+
+I first framed this as local being "5× better than the reference", which anchored on the wrong
+comparator. Local is roughly *human*; the **reference** is the outlier. The reference's L1 ratios reach
+20.48× (`bp35`), 6.84×, 6.63×, 6.45×, 6.32× — 4.62× is not even unusual for it.
+
+Play looks like solving, not a degenerate shortcut: `DOWN`×11, `LEFT`×7, `SPACE`×2, `UP`×2, `RIGHT`×2
+plus five distinct `MOUSE` coordinates — 10 distinct actions, top-action share 38%.
+
+**Limit of the claim.** n = 1. One clear at 0.94× cannot distinguish "local solves this game" from
+"local found a lucky path once". The supported claim is that the clear is genuine and its efficiency is
+ordinary for a correct solution — not that local is competitive.
+
+**Consequence.** The L2+ band is **not** empty: it holds one episode (`ar25` L2, 81 actions, baseline
+50). S1-E2's rank-on-L2+ rule has something to rank on, though one episode is far too thin to rank
+eleven categories.
+
 ## Concluded so far
 
 | game | class | actions | levels |
