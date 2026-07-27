@@ -42,6 +42,46 @@ of the task**, and the failure-frequency ranking derived from it would inherit t
 ranked on those frequencies, so this is not a footnote — it decides whether the corpus can be used at
 all for its stated purpose.
 
+---
+
+## THE ARM COMPLETED, AND IT DOES NOT REACH SIGNIFICANCE — 2026-07-27, 16:10
+
+All 8 games ran both arms, 45 min each, all budget-terminated and admissible under S1-E9.
+
+| game | 8-bit act | 8-bit lvl | 4-bit act | 4-bit lvl |
+|---|---:|---:|---:|---:|
+| `tn36` | 14 | **1** | 4 | 0 |
+| `vc33` | 10 | **1** | 23 | 0 |
+| `sp80` | 53 | **1** | 48 | 0 |
+| `lp85` | 5 | 0 | 4 | 0 |
+| `ft09` | 10 | 0 | 1 | 0 |
+| `r11l` | 7 | 0 | 19 | 0 |
+| `bp35` | 72 | 0 | 24 | 0 |
+| `tu93` | 102 | 0 | 153 | 0 |
+
+**8-bit 3 clears, 4-bit 0, no reversals.** That reads as decisive and is not: it is **3 discordant
+pairs all in one direction, exact sign test p = 0.25**.
+
+The section above guessed the noise floor at "roughly 2×" from `vc33`'s single 23 → 51 swing. It is now
+measured properly against 25 paired games of the reference against itself
+(`notes/s1-reference-variance.md`), and the guess was optimistic:
+
+- the reference **disagrees with its own rerun on 36% of games** (9/25 change level count);
+- our two arms disagree on **37.5%** (3/8) — statistically indistinguishable from a configuration
+  disagreeing with itself;
+- the reference's mean score moved **2.19 → 1.14** between identical runs.
+
+Reaching p < 0.05 needs **6 discordant pairs one way**, so at a ~37% discordance rate, roughly **16
+paired games** or 8 games × 2 seeds.
+
+**What still stands** are the within-run rate statistics, which average over tens of generations rather
+than resting on one binary outcome: acting rate (8-bit 25–32% vs 4-bit 12–50%), actions per generation
+(`tn36` 0.12 → 0.45), and the near-identical generation counts across arms (33/31/30) that rule out
+compute as the variable.
+
+**H5 is therefore neither supported nor refuted by this arm.** The honest status is *underpowered*, and
+the design error was mine: I priced the arm at one run per cell before the noise floor was measured.
+
 ## Throughput cost
 
 8-bit runs at ~8.3 tok/s against 4-bit's ~12.1 — about ⅔ the speed — so it gets slightly fewer

@@ -39,6 +39,44 @@ comfortably under a gigabyte on a machine with **69 GB unified memory**.
 > sweeps parameter counts rather than assuming 20M, so the size can be chosen against measured
 > throughput instead of the reverse.
 
+### Measured, 2026-07-27 — `bench_training.py`
+
+Forward + backward + Adam step, steady state after warm-up. K = 16 transitions, 64×64 grid, batch 32,
+6 layers / 8 heads, MLX on the 69 GB machine.
+
+| params | steps/s | ms/step | peak mem |
+|---:|---:|---:|---:|
+| 5.3M | 15.07 | 66 | 3.66 GB |
+| 10.0M | 10.08 | 99 | 5.10 GB |
+| **21.2M** | **7.22** | **138** | **7.54 GB** |
+| 51.7M | 3.79 | 264 | 12.20 GB |
+| 84.6M | 3.09 | 323 | 16.04 GB |
+
+Wall-clock for the ~12 runs S3 needs (3 objectives × rollout on/off × 2 seeds):
+
+| params | 10k steps | 50k | 100k | 500k |
+|---:|---:|---:|---:|---:|
+| 5.3M | 2.2 h | 11.1 h | 22.1 h | 110.6 h |
+| **21.2M** | **4.6 h** | **23.1 h** | **46.2 h** | 230.8 h |
+| 51.7M | 8.8 h | 43.9 h | 87.9 h | 439.3 h |
+| 84.6M | 10.8 h | 53.9 h | **107.7 h** | 538.7 h |
+
+**S3 allows 5 days — 120 h — for those runs plus controls.** At the guessed 20M, a 100k-step budget
+costs 46 h: comfortably inside, with room for the controls and a rerun. Even **50M at 100k steps fits**
+(88 h), and 85M at 100k just fits (108 h) with no slack.
+
+So the honest answer to "is local viable for the training work" is **yes, and the parameter budget is
+not the binding constraint** — 20M is conservative by roughly 4×. Memory is nowhere near binding either:
+7.5 GB of 69 GB at 20M.
+
+**The binding constraint is the step budget, and it is the number nobody has registered.** At 500k steps
+nothing above 5M fits in 120 h. The table converts a missing pre-registration into wall-clock, which is
+the form in which it has to be decided.
+
+*Limits:* not the real model — a heavier decoder in arm B or a different attention pattern moves this;
+MLX only, no torch/MPS comparison available; single process, so the figures assume no LLM server is
+resident.
+
 S2's F1/F3 generators are synthetic sequence producers, and S3 screens three objectives (A latent /
 B reconstructive / C exact-delta) over them. **None of that touches an LLM.** That part does not depend
 on the parameter budget at all — whatever size is chosen, no 27B model is in the loop.

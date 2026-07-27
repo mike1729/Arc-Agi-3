@@ -88,7 +88,7 @@ class ContextTransformer(nn.Module):
 
     def __call__(self, x):
         for b in self.blocks:
-            x = b(x)
+            x = b(x, None)                         # mask is positional and required in mlx.nn
         return x
 
 
