@@ -1,0 +1,65 @@
+{
+  "finished": {
+    "ft09-0d8bbf25": {
+      "state": "cancelled",
+      "completed": true,
+      "budget_terminated": true,
+      "censored_at_seconds": 2700.0,
+      "final_wallclock_seconds": 2700.912438333995,
+      "levels_completed": 0,
+      "actions_per_level": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "run_dir": "20260727_084448_s1e-l2c2-c01"
+    },
+    "vc33-5430563c": {
+      "state": "cancelled",
+      "completed": true,
+      "budget_terminated": true,
+      "censored_at_seconds": 2700.0,
+      "final_wallclock_seconds": 2706.456342000005,
+      "levels_completed": 0,
+      "actions_per_level": [
+        51,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "run_dir": "20260727_084448_s1e-l2c2-c01"
+    }
+  },
+  "chunks": [
+    {
+      "name": "s1e-l2c2-c01",
+      "games": [
+        "ft09-0d8bbf25",
+        "vc33-5430563c"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_s": 2707.9,
+      "harvested": [
+        "ft09-0d8bbf25",
+        "vc33-5430563c"
+      ],
+      "concluded": [
+        "ft09-0d8bbf25",
+        "vc33-5430563c"
+      ],
+      "at": "2026-07-27T07:29:55.618754+00:00"
+    }
+  ],
+  "started_at": "2026-07-27T06:44:47.699232+00:00",
+  "attempts": {
+    "ft09-0d8bbf25": 1,
+    "vc33-5430563c": 1
+  }
+}

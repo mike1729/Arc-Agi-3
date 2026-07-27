@@ -1,0 +1,512 @@
+{
+  "game": "tu93-0768757b",
+  "a": 28,
+  "w": 28,
+  "reps": 3,
+  "waste_valid": true,
+  "results": {
+    "A": [
+      {
+        "arm": "A",
+        "card_id": "04115c2a-7bd4-4990-9f78-e512a8a31b1c",
+        "levels_completed": 1,
+        "score": 1.0232426303854876,
+        "actions": 28,
+        "resets": 0,
+        "level_scores": [],
+        "level_actions": [],
+        "level_baselines": [],
+        "waste_log": []
+      },
+      {
+        "arm": "A",
+        "card_id": "e20dcbdc-ad1a-48f0-9439-79fd22663980",
+        "levels_completed": 1,
+        "score": 1.0232426303854876,
+        "actions": 28,
+        "resets": 0,
+        "level_scores": [],
+        "level_actions": [],
+        "level_baselines": [],
+        "waste_log": []
+      },
+      {
+        "arm": "A",
+        "card_id": "6bd0f1fd-8c29-4665-8153-7ba30dd6b3c4",
+        "levels_completed": 1,
+        "score": 1.0232426303854876,
+        "actions": 28,
+        "resets": 0,
+        "level_scores": [],
+        "level_actions": [],
+        "level_baselines": [],
+        "waste_log": []
+      }
+    ],
+    "B": [
+      {
+        "arm": "B",
+        "card_id": "53e1532d-94c1-4eb0-b704-c67a0f6aca47",
+        "levels_completed": 1,
+        "score": 0.24691358024691357,
+        "actions": 57,
+        "resets": 1,
+        "level_scores": [],
+        "level_actions": [],
+        "level_baselines": [],
+        "waste_log": [
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 3,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 3,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          }
+        ]
+      },
+      {
+        "arm": "B",
+        "card_id": "0b029172-04dc-4904-a818-c1791e72be88",
+        "levels_completed": 1,
+        "score": 0.24691358024691357,
+        "actions": 57,
+        "resets": 1,
+        "level_scores": [],
+        "level_actions": [],
+        "level_baselines": [],
+        "waste_log": [
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 3,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 3,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          }
+        ]
+      },
+      {
+        "arm": "B",
+        "card_id": "1009d12c-0ffa-452a-bb45-a890d98350ce",
+        "levels_completed": 1,
+        "score": 0.24691358024691357,
+        "actions": 57,
+        "resets": 1,
+        "level_scores": [],
+        "level_actions": [],
+        "level_baselines": [],
+        "waste_log": [
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 3,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 1,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 3,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 4,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          },
+          {
+            "action": 2,
+            "accepted": true,
+            "changed": true
+          }
+        ]
+      }
+    ]
+  },
+  "r": 2.0357142857142856,
+  "verdict": "accumulates",
+  "spread_A": 0.0,
+  "spread_B": 0.0
+}

@@ -224,6 +224,16 @@ CLAUDE.md
 /logs/*
 !/logs/.gitkeep
 
+# EXCEPTION: the small measurement JSONs are the only off-machine copy of S1's
+# evidence — everything else in logs/ (932 MB of run artifacts, 25 Kaggle request
+# logs) lives on one disk. Reference runs are stochastic and take 2h12m, so a lost
+# run cannot be reproduced, only re-sampled into a different result.
+# This remote is PRIVATE (PUBLISHING.md), so reference-derived content is safe here.
+# Screened 2026-07-27 — see logs/README.md before copying any of it to the clean repo.
+!/logs/*.json
+/logs/*_state_PRE-D13_discarded.json
+!/logs/README.md
+
 # S1-b: throwaway working copy of the vendored reference. Rebuilt by
 # agent/harness/build_local.sh from agent/reference/ + agent/patches/. Never edit it directly.
 /agent/work/

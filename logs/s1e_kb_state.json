@@ -1,0 +1,178 @@
+{
+  "finished": {
+    "g50t-5849a774": {
+      "state": "cancelled",
+      "completed": true,
+      "budget_terminated": true,
+      "censored_at_seconds": 2700.0,
+      "final_wallclock_seconds": 2700.853739416998,
+      "levels_completed": 0,
+      "actions_per_level": [
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "run_dir": "20260726_211534_s1e-kb2-c01"
+    },
+    "ls20-9607627b": {
+      "state": "cancelled",
+      "completed": true,
+      "budget_terminated": true,
+      "censored_at_seconds": 2700.0,
+      "final_wallclock_seconds": 2700.8499378750057,
+      "levels_completed": 0,
+      "actions_per_level": [
+        39,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "run_dir": "20260726_211534_s1e-kb2-c01"
+    },
+    "re86-8af5384d": {
+      "state": "cancelled",
+      "completed": true,
+      "budget_terminated": true,
+      "censored_at_seconds": 2700.0,
+      "final_wallclock_seconds": 2700.857305999998,
+      "levels_completed": 0,
+      "actions_per_level": [
+        48,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "run_dir": "20260726_223006_s1e-kb2-c02"
+    },
+    "tr87-cd924810": {
+      "state": "cancelled",
+      "completed": true,
+      "budget_terminated": true,
+      "censored_at_seconds": 2700.0,
+      "final_wallclock_seconds": 2721.8156650829987,
+      "levels_completed": 0,
+      "actions_per_level": [
+        7,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "run_dir": "20260726_223006_s1e-kb2-c02"
+    },
+    "tu93-0768757b": {
+      "state": "cancelled",
+      "completed": true,
+      "budget_terminated": true,
+      "censored_at_seconds": 2700.0,
+      "final_wallclock_seconds": 2700.013216958003,
+      "levels_completed": 0,
+      "actions_per_level": [
+        153,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "run_dir": "20260726_231530_s1e-kb2-c03"
+    },
+    "wa30-ee6fef47": {
+      "state": "cancelled",
+      "completed": true,
+      "budget_terminated": true,
+      "censored_at_seconds": 2700.0,
+      "final_wallclock_seconds": 2699.942834458001,
+      "levels_completed": 0,
+      "actions_per_level": [
+        28,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "run_dir": "20260726_231530_s1e-kb2-c03"
+    }
+  },
+  "chunks": [
+    {
+      "name": "s1e-kb2-c01",
+      "games": [
+        "g50t-5849a774",
+        "ls20-9607627b"
+      ],
+      "returncode": 0,
+      "elapsed_s": 2702.2,
+      "harvested": [
+        "g50t-5849a774",
+        "ls20-9607627b"
+      ],
+      "concluded": [],
+      "at": "2026-07-26T20:00:36.022325+00:00"
+    },
+    {
+      "name": "s1e-kb2-c02",
+      "games": [
+        "re86-8af5384d",
+        "tr87-cd924810"
+      ],
+      "returncode": 0,
+      "elapsed_s": 2723.1,
+      "harvested": [
+        "re86-8af5384d",
+        "tr87-cd924810"
+      ],
+      "concluded": [
+        "re86-8af5384d",
+        "tr87-cd924810"
+      ],
+      "at": "2026-07-26T21:15:29.601743+00:00"
+    },
+    {
+      "name": "s1e-kb2-c03",
+      "games": [
+        "tu93-0768757b",
+        "wa30-ee6fef47"
+      ],
+      "returncode": 0,
+      "elapsed_s": 2701.3,
+      "harvested": [
+        "tu93-0768757b",
+        "wa30-ee6fef47"
+      ],
+      "concluded": [
+        "tu93-0768757b",
+        "wa30-ee6fef47"
+      ],
+      "at": "2026-07-26T22:00:30.911336+00:00"
+    }
+  ],
+  "started_at": "2026-07-26T19:15:33.732434+00:00",
+  "attempts": {
+    "g50t-5849a774": 1,
+    "ls20-9607627b": 1,
+    "re86-8af5384d": 1,
+    "tr87-cd924810": 1,
+    "tu93-0768757b": 1,
+    "wa30-ee6fef47": 1
+  }
+}

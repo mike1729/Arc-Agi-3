@@ -1,0 +1,130 @@
+{
+  "finished": {
+    "tn36-ef4dde99": {
+      "state": "cancelled",
+      "levels_completed": 0,
+      "actions_per_level": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "run_dir": "20260726_190929_s1e-d13-c01"
+    },
+    "lf52-271a04aa": {
+      "state": "cancelled",
+      "levels_completed": 0,
+      "actions_per_level": [
+        16,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "run_dir": "20260726_190929_s1e-d13-c01"
+    },
+    "cn04-2fe56bfb": {
+      "state": "cancelled",
+      "levels_completed": 0,
+      "actions_per_level": [
+        12,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "run_dir": "20260726_190929_s1e-d13-c01"
+    },
+    "bp35-0a0ad940": {
+      "state": "cancelled",
+      "levels_completed": 0,
+      "actions_per_level": [
+        8,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "run_dir": "20260726_190929_s1e-d13-c01"
+    },
+    "wa30-ee6fef47": {
+      "state": "cancelled",
+      "levels_completed": 0,
+      "actions_per_level": [
+        201,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "run_dir": "20260726_195515_s1e-d13c2-c02"
+    },
+    "lp85-305b61c3": {
+      "state": "cancelled",
+      "levels_completed": 0,
+      "actions_per_level": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "run_dir": "20260726_195515_s1e-d13c2-c02"
+    }
+  },
+  "chunks": [
+    {
+      "name": "s1e-d13-c01",
+      "games": [
+        "tn36-ef4dde99",
+        "lf52-271a04aa",
+        "cn04-2fe56bfb",
+        "bp35-0a0ad940"
+      ],
+      "returncode": 0,
+      "elapsed_s": 2731.2,
+      "harvested": [
+        "bp35-0a0ad940",
+        "cn04-2fe56bfb",
+        "lf52-271a04aa",
+        "tn36-ef4dde99"
+      ],
+      "at": "2026-07-26T17:55:00.244454+00:00"
+    },
+    {
+      "name": "s1e-d13c2-c02",
+      "games": [
+        "wa30-ee6fef47",
+        "lp85-305b61c3"
+      ],
+      "returncode": 0,
+      "elapsed_s": 2727.8,
+      "harvested": [
+        "lp85-305b61c3",
+        "wa30-ee6fef47"
+      ],
+      "at": "2026-07-26T18:40:42.528850+00:00"
+    }
+  ],
+  "started_at": "2026-07-26T17:09:29.048969+00:00"
+}

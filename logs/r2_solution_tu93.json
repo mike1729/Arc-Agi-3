@@ -1,0 +1,26 @@
+{
+  "game": "tu93-0768757b",
+  "n_actions": 18,
+  "action_ids": [
+    4,
+    2,
+    2,
+    4,
+    1,
+    4,
+    2,
+    2,
+    3,
+    3,
+    2,
+    4,
+    4,
+    2,
+    4,
+    1,
+    4,
+    2
+  ],
+  "reproduces": true,
+  "expanded_nodes": 960
+}
