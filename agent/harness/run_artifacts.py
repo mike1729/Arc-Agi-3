@@ -142,16 +142,55 @@ class RunArtifacts:
     def wallclock(self, game: str):
         return self.game_run(game).get("final_wallclock_seconds")
 
-    def budget_terminated(self, game: str) -> bool:
+    def budget_terminated(self, game: str):
+        """True / False / None. None means UNKNOWN, not "no".
+
+        `run_config.json` is absent from Kaggle kernel output, so `budget_seconds` is None there and
+        an earlier version returned False — asserting "not censored" for 25 episodes that each ran the
+        full 132-minute budget. `latency_or_budget` is defined on exactly that fact, so a False here
+        misleads the rater about the one category it decides.
+        """
         b, w = self.budget_seconds, self.wallclock(game)
-        return bool(b and w is not None and w >= BUDGET_TOLERANCE * b)
+        if b is None or w is None:
+            return None
+        return w >= BUDGET_TOLERANCE * b
 
     def concluded(self, game: str) -> bool:
         """S1-E9: the agent finished, OR the uniform pre-registered budget expired."""
-        return (self.game_run(game).get("state") in AGENT_FINISHED) or self.budget_terminated(game)
+        return bool(self.game_run(game).get("state") in AGENT_FINISHED
+                    or self.budget_terminated(game))
+
+    @staticmethod
+    def _tool_code(msg: dict) -> list:
+        codes = []
+        for tc in (msg.get("tool_calls") or []):
+            try:
+                codes.append(json.loads(
+                    tc.get("function", {}).get("arguments", "")).get("code", ""))
+            except Exception:  # noqa: BLE001
+                pass
+        return codes
 
     def requests(self, pass_key: str) -> dict:
-        """analysis_step -> reasoning and tool calls, for ONE pass. See the class docstring."""
+        """analysis_step -> reasoning and tool calls, for ONE pass. See the class docstring.
+
+        TWO LOG SHAPES, because the serving stacks differ. Measured 2026-07-27:
+
+          mlx_vlm (local)  response rows carry `response_message` with reasoning/content/tool_calls.
+          vLLM (Kaggle)    response rows carry NO `response_message` — only `finish_reason`. The
+                           model's output appears as `assistant` messages inside the REPLAYED
+                           CONVERSATION of subsequent rows, because every request resends the whole
+                           history.
+
+        Reading only `response_message` therefore returned EMPTY evidence for all 25 Kaggle episodes
+        while `evidence_steps_with_reasoning` still counted 22 — it was counting response rows, not
+        reasoning. Silent, and it would have been labelled on.
+
+        Replay attribution: an assistant message that appears for the FIRST time in row R was produced
+        by the request immediately preceding R, so it is attributed to the PREVIOUS row's
+        analysis_step. That is exact across turn boundaries too — the last turn of step N first
+        appears in the replay of step N+1's first request, and the row before it is still step N.
+        """
         per_pass = self.run_dir / f"{pass_key}_requests.jsonl"
         run_level = self.run_dir / "requests.jsonl"
         if per_pass.exists():
@@ -166,29 +205,51 @@ class RunArtifacts:
             return {}
 
         by_step: dict = {}
+        direct = 0
+        seen: set = set()
+        prev_step = None
         for f in files:
             for line in open(f):
                 try:
                     r = json.loads(line)
                 except Exception:  # noqa: BLE001
                     continue
-                if r.get("event") != "response":
-                    continue
-                msg = r.get("response_message") or {}
-                codes = []
-                for tc in (msg.get("tool_calls") or []):
-                    try:
-                        codes.append(json.loads(
-                            tc.get("function", {}).get("arguments", "")).get("code", ""))
-                    except Exception:  # noqa: BLE001
-                        pass
-                by_step.setdefault(r.get("analysis_step"), []).append({
-                    "finish_reason": r.get("finish_reason"),
-                    "reasoning": (msg.get("reasoning") or "")[:4000],
-                    "content": (msg.get("content") or "")[:4000],
-                    "tool_code": codes,
-                    "usage": r.get("usage"),
-                })
+
+                msg = r.get("response_message")
+                if r.get("event") == "response" and msg:
+                    direct += 1
+                    by_step.setdefault(r.get("analysis_step"), []).append({
+                        "finish_reason": r.get("finish_reason"),
+                        "reasoning": (msg.get("reasoning") or "")[:4000],
+                        "content": (msg.get("content") or "")[:4000],
+                        "tool_code": self._tool_code(msg),
+                        "usage": r.get("usage"),
+                    })
+                else:
+                    # Replay path. Walk the conversation for assistant turns not yet emitted.
+                    for m in (r.get("messages") or []):
+                        if m.get("role") != "assistant":
+                            continue
+                        key = json.dumps([m.get("reasoning"), m.get("content"),
+                                          m.get("tool_calls")], sort_keys=True)
+                        if key in seen:
+                            continue
+                        seen.add(key)
+                        by_step.setdefault(prev_step if prev_step is not None
+                                           else r.get("analysis_step"), []).append({
+                            "finish_reason": r.get("finish_reason"),
+                            "reasoning": (m.get("reasoning")
+                                          or m.get("reasoning_content") or "")[:4000],
+                            "content": (m.get("content") or "")[:4000],
+                            "tool_code": self._tool_code(m),
+                            "usage": r.get("usage"),
+                        })
+                prev_step = r.get("analysis_step")
+
+        if not direct and seen:
+            self.warnings.append(
+                f"{pass_key}: no `response_message` in the log (vLLM-side shape) — "
+                f"reasoning recovered from {len(seen)} replayed assistant turns")
         return by_step
 
 
