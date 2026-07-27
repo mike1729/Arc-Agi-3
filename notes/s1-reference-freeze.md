@@ -293,3 +293,42 @@ Local prerequisites to confirm before S1-b starts: `mlx-vlm` installed and servi
 pre-flight — see `notes/s1-verification.md`, accelerator inventory, "Software stack present"); `arc-agi`
 runtime installed (reference pins `arc-agi==0.9.8`; our S0 starter resolved `arcengine==0.9.3` — **record
 which version the local play actually uses**, the skew is a real reproduction variable).
+
+---
+
+## Target hardware, read from the reference's own deployment code — 2026-07-27
+
+```python
+# agent/reference/taaf/src/tufa-arc-agi-framework/src/taaf/deploy_kaggle.py
+COMPETITION_SLUG    = "arc-prize-2026-arc-agi-3"
+DEFAULT_ACCELERATOR = "NvidiaRtxPro6000"
+```
+
+The competition accelerator is the **NVIDIA RTX PRO 6000 (Blackwell, 96 GB)** — not the RTX A6000
+(Ampere) and not the RTX 6000 Ada. Both share the "6000" name and neither is the right target; the
+three differ by roughly 6× in rental price and 2× in VRAM.
+
+Reference run configuration, from `configs/inference.json` and `Makefile:kaggle-duck`:
+
+| | |
+|---|---|
+| accelerator | NVIDIA RTX PRO 6000, 96 GB |
+| `gpu_count` | **2** |
+| `tensor_parallel_size` | 1 — one model instance per GPU, not sharded across them |
+| `gpu_memory_utilization` | 0.92 (~88 GB usable per card) |
+| `CONCURRENT_JOBS` | **28** |
+| `MAX_RUNTIME_MINUTES` | 132 |
+| `ANALYZER_TIMEOUT` | 900 |
+
+**Correction.** Earlier notes and my own summaries state the reference ran at **concurrency 32**. It is
+**28**. The figure was never measured, only assumed.
+
+**Why this matters beyond bookkeeping.** ~88 GB of usable VRAM per card is what let the reference hold
+28 concurrent long-context games. The local machine has 69 GB of *unified* memory shared with the OS and
+everything else, so concurrency 28 was never reachable locally at any precision — the gap is structural,
+not a tuning oversight.
+
+Rental, if the hybrid escalation is taken (RunPod, checked 2026-07-27): RTX PRO 6000 at **$1.69/hr**
+community, **$1.99/hr** secure. A single card reproduces the architecture and the memory envelope; the
+second is needed only to reproduce 28-way concurrency exactly. Storage is billed separately and
+continues while the pod is stopped.
