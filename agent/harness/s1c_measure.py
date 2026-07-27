@@ -20,31 +20,10 @@ from __future__ import annotations
 import argparse
 import glob
 import json
-import re
 import statistics
 from pathlib import Path
 
-def game_of(pass_key: str) -> str:
-    """`bp35-0a0ad940_p0` -> `bp35-0a0ad940`."""
-    return re.sub(r"_p\d+$", "", pass_key)
-
-
-def load_game_runs(run_dir: Path):
-    """Every game in the directory, keyed by id.
-
-    A chunk directory holds N games. Reading `game_runs[0]` reported one game's state, levels and
-    baseline as though they were the run's, and `game_runs` is not ordered like the event files, so
-    it was not even consistently the first game alphabetically. Single-game runs hid this entirely.
-
-    A `game_run` entry means the game was SCHEDULED, not that it ran: the killed 25-game directory
-    lists 25 entries against 4 event files. Games with no history are reported as not-run.
-    """
-    bj = run_dir / "benchmark.json"
-    if not bj.exists():
-        return {}
-    b = json.loads(bj.read_text())
-    return {gr.get("game_id"): gr for gr in (b.get("game_runs") or []) if gr.get("game_id")}
-
+from run_artifacts import game_of, load_run
 
 def latency_stats(history, batch_gap_s=0.25):
     """Latency, reported at TWO units — because the pre-registered `per_action_latency` threshold
@@ -110,18 +89,14 @@ def legal_action_reliability(run_dir: Path, executed_events: int, pass_key: str 
     # The action result is delivered to the model as a TOOL message whose content is pretty-printed
     # JSON. Parse the request row, walk its messages, and read the tool payloads — a regex over the
     # raw line fails because the payload is escaped JSON inside a JSON string.
-    # Scoped to ONE pass. Globbing `*requests.jsonl` pooled every game in a chunk directory, plus the
-    # run-level `requests.jsonl`, into one tally.
-    # Same single-game fallback as s1d_label.load_requests: with one pass in the directory the
-    # run-level log is unambiguously that pass's, and the harness writes no per-pass file.
+    # Pass scoping and the single-game fallback live in run_artifacts; see its docstring for why
+    # both a strict glob and a strict per-pass rule were each wrong in a different direction.
     if pass_key:
         per_pass = run_dir / f"{pass_key}_requests.jsonl"
-        if per_pass.exists():
-            files = [per_pass]
-        else:
-            passes = glob.glob(str(run_dir / "artifacts" / "*_events.jsonl"))
-            run_level = run_dir / "requests.jsonl"
-            files = [run_level] if (len(passes) == 1 and run_level.exists()) else []
+        run_level = run_dir / "requests.jsonl"
+        n_passes = len(glob.glob(str(run_dir / "artifacts" / "*_events.jsonl")))
+        files = ([per_pass] if per_pass.exists()
+                 else ([run_level] if (n_passes == 1 and run_level.exists()) else []))
     else:
         files = [Path(p) for p in glob.glob(str(run_dir / "*requests.jsonl"))]
     seen = set()
@@ -225,34 +200,29 @@ def main() -> int:
     args = ap.parse_args()
     run_dir = Path(args.run_dir)
 
-    runs_by_game = load_game_runs(run_dir)
+    run = load_run(run_dir)
 
-    cfg = {}
-    rc = run_dir / "run_config.json"
-    if rc.exists():
-        try:
-            cfg = json.loads(rc.read_text())
-        except Exception:  # noqa: BLE001
-            cfg = {}
-    # Freeze §5: every latency figure carries the concurrency it was measured at. `effective_` is the
-    # value the harness actually applied; the requested one can be clamped.
-    conc = cfg.get("effective_concurrent_jobs") or cfg.get("concurrent_jobs") or cfg.get("concurrency")
+    # Freeze §5: every latency figure carries the concurrency it was measured at.
+    conc = run.concurrency
     if conc is None:
         print("WARNING: no concurrency recorded — a latency figure without it is not comparable.")
+    for w in run.warnings:
+        print(f"WARNING {w}")
 
     per_game = {}
-    for f in sorted(glob.glob(str(run_dir / "artifacts" / "*_events.jsonl"))):
-        pass_key = Path(f).name.split("_events")[0]
+    for pass_key in run.passes:
         game = game_of(pass_key)
-        gr = runs_by_game.get(game, {})
+        gr = run.game_run(game)
         history = gr.get("history") or []
-        executed = sum(1 for l in open(f) if json.loads(l).get("type") == "action")
+        executed = sum(1 for r in run.events(pass_key) if r.get("type") == "action")
         per_game[pass_key] = {
             "game": game,
             "state": gr.get("state"),
+            "concluded": run.concluded(game),
+            "censored_at_seconds": run.budget_seconds if run.budget_terminated(game) else None,
             "levels_completed": gr.get("levels_completed"),
-            "actions_per_level": gr.get("actions_per_level"),
-            "base_actions_per_level": gr.get("base_actions_per_level"),
+            "actions_per_level": run.actions_per_level(game),
+            "base_actions_per_level": run.baselines(game),
             "executed_action_events": executed,
             "per_action_latency": latency_stats(history),
             "legal_action_reliability": legal_action_reliability(run_dir, executed, pass_key),
@@ -260,13 +230,12 @@ def main() -> int:
             "token_accounting": token_accounting(history),
         }
 
-    scheduled_not_run = sorted(g for g in runs_by_game
-                               if g not in {v["game"] for v in per_game.values()})
+    scheduled_not_run = run.scheduled_not_run
     out = {
         "run": run_dir.name,
         "concurrency": conc,
         "concurrency_source": "run_config.json effective_concurrent_jobs",
-        "model": cfg.get("model") or (cfg.get("deployment") or {}).get("model"),
+        "model": run.model,
         "n_games_measured": len(per_game),
         "scheduled_but_not_run": scheduled_not_run,
         "note": ("every figure is per game. A chunk directory holds several games and they are NOT "
