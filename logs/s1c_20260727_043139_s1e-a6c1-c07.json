@@ -1,0 +1,80 @@
+{
+  "run": "20260727_043139_s1e-a6c1-c07",
+  "concurrency": 1,
+  "concurrency_source": "run_config.json effective_concurrent_jobs",
+  "model": "/Users/michal/models/mlx/Qwen3.6-27B-4bit",
+  "n_games_measured": 1,
+  "scheduled_but_not_run": [],
+  "note": "every figure is per game. A chunk directory holds several games and they are NOT interchangeable: each has its own human baseline. Latency is comparable only within one concurrency setting.",
+  "per_game": {
+    "r11l-495a7899_p0": {
+      "game": "r11l-495a7899",
+      "state": "cancelled",
+      "concluded": true,
+      "censored_at_seconds": 2700.0,
+      "levels_completed": 0,
+      "actions_per_level": [
+        19,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "base_actions_per_level": [
+        22,
+        33,
+        51,
+        26,
+        52,
+        49
+      ],
+      "executed_action_events": 19,
+      "per_action_latency": {
+        "n_actions": 19,
+        "total_wallclock_s": 2525.2,
+        "batch_gap_s": 0.25,
+        "actions_committed_in_batches": 1,
+        "batched_fraction": 0.056,
+        "per_action": {
+          "n": 18,
+          "p50_s": 70.05,
+          "p95_s": 181.97,
+          "mean_s": 128.9,
+          "max_s": 1094.48
+        },
+        "per_decision": {
+          "n": 17,
+          "p50_s": 74.05,
+          "p95_s": 181.97,
+          "mean_s": 136.47,
+          "max_s": 1094.48
+        },
+        "which_to_use": "per_decision. The frozen threshold names per-action latency, but with batching that statistic is dominated by intra-batch zeros and understates the model cost. Record both; gate on per_decision."
+      },
+      "legal_action_reliability": {
+        "requested_actions": 2,
+        "executed_actions": 2,
+        "validity": 1.0,
+        "explicit_batch_results": 0,
+        "implicit_single_results": 2,
+        "rejection_taxonomy": {},
+        "executed_action_events": 19,
+        "method": "read from the harness's own requested_count/executed_count in action results, captured verbatim in the D6 request logs. Single non-early-stopped actions omit the fields and count 1/1."
+      },
+      "throughput_degradation": {
+        "first_window_s": 600.0,
+        "actions_per_min_first_window": 0.2,
+        "actions_per_min_whole_run": 0.45,
+        "degradation": -1.2572,
+        "note": "positive degradation = slower later. Confounded by task phase, not only thermals."
+      },
+      "token_accounting": {
+        "generated_total": 29314,
+        "generated_per_action_p50": 879,
+        "uncached_input_total": 0,
+        "uncached_input_per_action_p50": 0
+      }
+    }
+  }
+}

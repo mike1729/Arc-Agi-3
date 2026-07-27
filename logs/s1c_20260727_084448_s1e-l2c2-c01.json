@@ -1,0 +1,126 @@
+{
+  "run": "20260727_084448_s1e-l2c2-c01",
+  "concurrency": 2,
+  "concurrency_source": "run_config.json effective_concurrent_jobs",
+  "model": "/Users/michal/models/mlx/Qwen3.6-27B-4bit",
+  "n_games_measured": 2,
+  "scheduled_but_not_run": [],
+  "note": "every figure is per game. A chunk directory holds several games and they are NOT interchangeable: each has its own human baseline. Latency is comparable only within one concurrency setting.",
+  "per_game": {
+    "ft09-0d8bbf25_p0": {
+      "game": "ft09-0d8bbf25",
+      "state": "cancelled",
+      "concluded": true,
+      "censored_at_seconds": 2700.0,
+      "levels_completed": 0,
+      "actions_per_level": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "base_actions_per_level": [
+        43,
+        12,
+        23,
+        28,
+        65,
+        37
+      ],
+      "executed_action_events": 1,
+      "per_action_latency": {},
+      "legal_action_reliability": {
+        "requested_actions": 1,
+        "executed_actions": 1,
+        "validity": 1.0,
+        "explicit_batch_results": 0,
+        "implicit_single_results": 1,
+        "rejection_taxonomy": {},
+        "executed_action_events": 1,
+        "method": "read from the harness's own requested_count/executed_count in action results, captured verbatim in the D6 request logs. Single non-early-stopped actions omit the fields and count 1/1."
+      },
+      "throughput_degradation": {
+        "note": "run shorter than the 600s window; not computable"
+      },
+      "token_accounting": {
+        "generated_total": 4764,
+        "generated_per_action_p50": 4764,
+        "uncached_input_total": 0,
+        "uncached_input_per_action_p50": 0
+      }
+    },
+    "vc33-5430563c_p0": {
+      "game": "vc33-5430563c",
+      "state": "cancelled",
+      "concluded": true,
+      "censored_at_seconds": 2700.0,
+      "levels_completed": 0,
+      "actions_per_level": [
+        51,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "base_actions_per_level": [
+        7,
+        18,
+        44,
+        61,
+        131,
+        34,
+        152
+      ],
+      "executed_action_events": 51,
+      "per_action_latency": {
+        "n_actions": 51,
+        "total_wallclock_s": 2461.1,
+        "batch_gap_s": 0.25,
+        "actions_committed_in_batches": 41,
+        "batched_fraction": 0.82,
+        "per_action": {
+          "n": 50,
+          "p50_s": 0.05,
+          "p95_s": 184.64,
+          "mean_s": 43.87,
+          "max_s": 932.75
+        },
+        "per_decision": {
+          "n": 9,
+          "p50_s": 173.67,
+          "p95_s": 932.75,
+          "mean_s": 243.52,
+          "max_s": 932.75
+        },
+        "which_to_use": "per_decision. The frozen threshold names per-action latency, but with batching that statistic is dominated by intra-batch zeros and understates the model cost. Record both; gate on per_decision."
+      },
+      "legal_action_reliability": {
+        "requested_actions": 15,
+        "executed_actions": 15,
+        "validity": 1.0,
+        "explicit_batch_results": 1,
+        "implicit_single_results": 2,
+        "rejection_taxonomy": {},
+        "executed_action_events": 51,
+        "method": "read from the harness's own requested_count/executed_count in action results, captured verbatim in the D6 request logs. Single non-early-stopped actions omit the fields and count 1/1."
+      },
+      "throughput_degradation": {
+        "first_window_s": 600.0,
+        "actions_per_min_first_window": 0.2,
+        "actions_per_min_whole_run": 1.24,
+        "degradation": -5.2166,
+        "note": "positive degradation = slower later. Confounded by task phase, not only thermals."
+      },
+      "token_accounting": {
+        "generated_total": 21558,
+        "generated_per_action_p50": 0,
+        "uncached_input_total": 0,
+        "uncached_input_per_action_p50": 0
+      }
+    }
+  }
+}

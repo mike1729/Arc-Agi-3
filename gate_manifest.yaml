@@ -1010,10 +1010,13 @@ s1:
         # The first attempt parsed action() calls out of tool SOURCE (undercounts — the agent builds
         # lists programmatically); the second looked for the wrong nesting. The payload sits at
         # {"tool":..., "returncode":..., "result": {<action result>}}.
-        verdict: "MEASURABLE — awaiting the S1-e breadth run for a verdict"
-        measured: "live S1-e chunk 1, partial: 12 requested / 11 executed -> validity 0.9167.
-                   SAMPLE FAR TOO SMALL to compare against the 0.95 threshold; recorded only to show
-                   the extractor works on the run now in flight"
+        verdict: "PASS — 0.9831 against a 0.95 threshold, S1-e complete 2026-07-27"
+        measured: "349 executed / 355 requested = 0.9831 across 26 games, both quantisation arms
+                   (Qwen3.6-27B 4-bit and 8-bit), concurrency 1 and 2, 45-minute budget each.
+                   rejection_taxonomy is EMPTY: no action was ever stopped early, so the 6 shortfall
+                   actions are single-action results that reported executed=false, not batch aborts."
+        superseded_measurement: "12 requested / 11 executed -> 0.9167, from one live partial chunk.
+                                 Sample of 12; superseded by the full breadth run, not contradicted."
         method: "agent/harness/s1c_measure.py::legal_action_reliability — sums requested_count and
                  executed_count from action results. Single non-early-stopped actions omit both fields
                  and count 1/1 (tool_agent.py emits them only when batch_size > 1 or stopped_early)"
@@ -1024,21 +1027,58 @@ s1:
         evidence_ref: "logs/s1c_20260726_164355_s1e-dense-c01.json"
 
       per_action_latency_p50:
-        verdict: "MEASURED — but the frozen UNIT is wrong for this agent. See note"
-        measured: "MoE run, concurrency 4: per_action p50 0.62 s / p95 21.54 s;
-                   per_decision p50 0.74 s / p95 22.42 s. 19% of actions were committed inside batches"
-        evidence_ref: "logs/s1c_20260726_151043_s1b-vc33-moe.json; agent/harness/s1c_measure.py"
-        unit_problem: "the threshold names PER-ACTION latency, which assumes one model call per action.
-                       The duck calls action(actions=[a,b,c,...]), so several actions commit from one
-                       decision and intra-batch deltas are ~0. Reporting per-action p50 flatters the
-                       agent by an order of magnitude. GATE ON per_decision"
-        status: "not gated yet — this is a MoE run and S1-e will run dense" 
+        # The formula resolves two ways and they DISAGREE ON THE VERDICT. Both are recorded; the
+        # passing one is NOT adopted by default. See `unresolved_denominator` below.
+        verdict: "FAIL under the formula as written; PASS under the unit-consistent variant.
+                  OPERATOR DECISION REQUIRED — see unresolved_denominator"
+        measured: "per_decision p50 median 139.39 s across 26 games (range 51.74-384.96);
+                   dense Qwen3.6-27B 4-bit and 8-bit, concurrency 1 and 2, 45-minute budget.
+                   median batched_fraction 0.447 — nearly half of all actions commit inside a batch."
+        scalar_derivation: "median_actions_per_game = 23.5, median_decisions_per_game = 9.0, both
+                            measured on the S1-e breadth run. usable = 45*60*1000*(1-0.25) = 2,025,000 ms."
+        threshold_as_written: "usable / median_actions_per_game = 86.17 s. Measured 139.39 s -> FAIL"
+        threshold_unit_consistent: "usable / median_decisions_per_game = 225.00 s. Measured 139.39 s
+                                    -> PASS (20 of 26 games individually under it)"
+        unresolved_denominator: "The frozen note already says GATE ON per_decision, and that correction
+                                 was applied to the NUMERATOR (which statistic to measure) but not to
+                                 the DENOMINATOR (which count to divide the budget by). Dividing a
+                                 per-decision latency by an actions-per-game count mixes units whenever
+                                 the agent batches, and it batches 45% of the time. The unit-consistent
+                                 form is the physically meaningful constraint — wall-clock =
+                                 decisions x latency-per-decision — but adopting it silently would flip
+                                 a FAIL to a PASS on a threshold whose on_fail makes latency a
+                                 first-order constraint on every component priced after Aug 22. That is
+                                 the operator's call, not a tidy-up."
+        caveat_on_per_decision: "`per_decision` counts gaps > 0.25 s BETWEEN ACTIONS, so a single gap
+                                 may contain several model round-trips that produced no action. It is
+                                 therefore a lower bound on round-trip count and an upper bound on
+                                 latency per round-trip. Measured: 9 action-committing decisions per
+                                 45 minutes at median p50 139 s accounts for ~1250 s of a ~2518 s
+                                 action span, so roughly half the wall-clock is in non-acting turns."
+        evidence_ref: "logs/s1c_*s1e*.json (26 games); agent/harness/s1c_measure.py"
+        superseded_measurement: "MoE, concurrency 4: per_decision p50 0.74 s / p95 22.42 s. Different
+                                 model (Qwen3.6-35B-A3B MoE, rejected under D11/S1-E5) and different
+                                 concurrency; not comparable and not a contradiction."
       per_action_latency_p95:
-        verdict: "MEASURED — see per_action_latency_p50 for the unit caveat"
-        measured: "per_decision p95 22.42 s (MoE, concurrency 4); max 141.17 s"
-        evidence_ref: "logs/s1c_20260726_151043_s1b-vc33-moe.json"
-        status: "not gated yet — S1-e will run dense" 
-      wall_clock_margin:      {verdict: null, measured: null, evidence_ref: null}
+        verdict: "FAIL under the formula as written; PASS under the unit-consistent variant.
+                  Tracks per_action_latency_p50 exactly — same denominator question"
+        measured: "per_decision p95 median 361.33 s across 26 games (range 144.29-1524.90); max 1524.90 s"
+        threshold_as_written: "3 x 86.17 = 258.51 s. Measured 361.33 s -> FAIL"
+        threshold_unit_consistent: "3 x 225.00 = 675.00 s. Measured 361.33 s -> PASS"
+        evidence_ref: "logs/s1c_*s1e*.json (26 games)"
+      wall_clock_margin:
+        # This one does NOT depend on the denominator question, and it fails cleanly.
+        verdict: "FAIL — there is no margin"
+        measured: "median first-action-to-last-action span 2518 s of a 2700 s budget = 93%; max 2691 s
+                   = 99.7%. All 26 games were budget-terminated (S1-E9). Required margin 0.25, i.e. a
+                   game should occupy <= 75% of its budget."
+        interpretation: "the agent does not finish early anywhere. It expands to fill whatever budget it
+                         is given, which is consistent with S1-E9's finding that the reference was cut
+                         off rather than halting, and with H4's refutation. A larger budget buys more
+                         actions, not completion."
+        consequence: "any extrapolation of the form 'it would have solved it with more time' is
+                      unsupported by this corpus and must not be made without a longer-budget run."
+        evidence_ref: "logs/s1c_*s1e*.json (26 games); notes/s1d-failure-frequencies.md"
       reproduction_fidelity:
         # GATED criterion only. The LB-1.21 comparison stays reported-not-gated.
         verdict: PASS
@@ -1055,7 +1095,21 @@ s1:
         gap_explanation: "n/a for the gated criterion."
         note: "S1-b HARD EXIT MET. Also demonstrates the agent can localise ACTION6 clicks, which
                coordinate_unreachable cannot itself evidence (no coordinate candidate set)."
-      hardware_fit_vram:      {verdict: null, measured: null, evidence_ref: null}
+      hardware_fit_vram:
+        verdict: "PASS for one model resident; FAIL for two — and the failure mode is what matters"
+        measured: "4-bit resident 15.0 GiB, 8-bit resident 29.5 GiB, against a 44.06 GiB ceiling
+                   (= 51.84 * 0.85). Either alone fits with room to spare."
+        two_model_failure: "measured 2026-07-27 during the quantisation arm: a `kill` that did not take
+                            left both models resident at 45.5 GiB, which exceeded the ceiling, drove
+                            11 GiB of swap, and produced a 600 s generation timeout — the run did not
+                            slow down gracefully, it stopped producing. Recovery required kill -9 on
+                            both and ~60 s of kernel reclaim (wired 30.6 -> 4.1 GiB). Unified memory
+                            gives no isolation: the ceiling is a cliff, not a gradient."
+        track_a_headroom: "irrelevant at Track A scale — bench_training.py measures 7.54 GiB peak at
+                           21.2M parameters and 16.04 GiB at 84.6M, both far inside the ceiling. VRAM
+                           binds only for LLM-driver work."
+        evidence_ref: "notes/s1-quantization-arm.md; notes/local-compute-options.md;
+                       agent/harness/bench_training.py"
       hardware_fit_throughput:
         verdict: "NOT INTERPRETABLE from this run"
         measured: "actions/min 6.8 in the first 10 min vs 18.62 across the whole run -> degradation
