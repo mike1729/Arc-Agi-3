@@ -148,10 +148,17 @@ What is not defensible is proceeding as though the measurement came out the othe
   self-report of its objective, which the manifest already flags as weak, anchoring evidence. An LLM
   rating an LLM's self-report may share a blind spot here. One human-rated sample of 8-10 episodes would
   bound it.
-- **No blind re-rate.** S1-E7 is DEFERRED to the operator and remains open, so `agreement_floor: 0.40`
-  has not been applied and no per-category agreement exists. Under the pre-registration's own terms
-  these categories are therefore driving the build order **with no stability check** — which is exactly
-  what the floor exists to prevent. This must appear in the S1-g close-out.
+- **No blind re-rate *for the numbers on this page*.** These frequencies were computed before any
+  re-rate existed, so `agreement_floor: 0.40` has not been applied to them and no per-category
+  agreement statistic backs them. Under the pre-registration's own terms **this table drove the build
+  order with no stability check** — exactly what the floor exists to prevent — and that stands as a
+  limitation of *this* first pass however the re-rate turns out.
+
+  S1-E7 itself is no longer open: resolved 2026-07-27 by **S1-E11**, operator choosing `multiple_passes`.
+  A 3-pass kernel is running (75 episodes), which makes the original pre-registered `sample_size: 30`
+  achievable without amending it. When it lands, the re-rate can be drawn and the agreement floor
+  applied — to the enlarged corpus. Per **S1-E10** the second pass will be *independent*, not delayed
+  test-retest, because the rater has no memory between sessions.
 - **Reference, not local.** These are FP8 reference episodes at a 132-minute budget. The local 4-bit
   corpus has 17 episodes, 16 of them L1, and 0 labelled. The local agent's failure profile may differ;
   the quantisation arm suggests it does.
