@@ -37,6 +37,41 @@ Consequence for scheduling: the earlier phase split put 19 games in one bucket o
 12 batching games with 7 non-batching ones. If concurrency is ever revisited, the three-way split is the
 one to reason about.
 
+## Action density by class, at concurrency 1 (8 games)
+
+| class | n | median generations | median actions/gen |
+|---|---:|---:|---:|
+| keyboard | 1 | 40 | **0.90** |
+| mixed | 4 | 50 | **0.62** |
+| pure-ACTION6 | 3 | 33 | **0.18** |
+
+The ordering is clean and it is the batching mechanism, not compute: mixed games obtain the MOST
+generations of any class (median 50 in 45 minutes) and still convert them at 0.62 actions each, while
+pure-ACTION6 games get the fewest generations and convert at 0.18. Per-generation conversion, not
+generation throughput, is what separates the classes.
+
+## The concurrency question, with the numbers I have
+
+The only direct A/B is `re86`: **48 actions at concurrency 2 versus 36 at concurrency 1**, despite 43%
+more generations at concurrency 1. Concurrency 2 is better on *both* axes for that game — more actions
+per game, and two games running at once, so roughly double the throughput per wall-clock hour.
+
+Extrapolating that to mixed and pure-ACTION6 games is **not** supported by measurement, and assuming it
+transfers is the same inference error that produced the original concurrency-4 confound. What can be
+said:
+
+- generation throughput at concurrency 1 is not the binding constraint for any class — mixed games
+  already get 50 generations per 45 minutes and still produce few actions
+- so the mechanism by which concurrency 1 was supposed to help (more compute per request → more
+  progress) is the one the `re86` A/B measured and found inverted
+
+**A decisive test costs 45 minutes.** Re-run one mixed game (`lf52`, 16 actions at concurrency 1) and
+one pure-ACTION6 game (`tn36`, 4 actions) together at concurrency 2. That pairs both untested classes
+against their own concurrency-1 results in a single chunk. Duplicate (game, level) episodes are handled
+by explicit selection in `s1d_build_corpus.py`, so re-running does not corrupt the corpus.
+
+If concurrency 2 wins, the remaining games halve in wall-clock.
+
 ## Concluded so far
 
 | game | class | actions | levels |
