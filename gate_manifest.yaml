@@ -995,10 +995,51 @@ s1:
   # Results — filled at S1-g (Day 7 AM).
   # -----------------------------------------------------------------------------
   results:
-    submission_branch: null            # PASS | REPAIR | DEGRADED  (see execution plan §4.7)
-    hidden_score: null
-    degraded_consequences: null        # required iff DEGRADED: what S4's retention decision now rests on,
-                                       # given no baseline for the closed-loop advisor delta
+    # PROVISIONALLY DEGRADED, 2026-07-27. Not because a submission was rejected — because the payload
+    # S1-f was designed around was withdrawn by operator decision on 2026-07-26 (see
+    # threshold_verdicts.packaging). No submission has been attempted, so this is not yet the §4.7
+    # DEGRADED branch as written ("still no accepted submission after Day 7"); it is the same end state
+    # reached by a different route. It flips to PASS if an ENTRANT-AUTHORED payload is built and accepted.
+    submission_branch: DEGRADED
+    hidden_score: null                 # none exists; no submission carried an entrant-authored payload
+    submission_branch_note: "The only submission to date is the S0 path proof — the official pinned
+                             starter, untouched, public score 0.06 (ledger row 2026-07-25). That
+                             establishes the EXECUTION PATH, not a leaderboard reference: it measures
+                             Kaggle's Random Agent, not anything of ours."
+
+    degraded_consequences:
+      what_is_lost: "S5's B axis (baseline readiness) has no score to read, and S4's closed-loop advisor
+                     run has no LEADERBOARD baseline to measure a delta against."
+      what_S4_rests_on_instead: "a LOCAL PAIRED CONTROL — the same games, the same budget, the same
+                                 model, advisor on versus advisor off. This is not a downgrade on
+                                 internal validity; it is a within-subject design and it controls the
+                                 model, the stack and the game set far better than a leaderboard delta
+                                 against a differently-configured public run ever could."
+      what_the_local_control_cannot_do: "establish HIDDEN-SET utility. Public games are materially
+                                         easier than hidden ones (13.33% public vs 7.78% semi-private
+                                         for the ARC-standardised frontier reference), so a positive
+                                         local delta on public games is not evidence of generalisation.
+                                         S4 can therefore establish that the advisor helps HERE, not
+                                         that it would help on the hidden set. Any retention decision
+                                         must be stated at that scope."
+      new_constraint_from_measured_variance: "REPLICATES ARE NOW MANDATORY FOR S4, and this is
+                                              independent of the missing baseline. Measured 2026-07-27:
+                                              two identical 25-game reference runs disagreed on the
+                                              cleared-level count in 9 of 25 games (36%) and the mean
+                                              score moved 2.19 -> 1.14. A single-run advisor-on versus
+                                              advisor-off comparison cannot resolve any effect smaller
+                                              than that noise floor. An unreplicated S4 would produce a
+                                              retention decision indistinguishable from a coin flip —
+                                              which is worse than no measurement, because it would be
+                                              reported as one. Budget paired replicates into S4 before
+                                              it starts."
+      escape_route: "S1-f is recoverable at any later point with an entrant-authored payload (the
+                     official starter plus our own harness is the cheapest such payload and is
+                     licence-clear under bucket 1). The execution plan already anticipates this route:
+                     'Day 6 packages the starter with your own harness instead'. Doing so converts this
+                     to PASS and restores S5's B axis. It costs one day's submission quota."
+      recorded_by: "notes/s1-reference-variance.md; notes/s1d-failure-frequencies.md;
+                    submissions/ledger.md"
 
     # One verdict per frozen threshold, each with an evidence reference. A single aggregate verdict
     # hides WHICH threshold failed, and the build order depends on knowing that.
