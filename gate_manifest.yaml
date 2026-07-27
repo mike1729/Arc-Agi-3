@@ -339,6 +339,83 @@ errata:
            band, or ranking rule is altered. S1-E7 (re-rate sample size) remains DEFERRED to the
            operator and is not resolved here — no re-rate sample has been drawn."
 
+  - id: S1-E11
+    date: 2026-07-27
+    scope: ["s1.blind_rerate.sample_size"]
+    resolves: "S1-E7, which deferred the choice to the operator"
+    decision: "OPERATOR CHOSE `multiple_passes`, 2026-07-27. `n_passes = 3` over the 25 public games on
+               the Kaggle reference kernel."
+    consequence_for_sample_size: "`sample_size: 30` STANDS AT ITS ORIGINAL PRE-REGISTERED VALUE and is
+                                  NOT amended. S1-E7's finding was that 30 is unachievable FROM A SINGLE
+                                  PASS — 25 games yield at most 25 episodes. Three passes yield up to 75,
+                                  so 30 becomes achievable as written and is 40% of the corpus, which is
+                                  a genuine sample rather than the near-tautological 20-of-25 that
+                                  S1-E7 rejected. No number changes; the corpus grows to meet it."
+    why_this_option: "It was chosen over `accept_fewer` because the cost assumption behind S1-E7 no
+                      longer holds and because it now buys two things instead of one.
+                      (a) COST: S1-E7 judged multiple passes 'only affordable on the reference stack,
+                          not locally'. The reference stack is Kaggle, which is FREE on GPU quota and
+                          is the competition's own accelerator. One pass measured at 2 h 12 m; three
+                          passes is roughly 6 h 40 m of quota and no money.
+                      (b) SECOND USE: the run-to-run variance measured on 2026-07-27 (36% of games
+                          change their cleared-level count between identical runs) makes paired
+                          replicates a requirement for S4 independently of the re-rate. The same three
+                          passes supply them. S1-E7 could not weigh this because the variance had not
+                          been measured when it was filed."
+    costs_accepted: "labelling scales with the corpus — 75 episodes is 3x the first pass. And a ~6 h 40 m
+                     kernel must complete inside Kaggle's session limit; if it is cut off the passes
+                     that finished are still usable, because each game-run is independent."
+    consequence_now_dischargeable: "S1-E7's `consequence_if_unresolved` — that per-category agreement is
+                                    unavailable and the `agreement_floor: 0.40` gate cannot be applied —
+                                    no longer has to be written into the close-out as a permanent
+                                    limitation. It applies to the FIRST-PASS frequencies already
+                                    reported (notes/s1d-failure-frequencies.md), which were computed
+                                    before any re-rate existed, and that must still be stated there."
+    unchanged: "procedure, stratification, blinding rule, cooling period, agreement metric and
+                agreement floor are all untouched. S1-E10's caveat stands: with an LLM rater the second
+                pass is INDEPENDENT, not delayed test-retest, and must be reported as such."
+
+  - id: S1-E12
+    date: 2026-07-27
+    scope:
+      - "s1.viability_thresholds.per_action_latency.threshold_p50_ms"
+      - "s1.viability_thresholds.per_action_latency.threshold_p95_ms"
+    correction: "The frozen formula divides the usable budget by MEDIAN ACTIONS PER GAME and compares
+                 the result against a per-action latency. A note already attached to the threshold
+                 concluded 'GATE ON per_decision', because the agent batches — it calls
+                 action(actions=[a,b,c,...]) so several actions commit from one model decision and
+                 intra-batch deltas are ~0. That correction was applied to the NUMERATOR (which
+                 statistic is measured) and never to the DENOMINATOR (which count divides the budget).
+                 Left half-applied it compares a per-decision latency against a per-action budget, which
+                 is a unit error whenever batching occurs. Measured median batched_fraction is 0.447."
+    effective_replacements:
+      threshold_p50_ms: "FORMULA: (45 * 60 * 1000 * (1 - wall_clock_margin_required)) /
+                         median_DECISIONS_per_game_measured"
+      threshold_p95_ms: "FORMULA: 3 x threshold_p50_ms  (unchanged in form)"
+      denominator_definition: "a DECISION is an inter-action gap exceeding batch_gap_s = 0.25 s, i.e. a
+                               gap that contains at least one model round-trip. Measured median 9.0 per
+                               game against a median 23.5 actions per game — the two differ by 2.6x,
+                               which is the whole of the disagreement."
+    resolved_scalars: "usable = 2,025,000 ms. threshold_p50 = 225.00 s, threshold_p95 = 675.00 s.
+                       Measured per_decision p50 median 139.39 s and p95 median 361.33 s across 26 games
+                       -> BOTH PASS. 20 of 26 games individually meet the p50 threshold."
+    verdict_change: "FAIL -> PASS. Recorded explicitly because that is the direction that warrants
+                     suspicion: a threshold reinterpreted until it passes is exactly the failure this
+                     manifest exists to prevent. The reasons this is a unit fix and not a rescue are
+                     that (a) the per_decision instruction was pre-registered BEFORE any latency was
+                     measured, (b) the physical constraint is wall-clock = decisions x latency-per-
+                     decision, which the as-written form does not express, and (c) both readings are
+                     recorded in threshold_verdicts, not just the surviving one."
+    does_not_change: "`wall_clock_margin` still FAILS and is unaffected — median first-to-last-action
+                      span is 93% of budget against a required <=75%. The agent has no margin. That
+                      failure does not depend on the denominator question and must not be read as
+                      softened by this erratum."
+    limitation_carried_forward: "`per_decision` counts gaps between ACTIONS, so one gap may contain
+                                 several model round-trips that committed no action. 9 decisions x 139 s
+                                 accounts for ~1250 s of a ~2518 s action span, so roughly half the
+                                 wall-clock is non-acting turns and the true round-trip count is higher
+                                 than 9. The threshold is therefore permissive; it is not tight."
+
 # =====================================================================================
 # S0 — External execution-path proof.
 # =====================================================================================
@@ -1070,8 +1147,8 @@ s1:
       per_action_latency_p50:
         # The formula resolves two ways and they DISAGREE ON THE VERDICT. Both are recorded; the
         # passing one is NOT adopted by default. See `unresolved_denominator` below.
-        verdict: "FAIL under the formula as written; PASS under the unit-consistent variant.
-                  OPERATOR DECISION REQUIRED — see unresolved_denominator"
+        verdict: "PASS — 139.39 s against a 225.00 s threshold (S1-E12, operator decision 2026-07-27).
+                  Under the superseded as-written formula this was FAIL at 86.17 s; both are kept below."
         measured: "per_decision p50 median 139.39 s across 26 games (range 51.74-384.96);
                    dense Qwen3.6-27B 4-bit and 8-bit, concurrency 1 and 2, 45-minute budget.
                    median batched_fraction 0.447 — nearly half of all actions commit inside a batch."
@@ -1080,16 +1157,16 @@ s1:
         threshold_as_written: "usable / median_actions_per_game = 86.17 s. Measured 139.39 s -> FAIL"
         threshold_unit_consistent: "usable / median_decisions_per_game = 225.00 s. Measured 139.39 s
                                     -> PASS (20 of 26 games individually under it)"
-        unresolved_denominator: "The frozen note already says GATE ON per_decision, and that correction
-                                 was applied to the NUMERATOR (which statistic to measure) but not to
-                                 the DENOMINATOR (which count to divide the budget by). Dividing a
-                                 per-decision latency by an actions-per-game count mixes units whenever
-                                 the agent batches, and it batches 45% of the time. The unit-consistent
-                                 form is the physically meaningful constraint — wall-clock =
-                                 decisions x latency-per-decision — but adopting it silently would flip
-                                 a FAIL to a PASS on a threshold whose on_fail makes latency a
-                                 first-order constraint on every component priced after Aug 22. That is
-                                 the operator's call, not a tidy-up."
+        resolved_denominator: "RESOLVED by S1-E12, operator decision 2026-07-27: divide by
+                               decisions/game. The frozen 'GATE ON per_decision' note had been applied
+                               to the numerator only; this completes it. The verdict moves FAIL -> PASS
+                               and that direction is flagged rather than buried — both readings stay
+                               recorded here so the change is auditable."
+        on_fail_not_triggered: "because this now passes, latency does NOT become build item #1 after
+                                Aug 22 ahead of the failure-frequency ranking. The build order follows
+                                notes/s1d-failure-frequencies.md. NOTE that `wall_clock_margin` still
+                                FAILS independently, so 'the agent has no wall-clock headroom' remains
+                                true — what passes is only the per-decision latency."
         caveat_on_per_decision: "`per_decision` counts gaps > 0.25 s BETWEEN ACTIONS, so a single gap
                                  may contain several model round-trips that produced no action. It is
                                  therefore a lower bound on round-trip count and an upper bound on
@@ -1101,8 +1178,8 @@ s1:
                                  model (Qwen3.6-35B-A3B MoE, rejected under D11/S1-E5) and different
                                  concurrency; not comparable and not a contradiction."
       per_action_latency_p95:
-        verdict: "FAIL under the formula as written; PASS under the unit-consistent variant.
-                  Tracks per_action_latency_p50 exactly — same denominator question"
+        verdict: "PASS — 361.33 s against a 675.00 s threshold (S1-E12). FAIL at 258.51 s under the
+                  superseded as-written formula; tracks p50 exactly, same denominator"
         measured: "per_decision p95 median 361.33 s across 26 games (range 144.29-1524.90); max 1524.90 s"
         threshold_as_written: "3 x 86.17 = 258.51 s. Measured 361.33 s -> FAIL"
         threshold_unit_consistent: "3 x 225.00 = 675.00 s. Measured 361.33 s -> PASS"
