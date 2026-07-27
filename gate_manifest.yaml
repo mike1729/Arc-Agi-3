@@ -300,6 +300,45 @@ errata:
     note: "this WIDENS what counts as data relative to S1-E8, and it does so before any labelling has
            occurred. No threshold, arm, or contrast changes."
 
+  - id: S1-E10
+    date: 2026-07-27
+    scope:
+      - "s1.failure_taxonomy.labelling_scheme.primary_label.rule"
+      - "s1.blind_rerate.agreement_type"
+    correction: "The pre-registration says the primary label is 'rater-designated' and names the
+                 agreement statistic 'delayed test-retest (same rater)'. Both assume a HUMAN rater with
+                 continuous memory across a 48-hour cooling period. The first pass over the 25 reference
+                 v2 episodes was performed by an LLM (claude-opus-5) reading the evidence packets. That
+                 is a deviation and is recorded here rather than absorbed silently."
+    why_not_a_script: "`s1d_label.py` refuses to assign labels, on the ground that 'a script that
+                       guessed labels would manufacture the very frequencies the build order is ranked
+                       on'. The distinction held to here is that a script pattern-matches surface
+                       features (action counts, ratios) while this pass read the reasoning text and
+                       applied the manifest's operational definitions — e.g. `reasoning_inconsistency`
+                       is defined on the agent's own stated reasoning, which only a reader can check.
+                       That is rater work. It is NOT a claim that an LLM rater equals a human one."
+    consequences:
+      cooling_period: "`cooling_period_hours: 48` is INAPPLICABLE and must not be reported as satisfied.
+                       An LLM has no memory between sessions, so there is nothing to decay."
+      agreement_semantics: "a second pass in a fresh context is INDEPENDENT, not test-retest. It is
+                            blinder than the pre-registered procedure — a human cannot forget on demand —
+                            but it measures a different quantity. If run, report it as
+                            'independent re-rate, same model' and NOT as `delayed test-retest`, and do
+                            not compare its kappa against a literature expecting human test-retest."
+      shared_failure_modes: "an LLM rating another LLM's reasoning may share systematic blind spots. In
+                             particular `goal_unknown` is diagnosed largely FROM the agent's self-report
+                             of its own objective, and the manifest already warns that rationale is
+                             self-report ('establishes what the agent said, not what was true'). A
+                             correlated bias here is plausible and unmeasured."
+      what_would_settle_it: "one human-rated sample over the same episodes. Even 8-10 episodes would
+                             bound the disagreement. Until then the frequencies are reported as a
+                             single-rater first pass."
+    evidence_ref: "logs/s1d_corpus_refv2.json (`labelling` block records rater and pass);
+                   notes/s1d-failure-frequencies.md"
+    note: "this changes WHO rated, not WHAT the categories mean. No category definition, threshold,
+           band, or ranking rule is altered. S1-E7 (re-rate sample size) remains DEFERRED to the
+           operator and is not resolved here — no re-rate sample has been drawn."
+
 # =====================================================================================
 # S0 — External execution-path proof.
 # =====================================================================================
