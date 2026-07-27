@@ -18,7 +18,7 @@ where *every action is a model generation*. A 27B model is in the inner loop.
 | ratio | — | **1,350× smaller** |
 | inner loop | one LLM generation per action | forward pass of a compact encoder/predictor |
 | bound by | tokens/second, VRAM for KV cache | gradient steps, data generation |
-| local viability | marginal — the whole of S1 is the evidence | **comfortable** |
+| local viability | marginal — the whole of S1 is the evidence | **plausible, not yet measured** — see the caveat below |
 
 Track A's parameter budget (`docs/arc-agi-3-ship-jepa-x-architecture.md` §20): spatial grid encoder
 4.0M, sequential context transformer 5.5M, local predictive model 3.5M, multi-horizon and event heads
@@ -37,9 +37,11 @@ comfortably under a gigabyte on a machine with **69 GB unified memory**.
 > be trained to different budgets without violating anything written down. The claim that local is
 > "comfortable" therefore rests on a guessed model size and an absent step count. `bench_training.py`
 > sweeps parameter counts rather than assuming 20M, so the size can be chosen against measured
-> throughput instead of the reverse. S2's F1/F3 generators are
-synthetic sequence producers, and S3 screens three objectives (A latent / B reconstructive / C
-exact-delta) over them. **None of that touches an LLM.**
+> throughput instead of the reverse.
+
+S2's F1/F3 generators are synthetic sequence producers, and S3 screens three objectives (A latent /
+B reconstructive / C exact-delta) over them. **None of that touches an LLM.** That part does not depend
+on the parameter budget at all — whatever size is chosen, no 27B model is in the loop.
 
 So the honest summary is: **the LLM throughput problem is a property of the baseline we are measuring
 against, not of the work we are doing.** S3 and S4 are what retain or kill JEPA, and S3 is local-native.
