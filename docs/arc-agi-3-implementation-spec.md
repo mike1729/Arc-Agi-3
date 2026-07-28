@@ -55,7 +55,7 @@ evidence belong here — never the experimental narrative.
 | Decision | Binding here | Evidence from | Output consumed |
 |---|---|---|---|
 | Executive viability | **D0** §10.1 | S1 measurements + a dedicated D0 run | model choice · per-action call budget |
-| Reset posture | §4.1 | S1 reset experiment | **Case 1 / 2 / 3** → branching posture |
+| Reset posture | §4.1 — **resolved** | S1 reset experiment (R1, R2) | no online branching; counterfactuals offline only |
 | Per-action budget | §2 | S1 latency table, re-measured at step 1 | candidate count × predictor passes |
 | Cheap evaluator retention | §5 | R1 branched audits | ranker version · fallback to archive + guards |
 | Invocation-gate operating point | §6, §13.1 | procedural τ sweep; public validation vetoes | τ, and the two selected operating points |
@@ -93,12 +93,14 @@ portfolio (§7) are first-class components with their own instrumentation and re
 
 ## 3. Component tiers
 
-| Tier | Contents |
+Membership only; each component is defined in the section named beside it.
+
+| Tier | Components |
 |---|---|
-| **1 — unconditional substrate** | harness, accounting, latency table, reset-accounting experiment · deterministic replay + branching primitive with yield instrumentation · canonicalizer + delta compiler · archive: immutable evidence + versioned projections, single active projection with atomic swap · ACTION6 candidate generators + recall instrumentation · minimal hypothesis store · executive I/O contract · terminal-transition logging · procedural suite core (F1, F3) · public-game partition (§13.5) |
-| **2 — required delegation layer** | cheap action evaluator (factual heads → weak value → audited ranker) · two-stage gate with scalar acceptance score, hard vetoes, and pre-R1 autonomy envelope · adaptive threshold controller · shadow-mode instrumentation · paired-run and branching estimators · control-portfolio arbitration (§7) · full belief ledger |
-| **3 — gated enhancements** (internal order binding) | belief-model rungs 1–3 (gate R0) → **verified partial programs (§8)** → rungs 4–5, each gated · learned probe selection · learned invocation gate (§6.8) · goal families F4/F5 (Fork G-F) · **G0 gate experiments — G0-R and G0-A evaluation (§9)** |
-| **4 — speculative score multipliers** | goal-model **production integration** (post-G0 only; the G0 model is the only committed artifact) · mechanism-based retrieval (capability rung 6) · longer-horizon latent planning · hierarchical subgoals |
+| **1 — unconditional substrate** | harness and accounting §4.1 · branching primitive §4.2 · canonicalizer and delta compiler §4.3 · archive §4.4 · ACTION6 candidate system §4.5 · minimal hypothesis store §4.6 · executive I/O contract §4.7 · terminal-transition logging §4.8 · procedural suite, F1 and F3 §4.9 · public-game partition §13.5 |
+| **2 — required delegation layer** | cheap action evaluator §5 · two-stage gate and autonomy envelope §§6.1, 6.4 · adaptive threshold controller §6.2 · shadow-mode instrumentation §6.5 · paired-run and branching estimators §6.6 · control portfolio §7 · full belief ledger §4.6 |
+| **3 — gated enhancements** (internal order binding) | belief-model rungs 1–3 and R0 §§10.2, 11.2 → **verified partial programs §8** → rungs 4–5, each gated §11.2 · learned probe selection §7 · learned invocation gate §6.8 · goal families F4/F5, Fork G-F §9.6 · **G0 gate experiments §9** |
+| **4 — speculative score multipliers** | goal-model **production integration** §9.7 · mechanism retrieval, rung 6 §11.2 · longer-horizon latent planning · hierarchical subgoals |
 
 Tier 4 items are never dependencies of the production agent. Within Tier 3, verified programs precede
 rungs 4–5: they offload the executive with less scientific uncertainty, and the slack policy (§12.2)
@@ -106,23 +108,119 @@ deletes rungs 4–5 while retaining programs — the calendar must not schedule 
 first. G0's *experiments* are Tier 3 (they are measurements); only *integration* of a passing goal
 model is Tier 4.
 
+### 3.1 Build difficulty `[planning judgment; binding on nothing]`
+
+Estimated build effort, **distinct from §3.2's data-acquisition scale** — a component can be trivial
+to build and starved of data, or the reverse. 0–2 = a day or less, no open questions · 3–4 = large
+but fully specified · 5–6 = an open design decision or a dependency that lands late · 7–8 =
+correctness is not locally checkable, or output quality is itself a measured unknown. Per-component
+reasoning: [`build-difficulty.md`](../notes/build-difficulty.md).
+
+| Tier 1 | § | | Tier 2 | § | |
+|---|---|---:|---|---|---:|
+| Harness, accounting, latency table | 4.1 | 2 | Cheap action evaluator | 5 | **6** |
+| Branching primitive | 4.2 | **7** | Two-stage gate + envelope | 6.1, 6.4 | 4 |
+| Canonicalizer + delta compiler | 4.3 | 4 | Adaptive threshold controller | 6.2 | 3 |
+| Archive | 4.4 | **7** | Shadow-mode instrumentation | 6.5 | 3 |
+| ACTION6 candidate system | 4.5 | 5 | Paired-run + branching estimators | 6.6 | **6** |
+| Minimal hypothesis store | 4.6 | 1 | Control portfolio | 7 | 4 |
+| Executive I/O contract | 4.7 | 3 | Full belief ledger | 4.6 | 5 |
+| Terminal-transition logging | 4.8 | 1 | | | |
+| Procedural suite (F1, F3) | 4.9 | 6 | | | |
+| Public-game partition | 13.5 | 1 *(blocked)* | | | |
+
+| Tier 3 | § | | Tier 4 | § | |
+|---|---|---:|---|---|---:|
+| Belief rungs 1–3 + R0 | 10.2, 11.2 | **8** | Goal-model integration | 9.7 | 3 |
+| Verified partial programs | 8 | 5 | Mechanism retrieval (rung 6) | 11.2 | 4 |
+| Rungs 4–5, each gated | 11.2 | **6** | Longer-horizon latent planning | — | 8 *(sketch)* |
+| Learned probe selection | 7 | 4 | Hierarchical subgoals | — | 8 *(sketch)* |
+| Learned invocation gate | 6.8 | **6** | | | |
+| Goal families F4/F5 (Fork G-F) | 9.6 | 5 / 0 | | | |
+| G0 experiments (G0-R, G0-A) | 9 | **6** | | | |
+
+Tier 3 and 4 ratings are conditional on gates that have not run, and the two Tier 4 entries marked
+*sketch* have no specification section — those estimate a plausible cost, not a design, and cannot
+be scheduled without a spec amendment first.
+
+Five consequences for scheduling:
+
+- **§§4.2 and 4.4 carry Tier 1's uncertainty and are one risk, not two.** §4.2's identity check reads
+  the inferred context signature and history equivalence class that §4.4 produces, so they cannot be
+  built strictly in sequence, and both fail *silently*.
+- **Tier 2 has no 7 and is still the more fragile tier.** Five of its seven components cannot be
+  validated until §4.9 exists — §13.1's \(\tau\) bounds and \(q_{hi}/q_{lo}\), §6.4's ECE clause,
+  §6.6's paired runs, §6.3's acceptance region, §5's progress supervision.
+- **The 1s are urgent for reasons unrelated to their size.** §4.8's data is unrecoverable if it
+  starts late; §13.5 blocks four components behind an unregistered tolerance; §4.5 is what makes the
+  19 of 25 public games exposing ACTION6 playable at all.
+- **Tier 3's binding order runs opposite to its difficulty, deliberately.** rungs 1–3 + R0 (8) →
+  verified programs (5) → rungs 4–5 (6): the slack policy deletes the rungs and retains programs, so
+  the harder disposable item must not be scheduled first.
+- **One measurement decides whether half of Tier 3 is fundable.** Learned probe selection, the
+  learned invocation gate, exact-branch G0-A and rung-3 discrimination all draw on branched evidence,
+  so R1's yield at W4 is their common evidence ceiling — not only the learned gate's.
+
+### 3.2 Training-data readiness `[planning snapshot; not an admission threshold]`
+
+The build is **not globally data-starved**. It has enough executed transitions for factual prediction
+and representation learning. Its shared acquisition risk is narrower: labels requiring an
+unexecuted alternative, a verified no-return result, or a real progress event. Counts below are
+measured planning inputs; where the specification has no minimum, the table says so rather than
+promoting a convenient count into a gate. Detailed artifact-by-artifact inventory:
+[`training-data-master.md`](../notes/training-data-master.md).
+
+Difficulty is acquisition difficulty on the same 0–8 scale used by that inventory: 0–2 = on disk or
+one extraction pass; 3–4 = scheduled generation/logging; 5–6 = a new instrument; 7–8 = capped
+interaction with uncertain yield.
+
+| Artifact group | Needed | Available now | Difficulty | Build consequence |
+|---|---|---|---:|---|
+| **Click salience (§4.5)** | state, clicked coordinate and observed outcome; no minimum registered | **56,347** replay ACTION6 transitions before §13.5 partitioning | **2** | in hand; partition balance governs coverage |
+| **Evaluator factual heads (§5)** | exact deltas, settled-frame comparisons and return evidence | ≈**701M** changed-cell labels; 8,945 replay no-ops; 5,065 demonstrated-reversible examples | **0–2** | sufficient; `P(persistent)` still needs one extraction pass |
+| **Progress head + G0-R (§§5, 9)** | real terminal/progress transitions plus procedural positives; minimum positive count not registered | **1,614** replay + 49 agent terminals; an unconstrained 17/8 draw leaves 850–1,287 replay terminals | **4–5** | scarce real positives; synthetic prevalence must be registered and calibrated |
+| **Belief model (§11)** | matched-history transitions and multi-step windows; the 100k-step S3 budget presents **51.2M transitions/run** | **180,144** replay + 12,475 agent transitions; procedural source not built yet | **2 for ARC; 4 for procedural** | ARC data is epoch-limited, not absent; S2 throughput and instance diversity gate the synthetic work |
+| **Counterfactual consumers (§§4.5, 6.8, 7, 9.1, 11.2)** | verified outcomes for competing actions; only the learned gate has a numeric minimum: \(n_{causal}\ge800\) | **0** frozen \(Y_{useful}\) labels; replays contain 23,032 effective-action coordinate pairs but only **204** involving progress | **6 via local fork; 8 via R1–R3** | all require R1–R3 unless a separately declared local-fork dataset is approved; a yield shortfall weakens six artifacts at once |
+| **Demonstrated irreversible (§5)** | verified absence of a return route within \(H_{rev}\); no minimum registered | **0** — replay non-return is `unknown`, never negative | **7** | must be actively searched via branching or a local fork |
+| **Gate validation (§13)** | \(n_{val}\ge150\) stratified suppression checks and \(n_{causal}\ge800\) valid disagreement states | **0**; nominal disagreement ceiling 2,040 requires ≥39% end-to-end validity | **6–8** | explicitly allowed to be unfundable; fallbacks in §§5 and 6.8 remain load-bearing |
+| **Verified programs (§8)** | \(N_{prog}\ge8\) held-out context-matched transitions per program | generated by ordinary play | **1** | no separate acquisition project |
+
+**Interpretation.**
+
+- Dense supervision is abundant, but it cannot substitute for rare label kinds. In particular,
+  180k on-policy replays do not discharge a counterfactual requirement.
+- S2's procedural suite feeds nine downstream artifacts in addition to screening. Its throughput,
+  instance diversity, held-out-instance count and progress prevalence are therefore data-interface
+  requirements, not generator tuning details.
+- The hard-data rows share one failure mode. R1's measured branch yield should be read not only as a
+  learned-gate feasibility result, but also as the available evidence ceiling for causal ACTION6
+  recall, learned probe selection, exact-branch G0-A, rung-3 discrimination and irreversible search.
+- A local fork of the public game sources can manufacture exact successors, but does not silently
+  enter training: version fidelity, third-party/replay-derived-weight licensing and §13.5 leakage
+  must be resolved first. Validation games remain quarantined.
+
 ---
 
 ## 4. Tier 1 — substrate
 
-### 4.1 Harness, accounting, and the reset experiment
+### 4.1 Harness, accounting, and reset posture
 
 Deterministic replay · scored-action accounting · measured latency table (environment step,
 evaluator forward pass, executive call under the real batching pattern) · derived per-action budget.
 
-**Reset-accounting experiment (step 1, mandatory).** Three regimes:
+**Reset accounting** `[amended 2026-07-28 — RESET-CASE-2026-07-28]`**.** Measured `accumulates`,
+\(r\) = 2.0357, `c_reset` = 1: wasted actions carry across resets **and** RESET is itself a scored
+action. **Everything scores, so there is no online branching** — counterfactual data comes from
+procedural environments, replay reconstruction and development runs exclusively, which is the posture
+§13.1's dev-partition branching budget assumes. Every deployed probe costs score directly, which is
+what selects the surgical information-per-action controller (§7).
 
-- **Case 1 — reset free / scored on successful attempt:** explore-then-speedrun dominates; online
-  branching is a strategy under a per-level action cap;
-- **Case 2 — reset costs runtime, not score:** online branching only where measured wall-clock slack
-  exceeds projected branch cost; otherwise development-only;
-- **Case 3 — everything scores:** no online branching; counterfactual data from procedural
-  environments, replay reconstruction, and development runs exclusively.
+**Scope, binding on reuse.** Measured on the **offline** competition environment files, *not*
+competition mode — V5–V7's hidden-scorecard and one-`make()` restrictions are unexercised — and the
+accounting rule rests on **one game** (tu93), single-game by design so the level weight cancels.
+Cross-game generalisation is untested and must not be asserted. Step 1 retains the experiment as
+**confirmation**, extended to at least one further game; a contradicting result reopens the register
+entry rather than being absorbed into it.
 
 ### 4.2 Branching primitive
 
@@ -251,7 +349,7 @@ hypothesis discrimination vs evidence · predicted vs realized risk — written 
 (§6.9): executive calibration as a logged quantity and a principled trigger for the next call.
 
 **Call types.** *Decision calls* request an action. *Compression calls* (critic mode) compress
-history into the ledger and return no action. Context pressure (§4.9) triggers compression calls
+history into the ledger and return no action. Context pressure (§4.10) triggers compression calls
 only. Costs and productivity reported separately by call type.
 
 ### 4.8 Terminal-transition logging
@@ -260,7 +358,82 @@ Every `(o_t, a_t, Δ_{t+1}, level advanced)` tuple is logged from step 1, uncond
 **acquisition** is main-line (heuristic hypotheses + executive-structural reasoning from step 3);
 learned goal induction is gated by G0 (§9).
 
-### 4.9 Definitions
+### 4.9 Procedural suite
+
+**Two families, generated rather than sampled.** **F1 — history-required aliasing:** visually
+identical observations require different actions because of a hidden switch, counter or phase.
+**F3 — sparse delayed causal memory:** a one-cell change with no short-term effect that determines a
+later transition. F3 is not optional coverage. F1 alone sits in the short-horizon regime where a
+latent predictor looks good, so an objective comparison run on F1 without F3 is biased in favour of
+the latent arm — the failure §10.2 and §11.3's controls exist to detect.
+
+**Why this is unconditional substrate and not an experiment fixture.** Every retention decision in §6
+rests on procedural paired runs; \(\tau\) bounds and the controller's calibration quantiles are
+defined against procedural held-out error (§13.1); §6.4's clause 3 needs ECE-verified calibration on
+procedural held-out data; D0's capability thresholds and R0's invariance and hidden-mechanics
+criteria are measured on it (§§10.1, 10.2); §9.4's splits require held-out procedural instances and
+held-out goal parameters; and it is the only supervision source whose progress prevalence and
+counterfactual labels are **design parameters** rather than whatever a corpus happens to contain
+(§5). Absent or unfaithful, those decisions are not delayed — they are unmeasurable.
+
+Because instances are generated, §13.5's leakage policy does not apply to them. That is precisely why
+procedural evidence **retains** while public validation only **vetoes** (§§6.7, 13.5).
+
+**Interface (binding).** Per instance the generator exposes:
+
+- legal action set · **exact successor for every legal action** — the counterfactual supply §4.1
+  leaves to this component · terminal / progress predicate;
+- **immediate action value or distance-to-goal**, the ranking criterion. **Evaluation-only:** if it
+  trains a value head, an objective comparison silently becomes supervised action ranking;
+- hidden mechanic state and parameters, and which state variables are causally relevant — §10.2's
+  hidden-mechanics recovery reads these;
+- recoloured and relaid-out variants with **colour roles explicitly permuted**, since §10.2 requires
+  invariance across permuted-role environments while requiring colour *sensitivity* within one;
+- **ground-truth state IDs** — §6.6's Jensen–Shannon divergence needs a policy-independent key;
+- **instance seed and environment random-stream control.** Whether common random numbers are
+  supported is **declared per generator, never assumed** (§6.6, §14);
+- **on-demand generation.** §13.1's insufficient-evidence rule extends procedural paired runs, which
+  a fixed pre-generated set cannot serve.
+
+**Observation fidelity.** Generated observations match the conventions measured across all 25 public
+games (2026-07-26): 64×64 grids at reset · cell values 0–15, all sixteen occurring · **1–N frames per
+observation** · 6–10 levels per instance · action availability fixed per instance, not per state
+(per-state variation is permitted by the interface but not evidenced). **The frame-sequence
+requirement is load-bearing three times over:** 71% of real observations are a single grid but the
+mean is 2.86 and the maximum 404, so a single-grid generator emits a distribution the real
+environment never produces; any encoder must consume 1–N frames or silently discard most of the
+observation at exactly the steps where something changed; and F1's timestep must be defined against
+this, because part of the history the aliasing test concerns lives *inside* one observation.
+
+**Validity conditions.** A generator failing these produces uninterpretable results, not weak ones.
+
+- **F1 carries three ceilings, not one:** observation-only · complete observable history with an
+  oracle decoder · oracle hidden state. Required pattern: observation-only < history-oracle ≈
+  hidden-state-oracle. If the history oracle sits far below the hidden-state oracle, the task is not
+  learnably history-resolvable and model failure on it is expected rather than informative.
+- Convention mismatches against the table above are **reported, never silently accepted**.
+
+**Provenance and timing.** The suite is built in screening sprint S2 and inherited by the build
+phase, not rebuilt. §12.1 lists no step for it because there is none — but step 1's D0 measures
+capability on held-out procedural environments, so a working suite is a **step-1 precondition, not a
+step-1 deliverable**. If S2 slips, D0 slips with it.
+
+**Predeclared numbers: none yet** — the one component in Tier 1 with no registered constant, while
+four downstream users depend on its scale.
+
+| Quantity | Who needs it | Status |
+|---|---|---|
+| Generator throughput | S3 is compute-budgeted; below its compute-bound rate the screening runs become data-bound (derivation: `notes/screening-training-data.md`) | **not registered** |
+| Held-out instance count | §9.4's splits · §13.1's \(q_{hi}, q_{lo}\) · §6.4 clause 3's ECE | **not registered** |
+| Progress-event prevalence | §5's progress head — the whole point of a generated source is that this is settable | **not registered**; §3.2 requires it registered *and* calibrated |
+| Instance diversity per family | §9.4's held-out-parameter splits · §11's transfer claims | **not registered** |
+
+§13.1's *20 instances × 3 seeds per condition per \(\tau\) grid point* is a floor for the paired-run
+use only and is **not** a suite size. All four go into `gate_manifest.yaml` before the work that
+consumes them, per the pre-registration rule — not backfilled from whatever the generator turns out
+to produce.
+
+### 4.10 Definitions
 
 **Context pressure:** serialized input packet exceeds \(B_{ctx}\) tokens, or active ledger
 hypotheses exceed \(N_h\). Triggers a **compression-only** executive call, not an action-selection
@@ -276,8 +449,30 @@ the level. Prevents a noisy classifier from fragmenting events and repeatedly wa
 
 ## 5. Tier 2 — cheap action evaluator
 
-A modest shared grid encoder scoring only the common candidate set of §4.5. Heads, with **frozen
-targets**:
+A modest grid encoder scoring only the common candidate set of §4.5
+`[amended 2026-07-28 — EVAL-SCOPE-2026-07-28]`.
+
+**Scoring granularity — one encoder pass per step.** The encoder runs once on the observation and
+emits a spatial map (Track A §5: output grid 8×8 or 16×16, token width 128–192, depth 4–6). Heads are
+**dense over that map**: the coordinate head scores every location simultaneously — structurally a
+segmentation head, consistent with Track A §14's factorization \(P(a,x,y) = P(a)P(x,y \mid a, z_t,
+c_t)\) — and discrete-action heads read the pooled embedding with a small action embedding, batched
+across ACTION1–5. **Evaluator cost is O(1) in candidate count.** §2's (candidate count) × (predictor
+passes per candidate) product governs the **belief model's rollout** (§11), not this component. An
+implementation that runs the encoder per candidate is **non-conforming**: ~40× cost at a typical
+candidate budget, enough to consume the fast loop by itself.
+
+**Encoders are shared across this component's own heads only — never with the belief model.** The
+evaluator and the belief model (§11) have **separate encoders**, for measurement integrity rather
+than modularity. The evaluator ships at step 4 (W3) trained on exact factual targets; the belief
+model's objective is chosen at R0 (W5) by comparing latent, reconstructive and exact-delta arms. An
+encoder pretrained on exact factual supervision would give **every arm exact supervision and confound
+the comparison** — the precise failure §11.3 and S3's mandatory arm C exist to prevent, and the one
+S5 names as "JEPA strong only with exact auxiliaries, meaning the auxiliaries carry the result."
+Encoder weights never cross between the two. Sharing *inputs* — the canonicalizer, delta compiler and
+candidate set — is required and unaffected.
+
+Heads, with **frozen targets**:
 
 - **P(no-op), P(visible change), P(persistent change)** — exact settled-frame labels.
 - **P(progress event)** — predicts a **predeclared observable event class** (level/score marker or
@@ -295,6 +490,18 @@ targets**:
   additionally train this head only; they never enter the progress-event head.
 - **Uncertainty / OOD.**
 
+**Data sourcing.** Factual heads are data-rich (one transition = 4,096 dense cell labels; **180,144
+valid replay transitions** and 12,475 logged agent transitions already exist). The
+**progress-event head is the binding constraint**: measured prevalence is 0.90% in human replays
+(1,614 terminal transitions) and 0.39% in reference-agent logs (49 terminals), and across all possible
+17/8 draws the dev partition holds **850–1,287** replay positives before the §13.5 balance rule is
+applied. **The partition is drawn under §13.5's multi-criterion balance constraint**
+`[amended 2026-07-28 — PARTITION-2026-07-28]` — balancing terminal count alone leaves this
+component's other heads unprotected.
+Procedural F1/F3 is the only source whose progress prevalence and counterfactual labels are design
+parameters, which makes the S2 generators primary supervision for this component and not only an
+instrument for objective screening. Sizing: [`notes/evaluator-training-data.md`](../notes/evaluator-training-data.md).
+
 **Supervision honesty — three stages:** **4a** factual heads on executed transitions + procedural
 branches (exact, free labels) · **4b** weak candidate value (pointwise, biased, declared) ·
 **post-R1 evaluator v2** — the first version with genuine common-candidate counterfactual
@@ -309,8 +516,8 @@ archive + guards, the gate pins to \(\tau_{max}\), and this is reported.
 ### 6.1 Two stages
 
 **Stage 1 — pre-emption (pre-proposal).** Fires on: level start or advance · plan exhaustion ·
-first occurrence of a new persistent event class (§4.9) · **reset, conditioned on the reset case**:
-in Case 1, a reset that begins an archive-known speedrun route does **not** call the executive.
+first occurrence of a new persistent event class (§4.10) · **reset**, unconditionally — under §4.1's
+accounting a reset is itself scored, so there are no routine ones.
 Context pressure triggers a compression call, not a Stage-1 decision call. Stage-1 calls are **not
 suppressible under the V1 gate** — which is not the same as productive: they may yield no usable
 hypothesis, duplicate a cheap default, or be redundant once a level-family plan transfers. Stage-1
@@ -698,7 +905,7 @@ Oct 18).
 
 | # | Contents | Cal. |
 |---|---|---|
-| 1 | Harness, replay, accounting, latency table; D0; reset-accounting experiment; branching primitive + yield instrumentation; terminal-transition logging; **public-game partition frozen (§13.5)** | W1 |
+| 1 | Harness, replay, accounting, latency table; D0; reset-accounting **confirmation** (§4.1, second game); branching primitive + yield instrumentation; terminal-transition logging; **public-game partition frozen (§13.5)** | W1 |
 | 2 | Canonicalizer, compiler, archive (evidence, projections, atomic single-active), ACTION6 coverage + three recall metrics; minimal hypothesis store | W1–2 |
 | 3 | Direct executive policy with full I/O contract, archive retrieval, legality guards → **functionally submittable agent** | W2 |
 | 4 | Evaluator 4a (factual heads incl. three-valued reversibility) and 4b (weak value) | W3 |
@@ -809,7 +1016,18 @@ priced 2–3 days each; Branch A requires ≥ 5 slack days at Aug 22.
 
 ### 13.5 Public-game partition and leakage policy `[frozen at step 1]`
 
-**17 development games / 8 validation games**, drawn before step 4. Validation games are excluded
+**17 development games / 8 validation games**, drawn before step 4.
+
+**Draw method** `[amended 2026-07-28 — PARTITION-2026-07-28]`**.** The draw is accepted only when
+**four** quantities each land within a pre-registered tolerance of the 17/8 proportional share:
+**terminal-transition count · no-op count · ACTION6 transition count · total transitions.**
+Reject-sample until all four hold; record the realized shares alongside the partition. The tolerance
+is pre-registered in `gate_manifest.yaml`. Measured basis (`logs/s2_corpus_census.json`): across the
+25 public games the worst-to-best dev share is 21%–97% for no-op positives, 22%–99% for ACTION6,
+32%–96% for discrete counterfactual pairs, 44%–87% for transitions and 53%–80% for terminals; six
+games contain no ACTION6 at all and five contain almost no no-ops.
+
+Validation games are excluded
 from: branching rounds R1–R3 · threshold and weight tuning · ablation iteration · click-salience
 training · G0 training data (their replays are quarantined). ACTION6 availability statistics may use
 all 25 (descriptive). Public validation is **external-validity evidence with veto power** (§6.7);
@@ -830,9 +1048,13 @@ value-head weights — are **frozen now**. Any change is logged with date and ca
 ## 14. Open items (measured, not assumed)
 
 Per-action latency and true wall-clock envelope · request-rate caps on the evaluation platform ·
-reset accounting (decides §4.1's case and the branching posture) · RESET's archive consequences ·
+**accounting-rule scope** — §4.1's case is selected, its scope is not: whether the rule measured on
+tu93 offline holds on a second game and in competition mode · RESET's archive consequences ·
 ACTION7/undo exposure · toolkit padding and tensor shapes · scoring constants · measured always-call
 executive cost (prices shadow mode and paired runs) · reconstruction-depth distribution (validates
 §13.1 depth caps) · branch validity yield (R1) · calibration-drift magnitude on procedural held-out
 games (sizes the adaptive controller) · common-random-number support in the environment (decides
-§6.6's stochasticity handling).
+§6.6's stochasticity handling) · **S2 generator throughput and held-out instance count** ·
+**minimum positive counts for the progress and demonstrated-irreversible heads** ·
+**`P(persistent change)` label census** · **replay/local-fork licensing and platform-version
+fidelity before derived weights ship**.

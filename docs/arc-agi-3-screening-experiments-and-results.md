@@ -68,6 +68,48 @@ breadth run that would have produced worse data.
 **Do not let the float be absorbed silently.** Spending it on overrun rather than on 1–3 is a descope
 of the decision quality this sprint exists to produce, and must be recorded as one.
 
+### Training-data readiness — do we have it, how much is needed, how hard is it to get?
+
+**Short answer:** executed transitions are abundant; *procedural diversity* and *real
+counterfactuals* are not. The replay archive already covers ARC-shaped observations and factual
+targets. S3 still depends on a generator that has not been built, and the hardest S4 labels ask what
+a different action would have done — information an on-policy replay cannot contain at any volume.
+
+**Measured inventory, 2026-07-28:** 340 human sessions (6.4 GB) provide **180,144 valid
+transitions**, including 171,199 changes, 8,945 no-ops, 1,614 terminal transitions, 56,347 ACTION6
+transitions and 516,260 grids (mean 2.86 per observation). Three reference-agent runs add **12,475
+transitions**, including 1,446 no-ops and 49 terminals. Procedural F1/F3 data is unbounded in
+principle but **zero exists today**: S2 builds its source. Full census and derivations:
+[`screening-training-data.md`](../notes/screening-training-data.md).
+
+Difficulty below means **data acquisition**, not model implementation: 0–2 = in hand or one
+extraction pass; 3–4 = produced by already-scheduled work; 5–6 = needs a new instrument; 7–8 =
+hard-budget environment interaction with uncertain yield.
+
+| Consumer | How much is needed | What exists now | Difficulty | Verdict |
+|---|---|---|---:|---|
+| **S2 ceilings** | Enough disjoint instances to resolve the registered F1/F3 margins; counts are **not yet registered** | generated on demand after S2 exists | **4** | volume is elastic; instance diversity is the risk |
+| **S3 A/B/C × rollout × seeds** | **51.2M transition presentations/run; 614.4M total** at 100k steps. If pre-generated, **≥2.56M distinct transitions** at ≤20 epochs and hundreds-to-low-thousands of instances/family are planning judgments, not thresholds | **0 procedural transitions** | **4** | not volume-limited after S2; throughput- and compute-limited |
+| **S4 ARC retraining** | A/B/C share one game-level split and one smaller, still-unregistered step budget | **180,144** replay transitions; any 17/8 split leaves 79,329–155,842 before the balance constraint | **1** | in hand, but epoch-limited: even 10k steps present 5.12M windows |
+| **Changed-region / no-op readouts** | no minimum registered | ≈**701M** cell labels on changed transitions; **8,945** replay + 1,446 agent no-op positives | **0–2** | changed-region solved; no-op adequate but partition-sensitive |
+| **Progress head / G0-R source** | minimum positive count **not registered**; splits must be by game/trajectory/instance, never random transitions | **1,614** replay + 49 agent positives; an unconstrained 17/8 draw leaves 850–1,287 replay positives | **4–5** | real positives are capped; procedural positives are elastic but synthetic |
+| **Candidate pruning / rung-3 ranking** | common-state action pairs with a causal ordering; no S4 training minimum registered | 23,032 replay pairs distinguish two effective coordinate actions, but only **204** involve progress | **6 via local fork; 8 via platform branches** | the real shortage; replays cannot supply unbiased rankings |
+| **Demonstrated irreversible class** | verified absence of a return route within \(H_{rev}\); no minimum registered | **0**; 5,065 demonstrated-reversible positives do not create the missing class | **7** | must be searched for, not inferred from missing return evidence |
+| **S4 closed-loop delta** | paired replicates; count not registered | live development games | **4** | not a training-volume problem; run-to-run variance determines power |
+
+Three consequences govern how these numbers are read:
+
+1. **Raw transition count is not a sufficiency argument.** The same 180k replays can solve dense
+   factual heads and still provide almost no causal action-ranking evidence.
+2. **S2 is a data dependency, not only an experiment.** Before it binds, register generator
+   throughput, distinct and held-out instance counts, emitted frame distribution, frame cap and
+   procedural progress prevalence (§11).
+3. **The hard labels share one acquisition path.** Counterfactual ranking, demonstrated
+   irreversibility, causal ACTION6 recall, the learned gate and exact-branch G0-A all consume either
+   the branching budget or a local game fork. All 25 public game sources are on disk, but local-fork
+   use still has licensing, platform-fidelity and dev/validation-leakage constraints; evaluation-only
+   use on the dev partition is the lowest-risk first use.
+
 **One known compute risk, not yet resolved.** S3's 46.2 h estimate assumes one grid per transition;
 the measured corpus averages **2.86**, and honouring the frame convention uncapped puts S3 at ~132 h
 against a 120 h budget. A frame cap of 8 covers 92.5% of observations at ~97 h. Register the cap on
@@ -144,11 +186,22 @@ within-run rate statistics; where a per-episode comparison is unavoidable, **pai
 mandatory and must be budgeted before the sprint starts.**
 Detail: [`s1-reference-variance`](../notes/s1-reference-variance.md).
 
-### 4.3 The reset posture — gated nothing, configured everything
+### 4.3 The reset posture — everything scores
 
-`accumulates`, `r` = 2.0357, `c_reset` = 1 — **RESET is itself scored.** This selected the **surgical
-information-per-action controller** over an aggressive identify-then-execute one: every probe costs
-score. That decision propagates into Tier 2's probe controller.
+`accumulates`, `r` = 2.0357, `c_reset` = 1 — **RESET is itself scored.** Two things follow.
+
+**SPEC §4.1's reset posture is settled** — `RESET-CASE-2026-07-28`, spec amended 2026-07-28. Both
+cheap-reset regimes require RESET to be free or to cost runtime only; `c_reset` = 1 falsifies them.
+**No online branching:** counterfactual data comes from procedural environments, replay
+reconstruction and development runs only. This changed no predeclared number — SPEC §13.1's branching
+budget was already written against the dev partition.
+
+**The controller fork** went the same way: **surgical information-per-action** over an aggressive
+identify-then-execute one, because every probe costs score. That propagates into Tier 2's probe
+controller.
+
+**Scope both claims carry:** offline environment files, not competition mode; and the accounting rule
+itself rests on one game (tu93), single-game by design so the level weight cancels.
 
 ### 4.4 The DEGRADED branch
 
@@ -416,6 +469,8 @@ is not.
 | 2026-07-27 | Restructured component-first; §3 coverage gap, §3.4 variance floor, §4 float claims, DEGRADED consequences, measured ARC conventions |
 | 2026-07-28 | **Re-scoped to evidence-and-results** on the arrival of the binding specification. Component inventory withdrawn in favour of SPEC §3 |
 | 2026-07-28 | **Cut 673 → 470 lines and renumbered for navigability** *(old section numbers in this row)*. New §1 status board — the orientation view the document previously lacked. Schedule detail delegated to `execution-schedule.md`; old §13 "After Aug 22" deleted as duplicating SPEC §12; old §11 paper-by-product dropped as duplicating `CLAUDE.md`. Archaeology compressed to one paragraph each — the withdrawn tier ordering (old §2.2), the coverage-gap narrative (old §3.2) and the three readings (old §3.3) — their full record being register entry `G0-SCOPE-2026-07-28`. Limitations gathered from five places into one §12. **Corrected a stale overclaim:** old §3.1 still read "the decline reads as genuine run-to-run variation" after §2.2 had already withdrawn it; a partial, non-blind re-rate cannot establish that |
+| 2026-07-28 | Added a measured training-data readiness summary: what exists, required presentation scale, acquisition difficulty, and the distinction between abundant factual transitions and scarce counterfactual labels |
+| 2026-07-28 | §4.3 rewritten: the reset result had been reported as configuring the controller only, when it also **settles SPEC §4.1's reset posture** — recorded as `RESET-CASE-2026-07-28` and amended into the spec the same day. The scope limits both claims carry (offline, one game) are now stated where the result is |
 
 ---
 
