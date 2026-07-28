@@ -28,7 +28,7 @@ their index and their interpretation.
 |---|---:|---|---|---|
 | **S0** starter submission | 0.5 / 0.5 | ✅ **complete** — public score 0.06 | execution path only | [`ledger`](../submissions/ledger.md) |
 | **S1** baseline reproduction | 6 / **2** | ⚠️ **measurement done, DEGRADED payload, gate reopened** | SPEC §4.1 reset posture · D0 latency inputs · SPEC §2 per-action budget | §6, [`s1-closeout`](../notes/s1-closeout.md) |
-| **S2** F1 + F3 generators | 3.5 / — | ▶️ **next** | nothing directly — **builds the instruments S3 needs** | §7 |
+| **S2** F1 + F3 generators | 3.5 / — | ▶️ **next** | decides no component, but **builds SPEC §4.9** — Tier 1 substrate — and carries its own gate, SPEC §12.1 **step 0** (schedule day A5-G). Passing it releases D0 and all procedural-dependent build work; failing it leaves W1's non-dependent substrate free to continue | §7 |
 | **S3** objective screening | 5 / — | not started | **R0 / SPEC §11** — the predictive objective | §8 |
 | **S4** ARC advisor test | 2.5 / — | not started | **SPEC §11.2 rung gates** — is Tier 3 retained at all | §9 |
 | **S5** decision audit | 1 / — | not started | **SPEC §12.2 slack policy** — build / defer / drop | §10 |
@@ -45,30 +45,7 @@ their index and their interpretation.
 
 ---
 
-## 2. Budget and float
-
-| | Budgeted | Spent |
-|---|---:|---:|
-| S0 · S1 · S2 · S3 · S4 · S5 | 0.5 · 6 · 3.5 · 5 · 2.5 · 1 | 0.5 · 2 · — · — · — · — |
-| **Total** | **18.5** | **2.5** |
-
-**~4 focused days of float exist where the plan assumed zero.** S1 came in at 2 days against 6 —
-accepting the reference's harness worked as intended, and the Kaggle run replaced a planned local
-breadth run that would have produced worse data.
-
-**Claims on the float, in priority order:**
-
-1. **Paired replicates for S3 and S4** (§12). An unreplicated S4 produces a retention decision
-   indistinguishable from a coin flip — *worse* than no measurement, because it would be reported as
-   one.
-2. **An entrant-authored payload** (~1 d) — converts the DEGRADED branch to PASS and restores S5's B
-   axis (§6).
-3. **S1's re-rate**, whose cost the float is explicitly banked for (§6).
-
-**Do not let the float be absorbed silently.** Spending it on overrun rather than on 1–3 is a descope
-of the decision quality this sprint exists to produce, and must be recorded as one.
-
-### Training-data readiness — do we have it, how much is needed, how hard is it to get?
+## 2. Training-data readiness — do we have it, how much is needed, how hard is it to get?
 
 **Short answer:** executed transitions are abundant; *procedural diversity* and *real
 counterfactuals* are not. The replay archive already covers ARC-shaped observations and factual

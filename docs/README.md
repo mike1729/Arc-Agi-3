@@ -262,11 +262,18 @@ evidence:
 decision: branch_v0_instrumentation_only
 detail: >
   Step 1 builds branch v0: prefix recording, deterministic replay, reset,
-  candidate execution, K-step outcome capture, and the full yield accounting of
-  §4.2 including all seven invalidity reasons. v0 is BARRED from emitting
-  training labels — its branches are cost-model and yield instrumentation only
-  and never enter §6.8's label set. Label-bearing branching (v1) requires
-  §4.4's identity layer and is unblocked at step 2.
+  candidate execution and K-step outcome capture. v0 is BARRED from emitting
+  training labels — its branches never enter §6.8's label set. Label-bearing
+  branching (v1) requires §4.4's identity layer and is unblocked at step 2.
+  v0's yield accounting is PARTIAL and is named separately for that reason.
+  Two of the seven invalidity reasons — context mismatch and projection change —
+  are detectable only against a projection, which is why final-hash match was
+  declared insufficient in the first place. v0 therefore reports yield_mech over
+  the five mechanically detectable reasons (stochasticity, animation timing,
+  reset behaviour, unavailable prefix, action nondeterminism), and that figure
+  is an UPPER BOUND on valid yield, never an estimate of it. yield_valid — the
+  quantity §13.1's n_causal feasibility decision reads — is defined only for v1
+  and measured at R1.
   This is close to free. §12.1 already places R1, the first branching round
   that produces labels, at step 6 (W4) — four steps after the identity layer
   lands. The amendment therefore makes an existing implication ENFORCEABLE
@@ -298,9 +305,12 @@ evidence:
   - artifact: docs/arc-agi-3-screening-experiments-and-results.md   # §7
   - artifact: notes/build-difficulty.md
   - finding: >
-      D0 plus five Tier 2 components depend on the suite (§13.1's tau bounds and
-      q_hi/q_lo, §6.4's ECE clause, §6.6's paired runs, §6.3's acceptance
-      region, §5's progress supervision). Four of the five quantities an
+      D0 plus FOUR of the seven Tier 2 components depend on the suite: the
+      evaluator (§5's progress supervision), the gate and envelope (§6.4's ECE
+      clause and §6.3's acceptance region — both belong to this one component),
+      the adaptive controller (§13.1's tau bounds and q_hi/q_lo) and the
+      paired-run estimators (§6.6). An earlier count said five by listing the
+      gate's two dependencies as separate components. Four of the five quantities an
       acceptance check would read are already listed as UNREGISTERED in §4.9.
       Separately, S2's 3.5-day budget predates three interface requirements
       added by §4.9 on 2026-07-28 and has not been re-examined.
@@ -312,12 +322,17 @@ detail: >
   Tier 1 component that is genuinely BUILT there, not merely checked. Nothing
   else deployable exists before W0: the rest of what the sprint leaves behind is
   measurement scaffolding around the vendored reference, which never ships.
-  Five acceptance criteria: generator correctness against F1's three-ceiling
-  pattern · throughput · held-out instance count · instance diversity ·
-  observation fidelity to the conventions measured 2026-07-26. Four are the
-  quantities §4.9 lists as unregistered, so acceptance and pre-registration are
-  ONE piece of work: both land in gate_manifest.yaml -> s2 before S2 runs,
-  satisfying the rule that numbers precede the step they govern.
+  SIX acceptance criteria in two kinds. Four are NUMERIC and are exactly the
+  quantities §4.9 lists as unregistered — throughput, held-out instance count,
+  instance diversity per family, progress-event prevalence — so acceptance and
+  pre-registration are ONE piece of work, both landing in gate_manifest.yaml
+  -> s2 before S2 runs. Two are STRUCTURAL with stated pass conditions:
+  generator correctness (F1's three-ceiling pattern on the registered margins;
+  F3's delay verified by construction) and observation fidelity (every row of
+  the measured convention table, including the frame-length distribution).
+  An earlier draft listed five criteria that did not match the table it claimed
+  to read: progress prevalence was in the table and not in acceptance, and the
+  two structural criteria had no pass definition.
   Step 0 sits OUTSIDE §12's "the calendar guarantees steps 1-5" — it is
   delivered by the sprint, so a slip arrives as a W1 problem and §12.2's
   deletions cannot absorb it.
@@ -327,9 +342,15 @@ detail: >
   §10.1 freezing thresholds before results are inspected, and with §13.5's
   habit of reporting rather than silently backfilling.
 open: >
-  Whether a failed step 0 slips W1 or lets the build proceed degraded is a
-  CALENDAR decision, not an acceptance criterion. It belongs with open item 2
-  and is deliberately not settled here.
+  FAILURE BRANCH, binding: reporting a failure does not discharge the
+  dependency, so the response is declared rather than improvised. W1's
+  non-dependent substrate continues — harness, accounting, replay, terminal
+  logging, the §13.5 partition — while D0 and every procedural-dependent item
+  are BLOCKED. Blocked means not attempted: a D0 threshold reading held-out
+  procedural environments is recorded UNTESTED, never passed.
+  What that blockage costs the calendar is open item 6, its own item — it is
+  not the October calendar tail of open item 2, and an earlier draft wrongly
+  deferred it there.
 revisit_if: >
   S2's budget is re-priced against the §4.9 interface, which may change what
   step 0 can reasonably demand.
@@ -348,3 +369,4 @@ approved_at: 2026-07-28
 | 4 | **Public-game partition — balance tolerance.** *(Draw method resolved by `PARTITION-2026-07-28`: multi-criterion, not one stratifier.)* What remains is the **tolerance** — how close to the 17/8 proportional share each of the four criteria must land before a draw is accepted. Frozen at build step 1, never backfilled | evaluator progress head · no-op head · G0 training data · click salience |
 | 5 | **Replay redistribution.** `paper/methods/s2-human-replay-corpus.md` records the archive carries no licence and mirror declarations come from non-rights-holders. Training locally is not redistribution; **shipping weights trained on it inside a submission may be** — unanswered, and it touches the progress head, §4.5 click salience, and G0 | W3 onward |
 | 3 | **The DEGRADED submission branch.** No entrant-authored payload exists, so S5's B axis has no score to read. SPEC step 3 (W2) produces one; until then the branch stands | S5's B axis |
+| 6 | **What a blocked D0 costs the calendar.** `S2-GATE-2026-07-28` fixes what *happens* on a failed step 0 — substrate continues, D0 and procedural-dependent work are blocked and recorded untested. It deliberately does not fix what that does to the schedule: D0 chooses the executive, which sizes the per-action budget and completes the latency table, so blocking it stalls more than step 1. Two options are available under the branch as written: **slip W1**, or **accept a late model choice** and carry the consequences into W3. A third is tempting and is *not* available — running a reduced D0 on its non-procedural parts (§10.1's licensing and GPU fit/throughput do not read procedural environments, only its capability thresholds do). Taking it means **amending `S2-GATE-2026-07-28`** to block D0's capability gate rather than D0 as a whole, because the branch currently says blocked means not attempted. That is a decision, not a clarification. **Distinct from item 2**, which is the October tail | any S2 overrun; the W1–W3 effort gap in SPEC §3.1 |

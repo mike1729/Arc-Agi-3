@@ -45,7 +45,10 @@ Aug 22 hard stop. That float is real and already has claims on it (§6).
 `gate_manifest.yaml → s2` is `NOT_STARTED`. The standing convention is that numbers enter the manifest
 **before** the step they govern. S2 cannot legitimately start until it carries: the value /
 distance-to-goal criterion per family · the three-ceiling margins validating F1 · F3's delay length and
-bit sparsity · the frame-sequence length distribution the generators emit.
+bit sparsity · the frame-sequence length distribution the generators emit · and the **four numeric
+criteria of SPEC §12.1 step 0** — generator throughput, held-out instance count, instance diversity
+per family, procedural progress-event prevalence. Step 0's acceptance reads exactly these registered
+values, so writing the manifest and defining the gate are one task, not two.
 
 This collides with **open item 1** — SPEC §13 predeclares its own constants under its own freeze rule,
 so two pre-registrations currently claim the role. **Resolve the ownership question before writing s2
@@ -57,7 +60,8 @@ numbers**, or the same conflict recurs at every subsequent block.
 | A2 | Wed Jul 29 | S2 — F1 generator: aliasing mechanic, **variable-length frame sequences**, ARC conventions (64×64, values 0–15, per-game action availability) | F1 emits, conventions asserted in a test |
 | A3 | Thu Jul 30 | S2 — F1 three ceilings: observation-only · history-oracle · hidden-state-oracle | required pattern observed, or task declared not history-resolvable |
 | A4 | Fri Jul 31 | S2 — F3 generator: sparse delayed causal memory at the pre-registered delay and bit sparsity | F3 emits; delay verified by construction |
-| A5 | Mon Aug 3 | S2 — generator interface complete (legal actions · exact successor · terminal predicate · **evaluation-only** value criterion · hidden state · causal-relevance labels · recoloured/relaid variants). Methods prose | S4 needs no re-engineering of these |
+| A5 | Mon Aug 3 | S2 — generator interface complete **to SPEC §4.9, which governs**: legal actions · exact successor · terminal predicate · **evaluation-only** value criterion · hidden state · causal-relevance labels · recoloured/relaid variants with colour roles permuted · **ground-truth state IDs** · **instance seed + random-stream control, CRN declared not assumed** · **on-demand generation**. Methods prose | every §4.9 interface item present; S4 needs no re-engineering |
+| **A5-G** | Mon Aug 3 | **SPEC §12.1 step 0 — procedural-suite acceptance.** Six criteria (§4.9): throughput · held-out instance count · instance diversity · progress prevalence — each against its registered value — plus generator correctness (F1's three-ceiling pattern on registered margins; F3's delay verified by construction) and observation fidelity (every row of the measured convention table, including the frame-length distribution) | **pass recorded, or unmet criteria named** — on failure, W1's non-dependent substrate continues while **D0 and all procedural-dependent work are blocked**, recorded untested, never passed |
 | A6–A10 | Tue Aug 4 – Mon Aug 10 | **S3 — objective screening.** Six configurations (A/B/C × rollout), two paired seeds, matched information and matched ranking interface. Symmetric degeneracy monitoring | five screening questions answered with pre-registered metrics |
 | A11–A12 | Tue Aug 11 – Wed Aug 12 | **S4 — ARC advisor test.** Held-out games, frozen advisor interfaces. **Local paired control** (advisor on/off), **replicates mandatory** | retention verdict on rungs, stated at local-public scope only |
 | — | Thu Aug 13 – Fri Aug 21 | **float, 7 weekdays** — see §6 for its claims | |
@@ -68,7 +72,8 @@ numbers**, or the same conflict recurs at every subsequent block.
 at 7.22 steps/s, 7.54 GB; twelve runs at 100k steps ≈ **46.2 h** against a 120 h budget. Over five
 focused days that is ~9 h/day of GPU, so it must run unattended overnight and cannot contend with other
 local GPU work. **Start the first training runs on A5, not A6** — the generators are ready a day before
-S3 formally opens.
+S3 formally opens — but **only once A5-G passes.** Training on an unaccepted generator spends GPU
+hours that step 0 may invalidate, and S3 has no slack to repeat them.
 
 ---
 
@@ -78,8 +83,8 @@ Steps, week assignments and gates are SPEC §12.1's. The "focus" column is deriv
 
 | W | Dates | SPEC step | Focus | Gate / milestone |
 |---|---|---|---|---|
-| **W1** | Aug 24–30 | 1, 2 (start) | harness · deterministic replay · scored-action accounting · **latency table re-measured** · branching primitive with yield instrumentation · terminal-transition logging | **D0** · **public-game partition frozen (17 dev / 8 validation)** · reset-accounting Case fixed |
-| **W2** | Aug 31–Sep 6 | 2, 3 | canonicalizer + delta compiler · archive (immutable evidence + versioned projections, atomic single-active swap) · ACTION6 generators + three recall metrics · minimal hypothesis store · direct executive policy with full I/O contract | **→ functionally submittable agent.** First entrant-authored payload; closes the DEGRADED branch |
+| **W1** | Aug 24–30 | 1, 2 (start) | harness · deterministic replay · scored-action accounting · **latency table — environment-step row only; the evaluator row waits for W3 and the executive row for D0, so the table is partial by construction and completed later** · **branching v0 — instrumentation only, emits no labels; reports \(yield_{mech}\), not \(yield_{valid}\) (SPEC §4.2)** · terminal-transition logging | **D0 — blocked if step 0 failed** · **public-game partition frozen (17 dev / 8 validation)** · reset-accounting confirmation on a second game (§4.1) |
+| **W2** | Aug 31–Sep 6 | 2, 3 | canonicalizer + delta compiler · archive (immutable evidence + versioned projections, atomic single-active swap) · **branching v1 admitted once projections exist — first version permitted to emit labels (SPEC §4.2)** · ACTION6 generators + three recall metrics · minimal hypothesis store · direct executive policy with full I/O contract | **→ functionally submittable agent.** First entrant-authored payload; closes the DEGRADED branch |
 | **W3** | Sep 7–13 | 4, 5 | evaluator 4a factual heads (incl. three-valued reversibility) · 4b weak value · two-stage gate · pre-R1 autonomy envelope · adaptive τ · portfolio arbitration v1 · shadow instrumentation | **→ budget-credible two-rate agent.** Step-5 target: ≥ 40% executive-call reduction. **This is the ablation baseline for W8** |
 | **W4** | Sep 14–20 | 6, 7 (start) | full ledger · contradiction-triggered projection splitting · probes · **R1 branching round on dev partition** | **R1** · \(n_{causal}\) feasibility decision (≥ 800 valid states, or causal tier declared unfundable and logged) · cost-side re-anchoring window |
 | **W5** | Sep 21–27 | 7, 8 (start) | R1 analysis → evaluator v2 → **envelope retired** · deterministic-gate calibration · complete procedural τ sweep, two operating points selected · belief rungs 1–3 | **R0** · G0-R runs opportunistically and **may not delay R0 or gate work** |
@@ -189,6 +194,7 @@ compressed; they are the submission.**
 | Blind re-rate sample + rating | S5's B/M axes | **today** (A1) |
 | S3/S4 replicate counts registered | A6 / A11 | A1–A2 |
 | Public-game partition (17 dev / 8 validation) | W1 step 1, frozen | before W1 — **drawn before step 4, never backfilled** |
+| **Procedural-suite acceptance (SPEC §12.1 step 0)** | **A5-G, Mon Aug 3** | **gates D0; its four numeric criteria are the `s2` pre-registration, so they land on A1** |
 | Entrant-authored payload | W2 | may be pulled into Phase A float |
 | Offline bundle + sandbox rehearsal | C2 | W6 — do not first attempt this in November |
 | `paper/methods/` prose | Nov 3 | continuous — written the day each thing is built |
@@ -198,8 +204,9 @@ compressed; they are the submission.**
 ## 9. Critical path
 
 ```
-S2 generators ──► S3 objective screening ──► S4 advisor test ──► S5 audit ──► SPEC amendment
-    (A2–A5)           (A6–A10, 46 h GPU)        (A11–A12)         (A13)         (Aug 22)
+S2 generators ──► step 0 acceptance ──► S3 objective screening ──► S4 advisor test ──► S5 audit ──► SPEC amendment
+   (A2–A5)            (A5-G)   │              (A6–A10, 46 h GPU)      (A11–A12)      (A13)        (Aug 22)
+                               └──► gates D0 in W1
                                                                                     │
                                               ┌─────────────────────────────────────┘
                                               ▼

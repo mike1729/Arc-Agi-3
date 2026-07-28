@@ -108,58 +108,76 @@ deletes rungs 4–5 while retaining programs — the calendar must not schedule 
 first. G0's *experiments* are Tier 3 (they are measurements); only *integration* of a passing goal
 model is Tier 4.
 
-### 3.1 Build difficulty `[planning judgment; binding on nothing]`
+### 3.1 Build effort and risk `[planning judgment; binding on nothing]`
 
-Estimated build effort, **distinct from §3.2's data-acquisition scale** — a component can be trivial
-to build and starved of data, or the reverse. 0–2 = a day or less, no open questions · 3–4 = large
-but fully specified · 5–6 = an open design decision or a dependency that lands late · 7–8 =
-correctness is not locally checkable, or output quality is itself a measured unknown. Per-component
-reasoning: [`build-difficulty.md`](../notes/build-difficulty.md).
+Per-component estimates. **Effort and data readiness are separate axes** — a component can be trivial
+to build and starved of data, or the reverse; the *Data* column references §3.2 rather than restating
+it. **Days** are optimistic / **likely** / pessimistic focused person-days, solo, ~8 h each, and
+**exclude integration** (allowance below). **Impl** is how much design remains open — Low fully
+specified, Med bounded choices, High a real design problem, **Open** research-open or unspecified.
+**Verify** is verification and integration risk; *High* means correctness is not locally checkable
+and a wrong implementation produces plausible output rather than an error. Reasoning and the tier 3–4
+tables: [`build-difficulty.md`](../notes/build-difficulty.md).
 
-| Tier 1 | § | | Tier 2 | § | |
-|---|---|---:|---|---|---:|
-| Harness, accounting, latency table | 4.1 | 2 | Cheap action evaluator | 5 | **6** |
-| Branching primitive | 4.2 | **7** | Two-stage gate + envelope | 6.1, 6.4 | 4 |
-| Canonicalizer + delta compiler | 4.3 | 4 | Adaptive threshold controller | 6.2 | 3 |
-| Archive | 4.4 | **7** | Shadow-mode instrumentation | 6.5 | 3 |
-| ACTION6 candidate system | 4.5 | 5 | Paired-run + branching estimators | 6.6 | **6** |
-| Minimal hypothesis store | 4.6 | 1 | Control portfolio | 7 | 4 |
-| Executive I/O contract | 4.7 | 3 | Full belief ledger | 4.6 | 5 |
-| Terminal-transition logging | 4.8 | 1 | | | |
-| Procedural suite (F1, F3) | 4.9 | 6 | | | |
-| Public-game partition | 13.5 | 1 *(blocked)* | | | |
+| Tier 1 — likely **33.5 d** | § | Days O/L/P | Impl | Verify | Data |
+|---|---|---|---|---|---|
+| Harness, accounting, latency table | 4.1 | 2 / **3** / 5 | Low | Med | Low |
+| Branching primitive | 4.2 | 3 / **5** / 9 | Med | **High** | **High** |
+| Canonicalizer + delta compiler | 4.3 | 3 / **5** / 8 | **Open** | Med | Low |
+| Archive | 4.4 | 4 / **6** / 10 | Med | **High** | Low |
+| ACTION6 candidate system | 4.5 | 2 / **4** / 6 | Low | Med | **High** |
+| Minimal hypothesis store | 4.6 | 0.5 / **1** / 1.5 | Low | Low | Low |
+| Executive I/O contract | 4.7 | 1.5 / **2.5** / 4 | Low | Med | Low |
+| Terminal-transition logging | 4.8 | 0.25 / **0.5** / 1 | Low | Low | Low |
+| Procedural suite (F1, F3) | 4.9 | 3.5 / **6** / 10 | **High** | Med | n/a |
+| Public-game partition | 13.5 | 0.25 / **0.5** / 1 | Low | Low | **Blocked** |
 
-| Tier 3 | § | | Tier 4 | § | |
-|---|---|---:|---|---|---:|
-| Belief rungs 1–3 + R0 | 10.2, 11.2 | **8** | Goal-model integration | 9.7 | 3 |
-| Verified partial programs | 8 | 5 | Mechanism retrieval (rung 6) | 11.2 | 4 |
-| Rungs 4–5, each gated | 11.2 | **6** | Longer-horizon latent planning | — | 8 *(sketch)* |
-| Learned probe selection | 7 | 4 | Hierarchical subgoals | — | 8 *(sketch)* |
-| Learned invocation gate | 6.8 | **6** | | | |
-| Goal families F4/F5 (Fork G-F) | 9.6 | 5 / 0 | | | |
-| G0 experiments (G0-R, G0-A) | 9 | **6** | | | |
+| Tier 2 — likely **28.5 d** | § | Days O/L/P | Impl | Verify | Data |
+|---|---|---|---|---|---|
+| Cheap action evaluator | 5 | 4 / **7** / 12 | Med | Med | **High** |
+| Two-stage gate + envelope | 6.1, 6.4 | 2 / **3.5** / 6 | Low | Med | Med |
+| Adaptive threshold controller | 6.2 | 1 / **2** / 3 | Low | Med | Med |
+| Shadow-mode instrumentation | 6.5 | 1.5 / **2.5** / 4 | Low | Med | Low |
+| Paired-run + branching estimators | 6.6 | 3 / **5** / 8 | Med | **High** | Med |
+| Control portfolio | 7 | 2 / **3.5** / 6 | Low | Med | Low |
+| Full belief ledger | 4.6 | 3 / **5** / 8 | Med | Med | Med |
 
-Tier 3 and 4 ratings are conditional on gates that have not run, and the two Tier 4 entries marked
-*sketch* have no specification section — those estimate a plausible cost, not a design, and cannot
-be scheduled without a spec amendment first.
+Tier 3 likely totals **45 d** across seven items, dominated by belief rungs 1–3 + R0 at
+8 / **14** / 25 with High on all three risk axes. Tier 4 carries two entries with **no specification
+section**, recorded as `N/A — unspecified` rather than estimated. `N/A` never means zero: Fork G-F's
+Branch B is the decision *not* to build, and §13.5's `Blocked` is a dependency flag tracked in
+[`README.md`](README.md)'s open items, not an effort rating.
 
-Five consequences for scheduling:
+**Integration allowance — a judgment with no measurement behind it.** Component days cover building
+and unit-testing a component alone, not wiring it to neighbours or the paired and procedural
+validation each retention rule demands. Budget a further **~30% at step level**, more wherever
+*Verify* reads High. Replace this figure with actuals after step 1.
 
-- **§§4.2 and 4.4 carry Tier 1's uncertainty and are one risk, not two.** §4.2's identity check reads
-  the inferred context signature and history equivalence class that §4.4 produces, so they cannot be
-  built strictly in sequence, and both fail *silently*.
-- **Tier 2 has no 7 and is still the more fragile tier.** Five of its seven components cannot be
-  validated until §4.9 exists — §13.1's \(\tau\) bounds and \(q_{hi}/q_{lo}\), §6.4's ECE clause,
-  §6.6's paired runs, §6.3's acceptance region, §5's progress supervision.
-- **The 1s are urgent for reasons unrelated to their size.** §4.8's data is unrecoverable if it
-  starts late; §13.5 blocks four components behind an unregistered tolerance; §4.5 is what makes the
-  19 of 25 public games exposing ACTION6 playable at all.
-- **Tier 3's binding order runs opposite to its difficulty, deliberately.** rungs 1–3 + R0 (8) →
-  verified programs (5) → rungs 4–5 (6): the slack policy deletes the rungs and retains programs, so
-  the harder disposable item must not be scheduled first.
-- **One measurement decides whether half of Tier 3 is fundable.** Learned probe selection, the
-  learned invocation gate, exact-branch G0-A and rung-3 discrimination all draw on branched evidence,
-  so R1's yield at W4 is their common evidence ceiling — not only the learned gate's.
+**§12.1's calendar has never been checked against an effort model.** Its W-numbers express dependency
+order, which they do correctly. Steps 1–5 — the ones §12 declares guaranteed — allot **W1–W3 ≈ 15
+person-days** at the project's ~5 focused days/week, against **30 optimistic and 50 likely** for the
+components they contain, before the integration allowance. Step 4–5 alone is 18.5 likely days inside
+one week. Either the estimates are substantially too high or the calendar is substantially too tight;
+the gap does not close by adjusting individual numbers. Step 1 is the cheapest calibration point and
+happens regardless — **re-anchor on measured actuals there** rather than acting on these judgments.
+
+Four further consequences:
+
+- **§§4.2 and 4.4 are one risk, not two.** §4.2's identity check reads the inferred context signature
+  and history equivalence class that §4.4 produces, so they cannot be built strictly in sequence, and
+  both fail *silently*. §12.1 nonetheless places §4.2 in step 1 and the projections in step 2 — a
+  step-1 branch has only a hash available, which §4.2 states is insufficient.
+- **Tier 2 has no High-Impl component and is still the more fragile tier.** **Four** of its seven
+  cannot be validated until §4.9 exists: the evaluator (§5's progress supervision), the gate and
+  envelope (§6.4's ECE clause *and* §6.3's acceptance region — both are this one component), the
+  adaptive controller (§13.1's \(\tau\) bounds and \(q_{hi}/q_{lo}\)) and the paired-run estimators
+  (§6.6).
+- **The half-day items are urgent for reasons unrelated to their size.** §4.8's data is unrecoverable
+  if it starts late; §13.5 blocks four components behind an unregistered tolerance; §4.5 is what makes
+  the 19 of 25 public games exposing ACTION6 playable at all.
+- **One measurement decides whether half of Tier 3 is fundable.** Learned probe selection, the learned
+  invocation gate, exact-branch G0-A and rung-3 discrimination all draw on branched evidence, so R1's
+  yield at W4 is their common evidence ceiling — not only the learned gate's.
 
 ### 3.2 Training-data readiness `[planning snapshot; not an admission threshold]`
 
@@ -233,6 +251,23 @@ policy (§9.3).
 **Cost model.** Per audited state \(C \approx d_{verify} + n_{cand}(d + K)\) plus resets, \(d\) = the
 archive's **shortest known path from reset**, not historical depth; audit-state selection prefers
 short verified reconstruction routes.
+
+**Two versions, and only one may emit labels** `[amended 2026-07-28 — BRANCH-V0-2026-07-28]`**.** The
+identity check above reads the inferred context signature and history equivalence class that §4.4's
+projections produce, and §12.1 builds those at step 2. **Branch v0**, at step 1, is therefore
+instrumentation only: prefix recording, replay, reset, candidate execution, K-step outcome capture,
+with **no authority to emit training labels** — its branches never enter §6.8's \(Y_{useful}\) set.
+**Branch v1** is unblocked once the identity layer lands and is the only version whose output may be
+labeled. This constrains nothing already scheduled: R1, the first label-bearing round, is at step 6.
+
+**v0 measures \(yield_{mech}\), not \(yield_{valid}\).** Two of the seven invalidity reasons below —
+**context mismatch** and **projection change** — are detectable only against a projection, which is
+precisely why final-hash match was declared insufficient. v0 can therefore report replay cost and the
+five mechanically detectable failures (stochasticity, animation timing, reset behaviour, unavailable
+prefix, action nondeterminism), and **its yield is an upper bound on the valid yield, never an
+estimate of it.** \(yield_{valid}\) — the quantity §13.1's \(n_{causal}\) feasibility decision reads —
+is defined only for v1 and is measured at R1. A v0 number reported as valid yield would overstate
+feasibility exactly where the project cannot afford it.
 
 **Yield accounting (binding).** Budgets cap **attempted actions**. Log per branch: attempted / valid
 / invalidity reason (stochasticity, context mismatch, animation timing, reset behaviour, unavailable
@@ -413,10 +448,33 @@ this, because part of the history the aliasing test concerns lives *inside* one 
   learnably history-resolvable and model failure on it is expected rather than informative.
 - Convention mismatches against the table above are **reported, never silently accepted**.
 
-**Provenance and timing.** The suite is built in screening sprint S2 and inherited by the build
-phase, not rebuilt. §12.1 lists no step for it because there is none — but step 1's D0 measures
-capability on held-out procedural environments, so a working suite is a **step-1 precondition, not a
-step-1 deliverable**. If S2 slips, D0 slips with it.
+**Provenance and timing — this is §12.1 step 0** `[amended 2026-07-28 — S2-GATE-2026-07-28]`**.** The
+suite is the one Tier 1 component built *before* the build phase: delivered by screening sprint S2 and
+inherited, never rebuilt. Everything else S2 and its neighbours leave behind is measurement
+scaffolding around the vendored reference and is not Tier 1 implementation. Step 1's D0 measures
+capability on held-out procedural environments, so this component **gates the build** rather than
+sitting inside it.
+
+**Acceptance — six criteria, in two kinds.** Four are the **numeric** quantities the table below lists
+as unregistered, and acceptance reads exactly the registered value: **throughput** · **held-out
+instance count** · **instance diversity per family** · **progress-event prevalence**. Acceptance and
+pre-registration are therefore one piece of work, both landing in `gate_manifest.yaml` before S2 runs.
+Two are **structural**, and pass only on a stated condition:
+
+- **Generator correctness** — F1's required three-ceiling pattern holds (observation-only <
+  history-oracle ≈ hidden-state-oracle) on the registered margins, and F3's delay is verified by
+  construction rather than inferred from a trained model's behaviour;
+- **Observation fidelity** — emitted observations match the measured convention table above on every
+  row, including the frame-sequence length distribution. Any mismatch is a failure and is reported;
+  it is never absorbed as a tolerable difference.
+
+**Failure branch (binding).** Reporting a failure does not discharge the dependency, so the response
+is declared here rather than improvised: **W1's non-dependent substrate continues** — harness,
+accounting, replay, terminal-transition logging, the §13.5 partition — while **D0 and every
+procedural-dependent item are blocked** until acceptance passes. Blocked means not attempted: a D0
+threshold that reads held-out procedural environments is recorded **untested**, never as passed, and
+§10.1's freeze-before-inspection rule is unaffected. What blocking costs the calendar is tracked as
+its own open item; it is not a scheduling question the acceptance criteria may absorb.
 
 **Predeclared numbers: none yet** — the one component in Tier 1 with no registered constant, while
 four downstream users depend on its scale.
@@ -900,13 +958,19 @@ candidates first.
 
 ### 12.1 Steps
 
-Dependency order primary; calendar is feasibility (W1 = Aug 24–30; W8 ends Oct 16; submission
-Oct 18).
+Dependency order primary; calendar is feasibility (**W0 = the S2 window, before Aug 24**; W1 =
+Aug 24–30; W8 ends Oct 16; submission Oct 18).
+
+**Nothing deployable exists before W0.** What the screening sprint leaves behind is measurement
+scaffolding built around the vendored reference — it is evidence, not Tier 1 implementation, and none
+of it ships. **Step 0 is the exception:** one Tier 1 component, the procedural suite, is genuinely
+built during S2 and inherited by the build phase.
 
 | # | Contents | Cal. |
 |---|---|---|
-| 1 | Harness, replay, accounting, latency table; D0; reset-accounting **confirmation** (§4.1, second game); branching primitive + yield instrumentation; terminal-transition logging; **public-game partition frozen (§13.5)** | W1 |
-| 2 | Canonicalizer, compiler, archive (evidence, projections, atomic single-active), ACTION6 coverage + three recall metrics; minimal hypothesis store | W1–2 |
+| **0** | **Procedural suite (§4.9) built and accepted** — Tier 1 substrate delivered by S2, not by the build phase. Six acceptance criteria (§4.9). **On failure: W1's non-dependent substrate continues; D0 and every procedural-dependent item are blocked** | **W0** (during S2) |
+| 1 | Harness, replay, accounting, latency table; D0; reset-accounting **confirmation** (§4.1, second game); **branching v0 — instrumentation only, emits no labels (§4.2)** + yield instrumentation; terminal-transition logging; **public-game partition frozen (§13.5)** | W1 |
+| 2 | Canonicalizer, compiler, archive (evidence, projections, atomic single-active), ACTION6 coverage + three recall metrics; minimal hypothesis store; **branching v1 admitted once projections exist — the first version permitted to emit labels (§4.2)** | W1–2 |
 | 3 | Direct executive policy with full I/O contract, archive retrieval, legality guards → **functionally submittable agent** | W2 |
 | 4 | Evaluator 4a (factual heads incl. three-valued reversibility) and 4b (weak value) | W3 |
 | 5 | Two-stage gate (\(A_t\), vetoes, forced escalations), **pre-R1 autonomy envelope**, adaptive \(\tau\) controller, portfolio arbitration v1 (rows 1, 5, 6), shadow instrumentation, suppression metrics live → **budget-credible two-rate agent** | W3 |
@@ -922,7 +986,15 @@ Oct 18).
 > step 5 is on the critical path for a runtime-viable submission. The ablation baseline is the
 > step-5 agent.
 >
-> The calendar guarantees steps 1–5. Tier-3 maturation by Oct 18 is best-effort, governed by the
+> The calendar guarantees steps 1–5. **Step 0 is not inside that guarantee** — it is delivered by the
+> screening sprint, so a slip there is a sprint overrun that arrives as a W1 problem, and §12.2's
+> deletions cannot absorb it.
+>
+> **Two prerequisite edges are explicit above rather than implied** `[amended 2026-07-28 —
+> S2-GATE-2026-07-28, BRANCH-V0-2026-07-28]`: step 0 gates D0, and label-bearing branching waits for
+> step 2's projections because §4.2's identity check reads them.
+>
+> Tier-3 maturation by Oct 18 is best-effort, governed by the
 > component gates and the slack policy: this is a score-first implementation plan with gated
 > research work, designed to degrade by deleting components — never by compressing the submission.
 
@@ -933,6 +1005,13 @@ only where opportunistically cheap; G0-R diagnostic always continues — it is a
 data) → G0-A evaluation → rungs 4–5 → Fork G-F Branch A (falls to Branch B) → R3 → public
 validation reduced to one operating point. **Verified programs are never deleted before rungs 4–5.**
 Steps 1–5 are never compressed; they are the submission.
+
+**This policy does not cover a failed step 0** `[amended 2026-07-28 — S2-GATE-2026-07-28]`. Its
+deletions are all Tier 3 and 4, and the procedural suite is Tier 1 substrate that D0 and four of the
+seven Tier 2 components depend on — there is nothing to delete. A failed acceptance is handled by
+§4.9's blocking rule, and what the blockage costs the calendar is
+[`README.md`](README.md)'s **open item 6** — D0 cannot size the executive or complete the latency
+table while blocked. That is a different question from the October calendar tail.
 
 ---
 
