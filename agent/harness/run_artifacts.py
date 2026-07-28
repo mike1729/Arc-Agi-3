@@ -1,4 +1,4 @@
-"""One loader for a run directory's artifacts, keyed by game.
+"""One loader for a run directory's artifacts, keyed by pass.
 
 WHY THIS EXISTS
 ---------------
@@ -11,12 +11,19 @@ from 25 games all scored against `sk48`'s baselines, median action ratio 0.90x w
 2.03x.
 
 This module makes that defect unrepresentable rather than merely fixed. There is no way to ask it for
-"the run's game" — every accessor is per game id.
+"the run's game" — every accessor is per PASS key (`<game>_p<N>`), matching the artifact stems.
 
 WHAT IT ENCODES, EACH FROM A MEASURED FAILURE
 ---------------------------------------------
 * **game_runs is a mapping, never a list index.** `game_runs` is not ordered like the event files, so
   `[0]` was not even reliably "the first game".
+* **The mapping key is the PASS, not the game (S1-E11).** Under `n_passes > 1` the vendor appends one
+  `game_run` per (pass, game) and every pass repeats the same `game_id` — `taaf/benchmark.py` checks id
+  uniqueness only on `pass_idx == 0`, commenting that "later passes legitimately repeat the same ids".
+  Keying by `game_id` therefore kept only the LAST pass and silently served its action counts, terminal
+  state and wall clock as p0's, p1's and p2's alike. That is the same one-identity-for-many-runs defect
+  described above, re-entering through the pass axis, and it would have corrupted all three passes of
+  the S1-E11 corpus. `game_runs` is passes-major, so the k-th occurrence of a game id IS its pass k.
 * **A `game_run` entry means SCHEDULED, not ran.** The killed 25-game directory lists 25 entries
   against 4 event files. Games with no event file are reported, not silently absorbed.
 * **Request logs are per pass, with a single-game fallback.** The harness writes
@@ -63,14 +70,24 @@ def _load_json(p: Path):
 
 
 class RunArtifacts:
-    """Everything a run directory holds, addressable only per game."""
+    """Everything a run directory holds, addressable only per pass (`<game>_p<N>`)."""
 
     def __init__(self, run_dir: Path):
         self.run_dir = Path(run_dir)
         self.name = self.run_dir.name
         bench = _load_json(self.run_dir / "benchmark.json") or {}
-        self._runs = {gr.get("game_id"): gr
-                      for gr in (bench.get("game_runs") or []) if gr.get("game_id")}
+        # Passes-major: `game_runs[pass_idx * n_games + g]`. Counting occurrences recovers the pass
+        # index without trusting `n_passes` to agree with the list length on a truncated run.
+        self._runs: dict[str, dict] = {}
+        seen: dict[str, int] = {}
+        for gr in (bench.get("game_runs") or []):
+            gid = gr.get("game_id")
+            if not gid:
+                continue
+            idx = seen.get(gid, 0)
+            seen[gid] = idx + 1
+            self._runs[f"{gid}_p{idx}"] = gr
+        self.n_passes_declared = bench.get("n_passes")
         self._config = _load_json(self.run_dir / "run_config.json") or {}
         self._events: dict[str, list] = {}
         for f in sorted(glob.glob(str(self.run_dir / "artifacts" / "*_events.jsonl"))):
@@ -78,7 +95,7 @@ class RunArtifacts:
             self._events[key] = [json.loads(l) for l in open(f)]
         self.warnings: list[str] = []
         for pk in self._events:
-            if game_of(pk) not in self._runs:
+            if pk not in self._runs:
                 self.warnings.append(
                     f"{pk}: no game_run in benchmark.json — no baseline or terminal state")
 
@@ -90,8 +107,9 @@ class RunArtifacts:
 
     @property
     def scheduled_not_run(self) -> list[str]:
-        played = {game_of(pk) for pk in self._events}
-        return sorted(g for g in self._runs if g not in played)
+        """Pass keys with a `game_run` but no event file. Per pass: under `n_passes > 1` a game can
+        complete p0 and never reach p2, and collapsing to the game id would hide that."""
+        return sorted(pk for pk in self._runs if pk not in self._events)
 
     @property
     def concurrency(self):
@@ -107,42 +125,46 @@ class RunArtifacts:
         m = self._config.get("max_runtime_minutes_per_game")
         return float(m) * 60.0 if m else None
 
-    # ---------------------------------------------------------------- per game
+    # ---------------------------------------------------------------- per pass
 
-    def game_run(self, game: str) -> dict:
-        return self._runs.get(game, {})
+    def game_run(self, pass_key: str) -> dict:
+        """The `game_run` for ONE pass. `pass_key` is `<game>_p<N>`, never a bare game id — a bare id
+        would silently miss and return {}, which reads as "no data" rather than "wrong key"."""
+        return self._runs.get(pass_key, {})
 
     def events(self, pass_key: str) -> list:
         return self._events.get(pass_key, [])
 
-    def actions_per_level(self, game: str) -> list:
+    def actions_per_level(self, pass_key: str) -> list:
         """From benchmark.json — authoritative. See the class docstring on the clearing action."""
-        return self.game_run(game).get("actions_per_level") or []
+        return self.game_run(pass_key).get("actions_per_level") or []
 
-    def baselines(self, game: str) -> list:
-        return self.game_run(game).get("base_actions_per_level") or []
+    def baselines(self, pass_key: str) -> list:
+        """Human baselines. Identical across passes of one game, but read per pass so a missing pass
+        yields [] rather than another pass's numbers."""
+        return self.game_run(pass_key).get("base_actions_per_level") or []
 
-    def actions_on_level(self, game: str, level) -> int | None:
+    def actions_on_level(self, pass_key: str, level) -> int | None:
         """Actions spent on a 1-indexed level, reconciled against benchmark.json."""
-        apl = self.actions_per_level(game)
+        apl = self.actions_per_level(pass_key)
         try:
             i = int(level) - 1
         except (TypeError, ValueError):
             return None
         return apl[i] if 0 <= i < len(apl) else None
 
-    def baseline_for(self, game: str, level):
-        bal = self.baselines(game)
+    def baseline_for(self, pass_key: str, level):
+        bal = self.baselines(pass_key)
         try:
             i = int(level) - 1
         except (TypeError, ValueError):
             return None
         return bal[i] if 0 <= i < len(bal) else None
 
-    def wallclock(self, game: str):
-        return self.game_run(game).get("final_wallclock_seconds")
+    def wallclock(self, pass_key: str):
+        return self.game_run(pass_key).get("final_wallclock_seconds")
 
-    def budget_terminated(self, game: str):
+    def budget_terminated(self, pass_key: str):
         """True / False / None. None means UNKNOWN, not "no".
 
         `run_config.json` is absent from Kaggle kernel output, so `budget_seconds` is None there and
@@ -150,15 +172,15 @@ class RunArtifacts:
         full 132-minute budget. `latency_or_budget` is defined on exactly that fact, so a False here
         misleads the rater about the one category it decides.
         """
-        b, w = self.budget_seconds, self.wallclock(game)
+        b, w = self.budget_seconds, self.wallclock(pass_key)
         if b is None or w is None:
             return None
         return w >= BUDGET_TOLERANCE * b
 
-    def concluded(self, game: str) -> bool:
+    def concluded(self, pass_key: str) -> bool:
         """S1-E9: the agent finished, OR the uniform pre-registered budget expired."""
-        return bool(self.game_run(game).get("state") in AGENT_FINISHED
-                    or self.budget_terminated(game))
+        return bool(self.game_run(pass_key).get("state") in AGENT_FINISHED
+                    or self.budget_terminated(pass_key))
 
     @staticmethod
     def _tool_code(msg: dict) -> list:

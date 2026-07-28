@@ -212,17 +212,18 @@ def main() -> int:
     per_game = {}
     for pass_key in run.passes:
         game = game_of(pass_key)
-        gr = run.game_run(game)
+        gr = run.game_run(pass_key)
         history = gr.get("history") or []
         executed = sum(1 for r in run.events(pass_key) if r.get("type") == "action")
         per_game[pass_key] = {
             "game": game,
+            "pass_key": pass_key,
             "state": gr.get("state"),
-            "concluded": run.concluded(game),
-            "censored_at_seconds": run.budget_seconds if run.budget_terminated(game) else None,
+            "concluded": run.concluded(pass_key),
+            "censored_at_seconds": run.budget_seconds if run.budget_terminated(pass_key) else None,
             "levels_completed": gr.get("levels_completed"),
-            "actions_per_level": run.actions_per_level(game),
-            "base_actions_per_level": run.baselines(game),
+            "actions_per_level": run.actions_per_level(pass_key),
+            "base_actions_per_level": run.baselines(pass_key),
             "executed_action_events": executed,
             "per_action_latency": latency_stats(history),
             "legal_action_reliability": legal_action_reliability(run_dir, executed, pass_key),

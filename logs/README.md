@@ -16,26 +16,58 @@ longer exists. The derived JSONs are small, so they are versioned; the raw artif
 | | size | reproducible? |
 |---|---:|---|
 | `kaggle_v2/` (25 per-game request logs) | 516 MB | no — stochastic, 2 h 12 m |
-| `kaggle-reference/` (v1) | — | no — stochastic, and its kernel version is superseded |
-| `runs/` (29 local run dirs) | 230 MB | no — same reason, 45 min each |
+| `kaggle_v3/` (25 per-game request logs) | 588 MB | no — stochastic, 2 h 12 m |
+| `kaggle_v4/` (25 per-game request logs) | 486 MB | no — stochastic, 2 h 12 m |
+| `kaggle-reference/` (v1) | 948 KB | no — stochastic, and its kernel version is superseded |
+| `runs/` (29 local run dirs) | 225 MB | no — same reason, 45 min each |
 | `quarantine/` | 164 MB | n/a — discarded runs, kept for provenance |
+
+**≈2.0 GB total, not 932 MB** — v3 and v4 added ~1.07 GB after this table was first written, and each is
+a replicate that cannot be regenerated. The three Kaggle runs are jointly the S1-E14 pooled corpus: lose
+one and the 75-episode corpus becomes a 50-episode corpus, and `sample_size: 30` stops being the 40%
+sample the erratum argues for.
 
 Too large for git. These need an off-machine target that is **not public**.
 
 ## Screen for the clean publication repository
 
 `PUBLISHING.md` lists `logs/` as **check first**: run artifacts embed reference prompts and model
-output, and the publication repository must contain only entrant-authored work. Screened 2026-07-27 by
-scanning every tracked JSON for `evidence` / `reasoning` / `content` / `tool_code` / `prompt` /
-`messages` keys.
+output, and the publication repository must contain only entrant-authored work. Re-screened 2026-07-28
+by counting `evidence.reasoning_by_step` excerpts in every `logs/*.json` that is tracked or matches
+`s1d_corpus*`; the 2026-07-27 screen predates the S1-E14 corpora and missed all three.
 
 ### Do NOT copy — contains reference model reasoning verbatim
 
-| file | why |
-|---|---|
-| `s1d_corpus.json` | `evidence` holds the reference's reasoning text and tool code per episode |
-| `s1d_corpus_phase1.json` | same |
-| `s1d_episodes_kaggle_reference.json` | same |
+| file | excerpts | why |
+|---|---:|---|
+| `s1d_corpus_pooled.json` | 4,185 | v2+v3+v4 evidence packets — the largest concentration of reference output in the repository |
+| `s1d_corpus_refv2.json` | 1,494 | **tracked in git**, so it ships by default unless excluded deliberately |
+| `s1d_corpus.json` | 520 | `evidence` holds the reference's reasoning text and tool code per episode |
+| `s1d_corpus_phase1.json` | 144 | same |
+| `s1d_episodes_kaggle_reference.json` | — | same |
+
+These are the sharpest case in the repository: they are produced by *our* scripts, sit under names that
+read like analysis output, and one is tracked — every signal says entrant-authored. The reasoning text is
+carried deliberately, because the labelling categories are defined on it and an evidence packet stripped
+of it cannot be re-rated. **Regenerate the count rather than trusting this table**, since any corpus
+rebuild changes it:
+
+```bash
+.venv/bin/python - <<'PY'
+import json, glob
+for f in sorted(glob.glob('logs/*.json')):
+    try:
+        d = json.load(open(f))
+    except Exception:
+        continue
+    if not isinstance(d, dict):          # some logs are top-level lists
+        continue
+    n = sum(len(v) for e in (d.get('episodes') or [])
+            for v in ((e.get('evidence') or {}).get('reasoning_by_step') or {}).values())
+    if n:
+        print(f'{n:6d}  {f}')
+PY
+```
 
 Frequencies and per-episode *statistics* derived from these are entrant-authored and safe; the
 `evidence` payloads are not. If the corpus is needed in the clean repo, strip `evidence` and republish

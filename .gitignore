@@ -234,6 +234,24 @@ CLAUDE.md
 /logs/*_state_PRE-D13_discarded.json
 !/logs/README.md
 
+# EXCEPTION 2: the RECONSTRUCTED run_config.json in each Kaggle run directory. Kaggle's
+# kernel output does not include one, so these are derived by hand from each run's own log
+# and taaf_setup_env.json. They are small, and they are load-bearing twice over:
+#   - `budget_seconds` comes from them, and without it every budget-terminated episode is
+#     silently recorded as NOT censored — the exact fact `latency_or_budget` is defined on.
+#     That bug has now occurred twice (v2, then v3).
+#   - they feed the S1-E14 configuration signature that decides whether two runs may be
+#     pooled into one corpus.
+# Losing them means re-deriving them, and a missing one fails silently rather than loudly.
+#
+# The three lines below are order-dependent and must stay together. Git does not descend into
+# an ignored DIRECTORY, so `!/logs/*/run_config.json` alone matches nothing: `/logs/*` has
+# already excluded `logs/kaggle_v3/` itself. Un-ignore the directories, re-ignore their
+# contents, then re-admit the one file.
+!/logs/*/
+/logs/*/*
+!/logs/*/run_config.json
+
 # S1-b: throwaway working copy of the vendored reference. Rebuilt by
 # agent/harness/build_local.sh from agent/reference/ + agent/patches/. Never edit it directly.
 /agent/work/

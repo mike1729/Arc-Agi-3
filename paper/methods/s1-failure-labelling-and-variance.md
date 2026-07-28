@@ -107,18 +107,25 @@ that is already solved rather than the bottleneck. Where the two bands disagree 
 disagreement is itself reported.
 
 **The rater was an LLM (claude-opus-5), not a human.** The pre-registration assumes a human throughout —
-it names the agreement statistic "delayed test-retest (same rater)" over a 48-hour cooling period, which
-is inapplicable to a rater with no memory between sessions. A second pass in a fresh context would be
-*independent* rather than test-retest: blinder than the pre-registered procedure, but measuring a
-different quantity, and it must not be compared against a literature expecting human test-retest.
+it names the agreement statistic "delayed test-retest (same rater)" over a 48-hour cooling period. Both
+assume continuous memory. The cooling period is therefore inapplicable and is not reported as satisfied,
+and a second pass in a fresh context is *independent* rather than test-retest: blinder than the
+pre-registered procedure, but measuring a different quantity, and it must not be compared against a
+literature expecting human test-retest.
 The specific risk is correlated bias: `goal_unknown` is diagnosed largely from the agent's own statement
 of its objective, which is self-report, and an LLM reading another LLM's self-report may share a blind
 spot on exactly the category that dominates the result. One human-rated sample of 8–10 episodes would
 bound this and has not been run.
 
-No blind re-rate was performed. The pre-registered sample size of 30 is unachievable — 25 games yield at
-most 25 episodes — and the resolution of that conflict was deferred, so no per-category agreement
-statistic exists and the pre-registered agreement floor was not applied.
+No blind re-rate was performed **for the figures reported in this section**, so no per-category agreement
+statistic backs them and the pre-registered agreement floor was not applied to them. That limitation is
+permanent for these numbers, which were computed from a single run before any re-rate existed.
+
+The sample size of 30 was briefly judged unachievable, on the reasoning that one run yields at most one
+failure episode per game and so at most 25. That reasoning held only for a single run. The corpus is now
+built from three separate runs of a byte-identical configuration — verified equal on model, sampling
+parameters, context window, budget and solver settings before pooling — giving **75 episodes**, against
+which 30 is a 40% sample. The pre-registered size was never amended; the corpus grew to meet it.
 
 ## 6. Robustness of the ranking against the variance floor
 

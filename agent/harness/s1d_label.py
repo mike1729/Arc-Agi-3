@@ -64,14 +64,17 @@ def extract_episodes(run_dir: Path):
     for pass_key in run.passes:
         rows = run.events(pass_key)
         game = game_of(pass_key)
-        gr = run.game_run(game)
-        games_seen[game] = {
+        gr = run.game_run(pass_key)
+        # Keyed by pass, not game: passes of one game have different states and action counts, and
+        # keying by game would keep only the last (S1-E11 / run_artifacts docstring).
+        games_seen[pass_key] = {
+            "game": game,
             "state": gr.get("state"),
             "levels_completed": int(gr.get("levels_completed") or 0),
-            "actions_per_level": run.actions_per_level(game),
-            "concluded": run.concluded(game),
-            "budget_terminated": run.budget_terminated(game),
-            "censored_at_seconds": run.budget_seconds if run.budget_terminated(game) else None,
+            "actions_per_level": run.actions_per_level(pass_key),
+            "concluded": run.concluded(pass_key),
+            "budget_terminated": run.budget_terminated(pass_key),
+            "censored_at_seconds": run.budget_seconds if run.budget_terminated(pass_key) else None,
         }
         requests = run.requests(pass_key)
 
@@ -110,18 +113,18 @@ def extract_episodes(run_dir: Path):
             # The action that clears a level is stamped with the NEW level in the event stream while
             # benchmark.json counts it toward the level it completed (ar25: benchmark [30, 80] vs
             # events L1:29 L2:81). Counting rows makes a cleared level one low and the next one high.
-            n_actions = run.actions_on_level(game, lvl)
+            n_actions = run.actions_on_level(pass_key, lvl)
             n_events = len(acts)
             if n_actions is None:
                 n_actions = n_events
-            base = run.baseline_for(game, lvl)
+            base = run.baseline_for(pass_key, lvl)
 
             episodes.append({
                 "episode_id": f"{run.name}::{pass_key}::L{lvl}",
-                "game": game, "level": lvl,
+                "game": game, "level": lvl, "pass_key": pass_key,
                 "terminal_state": gr.get("state"),
-                "concluded": run.concluded(game),
-                "censored_at_seconds": run.budget_seconds if run.budget_terminated(game) else None,
+                "concluded": run.concluded(pass_key),
+                "censored_at_seconds": run.budget_seconds if run.budget_terminated(pass_key) else None,
                 "actions_taken": n_actions,
                 "actions_in_event_stream": n_events,
                 "human_baseline": base,
@@ -146,8 +149,9 @@ def extract_episodes(run_dir: Path):
         "run": run.name,
         "concurrency": run.concurrency,
         "model": run.model,
-        "games": games_seen,
-        "n_games": len(games_seen),
+        "passes": games_seen,
+        "n_passes": len(games_seen),
+        "n_distinct_games": len({v["game"] for v in games_seen.values()}),
         "scheduled_but_not_run": run.scheduled_not_run,
         "categories_labelable": LABELABLE,
         "categories_unobservable": sorted(UNOBSERVABLE),

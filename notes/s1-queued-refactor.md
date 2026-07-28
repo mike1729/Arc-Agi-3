@@ -1,66 +1,64 @@
 # Queued after S1-e — refactor and hygiene
 
-Queued 2026-07-26, deliberately **not** applied while the breadth run is in flight.
+Queued 2026-07-26 while the breadth run was in flight. **S1-e has concluded** (`pgrep -f
+run_s1e_by_action_class` returns nothing), so the precondition this file was gated on is discharged
+and the remaining items are simply open work.
 
-**Why nothing was changed.** `run_s1e_by_action_class.sh` is executing, and bash reads a script
-incrementally by byte offset — editing a running script can make it execute garbage. `run_resumable.py`
-is also re-invoked for phase 2 (ACTION6). Risking a ~16 h run for cosmetic deduplication is a bad trade,
-so the analysis was completed and the changes were queued instead.
+**Updated 2026-07-28.** Two of the four are done; the note previously still said "not applied while
+the breadth run is in flight", which stopped being true two days ago and made a finished task look
+pending.
 
-**Precondition: S1-e has concluded.** Verify before starting:
-
-```
-pgrep -f run_s1e_by_action_class     # must return nothing
-```
-
----
-
-## 1. `run_artifacts.py` — one loader, keyed by game  *(task #3)*
-
-Four modules independently parse `benchmark.json` / `*_events.jsonl` / `*_requests.jsonl`:
-`analyse_reference_run.py`, `make_run_tables.py`, `s1c_measure.py`, `s1d_label.py`. **That duplication is
-why the `game_runs[0]` bug had to be fixed twice.** A shared loader that only ever returns a per-game
-view makes the bug unrepresentable rather than merely fixed.
-
-Checked 2026-07-26: `make_run_tables.py` and `analyse_reference_run.py` iterate all `game_runs`
-correctly and do **not** carry the defect. `analyse_reference_run.py` being correct is exactly why
-`per_game_analysis.json` could serve as the independent cross-check that validated the repair — so
-migrate those two only if it does not put their output at risk.
-
-## 2. Game lists from measured data, not four hardcoded copies  *(task #4)*
-
-The 25-game set and the 6 keyboard games are typed out in `run_resumable.py`,
-`run_s1e_by_action_class.sh`, `s1d_blind_rerate.py` and `gate_manifest.yaml`, in three different
-formats, linked by nothing. The six define **both** the S1-E4 eligibility stratum **and** the
-concurrency schedule; drift between those two uses would be silent.
-
-Derive from `logs/s2_arc_conventions.json`. **Blocked on item 3** — that file is not in the repo.
-
-## 3. Track the small measurement JSONs  *(task #5)*
-
-`logs/` is gitignored, so every `logs/*.json` cited as evidence across `notes/` exists only on this
-machine and is in no commit. **The raw evidence for all of S1 has no off-machine copy.**
-
-Add exceptions for the small derived-measurement files; keep `logs/runs/` and `logs/quarantine/`
-ignored. Per `PUBLISHING.md`, read each file before tracking it — anything carrying reference-derived
-prompts or model output is bucket-3 and must not be committed.
-
-Once `s2_arc_conventions.json` is tracked, `measure_arc_conventions.py` can be retired too; it is kept
-today only because its output is untracked.
-
-## 4. Dedupe `game_of()` and `COMPLETED`  *(task #6)*
-
-`game_of()` is byte-identical in two modules. `{"gave_up", "won"}` is defined twice — and that one is
-load-bearing: it encodes the S1-E8 inclusion criterion, so the supervisor's retry rule and the corpus
-builder's exclusion rule must agree by construction, not coincidence.
+| # | item | state |
+|---:|---|---|
+| 1 | `run_artifacts.py` — one loader for a run directory | **done** |
+| 2 | game lists from measured data, not hardcoded copies | **open** — now unblocked |
+| 3 | track the small measurement JSONs | **done** |
+| 4 | dedupe `game_of()` and the finished-state set | **half done** |
 
 ---
 
-## Not queued — decisions, not refactors
+## Done
 
-- **S1-E7**, the re-rate sample size. Better made once the concluded-game count is known.
-- **`docs/sources/`** — 4 files, 88 K, "not authoritative, do not cite", referenced by nothing. Removal
-  would want a matching edit to the precedence table in `CLAUDE.md`. Left alone because the instruction
-  was to minimise *code*.
-- **Back up `logs/` off-machine.** Independent of the repo question: a disk failure now costs the Kaggle
-  reference run and everything S1-e is producing.
+**1. `run_artifacts.py`.** Four modules independently parsed `benchmark.json` / `*_events.jsonl` /
+`*_requests.jsonl`, which is why the `game_runs[0]` bug had to be fixed twice. The shared loader
+exists and every accessor is per **pass** (`<game>_p<N>`), not per game — the pass axis turned out to
+carry the same defect: `game_runs` is passes-major and repeats the game id, so a game-keyed mapping
+silently served the last pass's data for every pass. `make_run_tables.py` and
+`analyse_reference_run.py` were verified free of the original defect and deliberately left alone, so
+`per_game_analysis.json` remains an independent cross-check.
+
+**3. Track the small measurement JSONs.** `.gitignore` now admits the derived-measurement files while
+keeping `logs/runs/`, `logs/quarantine/` and the raw `logs/kaggle_v*/` directories out. Each tracked
+file was read before being added, per `PUBLISHING.md`; the corpus JSONs carry reference reasoning
+verbatim and are listed as **never publish** in `PUBLISHING.md` and `logs/README.md`.
+
+---
+
+## Open
+
+**2. Game lists from measured data.** The 25-game set and the 6 keyboard games are still typed out in
+`run_resumable.py`, `run_s1e_by_action_class.sh`, `run_s1e_v2.sh`, `s1d_blind_rerate.py` and
+`gate_manifest.yaml`, in three formats, linked by nothing. The six define **both** the S1-E4
+eligibility stratum **and** the concurrency schedule, so drift between those two uses would be silent.
+
+**No longer blocked:** `logs/s2_arc_conventions.json` is tracked as of 2026-07-28, which was the
+dependency. Deriving from it also retires `measure_arc_conventions.py`, kept only because its output
+was untracked.
+
+**4. Dedupe the finished-state set.** `game_of()` is no longer duplicated — item 1 absorbed it. But
+`{"gave_up", "won"}` is still defined three times, in `run_artifacts.py`, `run_resumable.py` and
+`s1d_build_corpus.py`. That one is load-bearing: it encodes the S1-E8/S1-E9 inclusion criterion, so
+the supervisor's retry rule and the corpus builder's exclusion rule must agree by construction rather
+than by coincidence.
+
+---
+
+## Not refactors — still live
+
+- **Back up `logs/` off-machine.** Independent of the repo question and now the largest exposure:
+  `kaggle_v2/`, `v3/` and `v4/` are ~1.6 GB of irreproducible stochastic evidence (the agent samples at
+  temperature 0.6 with no seed), deliberately gitignored, and the three of them jointly constitute the
+  75-episode pooled corpus. Losing one turns it into a 50-episode corpus. See `logs/README.md`.
+- **S1-E7** (re-rate sample size) was resolved by S1-E11 and re-scoped by S1-E14; no longer queued.
+- ~~`docs/sources/`~~ **done 2026-07-28** in the docs consolidation: `sources/` deleted (recoverable
+  from history), three superseded documents moved to `docs/archive/`.

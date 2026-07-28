@@ -1,0 +1,58 @@
+# Mutations that survive `tests/run_mutation_harness.py` and are NOT bugs.
+#
+# Format:  <file>::<function>::<operator>::<source fragment>  # reason
+#
+# An entry is a claim that the line CANNOT be usefully pinned by a test, not that pinning it is
+# inconvenient. Three legitimate categories, and nothing else:
+#
+#   equivalent    the mutation provably does not change behaviour
+#   message-only  it changes printed text, not a verdict, an exit code, or a written artifact
+#   defensive     an I/O fallback for a state the suite cannot construct without mocking the
+#                 filesystem, where mocking it would test the mock
+#
+# A guard that decides whether a category drives the build order NEVER belongs here. If one appears,
+# the fix is a test. Keys are function+fragment rather than line numbers so they survive edits above
+# them; a stale key simply stops matching and its mutant reappears as unexplained, which is the right
+# failure direction.
+
+# --- equivalent ---------------------------------------------------------------------------------
+s1d_blind_rerate.py::_score::compare::x == cat  # equivalent: one-vs-rest kappa is symmetric under swapping the Y/N assignment, so == and != give an identical statistic
+
+# --- message-only -------------------------------------------------------------------------------
+s1d_blind_rerate.py::_score::compare::k >= floor  # message-only: the "<- below floor" annotation in the any-label table. The verdict uses `kp >= floor and ks >= floor`, which IS pinned by test_a_category_exactly_at_the_agreement_floor_passes
+s1d_blind_rerate.py::_score::compare::kp >= floor  # message-only: chooses whether the refusal says "fails primary" or "fails primary+any-label". The pass/fail decision itself is the separate `ok = ...` line and is pinned
+s1d_blind_rerate.py::_score::compare::ks >= floor  # message-only: as above, the wording of `which`, not the verdict
+s1d_blind_rerate.py::_score::compare::len(tampered) > 5  # message-only: truncates the printed list of tampered episode ids
+s1d_blind_rerate.py::_score::compare::len(label_errs) > 8  # message-only: truncates the printed list of schema errors
+s1d_blind_rerate.py::_score::compare::na != nb  # message-only: whether the "total labels differ" NOTE prints. The any-label kappa table already carries the finding
+s1d_build_corpus.py::build::compare::len(dropped_censored) > 10  # message-only: truncates the printed exclusion list
+s1d_build_corpus.py::build::compare::sig == UNKNOWN_SIGNATURE  # message-only: selects which WARNING text is printed for an unidentifiable run. Whether it may POOL is decided by _same_config, which is pinned
+s1d_build_corpus.py::build::compare::sig == UNKNOWN_SIGNATURE  # message-only: second occurrence, the INCOMPLETE branch of the same warning
+
+# --- defensive ----------------------------------------------------------------------------------
+s1d_build_corpus.py::_budget_seconds::guard-off::not rc.exists()  # defensive: missing run_config.json. The signature path already refuses such a run as INCOMPLETE, which is pinned
+s1d_build_corpus.py::_wallclock::guard-off::not bj.exists()  # defensive: missing benchmark.json fallback to None
+s1d_build_corpus.py::build::guard-off::not rd.exists()  # defensive: a --runs path that does not exist; prints SKIP
+s1d_build_corpus.py::_config_signature::guard-off::m  # defensive: the HarnessSolver repr is absent from the log
+s1d_build_corpus.py::_config_signature::guard-off::found  # defensive: as above, no repr matched in any log file
+s1d_build_corpus.py::_config_signature::guard-off::not parts  # defensive: a run directory with no benchmark, no config and no log at all -> UNKNOWN. The INCOMPLETE path that matters is pinned
+s1d_build_corpus.py::_config_signature::compare::budget is not None  # defensive: budget omitted from the signature string when unreadable; absence is already fatal via _REQUIRED_IDENTITY
+s1d_build_corpus.py::_pass_index::compare::len(parts) > 2  # defensive: fallback parse for episode files predating the pass_key field
+s1d_build_corpus.py::build::compare::wall is not None  # defensive: reached only when benchmark.json lacks the game run
+s1d_blind_rerate.py::kappa::guard-off::not a or len(a) != len(b)  # defensive: unequal sequence lengths cannot occur, both are built from the same `common` list
+s1d_blind_rerate.py::_score::guard-off::not common  # defensive: unreachable — the completeness guard above it already refuses when any episode lacks a label
+s1d_blind_rerate.py::validate_labels::guard-off::not isinstance(labels, list) or not labels  # defensive: the empty/non-list branch. Its REFUSAL is pinned by test_structurally_malformed_label_containers_are_refused; only the internal short-circuit survives
+
+# --- redundant guards, kept for their error message ------------------------------------------
+# These fire on states another, pinned check already rejects. They are retained because their message
+# names the actual problem, which a generic "sample does not match" would not.
+s1d_blind_rerate.py::_score::guard-off::recorded_corpus and recorded_corpus != actual_corpus  # redundant: a changed population also changes what re-derivation produces, so re-derivation catches it first
+s1d_blind_rerate.py::_score::guard-off::inconsistent  # redundant: manifest-vs-corpus digest disagreement. The packet check against the corpus already refuses the rewritten material
+s1d_blind_rerate.py::_score::guard-off::not manifest  # redundant: an empty `episodes` map fails re-derivation on the next check
+s1d_blind_rerate.py::_score::return-ok::return 1  # redundant: the `return 1` of one of the redundant guards above; the state is refused either way
+s1d_blind_rerate.py::_score::return-ok::return 1  # redundant: second occurrence, same reason
+s1d_blind_rerate.py::_score::compare::len(first_errs) > 8  # message-only: truncates the printed list of first-pass schema errors
+s1d_blind_rerate.py::draw::compare::len(corpus_errs) > 8  # message-only: truncates the printed list of corpus schema errors
+s1d_blind_rerate.py::_score::compare::len(unlabelled) > 8  # message-only: truncates the printed list of unlabelled episode ids
+s1d_blind_rerate.py::draw::compare::len(unlabelled) > 8  # message-only: truncates the printed list of unlabelled episode ids
+s1d_blind_rerate.py::promote::return-ok::return 1  # redundant: the `return 1` of the re-score-failed guard. Its condition is pinned by message assertion in test_promote_refuses_when_rescoring_fails_outright; returning 0 there still hits the gate_valid check immediately below, which refuses anyway

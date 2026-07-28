@@ -69,10 +69,15 @@ surface the disagreement explicitly rather than resolving it silently.
 
 ## Blind re-rate
 
-Agreement is measured by re-rating a stratified sample after a cooling period. The order is fixed:
+Agreement is measured by re-rating a stratified sample in a fresh context. The order is fixed:
 label the full pass, then draw the sample, then blind it. Stratification is on the first-pass label, so
 a sample set aside before labelling could not be stratified and would have nothing to be compared
 against.
+
+The pre-registration specified a 48-hour cooling period, which assumes a rater with continuous memory.
+Our rater is a language model, which has none between sessions; the interval is therefore inapplicable
+and is not reported as satisfied. What the cooling period stood in for — that the second pass not see
+the first — is met structurally instead, by a fresh context together with the stripping described below.
 
 Blinding removes the prior judgement, not the evidence. Labels, confidences and rater notes are
 stripped; the evidence packet is carried through unchanged, including the model's reasoning text.
@@ -89,12 +94,22 @@ on coordinate-driven games the alternative is a coordinate rather than a named a
 does not exist. The eligible fraction is reported alongside the agreement statistic: a number computed
 on a subset must say which subset.
 
-With a single rater, this is delayed test–retest agreement, not inter-rater reliability. Cohen's kappa
-remains the appropriate statistic, but the claim it supports is weaker than the name suggests: it bounds
-the stability of a label, not its correctness. A rater can reproduce a confounded judgement identically
-in both passes, and the two confounded categories in our taxonomy are precisely the ones most likely to
-be reproduced that way. Categories falling below the agreement floor are reported as unreliable and do
-not drive construction order.
+With a single model rater in a fresh context, this is an *independent* re-rate by the same model — not
+delayed test–retest, which the pre-registration named on the assumption of a human rater. The second
+pass is blinder than the procedure specified, because a human cannot forget on demand, but it measures a
+different quantity and should not be compared against a literature reporting human test–retest. Cohen's
+kappa remains the appropriate statistic, and the claim it supports is weaker than the name suggests: it
+bounds the stability of a label, not its correctness. A rater can reproduce a confounded judgement
+identically in both passes, and the two confounded categories in our taxonomy are precisely the ones most
+likely to be reproduced that way. A model rating another model's reasoning may also share systematic
+blind spots, which we cannot bound without a human-rated sample.
+
+Agreement is reported on two axes. The first compares the designated primary label. The second compares
+the full label set, category by category, on presence anywhere in the labelling. The second exists
+because primary-only agreement is structurally blind to secondary labels: a pass that changed every
+secondary label and no primary would score perfect agreement, while the frequency table — which reads
+both fields — would have moved. Categories falling below the agreement floor on either axis are
+reported as unreliable and do not drive construction order.
 
 ## Reference baseline
 

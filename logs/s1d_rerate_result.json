@@ -1,0 +1,38 @@
+{
+  "result_schema_version": 3,
+  "result_kind": "invalidation",
+  "gate_valid": false,
+  "refused": true,
+  "reason": "NO BLIND RE-RATE HAS BEEN SCORED. Placeholder rewritten 2026-07-28 under the v3 lineage contract.",
+  "detail": [
+    "S1 is open. No independent second pass exists.",
+    "Every v3 artifact carries superseded and invalidation_chain; this file predated that and lacked both.",
+    "A valid gate requires: floor exactly 0.40; 30 requested and 30 scored; rater equal to the single recorded first-pass identity; a fully-labelled corpus; and a re-rate produced in a fresh context."
+  ],
+  "invalidated_at": "2026-07-28T21:19:48+02:00",
+  "invalidated": {
+    "sha256": "3b775845bbd5bb46b599abea2c3bf3ecff265989b9b74eb781cfa218b8ebed04",
+    "result_kind": "invalidation",
+    "gate_valid": false,
+    "promoted_from": null,
+    "categories_driving_build_order": null,
+    "n_episodes": null,
+    "inputs": null,
+    "invalidated_at": "2026-07-28T16:21:32+02:00"
+  },
+  "invalidation_chain": [
+    {
+      "sha256": "3b775845bbd5bb46b599abea2c3bf3ecff265989b9b74eb781cfa218b8ebed04",
+      "result_kind": "invalidation",
+      "gate_valid": false,
+      "promoted_from": null,
+      "categories_driving_build_order": null,
+      "n_episodes": null,
+      "inputs": null,
+      "invalidated_at": "2026-07-28T16:21:32+02:00"
+    }
+  ],
+  "categories_driving_build_order": null,
+  "categories_excluded": null,
+  "note": "Canonical gate result INVALIDATED deliberately. `invalidated` identifies what this replaced, including its SHA-256. Do not fill manifest roll-ups from it. Re-score and re-promote to replace it."
+}

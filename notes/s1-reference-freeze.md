@@ -2,7 +2,7 @@
 
 **Status: FROZEN 2026-07-26.** Corresponding `gate_manifest.yaml → s1` block frozen the same day.
 
-Screened per `docs/arc-agi-3-s0-s1-execution.md` §4.1. Selection criteria, in the order the plan fixes
+Screened per `docs/archive/arc-agi-3-s0-s1-execution.md` §4.1 (archived 2026-07-28). Selection criteria, in the order the plan fixes
 them: (1) the models-and-weights bucket clears; (2) fits the accelerator at the intended quantization
 with the compact models resident; (3) reports a public-game score that can be targeted; (4) the harness
 is reusable — *that is where the saving comes from*; (5) legible enough to instrument.

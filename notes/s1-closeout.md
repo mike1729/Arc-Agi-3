@@ -51,6 +51,72 @@ gather the Day-5 taxonomy on the dense 27B.
 
 ---
 
+## Session log — 2026-07-27 · external review, S1 REOPENED
+
+An external review of the three-pass / re-rate path found six blockers. All six reproduced. Five were
+defects in this repository, not in the reading of it.
+
+| # | Finding | Disposition |
+|---|---|---|
+| 1 | Notebook still set `bm.n_passes = 1` while the README's version 3 and S1-E11 both claim three passes | **superseded by S1-E14** — the divergence was real and had already cost a run; the resolution was to adopt single-pass runs deliberately, not to set it to 3. See below |
+| 2 | `run_artifacts.py` keyed `game_runs` by `game_id`; the vendor appends one record per (pass, game) and *repeats the id* — `taaf/benchmark.py` checks uniqueness only on `pass_idx == 0` | **fixed** — keyed by pass. This is the 2026-07-26 `game_runs[0]` defect re-entering through the pass axis, and it would have served pass 2's action counts, state and wall clock as p0's and p1's for all 75 episodes |
+| 3 | Corpus builder deduplicated on `(game, level)`, discarding the replicates S1-E11 was filed to obtain | **fixed, then re-scoped by S1-E14** — `--replicates` keys on `(game, level, run, pass)` and ownership keys on a **configuration signature** rather than the run directory, so same-configuration replicates pool across runs while a differently-configured run is still refused |
+| 4 | Re-rate script recorded a 48 h cooling period and `delayed test-retest`, contradicting S1-E10 | **fixed** — reports `independent re-rate, same model`; cooling recorded as INAPPLICABLE, not as satisfied |
+| 5 | Threshold `evidence_ref` pointed at a path that does not exist, and "26 games" described two different cohorts | **S1-E13** — see below |
+| 6 | §4 marked S1 complete with the agreement gate unapplied and three roll-up fields still null | **S1 reopened** |
+
+### ⚠ Finding 1 was not hypothetical — the three-pass run ran one pass
+
+The run launched as "the 3-pass reference run" **executed with `n_passes = 1`**. `logs/kaggle_v3`
+confirms it: `benchmark.json` records `n_passes: 1`, 25 game-run records, no id repeated, and 25
+`_p0_events.jsonl` artifacts with no `_p1` or `_p2`. The local edit setting 3 was never pushed before
+launch, so the kernel ran the configuration it already had.
+
+**Resolved by S1-E14, and not by setting the notebook to 3.** The position the accident produced was
+judged the better instrument and adopted deliberately: the corpus is now built from **repeated
+single-pass runs** of a byte-identical configuration. Passes inside one kernel share a session, a vLLM
+server and a GPU, so they bound *within-run* variance — while S4 compares advisor-on to advisor-off as
+separate runs and must clear the *run-to-run* floor. Two run-to-run pairs are measured (36% v1↔v2, 20%
+v2↔v3); no within-run pass figure exists at all. `bm.n_passes = 1` is therefore now load-bearing: it is
+what keeps runs 2, 3 and 4 configuration-identical and so poolable.
+
+**The corpus is not blocked.** v2 and v3 pool to **50 evidence-bearing episodes** across 25 games — 20
+game-levels with two replicates each — which already exceeds `sample_size: 30`. v4 is needed only to
+reach 75, where 30 is a 40% sample rather than 60%. What made this work is the tooling change S1-E14
+mandated: ownership keys on a **configuration signature**, not a run directory. Under the previous
+directory rule v2+v3 collapsed to 30 episodes and silently discarded all 20 cross-run replicates.
+
+**Do not re-rate from the 30-episode collapsed corpus.** Drawing 30 of 30 is the near-tautological
+sample S1-E7 explicitly rejected; the whole point of the enlarged corpus is that 30 is a fraction of it.
+
+Cost of the accident: ~2 h 12 m of GPU quota that bought a third replicate rather than the intended
+corpus — which S1-E14 then made use of. The durable lesson is in the README: kernel status is not
+evidence that the kernel you edited is the kernel that ran.
+
+### On finding 5 — the numbers were right, the cohort was undocumented
+
+The recorded figures reproduce **exactly** (349/355 = 0.9831; per-decision p50 median 139.39 s). What was
+wrong was the provenance around them:
+
+- the cited file is at `logs/quarantine/…`, a **quarantined** run under a superseded config, and
+  `logs/quarantine/` is **untracked** — a frozen threshold cited evidence not in the repository;
+- one chunk file was never the cohort; both figures aggregate all 27 tracked S1-e chunk files;
+- "26 games" is the **latency** sample. Validity sums 32 game-run records over 18 distinct games.
+
+`logs/s1c_threshold_cohort.json` is now the cohort of record, regenerable and self-checking
+(`s1c_threshold_cohort.py --verify` exits non-zero on drift). The cohort takes **all** game-run records
+and does not apply S1-E9 admissibility — operator decision, recorded in S1-E13 with the counterfactual
+(344/350, 144.66 s) alongside. **Both verdicts PASS under either cohort**, so no verdict turned on it.
+
+### Why S1 reopened rather than closing with a caveat
+
+The gate was pre-registered. A stage cannot be closed on a gate that never ran — `agreement_floor: 0.40`
+is unapplied and `failure_frequency_ranking`, `build_order` and `viability_verdict` are still null. The
+measurement work stands and is not repeated; what reopens is the gate. Cost falls on the ~4 days of float
+§4 banks, which is what the float is for.
+
+---
+
 ## ⛔ Publishing policy
 
 **This repository is never made public.** Entrant-authored work is released as a **new, clean

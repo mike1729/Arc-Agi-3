@@ -1,8 +1,11 @@
 # gate_manifest.yaml — pre-registration for the Stage 0 screening sprint
 #
-# Authority: docs/arc-agi-3-decision-experiments.md §12 (was §10 before that document's
+# Authority: docs/arc-agi-3-screening-experiments-and-results.md §12 (was §10 before that document's
 #            2026-07-27 restructure; pointer correction only, no pre-registered value changed).
-# Schedule:  docs/arc-agi-3-s0-s1-execution.md
+# Schedule:  docs/archive/arc-agi-3-s0-s1-execution.md  (archived 2026-07-28. S0 complete; S1
+#            MEASUREMENT complete, S1 GATE OPEN — the blind re-rate has not been scored, so
+#            results.failure_frequency_ranking / build_order / viability_verdict remain null)
+# Build:     docs/arc-agi-3-implementation-spec.md      (binding for Aug 24 -> Oct 18)
 #
 # RULES
 #   - A block with `status: DRAFT` is edited freely. Once `status: frozen`, every change is a dated
@@ -416,6 +419,181 @@ errata:
                                  accounts for ~1250 s of a ~2518 s action span, so roughly half the
                                  wall-clock is non-acting turns and the true round-trip count is higher
                                  than 9. The threshold is therefore permissive; it is not tight."
+
+  - id: S1-E13
+    date: 2026-07-27
+    scope:
+      - "s1.threshold_verdicts.legal_action_validity"
+      - "s1.threshold_verdicts.per_action_latency_p50"
+    correction: "The two measured thresholds cited ONE chunk file as `evidence_ref`
+                 (`logs/s1c_20260726_164355_s1e-dense-c01.json`) and described their cohort as
+                 '26 games'. Three defects, none of them in the arithmetic:
+                 (a) THE CITED PATH DOES NOT EXIST. The file is at
+                     `logs/quarantine/s1c_20260726_164355_s1e-dense-c01.json` — a QUARANTINED run
+                     (superseded config, see logs/quarantine/MANIFEST.json) — and `logs/quarantine/`
+                     is untracked. A frozen threshold cited evidence that was neither at the stated
+                     path nor in the repository.
+                 (b) ONE CHUNK FILE WAS NEVER THE COHORT. Both figures aggregate the whole S1-e
+                     breadth run: the 27 tracked `logs/s1c_*s1e*.json` chunk files. No artifact said so.
+                 (c) '26 GAMES' MISLABELS THE DENOMINATOR. 26 is the LATENCY sample — the game-runs
+                     carrying a `per_decision` p50. The validity figure sums over 32 game-run records
+                     across 18 distinct games; chunked runs repeat a game across files. One phrase
+                     described two different cohorts."
+    numbers_unchanged: "NO recorded scalar moves. Both figures reproduce EXACTLY from the tracked logs:
+                        349/355 = 0.9831 and per_decision p50 median 139.39 s. This erratum documents
+                        the cohort; it does not amend a measurement. Verified by
+                        `s1c_threshold_cohort.py --verify`, which exits non-zero if they ever drift."
+    admissibility_decision: "OPERATOR DECIDED, 2026-07-27: the threshold cohort is ALL game-run records
+                             and does NOT apply the S1-E9 admissibility filter. 5 of the 32 records
+                             stopped early. S1-E9 exists to stop a truncated run misattributing a
+                             FAILURE CATEGORY in the labelling corpus, where the category is inferred
+                             from how the run ended. Legal-action validity and per-decision latency are
+                             properties of actions that were actually issued, and an operator kill does
+                             not retroactively make those actions illegal or slow. The two measurements
+                             answer different questions and take different cohorts, and that is now
+                             stated rather than left implicit."
+    counterfactual_recorded: "Under S1-E9 admissibility the same logs give 344/350 = 0.9829 and p50
+                              median 144.66 s across 27 concluded records. BOTH VERDICTS STAY PASS
+                              under either cohort (thresholds 0.95 and 225.00 s), so no verdict depends
+                              on this choice. Recorded so the alternative is auditable rather than
+                              discarded — the same discipline S1-E12 applied to the denominator."
+    evidence_ref: "logs/s1c_threshold_cohort.json — the exact cohort: every chunk file, every game-run
+                   record, both admissibility variants, and the per-record breakdown. Regenerate with
+                   `.venv/bin/python agent/harness/s1c_threshold_cohort.py`. SUPERSEDES the single-file
+                   evidence_ref on both thresholds."
+    note: "this changes WHICH GAME-RUNS the recorded numbers are known to cover, not the numbers. No
+           threshold, formula, arm, or verdict is altered."
+
+  - id: S1-E14
+    date: 2026-07-27
+    scope: ["s1.blind_rerate.sample_size"]
+    amends: "S1-E11, which resolved S1-E7 by choosing `multiple_passes`"
+    correction: "S1-E11 specified the enlarged corpus as `n_passes = 3` INSIDE ONE KAGGLE KERNEL. The
+                 mechanism changes to THREE SEPARATE SINGLE-PASS RUNS of a byte-identical
+                 configuration. `sample_size: 30` is UNCHANGED and still not amended; the corpus still
+                 reaches 75 episodes and 30 is still 40% of it. Only the route changes."
+
+    what_prompted_it: "The kernel launched on 2026-07-27 to execute S1-E11 ran with `bm.n_passes = 1`:
+                       the edit setting it to 3 was made in the local notebook and never pushed before
+                       launch. The run that completed is therefore a THIRD INDEPENDENT SINGLE-PASS
+                       REPLICATE (logs/kaggle_v3), not the 3-pass corpus. This erratum records that the
+                       resulting position was then judged BETTER than the one intended, and adopts it
+                       deliberately — it is not a rationalisation of an accident, and the accident is
+                       recorded here precisely so that judgement can be audited."
+
+    why_separate_runs_are_the_better_instrument: "S1-E11 justified the enlarged corpus on TWO uses:
+                       (a) reaching `sample_size: 30`, and (b) supplying the paired replicates S4 needs
+                       against the measured run-to-run variance. Separate runs are equal on (a) and
+                       strictly better on (b). Three passes inside one kernel share a session, one vLLM
+                       server process and one GPU, so they bound WITHIN-RUN variance. S4 compares
+                       advisor-on against advisor-off as SEPARATE RUNS, so the noise floor it must clear
+                       is the run-to-run one. Two run-to-run pairs are now measured — 36% of games
+                       change their cleared-level count (v1<->v2) and 20% (v2<->v3) — and NO within-run
+                       pass-to-pass figure exists at all. Adopting passes would have measured the
+                       quantity S4 does not face."
+
+    cost: "roughly 2 h 12 m of Kaggle GPU quota per additional run against ~6 h 40 m for one 3-pass
+           kernel. Cheaper, and it fails soft: a lost run costs one replicate, not the corpus."
+
+    configuration_identity_requirement: "Pooling episodes across runs is admissible ONLY while the runs
+                                         are the same configuration. Verified for v2 and v3 by
+                                         byte-identical `HarnessSolver(...)` reprs in both kernel logs
+                                         (analyzer_timeout=900.0, max_runtime_s_per_game=7920.0,
+                                         concurrency=28, model='local', label='duck-harness') and by
+                                         diffing the executed notebook source: only comments differ.
+                                         THIS CHECK IS A PRECONDITION, not a formality — it is the
+                                         entire premise that makes the pooled corpus one corpus. Runs
+                                         whose reprs differ must not be pooled, and the check is
+                                         mechanised in s1d_build_corpus.py rather than left to
+                                         inspection."
+
+    consequence_for_tooling: "s1d_build_corpus.py's `--replicates` was scoped to passes WITHIN one run
+                              and refused cross-run pooling by design, to prevent mixing
+                              configurations. That guard is correct in intent and too strict in form:
+                              it keys ownership on the run DIRECTORY rather than on the CONFIGURATION.
+                              It is re-keyed onto a configuration signature, so pooling is permitted
+                              exactly when the configurations match and refused otherwise."
+
+    unchanged: "sample_size, procedure, stratification, blinding rule, agreement metric and
+                agreement_floor are untouched. S1-E10's caveat stands: with an LLM rater the second
+                pass is INDEPENDENT, not delayed test-retest. S1-E11's `cooling_period_hours: 48`
+                remains INAPPLICABLE for the same reason."
+
+    status_when_filed: "v2 and v3 in hand (50 episodes with evidence, 25 labelled). Kernel version 4
+                        launched 2026-07-27 to supply the third run. v1 has no request logs and can
+                        never be labelled, so it contributes to the variance measurement only."
+
+  - id: S1-E15
+    date: 2026-07-27
+    scope: ["verification.items.V16_gpu_quota"]
+    type: "ADDS a constant that was never recorded. Edits no frozen value."
+    what_was_missing: "The documents use the word `quota` for TWO different resources and only one of
+                       them was ever verified. V13 records the SUBMISSION quota (1/day, 2 final) and it
+                       is treated correctly as a first-order planning constraint. The KAGGLE GPU
+                       COMPUTE quota is referenced repeatedly as though known — 'FREE on GPU quota'
+                       (S1-E11), 'roughly 2 h 12 m of quota' (S1-E14), 'while quota lasts'
+                       (notes/local-compute-options.md) — and NO NUMBER APPEARS ANYWHERE IN THE REPO.
+                       S1-E11 and S1-E14 both priced a decision in a budget whose size was unmeasured."
+
+    measured: "GPU 30.00 h per week: 7.84 h used, 22.16 h remaining, refreshing 2026-08-01T00:00:00.
+               TPU 20.00 h per week, 0.00 h used. Read 2026-07-27."
+    source: "`kaggle quota` (Kaggle CLI). This is an API read of the account's own meter, not a
+             documentation claim, so it is a measurement rather than a citation."
+    verified: true
+
+    consequence_for_the_sprint: "It REFRESHES WEEKLY, so it is not a fixed pool to be spent down. The
+                                 binding question is never 'how much is left in total' but 'how much is
+                                 left THIS WEEK'. At the time of filing, ~19.8 h remains this week once
+                                 the running v4 (~2.3 h) is accounted for, and the meter resets Aug 1.
+                                 Assuming the weekly rate holds, roughly four more refreshes fall
+                                 before the Aug 22 sprint hard stop."
+
+    the_cost_model_that_actually_matters: "A REFERENCE RUN IS BUDGET-BOUND, NOT GAME-BOUND. Each game
+                                           gets max_runtime_s_per_game = 7920 s and the harness runs at
+                                           concurrency 28, so ANY set of <= 28 games costs one full
+                                           budget: ~2 h 12 m. Cutting a run from 25 games to 3 does NOT
+                                           make it cheaper. This is the single most important thing to
+                                           know before pricing S4, because the natural assumption —
+                                           that a small game set is a cheap run — is false and would
+                                           under-budget the replicates by an order of magnitude."
+
+    consequence_for_S4: "S4's paired replicates are the largest claim on this resource. At 2 conditions
+                         (advisor on/off) x k replicates x ~2.2 h, k=3 costs 13.2 h and k=5 costs 22 h.
+                         k=3 fits inside one weekly refresh with little room beside it; k=5 does not fit
+                         in a single week at all and must be planned across two. Budget this BEFORE S4
+                         starts, per the degraded_consequences entry that already requires replicates."
+
+    not_a_constraint_on: "S3. Its training is local (measured: 21.2M params at 7.22 steps/s, 12 runs x
+                          100k steps = 46.2 h against a 120 h local budget) and consumes no Kaggle GPU
+                          quota at all."
+
+  - id: S1-E16
+    date: 2026-07-28
+    scope: ["verification.items.V16_gpu_quota"]
+    amends: "S1-E15, whose per-run cost was DERIVED rather than measured"
+    correction: "S1-E15 priced a reference run at '~2.2 h', reasoning from the 7920 s (2 h 12 m) per-game
+                 budget plus overhead. The measured notebook wall-clock is 2.36-2.38 h — 8569.2 s (v2),
+                 8553.8 s (v3), 8509.9 s (v4). Use 2.37 h. The derivation was low because it treated the
+                 game budget as the run cost and under-counted model load, vLLM server startup and
+                 teardown, which together add ~10 min and are charged to the meter like anything else."
+
+    revised_S4_budget: "At 2 conditions x k replicates x 2.37 h: k=3 costs 14.2 h (was stated 13.2) and
+                        k=5 costs 23.7 h (was stated 22.0). The CONCLUSION IS UNCHANGED — k=3 fits
+                        inside one 30 h weekly refresh with little beside it, k=5 does not fit in one
+                        week — but the margin at k=3 is thinner than S1-E15 implied: 14.2 of 30 h is
+                        47% of a week's quota for S4 alone."
+
+    method_note: "Wall-clock is read as the largest `time` field in each run's kernel log, which is
+                  notebook-relative and therefore includes setup and teardown. That is the right
+                  quantity for quota planning precisely BECAUSE it is not the game budget: the meter
+                  charges session time, not play time."
+
+    also_recorded: "S1-E15's snapshot of `7.84 h used / 22.16 h remaining` was taken while v4 was
+                    already running, so it was a moving figure rather than a clean pre-run baseline and
+                    its '~19.8 h remaining' projection was correspondingly pessimistic. Measured after
+                    v4 completed: 9.50 h used, 20.50 h remaining, same 2026-08-01 refresh. Recorded
+                    because a quota reading taken mid-run is not a baseline, and the next person to
+                    check will otherwise repeat the mistake."
 
 # =====================================================================================
 # S0 — External execution-path proof.
@@ -1315,11 +1493,18 @@ s1:
                                    candidate set exists anywhere, and the solver does not search. No
                                    instrumentation can create either quantity" 
 
+    # NULL, NOT []. An empty list encodes "the gate ran and nothing qualified"; null encodes "the gate
+    # has not been applied", which is the true state — no valid blind re-rate exists
+    # (logs/s1d_rerate_result.json is a refusal). The distinction is the same one the scorer now makes
+    # by withholding `categories_driving_build_order` on an invalid run, and it is what
+    # notes/s1-closeout.md has said all along. Fill these ONLY from a promoted, gate_valid result.
+    # Editing here is not an amendment to the pre-registration: `results:` is filled as work proceeds
+    # (see the block header), while the frozen part of `s1:` above it changes only by erratum.
     total_failure_episodes: null       # the denominator for both shares below
-    failure_frequency_ranking: []      # [{category, primary_count, primary_share, episode_count,
+    failure_frequency_ranking: null    # [{category, primary_count, primary_share, episode_count,
                                        #   episode_share, survives_agreement_floor, addressed_by}]
                                        # ranked by primary_share; episode_share reported alongside
-    build_order: []
+    build_order: null
     viability_verdict: null            # roll-up ONLY; never a substitute for threshold_verdicts
 
 # =====================================================================================

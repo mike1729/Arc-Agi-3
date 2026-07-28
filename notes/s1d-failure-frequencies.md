@@ -109,8 +109,14 @@ Run-to-run variance changes *which level* an episode lands on and *how many acti
 to overturn this ranking it would have to change *what kind of failure* the agent has, systematically,
 in one direction. Nothing in the two reference runs suggests that.
 
-**This is a much stronger position than a close ranking would be**, and it substantially defuses task #8:
-the stability check is still worth running, but the build order no longer hangs on it.
+**⛔ WITHDRAWN 2026-07-28.** The stability check ran, and this robustness argument did not survive it.
+Measured across two further runs of the identical configuration, `goal_unknown`'s L2+ `primary_share`
+fell **75% -> 53% -> 27%**, and in the third run `action_semantics_unknown` overtook it. Four episodes
+did effectively relabel, in the same direction, twice. Worse, the decline is monotone in *labelling
+order* and `latency_or_budget`'s episode_share moved 48% -> 100% -> 100% on a fact that is constant by
+construction — so rater drift is measured, not merely possible, and the comparison is confounded.
+Read [`notes/s1d-cross-run-stability.md`](s1d-cross-run-stability.md) before using anything on this page.
+The pooled top-category ranking survives; the 67-point margin and this paragraph's conclusion do not.
 
 ---
 

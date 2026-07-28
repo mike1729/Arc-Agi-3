@@ -1,0 +1,684 @@
+{
+  "built": "s1c_threshold_cohort.py",
+  "purpose": "the exact cohort behind s1.threshold_verdicts.legal_action_validity and .per_action_latency_p50. Supersedes the single-file evidence_ref, which pointed at a quarantined, untracked path.",
+  "cohort_definition": "every game-run record in the tracked S1-e chunk files matched by `git ls-files logs/s1c_*s1e*.json`. Chunked runs repeat a game across files, so records exceed distinct games; this is the measured unit.",
+  "n_chunk_files": 27,
+  "chunk_files": [
+    "logs/s1c_20260726_211534_s1e-kb2-c01.json",
+    "logs/s1c_20260726_220036_s1e-kb2-c02.json",
+    "logs/s1c_20260726_223006_s1e-kb2-c02.json",
+    "logs/s1c_20260726_231530_s1e-kb2-c03.json",
+    "logs/s1c_20260727_000031_s1e-a6c1-c01.json",
+    "logs/s1c_20260727_000112_s1e-a6c1-c01.json",
+    "logs/s1c_20260727_004614_s1e-a6c1-c02.json",
+    "logs/s1c_20260727_013116_s1e-a6c1-c03.json",
+    "logs/s1c_20260727_021617_s1e-a6c1-c04.json",
+    "logs/s1c_20260727_030136_s1e-a6c1-c05.json",
+    "logs/s1c_20260727_034637_s1e-a6c1-c06.json",
+    "logs/s1c_20260727_043139_s1e-a6c1-c07.json",
+    "logs/s1c_20260727_051642_s1e-a6c1-c08.json",
+    "logs/s1c_20260727_060144_s1e-a6c1-c09.json",
+    "logs/s1c_20260727_064654_s1e-a6c1-c10.json",
+    "logs/s1c_20260727_073156_s1e-a6c1-c11.json",
+    "logs/s1c_20260727_081709_s1e-a6c1-c12.json",
+    "logs/s1c_20260727_084448_s1e-l2c2-c01.json",
+    "logs/s1c_20260727_092956_s1e-l2c2-c02.json",
+    "logs/s1c_20260727_100125_s1e-8bit-c01.json",
+    "logs/s1c_20260727_104627_s1e-8bit-c02.json",
+    "logs/s1c_20260727_113129_s1e-8bit-c03.json",
+    "logs/s1c_20260727_121631_s1e-8bit-c04.json",
+    "logs/s1c_20260727_130134_s1e-8bit-c05.json",
+    "logs/s1c_20260727_134639_s1e-8bit-c06.json",
+    "logs/s1c_20260727_143141_s1e-8bit-c07.json",
+    "logs/s1c_20260727_151643_s1e-8bit-c08.json"
+  ],
+  "cohorts": {
+    "all_records": {
+      "admissibility": "NONE \u2014 every game-run record, including runs that stopped early",
+      "n_game_run_records": 32,
+      "n_distinct_games": 18,
+      "n_not_concluded": 5,
+      "legal_action_validity": {
+        "executed": 349,
+        "requested": 355,
+        "validity": 0.9831,
+        "threshold": 0.95,
+        "verdict": "PASS"
+      },
+      "per_action_latency_p50": {
+        "per_decision_p50_median_s": 139.39,
+        "n_game_runs_with_latency": 26,
+        "threshold_s": 225.0,
+        "verdict": "PASS"
+      },
+      "scalar_derivation": {
+        "median_actions_per_game": 24,
+        "median_decisions_per_game": 9.0
+      },
+      "game_run_records": [
+        {
+          "pass_key": "g50t-5849a774_p0",
+          "game": "g50t-5849a774",
+          "chunk": "logs/s1c_20260726_211534_s1e-kb2-c01.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 1,
+          "executed_actions": 1,
+          "per_decision_p50_s": 118.51
+        },
+        {
+          "pass_key": "ls20-9607627b_p0",
+          "game": "ls20-9607627b",
+          "chunk": "logs/s1c_20260726_211534_s1e-kb2-c01.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": null
+        },
+        {
+          "pass_key": "re86-8af5384d_p0",
+          "game": "re86-8af5384d",
+          "chunk": "logs/s1c_20260726_220036_s1e-kb2-c02.json",
+          "concluded": false,
+          "state": null,
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": null
+        },
+        {
+          "pass_key": "tr87-cd924810_p0",
+          "game": "tr87-cd924810",
+          "chunk": "logs/s1c_20260726_220036_s1e-kb2-c02.json",
+          "concluded": false,
+          "state": null,
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": null
+        },
+        {
+          "pass_key": "re86-8af5384d_p0",
+          "game": "re86-8af5384d",
+          "chunk": "logs/s1c_20260726_223006_s1e-kb2-c02.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 48,
+          "executed_actions": 48,
+          "per_decision_p50_s": 173.25
+        },
+        {
+          "pass_key": "tr87-cd924810_p0",
+          "game": "tr87-cd924810",
+          "chunk": "logs/s1c_20260726_223006_s1e-kb2-c02.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": 196.19
+        },
+        {
+          "pass_key": "tu93-0768757b_p0",
+          "game": "tu93-0768757b",
+          "chunk": "logs/s1c_20260726_231530_s1e-kb2-c03.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": 328.31
+        },
+        {
+          "pass_key": "wa30-ee6fef47_p0",
+          "game": "wa30-ee6fef47",
+          "chunk": "logs/s1c_20260726_231530_s1e-kb2-c03.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 25,
+          "executed_actions": 25,
+          "per_decision_p50_s": 144.66
+        },
+        {
+          "pass_key": "tn36-ef4dde99_p0",
+          "game": "tn36-ef4dde99",
+          "chunk": "logs/s1c_20260727_000031_s1e-a6c1-c01.json",
+          "concluded": false,
+          "state": null,
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": null
+        },
+        {
+          "pass_key": "re86-8af5384d_p0",
+          "game": "re86-8af5384d",
+          "chunk": "logs/s1c_20260727_000112_s1e-a6c1-c01.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 27,
+          "executed_actions": 26,
+          "per_decision_p50_s": 134.12
+        },
+        {
+          "pass_key": "tn36-ef4dde99_p0",
+          "game": "tn36-ef4dde99",
+          "chunk": "logs/s1c_20260727_004614_s1e-a6c1-c02.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 3,
+          "executed_actions": 3,
+          "per_decision_p50_s": 204.3
+        },
+        {
+          "pass_key": "lf52-271a04aa_p0",
+          "game": "lf52-271a04aa",
+          "chunk": "logs/s1c_20260727_013116_s1e-a6c1-c03.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 6,
+          "executed_actions": 6,
+          "per_decision_p50_s": 384.96
+        },
+        {
+          "pass_key": "cn04-2fe56bfb_p0",
+          "game": "cn04-2fe56bfb",
+          "chunk": "logs/s1c_20260727_021617_s1e-a6c1-c04.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 39,
+          "executed_actions": 39,
+          "per_decision_p50_s": 93.36
+        },
+        {
+          "pass_key": "bp35-0a0ad940_p0",
+          "game": "bp35-0a0ad940",
+          "chunk": "logs/s1c_20260727_030136_s1e-a6c1-c05.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 10,
+          "executed_actions": 7,
+          "per_decision_p50_s": 101.68
+        },
+        {
+          "pass_key": "lp85-305b61c3_p0",
+          "game": "lp85-305b61c3",
+          "chunk": "logs/s1c_20260727_034637_s1e-a6c1-c06.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 2,
+          "executed_actions": 2,
+          "per_decision_p50_s": 223.05
+        },
+        {
+          "pass_key": "r11l-495a7899_p0",
+          "game": "r11l-495a7899",
+          "chunk": "logs/s1c_20260727_043139_s1e-a6c1-c07.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 2,
+          "executed_actions": 2,
+          "per_decision_p50_s": 74.05
+        },
+        {
+          "pass_key": "sp80-589a99af_p0",
+          "game": "sp80-589a99af",
+          "chunk": "logs/s1c_20260727_051642_s1e-a6c1-c08.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 19,
+          "executed_actions": 19,
+          "per_decision_p50_s": 76.86
+        },
+        {
+          "pass_key": "m0r0-492f87ba_p0",
+          "game": "m0r0-492f87ba",
+          "chunk": "logs/s1c_20260727_060144_s1e-a6c1-c09.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": 95.25
+        },
+        {
+          "pass_key": "vc33-5430563c_p0",
+          "game": "vc33-5430563c",
+          "chunk": "logs/s1c_20260727_064654_s1e-a6c1-c10.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 5,
+          "executed_actions": 5,
+          "per_decision_p50_s": 128.3
+        },
+        {
+          "pass_key": "ar25-0c556536_p0",
+          "game": "ar25-0c556536",
+          "chunk": "logs/s1c_20260727_073156_s1e-a6c1-c11.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 110,
+          "executed_actions": 108,
+          "per_decision_p50_s": 88.27
+        },
+        {
+          "pass_key": "ka59-38d34dbb_p0",
+          "game": "ka59-38d34dbb",
+          "chunk": "logs/s1c_20260727_081709_s1e-a6c1-c12.json",
+          "concluded": false,
+          "state": "playing",
+          "requested_actions": 5,
+          "executed_actions": 5,
+          "per_decision_p50_s": 51.74
+        },
+        {
+          "pass_key": "ft09-0d8bbf25_p0",
+          "game": "ft09-0d8bbf25",
+          "chunk": "logs/s1c_20260727_084448_s1e-l2c2-c01.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 1,
+          "executed_actions": 1,
+          "per_decision_p50_s": null
+        },
+        {
+          "pass_key": "vc33-5430563c_p0",
+          "game": "vc33-5430563c",
+          "chunk": "logs/s1c_20260727_084448_s1e-l2c2-c01.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 15,
+          "executed_actions": 15,
+          "per_decision_p50_s": 173.67
+        },
+        {
+          "pass_key": "re86-8af5384d_p0",
+          "game": "re86-8af5384d",
+          "chunk": "logs/s1c_20260727_092956_s1e-l2c2-c02.json",
+          "concluded": false,
+          "state": null,
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": null
+        },
+        {
+          "pass_key": "tn36-ef4dde99_p0",
+          "game": "tn36-ef4dde99",
+          "chunk": "logs/s1c_20260727_100125_s1e-8bit-c01.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 2,
+          "executed_actions": 2,
+          "per_decision_p50_s": 226.86
+        },
+        {
+          "pass_key": "lp85-305b61c3_p0",
+          "game": "lp85-305b61c3",
+          "chunk": "logs/s1c_20260727_104627_s1e-8bit-c02.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 1,
+          "executed_actions": 1,
+          "per_decision_p50_s": 282.06
+        },
+        {
+          "pass_key": "ft09-0d8bbf25_p0",
+          "game": "ft09-0d8bbf25",
+          "chunk": "logs/s1c_20260727_113129_s1e-8bit-c03.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 5,
+          "executed_actions": 5,
+          "per_decision_p50_s": 348.91
+        },
+        {
+          "pass_key": "r11l-495a7899_p0",
+          "game": "r11l-495a7899",
+          "chunk": "logs/s1c_20260727_121631_s1e-8bit-c04.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 4,
+          "executed_actions": 4,
+          "per_decision_p50_s": 107.15
+        },
+        {
+          "pass_key": "vc33-5430563c_p0",
+          "game": "vc33-5430563c",
+          "chunk": "logs/s1c_20260727_130134_s1e-8bit-c05.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 5,
+          "executed_actions": 5,
+          "per_decision_p50_s": 205.46
+        },
+        {
+          "pass_key": "bp35-0a0ad940_p0",
+          "game": "bp35-0a0ad940",
+          "chunk": "logs/s1c_20260727_134639_s1e-8bit-c06.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": 98.36
+        },
+        {
+          "pass_key": "sp80-589a99af_p0",
+          "game": "sp80-589a99af",
+          "chunk": "logs/s1c_20260727_143141_s1e-8bit-c07.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": 93.0
+        },
+        {
+          "pass_key": "tu93-0768757b_p0",
+          "game": "tu93-0768757b",
+          "chunk": "logs/s1c_20260727_151643_s1e-8bit-c08.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 20,
+          "executed_actions": 20,
+          "per_decision_p50_s": 279.7
+        }
+      ]
+    },
+    "concluded_only": {
+      "admissibility": "S1-E9: agent-finished OR consumed the full uniform budget",
+      "n_game_run_records": 27,
+      "n_distinct_games": 17,
+      "n_not_concluded": 0,
+      "legal_action_validity": {
+        "executed": 344,
+        "requested": 350,
+        "validity": 0.9829,
+        "threshold": 0.95,
+        "verdict": "PASS"
+      },
+      "per_action_latency_p50": {
+        "per_decision_p50_median_s": 144.66,
+        "n_game_runs_with_latency": 25,
+        "threshold_s": 225.0,
+        "verdict": "PASS"
+      },
+      "scalar_derivation": {
+        "median_actions_per_game": 23.5,
+        "median_decisions_per_game": 9
+      },
+      "game_run_records": [
+        {
+          "pass_key": "g50t-5849a774_p0",
+          "game": "g50t-5849a774",
+          "chunk": "logs/s1c_20260726_211534_s1e-kb2-c01.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 1,
+          "executed_actions": 1,
+          "per_decision_p50_s": 118.51
+        },
+        {
+          "pass_key": "ls20-9607627b_p0",
+          "game": "ls20-9607627b",
+          "chunk": "logs/s1c_20260726_211534_s1e-kb2-c01.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": null
+        },
+        {
+          "pass_key": "re86-8af5384d_p0",
+          "game": "re86-8af5384d",
+          "chunk": "logs/s1c_20260726_223006_s1e-kb2-c02.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 48,
+          "executed_actions": 48,
+          "per_decision_p50_s": 173.25
+        },
+        {
+          "pass_key": "tr87-cd924810_p0",
+          "game": "tr87-cd924810",
+          "chunk": "logs/s1c_20260726_223006_s1e-kb2-c02.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": 196.19
+        },
+        {
+          "pass_key": "tu93-0768757b_p0",
+          "game": "tu93-0768757b",
+          "chunk": "logs/s1c_20260726_231530_s1e-kb2-c03.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": 328.31
+        },
+        {
+          "pass_key": "wa30-ee6fef47_p0",
+          "game": "wa30-ee6fef47",
+          "chunk": "logs/s1c_20260726_231530_s1e-kb2-c03.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 25,
+          "executed_actions": 25,
+          "per_decision_p50_s": 144.66
+        },
+        {
+          "pass_key": "re86-8af5384d_p0",
+          "game": "re86-8af5384d",
+          "chunk": "logs/s1c_20260727_000112_s1e-a6c1-c01.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 27,
+          "executed_actions": 26,
+          "per_decision_p50_s": 134.12
+        },
+        {
+          "pass_key": "tn36-ef4dde99_p0",
+          "game": "tn36-ef4dde99",
+          "chunk": "logs/s1c_20260727_004614_s1e-a6c1-c02.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 3,
+          "executed_actions": 3,
+          "per_decision_p50_s": 204.3
+        },
+        {
+          "pass_key": "lf52-271a04aa_p0",
+          "game": "lf52-271a04aa",
+          "chunk": "logs/s1c_20260727_013116_s1e-a6c1-c03.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 6,
+          "executed_actions": 6,
+          "per_decision_p50_s": 384.96
+        },
+        {
+          "pass_key": "cn04-2fe56bfb_p0",
+          "game": "cn04-2fe56bfb",
+          "chunk": "logs/s1c_20260727_021617_s1e-a6c1-c04.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 39,
+          "executed_actions": 39,
+          "per_decision_p50_s": 93.36
+        },
+        {
+          "pass_key": "bp35-0a0ad940_p0",
+          "game": "bp35-0a0ad940",
+          "chunk": "logs/s1c_20260727_030136_s1e-a6c1-c05.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 10,
+          "executed_actions": 7,
+          "per_decision_p50_s": 101.68
+        },
+        {
+          "pass_key": "lp85-305b61c3_p0",
+          "game": "lp85-305b61c3",
+          "chunk": "logs/s1c_20260727_034637_s1e-a6c1-c06.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 2,
+          "executed_actions": 2,
+          "per_decision_p50_s": 223.05
+        },
+        {
+          "pass_key": "r11l-495a7899_p0",
+          "game": "r11l-495a7899",
+          "chunk": "logs/s1c_20260727_043139_s1e-a6c1-c07.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 2,
+          "executed_actions": 2,
+          "per_decision_p50_s": 74.05
+        },
+        {
+          "pass_key": "sp80-589a99af_p0",
+          "game": "sp80-589a99af",
+          "chunk": "logs/s1c_20260727_051642_s1e-a6c1-c08.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 19,
+          "executed_actions": 19,
+          "per_decision_p50_s": 76.86
+        },
+        {
+          "pass_key": "m0r0-492f87ba_p0",
+          "game": "m0r0-492f87ba",
+          "chunk": "logs/s1c_20260727_060144_s1e-a6c1-c09.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": 95.25
+        },
+        {
+          "pass_key": "vc33-5430563c_p0",
+          "game": "vc33-5430563c",
+          "chunk": "logs/s1c_20260727_064654_s1e-a6c1-c10.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 5,
+          "executed_actions": 5,
+          "per_decision_p50_s": 128.3
+        },
+        {
+          "pass_key": "ar25-0c556536_p0",
+          "game": "ar25-0c556536",
+          "chunk": "logs/s1c_20260727_073156_s1e-a6c1-c11.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 110,
+          "executed_actions": 108,
+          "per_decision_p50_s": 88.27
+        },
+        {
+          "pass_key": "ft09-0d8bbf25_p0",
+          "game": "ft09-0d8bbf25",
+          "chunk": "logs/s1c_20260727_084448_s1e-l2c2-c01.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 1,
+          "executed_actions": 1,
+          "per_decision_p50_s": null
+        },
+        {
+          "pass_key": "vc33-5430563c_p0",
+          "game": "vc33-5430563c",
+          "chunk": "logs/s1c_20260727_084448_s1e-l2c2-c01.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 15,
+          "executed_actions": 15,
+          "per_decision_p50_s": 173.67
+        },
+        {
+          "pass_key": "tn36-ef4dde99_p0",
+          "game": "tn36-ef4dde99",
+          "chunk": "logs/s1c_20260727_100125_s1e-8bit-c01.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 2,
+          "executed_actions": 2,
+          "per_decision_p50_s": 226.86
+        },
+        {
+          "pass_key": "lp85-305b61c3_p0",
+          "game": "lp85-305b61c3",
+          "chunk": "logs/s1c_20260727_104627_s1e-8bit-c02.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 1,
+          "executed_actions": 1,
+          "per_decision_p50_s": 282.06
+        },
+        {
+          "pass_key": "ft09-0d8bbf25_p0",
+          "game": "ft09-0d8bbf25",
+          "chunk": "logs/s1c_20260727_113129_s1e-8bit-c03.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 5,
+          "executed_actions": 5,
+          "per_decision_p50_s": 348.91
+        },
+        {
+          "pass_key": "r11l-495a7899_p0",
+          "game": "r11l-495a7899",
+          "chunk": "logs/s1c_20260727_121631_s1e-8bit-c04.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 4,
+          "executed_actions": 4,
+          "per_decision_p50_s": 107.15
+        },
+        {
+          "pass_key": "vc33-5430563c_p0",
+          "game": "vc33-5430563c",
+          "chunk": "logs/s1c_20260727_130134_s1e-8bit-c05.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 5,
+          "executed_actions": 5,
+          "per_decision_p50_s": 205.46
+        },
+        {
+          "pass_key": "bp35-0a0ad940_p0",
+          "game": "bp35-0a0ad940",
+          "chunk": "logs/s1c_20260727_134639_s1e-8bit-c06.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": 98.36
+        },
+        {
+          "pass_key": "sp80-589a99af_p0",
+          "game": "sp80-589a99af",
+          "chunk": "logs/s1c_20260727_143141_s1e-8bit-c07.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 0,
+          "executed_actions": 0,
+          "per_decision_p50_s": 93.0
+        },
+        {
+          "pass_key": "tu93-0768757b_p0",
+          "game": "tu93-0768757b",
+          "chunk": "logs/s1c_20260727_151643_s1e-8bit-c08.json",
+          "concluded": true,
+          "state": "cancelled",
+          "requested_actions": 20,
+          "executed_actions": 20,
+          "per_decision_p50_s": 279.7
+        }
+      ]
+    }
+  },
+  "recorded_in_manifest": {
+    "executed": 349,
+    "requested": 355,
+    "latency_p50_median_s": 139.39
+  },
+  "reproduces_recorded": true,
+  "note_on_26_games": "the manifest's '26 games' is the LATENCY sample size (26 game-runs carry a per_decision p50), not the validity denominator (32 records over 18 distinct games)."
+}
