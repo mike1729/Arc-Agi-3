@@ -125,8 +125,8 @@ should not be run.**
 | Sprint | Output the specification consumes |
 |---|---|
 | **S0** | that a submission can pass validation + hidden rerun |
-| **S1** | reset **Case**, `r`, `c_reset` · measured latency table · failure-frequency ranking · the variance floor |
-| **S2** | F1 and F3 generators matching measured ARC conventions |
+| **S1** | reset **posture**, `r`, `c_reset` · measured latency table · failure-frequency ranking · the variance floor |
+| **S2** | **SPEC §4.9 itself** — the procedural suite is Tier 1 unconditional substrate, not a screening fixture. Consumed by §6's retention decisions, §13.1's \(\tau\) calibration, §6.4's ECE clause, §10.1's D0, §10.2's R0 and §9.4's splits, as well as S3 |
 | **S3** | latent vs reconstructive vs exact-delta, and whether rollout pays |
 | **S4** | retain or drop belief-model rungs, at what latency cost |
 | **S5** | build / defer / drop per component |
@@ -263,8 +263,16 @@ cost falls on the float §2 banks — which is what the float is for.
 
 ## 7. S2 — Two minimal causal families
 
-**3.5 days. Decides no component — it builds the instruments S3 uses.** Priced accordingly: if S2
-overruns, it takes days from the sprint's only decision-bearing blocks.
+**3.5 days. Decides no component — it *builds* one.** S2 runs no gate, but its output is **SPEC §4.9,
+Tier 1 unconditional substrate**, and the specification's interface governs what S2 must deliver.
+Beyond S3, the suite is consumed by §6's retention decisions, §13.1's \(\tau\) bounds and
+\(q_{hi}/q_{lo}\), §6.4's ECE clause, §10.1's D0 thresholds, §10.2's R0 criteria and §9.4's splits —
+and SPEC §4.9 makes a working suite a **build step-1 precondition**, so a slip here moves D0 and the
+whole build, not just S3. If S2 overruns it also takes days from the sprint's only decision-bearing
+blocks.
+
+⚠ **The 3.5-day budget predates the interface below.** It was priced against a shorter list; three
+requirements were added by SPEC §4.9 on 2026-07-28 and the budget has not been re-examined since.
 
 **F1 — history-required aliasing.** Visually identical observations require different actions because
 of a hidden switch, counter, or phase.
@@ -312,10 +320,20 @@ misread as a model result.**
 
 ### Generator interface
 
-Legal action set · exact successor for every legal action · terminal/progress predicate · **immediate
-action value or distance-to-goal** (the ranking criterion — without it, ranking regret has no
-ordering) · hidden mechanic state and parameters · which state variables are causally relevant ·
-recoloured and relaid-out variants · **variable-length frame sequences**.
+**SPEC §4.9 is the governing list; this restates it.** Legal action set · exact successor for every
+legal action · terminal/progress predicate · **immediate action value or distance-to-goal** (the
+ranking criterion — without it, ranking regret has no ordering) · hidden mechanic state and
+parameters · which state variables are causally relevant · recoloured and relaid-out variants with
+colour roles explicitly permuted · **variable-length frame sequences**.
+
+**Three requirements added by SPEC §4.9, 2026-07-28**, each demanded by a consumer outside S3:
+
+- **ground-truth state IDs** — §6.6's Jensen–Shannon divergence needs a policy-independent key;
+- **instance seed and environment random-stream control**, with common-random-number support
+  **declared per generator, never assumed** (§6.6, §14);
+- **on-demand instance generation** — §13.1's insufficient-evidence rule extends procedural paired
+  runs, which a fixed pre-generated set cannot serve. This is an architecture requirement, not a
+  feature: it makes the generator a live reproducibly-seeded sampler rather than a dataset.
 
 **The value criterion is evaluation-only.** If it trains a value head, S3 becomes supervised action
 ranking rather than an objective comparison.
@@ -430,7 +448,7 @@ still `NOT_STARTED`.**
 
 | Sprint | Numbers required |
 |---|---|
-| **S2** | value/distance-to-goal criterion per family · F1's three-ceiling margins · F3's delay length and bit sparsity · **the frame-sequence length distribution the generators emit** · **the generator's distinct-instance count and held-out instance count** · **the encoder's frame cap** · **procedural progress-event prevalence** |
+| **S2** | value/distance-to-goal criterion per family · F1's three-ceiling margins · F3's delay length and bit sparsity · **the frame-sequence length distribution the generators emit** · **the generator's distinct-instance count and held-out instance count** · **the encoder's frame cap** · **procedural progress-event prevalence** · **generator throughput** (SPEC §4.9 names it unregistered; below its compute-bound rate S3 becomes data-bound) |
 | **S3** | primary metric and threshold for each of the five questions · `T_v`, `T_r` · the rescue recipe's fixed coefficients · the evaluator-doing-the-work criterion · **the parameter count**, currently a guess · **the step count** ("matched optimization budget" currently has no number) |
 | **S4** | the retention threshold — what advisor improvement at what latency cost · **the replicate count** (§4.2) · **the step budget and model size** · **the train/held-out game split, and whether it is drawn as the SPEC §13.5 partition** |
 | **S5** | the B/M/U/C pattern mapping to each branch |
@@ -471,6 +489,7 @@ is not.
 | 2026-07-28 | **Cut 673 → 470 lines and renumbered for navigability** *(old section numbers in this row)*. New §1 status board — the orientation view the document previously lacked. Schedule detail delegated to `execution-schedule.md`; old §13 "After Aug 22" deleted as duplicating SPEC §12; old §11 paper-by-product dropped as duplicating `CLAUDE.md`. Archaeology compressed to one paragraph each — the withdrawn tier ordering (old §2.2), the coverage-gap narrative (old §3.2) and the three readings (old §3.3) — their full record being register entry `G0-SCOPE-2026-07-28`. Limitations gathered from five places into one §12. **Corrected a stale overclaim:** old §3.1 still read "the decline reads as genuine run-to-run variation" after §2.2 had already withdrawn it; a partial, non-blind re-rate cannot establish that |
 | 2026-07-28 | Added a measured training-data readiness summary: what exists, required presentation scale, acquisition difficulty, and the distinction between abundant factual transitions and scarce counterfactual labels |
 | 2026-07-28 | §4.3 rewritten: the reset result had been reported as configuring the controller only, when it also **settles SPEC §4.1's reset posture** — recorded as `RESET-CASE-2026-07-28` and amended into the spec the same day. The scope limits both claims carry (offline, one game) are now stated where the result is |
+| 2026-07-28 | **S2 re-scoped after the specification created SPEC §4.9.** S2 was described as building "the instruments S3 uses"; the suite is Tier 1 unconditional substrate with six consumers outside S3 and is a **build step-1 precondition**, so a slip moves D0 and the whole build. §7's generator interface was a strict subset of the spec's and now carries the three requirements §4.9 added — ground-truth state IDs, seed and random-stream control with CRN declared, and on-demand generation. **The 3.5-day budget predates that interface and has not been re-examined.** §3's S1 row lost a dangling `Case` label; §11 gained generator throughput |
 
 ---
 
@@ -523,3 +542,50 @@ genuinely aliased successors · short versus compositional horizons · familiar 
 combinations of mechanics. Committed as **eight paired one-factor-at-a-time micro-environments with
 easy and stress arms — not a 2⁸ factorial.** **S2's F1 and F3 are the two families that survive the
 screening sprint.**
+
+**goal-predicate class taxonomy** — the ten classes S2 labels a game's terminal transition against,
+enforced as a closed set by `agent/harness/s2_apply_labels.py :: TAXONOMY`. Originally
+`agent-architecture.md` §5.2, archived 2026-07-28; **this appendix is now the definition site.** The
+list is unchanged by the relocation — it is *evidentiary*, not a spec instrument: the specification
+neither defines nor references it, and it binds S2's labelling only, via
+[`docs/README.md`](README.md) entry `DOCS-TAXONOMY-2026-07-28`.
+
+1. `state_relations` — a relation between objects or cells (adjacency, containment, alignment)
+2. `quantified_object_conditions` — a condition holding over some or all objects of a kind
+3. `counts` — a cardinality reaching a target
+4. `region_membership` — an object inside or outside a designated region
+5. `symmetry_and_template_match` — the grid matching a symmetry or a supplied template
+6. `all_instances_transformed` — every instance of a kind having undergone a transformation
+7. `event_occurrence` — a specific event having happened at all
+8. `ordered_event_programs` — several events having happened **in order**
+9. `action_conditioned_terminal_triggers` — the condition depending on the action, not only the state
+10. `cumulative_counters` — an accumulated quantity crossing a threshold
+
+Classes 8 and 9 are what make this more than a state classifier: an ordered program and an
+action-conditioned trigger are both invisible to any predicate read off a single frame.
+
+**Closed on purpose.** A predicate fitting none of them is labelled `outside_taxonomy` — recorded,
+counted and reported separately, never absorbed — because a codebook that quietly stretches to fit
+everything cannot be found wrong, and "the class library is incomplete" is a result worth having
+before the induction machinery is built.
+
+**It is a PRE-SPECIFIED CLOSED CODEBOOK, not a pre-registered instrument.** The distinction is not
+pedantry: it was written down before any S2 labelling and has not changed since, which is what
+pre-*specified* means — but it was never entered in `gate_manifest.yaml`, and `s2` there is still
+`NOT_STARTED` (open item 2 on the status board: pre-registration must precede the sprint it governs).
+So it carries the authority of a codebook fixed in advance, and none of the authority of the
+pre-registration mechanism. Treating it as frozen is premature until `gate_manifest.yaml -> s2`
+exists and adopts it; that adoption is the moment the "adding a class needs a dated erratum" rule
+starts to bite. Until then, changes to it are ordinary evidentiary edits and the S2 frequencies
+derived from it inherit the open pre-registration as a stated limitation.
+
+The learnable object is the **terminal transition** `(o_t, a_t, Δ_{t+1}, level advanced)`, not a
+positive goal state — a completing action typically returns the *next* level's frame, so a satisfying
+state may never be directly observed. Labels are **graded, not binary**: a visited non-advancing state
+is negative for *terminal now* but may be prerequisite-satisfied, partial-progress, or
+unknown-because-hidden-state-unresolved. Granularity is **per game, not per level**, because
+cross-level transfer is parameterised — so a class frequency here is a frequency over games and must
+not be reported as a frequency over levels.
+
+Not to be confused with the **S1-d failure taxonomy** (`goal_unknown`, `perception_parsing`, …), which
+classifies why an agent failed. That one labels episodes; this one labels games.

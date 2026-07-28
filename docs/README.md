@@ -109,6 +109,42 @@ approved_at: 2026-07-28
 ```
 
 ```yaml
+decision_id: DOCS-TAXONOMY-2026-07-28
+question: >
+  where does the ten-class goal-predicate taxonomy live, now that its only definition
+  site is archived, and what governance status does it have
+evidence:
+  - artifact: docs/archive/arc-agi-3-agent-architecture.md   # former §5.2, archived 2026-07-28
+  - artifact: agent/harness/s2_apply_labels.py               # TAXONOMY, enforced as a closed set
+  - artifact: logs/quarantine/s2-superseded-worksheet-2026-07-28/  # the pass-1 labelling that ran against it, since quarantined
+decision: relocate_unchanged_as_evidentiary
+detail: >
+  The list was defined only in an archived document and in code, while archive/README.md
+  says archived documents must not be cited — leaving a closed, pre-SPECIFIED codebook
+  with no citable definition. It is relocated UNCHANGED into the screening document's
+  evaluation-apparatus appendix, beside the other definitions folded out of the same
+  archived file by DOCS-2026-07-28. Governance status is EVIDENTIARY, not normative: the
+  specification neither defines nor references it, so it is not a spec instrument and no
+  spec amendment is due. It binds S2's labelling only. A first draft of this relocation
+  created a standalone document that self-declared itself "LIVE and authoritative"; that
+  overstated its status and broke the one-document-per-decision-horizon rule, and was
+  withdrawn in favour of the appendix.
+effective_spec_sections: []          # none — deliberately not a spec change
+approved_at: 2026-07-28
+status_precision: >
+  PRE-SPECIFIED CLOSED CODEBOOK, not a pre-registered instrument. It was fixed before any
+  S2 labelling and is unchanged since — but it was never entered in gate_manifest.yaml, and
+  `s2` there is still NOT_STARTED (open item 2: pre-registration must precede the sprint it
+  governs). Calling it "pre-registered" would credit it with authority the pre-registration
+  mechanism has not yet conferred. An earlier draft of this entry did exactly that.
+deviation_recorded: >
+  S2 frequencies computed against this codebook inherit the OPEN S2 pre-registration as a
+  stated limitation, and must say so wherever they are reported. The codebook becomes a
+  frozen instrument — with the "adding a class needs a dated erratum" rule in force — only
+  when gate_manifest.yaml -> s2 is written and adopts it.
+```
+
+```yaml
 decision_id: EVAL-SCOPE-2026-07-28
 question: >
   SPEC §5 says "a modest shared grid encoder scoring only the common candidate
@@ -202,6 +238,102 @@ revisit_if: >
   competition-mode accounting differs from offline, or step 1's re-scoped
   confirmation finds a second game accounting differently.
 effective_spec_sections: ["§1.1", "§4.1", "§14"]
+approved_at: 2026-07-28
+```
+
+```yaml
+decision_id: BRANCH-V0-2026-07-28
+question: >
+  §12.1 schedules the branching primitive in step 1 (W1) and the archive's
+  versioned projections in step 2 (W1-2). But §4.2 verifies a reconstruction
+  over (observation hash, inferred context signature, history equivalence
+  class), and the latter two are step-2 artifacts. What does a step-1 branch
+  do, and may its output be trusted?
+evidence:
+  - artifact: docs/arc-agi-3-implementation-spec.md    # §4.2, §4.4, §12.1
+  - artifact: notes/build-difficulty.md
+  - finding: >
+      §4.2 states that final-hash match alone is insufficient and that mismatch
+      INVALIDATES the branch. A step-1 implementation has only a hash, so it
+      cannot perform the check the section requires. The failure is silent:
+      hash-only branches emit plausible Y_useful labels that are
+      indistinguishable downstream from sound ones, and §6.8's label is the
+      sole basis for any learned-gate claim.
+decision: branch_v0_instrumentation_only
+detail: >
+  Step 1 builds branch v0: prefix recording, deterministic replay, reset,
+  candidate execution, K-step outcome capture, and the full yield accounting of
+  §4.2 including all seven invalidity reasons. v0 is BARRED from emitting
+  training labels — its branches are cost-model and yield instrumentation only
+  and never enter §6.8's label set. Label-bearing branching (v1) requires
+  §4.4's identity layer and is unblocked at step 2.
+  This is close to free. §12.1 already places R1, the first branching round
+  that produces labels, at step 6 (W4) — four steps after the identity layer
+  lands. The amendment therefore makes an existing implication ENFORCEABLE
+  rather than incidental, and changes no predeclared number: §13.1's 24,000
+  attempted actions per game per round and the R1-R3 schedule are untouched.
+  §12.1 now shows the split in the table itself — v0 in step 1, v1 admitted in
+  step 2 alongside the projections — so the dependency is visible in the build
+  order rather than only in §4.2's prose.
+rejected:
+  - move_minimal_projection_identity_into_step_1   # see below
+rejected_because: >
+  It front-loads the highest verification-risk component into the week that
+  already carries D0 and the latency table, and a "minimal" identity that is
+  revised later makes every v0 branch retroactively questionable — the same
+  silent-contamination problem relocated rather than removed.
+effective_spec_sections: ["§4.2", "§12.1"]
+approved_at: 2026-07-28
+```
+
+```yaml
+decision_id: S2-GATE-2026-07-28
+question: >
+  §4.9 makes a working procedural suite a build step-1 precondition — §10.1
+  measures D0 on held-out procedural environments — yet §12 opens W1 with no
+  check that the suite exists or works, and §12.2's slack policy governs only
+  later features. What happens if S2 delivers late or degraded?
+evidence:
+  - artifact: docs/arc-agi-3-implementation-spec.md    # §4.9, §10.1, §12.1, §12.2
+  - artifact: docs/arc-agi-3-screening-experiments-and-results.md   # §7
+  - artifact: notes/build-difficulty.md
+  - finding: >
+      D0 plus five Tier 2 components depend on the suite (§13.1's tau bounds and
+      q_hi/q_lo, §6.4's ECE clause, §6.6's paired runs, §6.3's acceptance
+      region, §5's progress supervision). Four of the five quantities an
+      acceptance check would read are already listed as UNREGISTERED in §4.9.
+      Separately, S2's 3.5-day budget predates three interface requirements
+      added by §4.9 on 2026-07-28 and has not been re-examined.
+decision: build_step_0_at_w0
+detail: >
+  S2 is a pre-build Tier 1 phase and §12.1 did not show it. The build order
+  gains **step 0 at W0** — the procedural suite built and accepted during S2 —
+  rather than a milestone hanging off the side of W1, because the suite is a
+  Tier 1 component that is genuinely BUILT there, not merely checked. Nothing
+  else deployable exists before W0: the rest of what the sprint leaves behind is
+  measurement scaffolding around the vendored reference, which never ships.
+  Five acceptance criteria: generator correctness against F1's three-ceiling
+  pattern · throughput · held-out instance count · instance diversity ·
+  observation fidelity to the conventions measured 2026-07-26. Four are the
+  quantities §4.9 lists as unregistered, so acceptance and pre-registration are
+  ONE piece of work: both land in gate_manifest.yaml -> s2 before S2 runs,
+  satisfying the rule that numbers precede the step they govern.
+  Step 0 sits OUTSIDE §12's "the calendar guarantees steps 1-5" — it is
+  delivered by the sprint, so a slip arrives as a W1 problem and §12.2's
+  deletions cannot absorb it.
+  On failure the response is reporting, not improvisation: the unmet criteria
+  are named, and every D0 threshold that depends on held-out procedural
+  environments is recorded as UNTESTED rather than passed — consistent with
+  §10.1 freezing thresholds before results are inspected, and with §13.5's
+  habit of reporting rather than silently backfilling.
+open: >
+  Whether a failed step 0 slips W1 or lets the build proceed degraded is a
+  CALENDAR decision, not an acceptance criterion. It belongs with open item 2
+  and is deliberately not settled here.
+revisit_if: >
+  S2's budget is re-priced against the §4.9 interface, which may change what
+  step 0 can reasonably demand.
+effective_spec_sections: ["§4.9", "§12.1", "§12.2"]
 approved_at: 2026-07-28
 ```
 

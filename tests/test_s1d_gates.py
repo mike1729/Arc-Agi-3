@@ -2036,3 +2036,77 @@ def test_the_on_disk_canonical_conforms_to_the_v3_contract():
     assert got["result_schema_version"] == RR.RESULT_SCHEMA_VERSION
     assert "invalidation_chain" in got and isinstance(got["invalidation_chain"], list)
     assert "superseded" in got or "invalidated" in got
+
+
+def test_s2_taxonomy_document_and_code_agree_exactly():
+    """A CLOSED taxonomy needs set equality in both directions, and its numbering is contractual.
+
+    The first version of this test only checked that every code class appears in the document, so a
+    documented class absent from `TAXONOMY` — the direction that silently widens what a rater may
+    legitimately write — would have passed. The classes are numbered 1-10 and referred to by number
+    ("classes 8 and 9 are what make this more than a state classifier"), so the ordering is part of
+    the contract too.
+
+    Definition site: the screening document's evaluation-apparatus appendix. It is EVIDENTIARY, not
+    normative — registered as DOCS-TAXONOMY-2026-07-28 in docs/README.md rather than as a spec
+    amendment, because the specification neither defines nor references it.
+    """
+    import re
+    repo = Path(RR.__file__).resolve().parents[2]
+    doc = repo / "docs" / "arc-agi-3-screening-experiments-and-results.md"
+    register = repo / "docs" / "README.md"
+    if not (doc.exists() and register.exists()):    # mutation sandbox copies only harness + tests
+        pytest.skip("repository docs not present (mutation sandbox)")
+    sys.path.insert(0, str(repo / "agent" / "harness"))
+    import s2_apply_labels                          # noqa: PLC0415 - after the skip
+
+    text = doc.read_text()
+    assert "**goal-predicate class taxonomy**" in text, "no definition site in the appendix"
+    block = text.split("**goal-predicate class taxonomy**")[1]
+    rows = re.findall(r"^\s*(\d+)\.\s+`([a-z_]+)`", block, re.M)
+    documented = [cls for _, cls in rows]
+
+    assert set(documented) == s2_apply_labels.TAXONOMY, (
+        f"only in doc: {sorted(set(documented) - s2_apply_labels.TAXONOMY)}; "
+        f"only in code: {sorted(s2_apply_labels.TAXONOMY - set(documented))}")
+    assert len(documented) == len(set(documented)) == 10, documented
+    assert [int(n) for n, _ in rows] == list(range(1, 11)), "numbering is referred to by number"
+    assert "outside_taxonomy" in block, "the escape hatch must be documented with the closed set"
+
+    # Governance: registered, and NOT self-declared normative.
+    assert "DOCS-TAXONOMY-2026-07-28" in register.read_text()
+    assert "EVIDENTIARY" in block or "evidentiary" in block
+
+    # Both provenance references point at the definition site.
+    assert "arc-agi-3-screening-experiments-and-results.md" in s2_apply_labels.__doc__
+    artifact = repo / "logs" / "s2_labels_pass1.json"
+    if artifact.exists():
+        src = json.loads(artifact.read_text()).get("taxonomy_source", "")
+        assert "screening-experiments-and-results" in src, src
+
+
+
+
+def test_the_s2_codebook_is_not_called_pre_registered():
+    """S2 is `NOT_STARTED` in the manifest and the codebook was never entered there.
+
+    It is pre-SPECIFIED — fixed before any labelling and unchanged since — which is a real property,
+    but it is not the authority the pre-registration mechanism confers, and the difference decides
+    whether "adding a class needs a dated erratum" is in force yet.
+    """
+    repo = Path(RR.__file__).resolve().parents[2]
+    doc = repo / "docs" / "arc-agi-3-screening-experiments-and-results.md"
+    register = repo / "docs" / "README.md"
+    manifest = repo / "gate_manifest.yaml"
+    if not all(p.exists() for p in (doc, register, manifest)):
+        pytest.skip("repository docs not present (mutation sandbox)")
+    import yaml
+    assert yaml.safe_load(manifest.read_text())["s2"]["status"] == "NOT_STARTED", (
+        "if s2 is now registered, the codebook may be called pre-registered — update this test")
+
+    block = doc.read_text().split("**goal-predicate class taxonomy**")[1]
+    assert "PRE-SPECIFIED CLOSED CODEBOOK" in block
+    assert "NOT_STARTED" in block, "the open S2 pre-registration must be stated at the definition site"
+    reg = register.read_text()
+    assert "PRE-SPECIFIED CLOSED CODEBOOK, not a pre-registered instrument" in reg
+    assert "deviation_recorded" in reg

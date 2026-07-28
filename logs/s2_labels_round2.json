@@ -1,0 +1,229 @@
+{
+ "rater": "5 fresh-context claude-opus-5 agents, disjoint size-balanced batches",
+ "pass": 1,
+ "round": 2,
+ "dated": "2026-07-28",
+ "corpus": "logs/s2_goal_predicates.json (corrected extractor)",
+ "method": "Raters confined to the evidence packet; instructed to report under-determination in notes rather than consult the environment source. Supersedes the 2026-07-28 round-1 labels, which were rated against packets since changed.",
+ "labels": {
+  "su15": {
+   "predicate_classes": [
+    "counts",
+    "region_membership"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "Real condition is cbdhpcilgb(): tally objects whose centre lies inside a target-zone sprite, bucketed by colour-index / category, and every (key,count) pair in the level's target spec must match EXACTLY; success sets phase 'pkqcyfpgc' and the guard only fires after a >10-tick recolour animation.",
+   "packet_digest": "171358eb7bc45d89"
+  },
+  "cn04": {
+   "predicate_classes": [
+    "all_instances_transformed",
+    "state_relations"
+   ],
+   "guard_form": "instance_flag",
+   "notes": "Guard reads rqolqpqwo, set a step earlier when sjwqloivve() held: for every visible sprite, every marked cell (colour 8/13) must be covered by a rotation-adjusted overlap with another sprite, i.e. no marked cell may remain uncovered anywhere.",
+   "packet_digest": "a1f28439391bc94b"
+  },
+  "lf52": {
+   "predicate_classes": [
+    "event_occurrence"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "Advance requires the inner engine's win flag (iajuzrgttrv, set only by win()) once the render queue has drained (len(frames_to_render) <= 1); the call site of win() is NOT in the evidence, so the deciding player-establishable condition cannot be determined here (sibling lose branches use a per-level step budget).",
+   "packet_digest": "2f1bcd37820c0389"
+  },
+  "vc33": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "guard_form": "delegated",
+   "notes": "ielczunthe() requires EVERY item sprite to have a matching target: the item's colour must appear in the target's pixels, the two must share the same along-gravity coordinate, and the target's wall must bound the platform the item rests on; any unmatched item returns False.",
+   "packet_digest": "53fa7bcabd612e07"
+  },
+  "cd82": {
+   "predicate_classes": [
+    "symmetry_and_template_match"
+   ],
+   "guard_form": "inline",
+   "notes": "Player canvas sprite must equal the fixed reference sprite pixel-for-pixel over a 10x10 mask that excludes both diagonals; early return only checks both sprites exist.",
+   "packet_digest": "761dda97e42e38f8"
+  },
+  "r11l": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "guard_form": "instance_flag",
+   "notes": "Guard reads a latched win flag plus an all-animations-idle loop; the real condition (set at the end of the move animation) is that every name-keyed piece collides_with its same-named target marker (with a substitute-piece fallback), skipping keys containing 'dirwzt'.",
+   "packet_digest": "c7cc53ef353ccd9c"
+  },
+  "m0r0": {
+   "predicate_classes": [
+    "all_instances_transformed",
+    "counts"
+   ],
+   "guard_form": "inline",
+   "notes": "Deciding test is an inline cardinality-zero over the four mirror-linked sprites: advance when none remain un-paired (each pair that lands on the same cell is marked INTANGIBLE), under a 150-action loss timer.",
+   "packet_digest": "23aabeaf7080d5af"
+  },
+  "tn36": {
+   "predicate_classes": [
+    "symmetry_and_template_match",
+    "state_relations"
+   ],
+   "guard_form": "instance_flag",
+   "notes": "Flag is set one step earlier when the delegated check finds the manipulable object equals its target object on x, y, scale, rotation and colour simultaneously \u2014 an exact template match reached by transform ops.",
+   "packet_digest": "5e451676549f8003"
+  },
+  "sc25": {
+   "predicate_classes": [
+    "event_occurrence"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "Advance only fires when a 2-tick armed animation (set together with the active flag by a trigger method) drains to zero; the evidence contains no caller of that trigger, so the deciding player condition is not present here.",
+   "packet_digest": "153e9a62b953c519"
+  },
+  "lp85": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "guard_form": "delegated",
+   "notes": "Delegated predicate is universal over two sprite classes: every sprite of tag A must have a 'goal' sprite at (x+1,y+1) and every sprite of tag B a 'goal-o' sprite there \u2014 type-matched co-location of all pieces, driven by button clicks that permute positions.",
+   "packet_digest": "fd3e4b6f9a7a40d5"
+  },
+  "ls20": {
+   "predicate_classes": [
+    "state_relations",
+    "all_instances_transformed"
+   ],
+   "guard_form": "delegated",
+   "notes": "pbznecvnfr() marks each door done when the avatar stands on its cell with shape/colour/rotation triple equal to that door's required triple (bejndxqqzf), and returns True only once every door flag in lvrnuajbl is set.",
+   "packet_digest": "8d66ae243ad86352"
+  },
+  "sp80": {
+   "predicate_classes": [
+    "all_instances_transformed",
+    "event_occurrence"
+   ],
+   "guard_form": "inline",
+   "notes": "Once the poured flow settles (lybfalkrdl), advance needs every target sprite from mxdlffpzkc() present in the filled set cevwbinfgl and the hazard-contact latch kfdcqkodyy never having fired.",
+   "packet_digest": "539354663763169f"
+  },
+  "tu93": {
+   "predicate_classes": [
+    "region_membership",
+    "quantified_object_conditions"
+   ],
+   "guard_form": "inline",
+   "notes": "In phase kdkehgjrzq==2 after movement settles, advance requires at least one surviving unit and every unit tagged 0017 co-located with some exit sprite (all/any over x,y equality).",
+   "packet_digest": "fb3018ecb0d87cf5"
+  },
+  "sk48": {
+   "predicate_classes": [
+    "event_occurrence"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "Advance fires at lgdrixfno>=35, a colour-flash countdown armed only when gvtmoopqgy() returned truthy; that method's body is absent from the evidence, so the actual player-established condition is undetermined.",
+   "packet_digest": "519deb5d5017911c"
+  },
+  "wa30": {
+   "predicate_classes": [
+    "region_membership",
+    "quantified_object_conditions"
+   ],
+   "guard_form": "delegated",
+   "notes": "ymzfopzgbq() is all() over sprites tagged geezpjgiyd: each must occupy a cell of the goal set built from fsjjayjoeg sprite footprints and be absent from zmqreragji, whose population sites are not in the evidence.",
+   "packet_digest": "40e82c5e9c66a730"
+  },
+  "dc22": {
+   "predicate_classes": [
+    "state_relations"
+   ],
+   "guard_form": "delegated",
+   "notes": "smxyfelexa() is bare positional coincidence: player sprite (tag 'jfva') x,y equals goal sprite (tag 'goknoi') x,y; only reached on a directional-move step with no animation/countdown flag pending, and the step budget is a lose path, not the advance.",
+   "packet_digest": "40c09d933554e32d"
+  },
+  "sb26": {
+   "predicate_classes": [
+    "ordered_event_programs",
+    "cumulative_counters"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "lmvwmlqtw is a 16-tick end-of-level countdown armed in dbfxrigdqx only when the interpreter pointer pmygakdvy sits on the last slot of the target command strip and that slot is filled, i.e. the player-composed program (frames plus calls) has emitted the whole ordered sequence, each emitted command colour-matching its slot.",
+   "packet_digest": "bbebbb3889df9acb"
+  },
+  "ft09": {
+   "predicate_classes": [
+    "symmetry_and_template_match",
+    "state_relations"
+   ],
+   "guard_form": "delegated",
+   "notes": "cgj(): for every clue sprite (tag 'bsT'), each of the 8 neighbours at +/-4 offsets must equal the clue's centre colour where the clue's own 3x3 stencil pixel is 0 and must differ where it is not; all clues must hold simultaneously.",
+   "packet_digest": "3eef5996d3f8a0fa"
+  },
+  "bp35": {
+   "predicate_classes": [
+    "event_occurrence"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "Advance requires the pending-animation flag set, the render queue drained to <=1 frame, and level flag nkuphphdgrp, which is set only by yodvybvftxa.win(); no caller of win() appears in the evidence, so the player-establishable deciding condition is not determinable from this item.",
+   "packet_digest": "d8db0861396f885d"
+  },
+  "s5i5": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "guard_form": "delegated",
+   "notes": "neurwiqfry(): every sprite tagged 0087 must be exactly co-located with some sprite tagged 0064 (universal over targets, existential positional match), achieved by clicking to rotate or extend the 0001-tagged pieces.",
+   "packet_digest": "5794167a41de4a55"
+  },
+  "ar25": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "region_membership"
+   ],
+   "guard_form": "instance_flag",
+   "notes": "Guard bool hujpxmlafgh latches vplrhaovhr(): every target sprite (tag 0001sruqbuvukh) must sit on a cell >= 0 in the composite grid built by skqtojxvbv/naxbskjmlg, i.e. all targets covered by the movable sprites or their repeated mirror reflections.",
+   "packet_digest": "56c101df98b78b5e"
+  },
+  "g50t": {
+   "predicate_classes": [
+    "state_relations",
+    "region_membership"
+   ],
+   "guard_form": "instance_flag",
+   "notes": "Guard bool qgzorkgosv latches mrzduxdbbk() -> safkknjslo: whftgckbcu.x+1 == dzxunlkwxt.x and whftgckbcu.y+1 == dzxunlkwxt.y, i.e. the avatar is positioned exactly on the centre of the goal sprite; the queue/ghost-replay machinery only gates when the test is evaluated.",
+   "packet_digest": "0e30476021d33471"
+  },
+  "tr87": {
+   "predicate_classes": [
+    "state_relations",
+    "symmetry_and_template_match"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "Advance fires when counter yfetxjexviz reaches len(pvgetmhmhgk)*(len(rhoqllymmn)-1) frames of a colour-remap animation armed at 0 by bsqsshqpox(): the fixed source glyph row must segment fully into rule LHSs while the player-edited row matches the concatenated RHSs name-for-name with both sequences exactly consumed.",
+   "packet_digest": "dbc489904230e807"
+  },
+  "ka59": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "guard_form": "delegated",
+   "notes": "dbmlcqbquh(): every goal marker of tag 0010xzmuziohuf must be satisfied by the 0022vrxelxosfy set and every 0027jbgxilrocf by the 0001uqqokjrptk set (Sokoban-style two-type target coverage); the module-level helper jxudaewdwt is not in the evidence, so overlap-vs-containment semantics is unconfirmed.",
+   "packet_digest": "26155e38e7e0caef"
+  },
+  "re86": {
+   "predicate_classes": [
+    "symmetry_and_template_match",
+    "quantified_object_conditions"
+   ],
+   "guard_form": "delegated",
+   "notes": "jeiavrvavi(): all 0031cppcuvqlbi piece sprites are composited onto a copy of reference sprite 0000wbshgbbxxc, then for every 0054xnsuqceejm overlay no pixel other than -1 (transparent) or 4 (wildcard) may differ from the composite - an exact template match modulo don't-cares.",
+   "packet_digest": "836f085c6260b5b0"
+  }
+ }
+}

@@ -4,7 +4,8 @@ Two things live here, and the second exists because the first kept lying.
 
 | file | what it is |
 |---|---|
-| `test_s1d_gates.py` | 121 regressions over the corpus builder and the blind re-rate. Every test names the defect it pins |
+| `test_s1d_gates.py` | 121 regressions over the S1 corpus builder and blind re-rate. Every test names the defect it pins |
+| `test_s2_gates.py` | 20 regressions over the S2 goal-predicate re-rate and label application |
 | `run_mutation_harness.py` | breaks the source on purpose and checks a test notices |
 | `mutation_allowlist.txt` | survivors that are provably not bugs, each with a reason |
 
@@ -56,12 +57,12 @@ which the sandbox does not contain — passed the baseline and then failed for *
 a flawless **155 killed / 0 survived** that meant only "one test errors out there". The run now prints
 the sandbox baseline including its skip count, because a suite that mostly skips there kills mutants it
 never exercised.
-Current state: **126 killed, 30 survived, all 30 allowlisted**.
+Current state: **159 killed, 31 survived, all 31 allowlisted**.
 
 Self-test — adding a guard no test covers turns the run red even though `pytest` reports green:
 
 ```
-121 passed
+141 passed
 harness EXIT=1  ·  3 UNTESTED line(s)
 ```
 
@@ -87,7 +88,8 @@ stale key stops matching and its mutant reappears as unexplained — the right d
 
 ## Scope
 
-Only `s1d_blind_rerate.py` and `s1d_build_corpus.py` are mutated by default. `s1d_apply_labels.py`,
+Four modules are mutated by default: `s1d_blind_rerate.py`, `s1d_build_corpus.py`,
+`s2_blind_rerate.py` and `s2_apply_labels.py`. `s1d_apply_labels.py`,
 `s1d_cross_run.py`, `s1d_label.py` and `s1d_worksheet.py` have **no direct tests**: mutating them
 would report every line as untested, which is true and unhelpful. The harness prints that fact on
 every run rather than hiding it. Run `--target <module>` once those have tests.

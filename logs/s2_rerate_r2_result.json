@@ -1,0 +1,455 @@
+{
+ "n": 25,
+ "sampling": "none \u2014 the whole 25-game corpus was re-rated",
+ "procedure": "independent re-rate, same model, fresh context (S1-E10). Bounds label stability, not correctness. No cooling period applies.",
+ "raters_second_pass": "5 fresh-context claude-opus-5 agents, disjoint size-balanced batches, per-rater scratch dirs",
+ "primary_kappa": 0.858,
+ "primary_observed_agreement": 0.88,
+ "primary_expected_agreement": 0.155,
+ "full_set_exact_agreement": 0.64,
+ "mean_jaccard_over_class_sets": 0.767,
+ "guard_form_agreement": 0.92,
+ "primary_classes_used_by_first_pass_only": [],
+ "primary_classes_used_by_rerate_only": [],
+ "disagreements": [
+  {
+   "env": "sk48",
+   "item_id": "g01",
+   "first_primary": "event_occurrence",
+   "rerate_primary": "state_relations",
+   "first_classes": [
+    "event_occurrence"
+   ],
+   "rerate_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "first_guard_form": "deferred_animation",
+   "rerate_guard_form": "deferred_animation"
+  },
+  {
+   "env": "ft09",
+   "item_id": "g02",
+   "first_primary": "symmetry_and_template_match",
+   "rerate_primary": "state_relations",
+   "first_classes": [
+    "state_relations",
+    "symmetry_and_template_match"
+   ],
+   "rerate_classes": [
+    "state_relations",
+    "symmetry_and_template_match"
+   ],
+   "first_guard_form": "delegated",
+   "rerate_guard_form": "delegated"
+  },
+  {
+   "env": "dc22",
+   "item_id": "g24",
+   "first_primary": "state_relations",
+   "rerate_primary": "region_membership",
+   "first_classes": [
+    "state_relations"
+   ],
+   "rerate_classes": [
+    "region_membership",
+    "state_relations"
+   ],
+   "first_guard_form": "delegated",
+   "rerate_guard_form": "delegated"
+  }
+ ],
+ "rows": [
+  {
+   "env": "ka59",
+   "item_id": "g00",
+   "first_primary": "quantified_object_conditions",
+   "rerate_primary": "quantified_object_conditions",
+   "first_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "rerate_classes": [
+    "quantified_object_conditions",
+    "region_membership"
+   ],
+   "first_guard_form": "delegated",
+   "rerate_guard_form": "delegated"
+  },
+  {
+   "env": "sk48",
+   "item_id": "g01",
+   "first_primary": "event_occurrence",
+   "rerate_primary": "state_relations",
+   "first_classes": [
+    "event_occurrence"
+   ],
+   "rerate_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "first_guard_form": "deferred_animation",
+   "rerate_guard_form": "deferred_animation"
+  },
+  {
+   "env": "ft09",
+   "item_id": "g02",
+   "first_primary": "symmetry_and_template_match",
+   "rerate_primary": "state_relations",
+   "first_classes": [
+    "state_relations",
+    "symmetry_and_template_match"
+   ],
+   "rerate_classes": [
+    "state_relations",
+    "symmetry_and_template_match"
+   ],
+   "first_guard_form": "delegated",
+   "rerate_guard_form": "delegated"
+  },
+  {
+   "env": "lf52",
+   "item_id": "g03",
+   "first_primary": "event_occurrence",
+   "rerate_primary": "event_occurrence",
+   "first_classes": [
+    "event_occurrence"
+   ],
+   "rerate_classes": [
+    "event_occurrence"
+   ],
+   "first_guard_form": "deferred_animation",
+   "rerate_guard_form": "instance_flag"
+  },
+  {
+   "env": "re86",
+   "item_id": "g04",
+   "first_primary": "symmetry_and_template_match",
+   "rerate_primary": "symmetry_and_template_match",
+   "first_classes": [
+    "quantified_object_conditions",
+    "symmetry_and_template_match"
+   ],
+   "rerate_classes": [
+    "all_instances_transformed",
+    "symmetry_and_template_match"
+   ],
+   "first_guard_form": "delegated",
+   "rerate_guard_form": "delegated"
+  },
+  {
+   "env": "sc25",
+   "item_id": "g05",
+   "first_primary": "event_occurrence",
+   "rerate_primary": "event_occurrence",
+   "first_classes": [
+    "event_occurrence"
+   ],
+   "rerate_classes": [
+    "event_occurrence"
+   ],
+   "first_guard_form": "deferred_animation",
+   "rerate_guard_form": "deferred_animation"
+  },
+  {
+   "env": "lp85",
+   "item_id": "g06",
+   "first_primary": "quantified_object_conditions",
+   "rerate_primary": "quantified_object_conditions",
+   "first_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "rerate_classes": [
+    "quantified_object_conditions",
+    "region_membership"
+   ],
+   "first_guard_form": "delegated",
+   "rerate_guard_form": "delegated"
+  },
+  {
+   "env": "tr87",
+   "item_id": "g07",
+   "first_primary": "state_relations",
+   "rerate_primary": "state_relations",
+   "first_classes": [
+    "state_relations",
+    "symmetry_and_template_match"
+   ],
+   "rerate_classes": [
+    "state_relations",
+    "symmetry_and_template_match"
+   ],
+   "first_guard_form": "deferred_animation",
+   "rerate_guard_form": "deferred_animation"
+  },
+  {
+   "env": "su15",
+   "item_id": "g08",
+   "first_primary": "counts",
+   "rerate_primary": "counts",
+   "first_classes": [
+    "counts",
+    "region_membership"
+   ],
+   "rerate_classes": [
+    "counts",
+    "region_membership"
+   ],
+   "first_guard_form": "deferred_animation",
+   "rerate_guard_form": "deferred_animation"
+  },
+  {
+   "env": "cd82",
+   "item_id": "g09",
+   "first_primary": "symmetry_and_template_match",
+   "rerate_primary": "symmetry_and_template_match",
+   "first_classes": [
+    "symmetry_and_template_match"
+   ],
+   "rerate_classes": [
+    "symmetry_and_template_match"
+   ],
+   "first_guard_form": "inline",
+   "rerate_guard_form": "inline"
+  },
+  {
+   "env": "ar25",
+   "item_id": "g10",
+   "first_primary": "quantified_object_conditions",
+   "rerate_primary": "quantified_object_conditions",
+   "first_classes": [
+    "quantified_object_conditions",
+    "region_membership"
+   ],
+   "rerate_classes": [
+    "quantified_object_conditions",
+    "region_membership"
+   ],
+   "first_guard_form": "instance_flag",
+   "rerate_guard_form": "instance_flag"
+  },
+  {
+   "env": "m0r0",
+   "item_id": "g11",
+   "first_primary": "all_instances_transformed",
+   "rerate_primary": "all_instances_transformed",
+   "first_classes": [
+    "all_instances_transformed",
+    "counts"
+   ],
+   "rerate_classes": [
+    "all_instances_transformed",
+    "counts"
+   ],
+   "first_guard_form": "inline",
+   "rerate_guard_form": "inline"
+  },
+  {
+   "env": "g50t",
+   "item_id": "g12",
+   "first_primary": "state_relations",
+   "rerate_primary": "state_relations",
+   "first_classes": [
+    "region_membership",
+    "state_relations"
+   ],
+   "rerate_classes": [
+    "region_membership",
+    "state_relations"
+   ],
+   "first_guard_form": "instance_flag",
+   "rerate_guard_form": "instance_flag"
+  },
+  {
+   "env": "bp35",
+   "item_id": "g13",
+   "first_primary": "event_occurrence",
+   "rerate_primary": "event_occurrence",
+   "first_classes": [
+    "event_occurrence"
+   ],
+   "rerate_classes": [
+    "event_occurrence"
+   ],
+   "first_guard_form": "deferred_animation",
+   "rerate_guard_form": "deferred_animation"
+  },
+  {
+   "env": "r11l",
+   "item_id": "g14",
+   "first_primary": "quantified_object_conditions",
+   "rerate_primary": "quantified_object_conditions",
+   "first_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "rerate_classes": [
+    "quantified_object_conditions",
+    "region_membership"
+   ],
+   "first_guard_form": "instance_flag",
+   "rerate_guard_form": "instance_flag"
+  },
+  {
+   "env": "ls20",
+   "item_id": "g15",
+   "first_primary": "state_relations",
+   "rerate_primary": "state_relations",
+   "first_classes": [
+    "all_instances_transformed",
+    "state_relations"
+   ],
+   "rerate_classes": [
+    "all_instances_transformed",
+    "state_relations"
+   ],
+   "first_guard_form": "delegated",
+   "rerate_guard_form": "delegated"
+  },
+  {
+   "env": "vc33",
+   "item_id": "g16",
+   "first_primary": "quantified_object_conditions",
+   "rerate_primary": "quantified_object_conditions",
+   "first_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "rerate_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "first_guard_form": "delegated",
+   "rerate_guard_form": "delegated"
+  },
+  {
+   "env": "tu93",
+   "item_id": "g17",
+   "first_primary": "region_membership",
+   "rerate_primary": "region_membership",
+   "first_classes": [
+    "quantified_object_conditions",
+    "region_membership"
+   ],
+   "rerate_classes": [
+    "quantified_object_conditions",
+    "region_membership"
+   ],
+   "first_guard_form": "inline",
+   "rerate_guard_form": "inline"
+  },
+  {
+   "env": "sp80",
+   "item_id": "g18",
+   "first_primary": "all_instances_transformed",
+   "rerate_primary": "all_instances_transformed",
+   "first_classes": [
+    "all_instances_transformed",
+    "event_occurrence"
+   ],
+   "rerate_classes": [
+    "all_instances_transformed",
+    "event_occurrence",
+    "quantified_object_conditions"
+   ],
+   "first_guard_form": "inline",
+   "rerate_guard_form": "instance_flag"
+  },
+  {
+   "env": "wa30",
+   "item_id": "g19",
+   "first_primary": "region_membership",
+   "rerate_primary": "region_membership",
+   "first_classes": [
+    "quantified_object_conditions",
+    "region_membership"
+   ],
+   "rerate_classes": [
+    "quantified_object_conditions",
+    "region_membership"
+   ],
+   "first_guard_form": "delegated",
+   "rerate_guard_form": "delegated"
+  },
+  {
+   "env": "tn36",
+   "item_id": "g20",
+   "first_primary": "symmetry_and_template_match",
+   "rerate_primary": "symmetry_and_template_match",
+   "first_classes": [
+    "state_relations",
+    "symmetry_and_template_match"
+   ],
+   "rerate_classes": [
+    "state_relations",
+    "symmetry_and_template_match"
+   ],
+   "first_guard_form": "instance_flag",
+   "rerate_guard_form": "instance_flag"
+  },
+  {
+   "env": "cn04",
+   "item_id": "g21",
+   "first_primary": "all_instances_transformed",
+   "rerate_primary": "all_instances_transformed",
+   "first_classes": [
+    "all_instances_transformed",
+    "state_relations"
+   ],
+   "rerate_classes": [
+    "all_instances_transformed",
+    "quantified_object_conditions"
+   ],
+   "first_guard_form": "instance_flag",
+   "rerate_guard_form": "instance_flag"
+  },
+  {
+   "env": "s5i5",
+   "item_id": "g22",
+   "first_primary": "quantified_object_conditions",
+   "rerate_primary": "quantified_object_conditions",
+   "first_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "rerate_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "first_guard_form": "delegated",
+   "rerate_guard_form": "delegated"
+  },
+  {
+   "env": "sb26",
+   "item_id": "g23",
+   "first_primary": "ordered_event_programs",
+   "rerate_primary": "ordered_event_programs",
+   "first_classes": [
+    "cumulative_counters",
+    "ordered_event_programs"
+   ],
+   "rerate_classes": [
+    "all_instances_transformed",
+    "ordered_event_programs"
+   ],
+   "first_guard_form": "deferred_animation",
+   "rerate_guard_form": "deferred_animation"
+  },
+  {
+   "env": "dc22",
+   "item_id": "g24",
+   "first_primary": "state_relations",
+   "rerate_primary": "region_membership",
+   "first_classes": [
+    "state_relations"
+   ],
+   "rerate_classes": [
+    "region_membership",
+    "state_relations"
+   ],
+   "first_guard_form": "delegated",
+   "rerate_guard_form": "delegated"
+  }
+ ]
+}

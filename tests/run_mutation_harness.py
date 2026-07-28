@@ -69,7 +69,8 @@ ALLOWLIST = TESTS_DIR / "mutation_allowlist.txt"
 # survivors that says one thing — "this module is untested" — a hundred times over, which buries the
 # survivors that mean "this guard is untested". The uncovered modules are reported as a single honest
 # line instead, and `--target` runs them when someone is ready to write those tests.
-DEFAULT_TARGETS = ["s1d_blind_rerate.py", "s1d_build_corpus.py"]
+DEFAULT_TARGETS = ["s1d_blind_rerate.py", "s1d_build_corpus.py",
+                   "s2_blind_rerate.py", "s2_apply_labels.py"]
 
 # `ast.walk` is deterministic, so a node's index in it is a stable handle into a fresh parse of the
 # same source. That is how a site found during collection is re-located when the mutant is built.
@@ -251,7 +252,7 @@ def main() -> int:
         return 2
 
     if not args.target:
-        uncovered = sorted(p.name for p in HARNESS_DIR.glob("s1d_*.py")
+        uncovered = sorted(p.name for p in HARNESS_DIR.glob("s[12]*.py")
                            if p.name not in DEFAULT_TARGETS)
         if uncovered:
             print(f"NOT under mutation — no direct tests import them: {', '.join(uncovered)}")

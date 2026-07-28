@@ -56,3 +56,4 @@ s1d_blind_rerate.py::draw::compare::len(corpus_errs) > 8  # message-only: trunca
 s1d_blind_rerate.py::_score::compare::len(unlabelled) > 8  # message-only: truncates the printed list of unlabelled episode ids
 s1d_blind_rerate.py::draw::compare::len(unlabelled) > 8  # message-only: truncates the printed list of unlabelled episode ids
 s1d_blind_rerate.py::promote::return-ok::return 1  # redundant: the `return 1` of the re-score-failed guard. Its condition is pinned by message assertion in test_promote_refuses_when_rescoring_fails_outright; returning 0 there still hits the gate_valid check immediately below, which refuses anyway
+s2_apply_labels.py::apply::compare::len(unverified) > 8  # message-only: truncates the printed list of envs whose labels carry no packet_digest
