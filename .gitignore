@@ -232,6 +232,19 @@ CLAUDE.md
 # Screened 2026-07-27 — see logs/README.md before copying any of it to the clean repo.
 !/logs/*.json
 /logs/*_state_PRE-D13_discarded.json
+
+# EXCEPTION TO THE EXCEPTION — S2 evidence packets embed COMPETITION SOURCE verbatim.
+# `!/logs/*.json` is scoped to small derived measurements. These four are not that: each carries
+# the extracted `evidence` field for all 25 public games (45,838 lines of environment source,
+# 2.3 MB in the largest). `/data/` is gitignored for exactly this reason, and PUBLISHING.md is
+# explicit that git history counts as redistribution and that deleting later is not sufficient —
+# so they must never enter a commit in the first place. They regenerate from the committed
+# scripts, so nothing is lost by excluding them.
+/logs/s2_goal_predicates.json
+/logs/s2_goal_predicates_labelled.json
+/logs/s2_rerate_worksheet*.json
+!/logs/s2_rerate_worksheet*.key.json
+!/logs/s2_rerate_worksheet*.ratings-template.json
 !/logs/README.md
 
 # EXCEPTION 2: the RECONSTRUCTED run_config.json in each Kaggle run directory. Kaggle's
