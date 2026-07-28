@@ -1,6 +1,13 @@
 # Track B — Score-Oriented ARC-AGI-3 Agent Architecture
 
-**Written 2026-07-25, revised 2026-07-25.** Complements
+**Written 2026-07-25, revised 2026-07-25. Expository pass 2026-07-27** — §§3.1, 3.2, 3.4 and 3.5 each
+gained a *what it is* opening, because each previously began mid-specification and assumed
+[Track A](arc-agi-3-ship-jepa-x-architecture.md); §3.1's three identity components are now defined,
+with the observation hash expanded (what canonicalization covers, why the hash and not the encoder
+representation, and three open specification questions); §10's five otherwise-undefined "retained"
+terms now carry pointers. **No design decision changed** — the three open questions in §3.1 are
+recorded as open, not answered.
+Complements
 [`arc-agi-3-ship-jepa-x-architecture.md`](arc-agi-3-ship-jepa-x-architecture.md) rather than
 superseding it: that document remains the reference for the learned predictive components, which are
 retained here in reduced but non-trivial roles.
@@ -95,11 +102,75 @@ interval.
 
 ### 3.1 Exact archive — context-conditioned (retained from SHiP-JEPA-X, with the identity fix)
 
-Node identity is **not** the observation hash alone:
+**What it is.** A directed multigraph built online from what the agent has actually done. **Nodes are
+states it has stood in; edges are transitions it has executed.** Nothing in it is predicted or
+inferred — an edge exists because an action was taken and an outcome was recorded. That is what
+*exact* means here, and it is why the archive outranks every other source (§2). Node and edge fields
+are specified in [Track A §9.1–9.2](arc-agi-3-ship-jepa-x-architecture.md); the one worth repeating is
+that every edge stores **the model's prediction and its error at execution time**, which makes the
+archive a running scorecard for the belief model and not only a map of the game.
+
+**What the fast loop asks it** (Track A §9.3): exact replay · shortest known path · frontier
+identification · cycle detection · reversible return paths · event bottleneck discovery ·
+contradiction retrieval · candidate subgoal generation · exact transition substitution during planning.
+
+**The identity fix.** Node identity is **not** the observation hash alone:
 
 ```
 node = (observation hash, inferred context signature, history equivalence class)
 ```
+
+- **observation hash** — the exact frame or frame sequence, canonicalized. Observed.
+- **inferred context signature** — the current hypothesis about hidden mechanics: which mode the game
+  is in, how a switch or counter is set, what the actions currently mean. Sourced from the belief
+  model's mechanics context (§3.3) and the ledger's supported hypotheses (§5.1). **A belief, not an
+  observation.**
+- **history equivalence class** — a coarsening of the path taken to reach this observation, retaining
+  only what has been shown to matter (which switches were thrown, which objects collected) and
+  discarding the rest. **Also inferred:** what "matters" is itself a hypothesis.
+
+Two of the three components are beliefs, so **node identity is revisable** — the graph can be wrong
+about what is the same state, and re-partitions as hypotheses change. That is the cost of the fix. The
+benefit is that a bare observation hash cannot represent "same picture, different truth," so it cannot
+record a contradiction, so nothing downstream can falsify anything.
+
+#### What the observation hash covers
+
+Not the raw payload — the output of [Track A §4.1](arc-agi-3-ship-jepa-x-architecture.md)'s
+canonicalizer, whose preserve-list *is* the specification: categorical cell values (the integers 0–15,
+never a rendered image) · original frame dimensions · frame separation · padding marked explicitly ·
+metadata and available-action masks. Canonicalization strips serialization-level noise so that two
+genuinely identical situations produce identical bytes. The hash is then trivial and costs
+microseconds — **the canonicalizer is where the risk lives, not the hash.**
+
+Track A §9.1 stores *both* the observation hash and the encoder representation on every node, and
+**only the hash is part of identity.** The hash is exact and discrete, so distinct states never
+collide; a learned embedding is approximate and continuous, so two behaviourally different states can
+embed arbitrarily close. An embedding in the key would silently merge states — and merged states
+manufacture false contradictions, sending the override rule below hunting a hidden variable that does
+not exist. The embedding is a retrieval field. It never decides sameness.
+
+**The rule that generalizes: invariance belongs in the representation, never in identity.** ARC
+instinct pushes the wrong way here, because in ARC-AGI-1/2 colour-permutation invariance is usually
+wanted. Inside one ARC-AGI-3 game colours are stable and causally meaningful, so two states differing
+only by colour genuinely behave differently — §4.1's "preserves categorical cell values" is what
+protects that. Generalization is the encoder's job (§3.3 rung 5), not the key's.
+
+**Three questions this leaves open, which a builder must settle:**
+
+1. **All N frames, or the settled final frame?** Observations arrive as 1–N grids, measured varying
+   *within* an episode (one game produced `1,1,1,1,1,1,1,6,6`). Hashing all of them makes two arrivals
+   at the same settled state via different animations into different nodes; hashing only the last
+   discards the evidence §3.2's animation-versus-persistent view runs on. *Suggested: settled frame for
+   identity, full sequence as a node field.* Not currently specified either way.
+2. **Is the available-action mask in the key?** §4.1 preserves it, but preserved-in-the-record and
+   in-the-key are different. For: §4.2 treats action-availability change as a delta feature, so the
+   states genuinely differ. Against: metadata churn then splits nodes spuriously. Measured today,
+   availability is per-game and **not observed to vary within an episode** — so it currently makes no
+   difference, which is exactly why it is cheap to get wrong now and expensive to discover later.
+3. **Level or score position?** No — §9.1 carries those as separate node fields. A monotonic counter in
+   the key makes every node unique by construction, which makes cycles undetectable and contradictions
+   unrepresentable, defeating the point of the fix.
 
 Edges store action + coordinate, exact delta, resulting node, event tags, reversibility evidence,
 whether the outcome matched the active rules, and any contradiction.
@@ -112,6 +183,13 @@ propose a hidden-mode variable, split the context signature, retain both modes u
 This is the system of record. Neither executive prose nor any learned latent is authoritative over it.
 
 ### 3.2 Multiview state compiler
+
+**What it is.** The fast loop's perception step. It takes the raw observation — 1 to N grids of 64×64
+cells with values 0–15 — and produces several *simultaneous* views of it, because no single
+representation suits every mechanic. A colour-based segmentation finds the objects in one game and
+destroys the structure of another; the executive reads ASCII well and raw integer grids badly; the
+belief model wants the categorical grid. Committing to one view early is the failure this component
+exists to avoid.
 
 Produce in parallel, expose a compact default, let the executive request more:
 
@@ -180,6 +258,13 @@ one.
 
 ### 3.4 ACTION6 candidate system
 
+**The problem it solves.** ACTION6 carries an (x, y) coordinate over a 64×64 grid — **4096 candidate
+actions at every step**, against five for ACTION1–5. Scoring them all is impossible inside the
+per-action budget (§1), and ACTION6 is available at reset in **19 of the 25 public games**
+(measured 2026-07-26). So a proposal mechanism that nominates a few dozen coordinates is not an
+optimization; without one the coordinate action space is simply unusable, and the majority of games
+are unreachable.
+
 Union of: learned click salience (human replays) · object/region centroids · boundaries and corners ·
 recently changed cells · rare colours and shapes · symmetry correspondences · uniformly spaced
 background probes · uncertainty hotspots · previously successful coordinate classes.
@@ -196,6 +281,12 @@ mechanism omitted the useful action, versus the ranker saw it and ordered it wro
 result is interpretable without it.
 
 ### 3.5 Control portfolio
+
+**What it is.** The fast loop's final step: everything above *proposes*, and this decides which
+proposal to act on. The "use when" column is each mode's admission condition. Where several are
+admissible the **earlier row wins**, because the rows are ordered by directness of evidence — the same
+ordering §2 gives for the state of record: exact observation, then verified program, then learned
+prediction, then executive judgement.
 
 | Mode | Use when |
 |---|---|
@@ -446,6 +537,17 @@ coordinate candidate generators · sequential/history-conditioned inference · d
 heads at 1/2/4 with composition consistency · counterfactual action ranking · the common-candidate
 audit and attribution ladder · the diagnostic contract · the procedural boundary suite (now training
 and evaluation infrastructure for the belief model, D0, and R0).
+
+*Five of those names appear nowhere else in this document. They are specified elsewhere, and this list
+is the only place they are claimed — so the pointers matter:*
+
+| Term | Defined in | In one line |
+|---|---|---|
+| **demotion ladder** | [Track A §21](arc-agi-3-ship-jepa-x-architecture.md), reliability governor | the four fallback modes the agent drops through when it stops being trustworthy: full hierarchical → sequential flat → exact archive/graph → conservative frontier exploration |
+| **common-candidate audit** | [`execution-plan.md` §6.7](arc-agi-3-execution-plan.md) | every arm ranks the *same* candidate set, so any difference is the ranker's and not the proposal mechanism's — this is what makes §3.4's recall metric interpretable |
+| **attribution ladder** | [`architecture-alternatives.md` §11](arc-agi-3-architecture-alternatives.md) | the four rungs separating "the model is wrong" from "the interface is wrong"; called the most transferable scientific asset in the project, and it works for any pair of arms |
+| **diagnostic contract** | [`execution-plan.md` §6.7](arc-agi-3-execution-plan.md) | the frozen baselines every condition is read against (copy-last-observation, random ranking, exact-simulator planning, archive baseline) plus the reported metrics — and the standing refusal to let unchanged-cell accuracy stand in for dynamics knowledge |
+| **procedural boundary suite** | [`executive-summary.md`](arc-agi-3-executive-summary.md), *Controlled mechanism study* | synthetic generators producing many independent environments while varying one factor at a time. **S2's F1 and F3 are the two families of this suite that survive the screening sprint** |
 
 **Dropped from the deployed agent:** unbounded and 8-step latent rollout as a production dependency ·
 learned latent goal geometry · automatic latent subgoals · learned event hierarchy · test-time

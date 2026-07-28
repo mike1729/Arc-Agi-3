@@ -1,6 +1,6 @@
 # S0 + S1 — Day-by-Day Execution Plan
 
-**Written 2026-07-25.** Operationalizes §3 and §4 of
+**Written 2026-07-25.** Operationalizes §5 and §6 of
 [`arc-agi-3-decision-experiments.md`](arc-agi-3-decision-experiments.md). That document is the authority;
 where this one disagrees, it is wrong. Nothing here re-decides scope — it fixes dates, deliverables, exit
 criteria, and the escalation rules the sprint document leaves open.
@@ -79,7 +79,7 @@ exists. Escalation in §7 item 0.
 
 ### 3.2 Verify the constants — same block
 
-`decision-experiments.md` §2 marks these as unverified. Record every answer in
+`decision-experiments.md` §4 marks these as unverified. Record every answer in
 `notes/s1-verification.md` with the URL and date you read it, because several are load-bearing for
 decisions made later this week.
 
