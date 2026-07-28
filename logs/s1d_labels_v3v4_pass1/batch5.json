@@ -1,0 +1,125 @@
+{
+"kaggle_v4::sb26-7fbdac44_p0::L2": {
+  "primary_label": "exploration_or_probe_selection",
+  "labels": [
+    {"category": "exploration_or_probe_selection", "confidence": "high",
+     "evidence": "Win condition is understood (fill the red and green frames with the right colours) and the failure is unguided search over splits: 'I've tried many arrangements with Red=[R, O, Y] and different green frame orders. None have worked', then 'Maybe the warm/cool split is wrong. Let me think about other ways to split the 7 colors into groups of 3 and 4.' 203 actions at 7.25x baseline."},
+    {"category": "goal_unknown", "confidence": "med",
+     "evidence": "The partition CRITERION is the win condition and is never derived; warm/cool, RGB ordering and frame-colour hypotheses are each tried and dropped."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated at 7920 s."}
+  ],
+  "rater_notes": "AGREES with v3's sb26 on primary — both runs know what winning looks like and brute-force the arrangement."
+},
+"kaggle_v4::sc25-635fd71a_p0::L1": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "Reached the configuration its own model called correct and the level did not complete: 'The pattern now has 4 white cross cells + 1 gray center. This matches the purple dot pattern (4 dots, no center). But the level is still not complete.'"},
+    {"category": "progress_signal_misinterpretation", "confidence": "med",
+     "evidence": "Cannot read the progress bar it is being scored on: \"the progress bar shows {'W': 29} ... Actually, looking at the image, the right edge is all green (N), not white (W) ... This is confusing.\""},
+    {"category": "irreversible_mistake", "confidence": "med",
+     "evidence": "'The game is over! ... This suggests that the progress bar is a resource bar, and when it's all white, the game ends' — the resource was spent before the objective was found."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated; 112 actions at 3.11x baseline."}
+  ],
+  "rater_notes": "THIRD CONSECUTIVE RUN with the identical sc25 signature — satisfied its own goal model, level did not complete. The most stable single result in the corpus."
+},
+"kaggle_v4::sk48-d8078629_p0::L1": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "Rejects hypotheses without converging: 'The level is not complete. So the goal is not to return to the initial state', then 'Maybe the goal is to have all three blocks at the right column (cols 42-45), in the order R, N, b from top to bottom', then 'Red at middle level, but level still not complete. Need to find another mechanic.'"},
+    {"category": "action_semantics_unknown", "confidence": "med",
+     "evidence": "Two of three blocks become permanently immovable and the reason is never established: 'Green/blue moved down and can't be moved back up.'"},
+    {"category": "invalid_output_interface", "confidence": "low",
+     "evidence": "'ACTION7 didn't work (unknown action)' — an action tried outside the advertised set."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated; 176 actions at 2.89x baseline."}
+  ],
+  "rater_notes": "DIVERGES from v3's sk48 (action_semantics_unknown), which derived a specific target order from the palette and was blocked only on execution. Here the palette never yields a target."
+},
+"kaggle_v4::sp80-589a99af_p0::L2": {
+  "primary_label": "action_semantics_unknown",
+  "labels": [
+    {"category": "action_semantics_unknown", "confidence": "high",
+     "evidence": "Goal is stated ('Extend red block to cover all 3 yellow blocks by merging with player's position') and the whole episode narrows SPACE's precondition without closing it: 'SPACE requires player to be adjacent to red block at same row', then after failure 'SPACE requires adjacency, not overlap', then a further correction about the player's 20-column width."},
+    {"category": "latency_or_budget", "confidence": "med",
+     "evidence": "261 actions at 4.50x baseline over 57 analysis turns, budget-terminated with a concrete next plan."},
+    {"category": "goal_unknown", "confidence": "low",
+     "evidence": "The 'cover all 3 yellow blocks' objective is inferred from the layout, never confirmed by a completion."}
+  ],
+  "rater_notes": "THIRD DISTINCT PRIMARY for sp80 across three runs — v2 progress_signal_misinterpretation, v3 goal_unknown, v4 action_semantics_unknown. Matches g50t as a maximally unstable game."
+},
+"kaggle_v4::su15-1944f8ab_p0::L2": {
+  "primary_label": "irreversible_mistake",
+  "labels": [
+    {"category": "irreversible_mistake", "confidence": "high",
+     "evidence": "Self-diagnosed and episode-ending: 'Key mistake: Clicked on magenta square at (27,32) after it entered the blue blob, which ended the game prematurely.' The correct rule was derived only afterwards: 'Goal likely: move all 4 magenta squares into blue blob area without clicking them once inside.'"},
+    {"category": "progress_signal_misinterpretation", "confidence": "high",
+     "evidence": "Six consecutive steps unable to determine whether play had ended: 'The game_over flag was False in one check but the system says The game is over', 'The game is over and I cannot take any more actions', then 'The game is still playable! The action was executed successfully' — by which point 20 seconds remained."},
+    {"category": "goal_unknown", "confidence": "med",
+     "evidence": "'The goal of level 2 was unclear - possibly to move all 4 magenta squares to the blue blob, or to move them to specific positions.'"},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated; 43 actions at 1.02x baseline."}
+  ],
+  "rater_notes": "The corpus's clearest irreversible_mistake and its first as a PRIMARY label. Chosen over goal_unknown because the agent had a workable objective and lost the episode to one recoverable-looking click."
+},
+"kaggle_v4::tn36-ef4dde99_p0::L2": {
+  "primary_label": "latency_or_budget",
+  "labels": [
+    {"category": "latency_or_budget", "confidence": "high",
+     "evidence": "Correct mechanic and correct goal, executing when time expired: 'Click on the boxes to toggle which panel is active. When a panel is active, click on the www markers to remove them. The goal is probably to remove all the www markers', followed by 'All 4 www markers in row 39 have been removed' and mid-computation of row 45's marker columns. 79 actions at 1.10x baseline."},
+    {"category": "perception_parsing", "confidence": "med",
+     "evidence": "Repeated column-index recomputation from ASCII consumed turns: 'Wait, let me count more carefully. The substring starts at col 13 ... hmm, that doesn't match. Let me recalculate.'"},
+    {"category": "goal_unknown", "confidence": "low",
+     "evidence": "The objective is held as 'probably' and never confirmed by a completion."}
+  ],
+  "rater_notes": "Different LEVEL from v3's tn36 (L2 here, L1 there), and a far better outcome — v3 never found that the markers were the interactive element at all."
+},
+"kaggle_v4::tr87-cd924810_p0::L1": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "med",
+     "evidence": "The symbol-pairing rule IS the win condition and its own data refutes it: hypothesis 'each blue symbol (from even columns) pairs with its right-neighbor pink symbol', target pink IDs [7,9,1,3,5], then 'P1 was supposed to be fixed ... But the target for P1 is (9, 0) ... If P1 is truly fixed, then my hypothesis is wrong.'"},
+    {"category": "action_semantics_unknown", "confidence": "med",
+     "evidence": "The control's effect is richer than assumed and only partly mapped: 'Key discovery - UP/DOWN cycles through different grid symbols, not just rotations', with cycle length 7 for P4 and an apparently fixed P1."},
+    {"category": "hidden_state_aliasing_or_memory", "confidence": "low",
+     "evidence": "'the game doesn't reset to the exact same initial state - it randomizes or changes the puzzle each time' — prior learning does not transfer across resets."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated; 157 actions at 2.91x baseline."}
+  ],
+  "rater_notes": "DIVERGES from v3's tr87 (latency_or_budget), which was on an unrefuted trajectory. This run went further, hit a contradiction, and could not resolve it."
+},
+"kaggle_v4::tu93-0768757b_p0::L2": {
+  "primary_label": "action_semantics_unknown",
+  "labels": [
+    {"category": "action_semantics_unknown", "confidence": "high",
+     "evidence": "Repeatedly killed by a coupling it discovers only late: 'Critical discovery! R block moves LEFT when player moves RIGHT, staying on the SAME row. Collision causes game over.' Even after the discovery its executed plan diverges from prediction: 'Player ended at (2, 4), not expected (0, 12). Something went wrong.'"},
+    {"category": "retrieval_or_context", "confidence": "med",
+     "evidence": "Drew conclusions from mis-scoped history: 'The transitions list contains ALL transitions from the start of the game, not just the current level. So my earlier analysis of T0-T9 was wrong - those are transitions from level 1, not level 2.'"},
+    {"category": "irreversible_mistake", "confidence": "med",
+     "evidence": "'After 3rd reset, game_over=True' — a bounded number of deaths, all spent on the same unmodelled collision."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated; 21 actions at 1.31x baseline over 18 analysis turns."}
+  ],
+  "rater_notes": "Only clear retrieval_or_context evidence in the v3/v4 half of the corpus, and notable because the agent's own tooling (a global transition list) was the source of the error."
+},
+"kaggle_v4::vc33-5430563c_p0::L2": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "Transfers level 1's win condition and finds it unreachable, with no replacement: 'In level 2, the bar's max position is 20, and the gap is at cols 28-29. The bar can't reach the gap', then 'the bar reached its max position (20, 21), but the level was not completed. So the goal is not to have the bar reach its max position.'"},
+    {"category": "retrieval_or_context", "confidence": "med",
+     "evidence": "Falls back on re-reading its own history to reconstruct the level-1 rule: 'let me re-examine the history to understand what changed between level 1 and level 2.'"},
+    {"category": "exploration_or_probe_selection", "confidence": "med",
+     "evidence": "83 actions at 4.61x baseline over 51 analysis turns."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated at 7920 s."}
+  ],
+  "rater_notes": "AGREES with v3's vc33 on primary, and both runs fail the same way — a level-1 rule transferred to level 2 where it cannot hold."
+},
+"kaggle_v4::wa30-ee6fef47_p0::L1": {
+  "primary_label": "latency_or_budget",
+  "labels": [
+    {"category": "latency_or_budget", "confidence": "high",
+     "evidence": "Correct mechanic, correct goal, mid-execution at the cut: targets are picked up and dropped into the blue bar with confirmed activation — 'Right target successfully dropped into blue bar at rows 28-31, cols 36-39 (G, activated)', then 'First target now G (activated)' — closing on 'SPACE to pick up first target, RIGHT to align with merged region, SPACE to drop.' 116 actions at 1.63x baseline."},
+    {"category": "goal_unknown", "confidence": "low",
+     "evidence": "The completion condition is inferred from two successful activations rather than confirmed."}
+  ],
+  "rater_notes": "DIVERGES sharply from v3's wa30 (action_semantics_unknown), where the same game produced 381 actions and an explicit 'I don't know the exact movement mechanics'. Here the mechanic was solved and the run was winning when time ran out. The widest same-game quality gap in the corpus."
+}
+}

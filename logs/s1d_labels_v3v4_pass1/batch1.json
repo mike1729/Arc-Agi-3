@@ -1,0 +1,124 @@
+{
+"kaggle_v3::ar25-0c556536_p0::L2": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "Derived correct mechanics (F mirrors P horizontally; UP/DOWN do nothing; SPACE scatters the white dots) and cycled goal hypotheses without settling: 'Maybe goal is to have F overlap with yellow L' -> aligned cols 3-17 and 'the level didn't complete'; then shape-match -> hashes differ; then boundaries match shifted 24 rows. Terminal plan is still 'Try moving F to different position and pressing SPACE, or try SPACE again.'"},
+    {"category": "latency_or_budget", "confidence": "med",
+     "evidence": "Budget-terminated at 7920 s having executed only 22 actions (0.44x baseline) over 10 analysis turns — time was spent thinking, not acting."}
+  ],
+  "rater_notes": "Reached a state its own hypothesis called solved (F/L horizontally aligned, equal pixel count) and the level did not complete — the sc25 pattern from v2."
+},
+"kaggle_v3::bp35-0a0ad940_p0::L2": {
+  "primary_label": "action_semantics_unknown",
+  "labels": [
+    {"category": "action_semantics_unknown", "confidence": "high",
+     "evidence": "Goal is known and correct (collect the green blocks; Layout A solved in 14 actions). Blocked on one block's semantics: 'So (33, 51) causes game over regardless of whether I use RIGHT+click or no movement. This block is fundamentally problematic.' It cannot determine whether (33,51) is a target or a trap: 'What if (33, 51) is NOT a target block?'"},
+    {"category": "irreversible_mistake", "confidence": "high",
+     "evidence": "Repeatedly commits the same game-ending click: 'Game over again! This time on (33, 51) with NO movement. The remaining went from 1 to 3.'"},
+    {"category": "latency_or_budget", "confidence": "med",
+     "evidence": "455 actions, 9.48x baseline, budget-terminated."},
+    {"category": "invalid_output_interface", "confidence": "low",
+     "evidence": "'The code timed out after 15 actions' — a tool-execution truncation that cost a partially-applied plan."}
+  ],
+  "rater_notes": "Causally earliest is not knowing what (33,51) does; the repeated game-overs follow from that, so irreversible_mistake is secondary despite being the more visible symptom."
+},
+"kaggle_v3::cd82-fb555c5d_p0::L2": {
+  "primary_label": "action_semantics_unknown",
+  "labels": [
+    {"category": "action_semantics_unknown", "confidence": "med",
+     "evidence": "Target is known and read off precisely (reference block decoded row by row, purple/orange diagonal with white wedge). Cannot control the stamping to reach it: after SPACE the block is 'similar to before but with orange and purple swapped', and row-by-row comparison shows every row off by 1-4 cells. Frame movement is also unreliable: 'the frame is at rows 45-52, and it didn't move after UP, UP, UP.'"},
+    {"category": "perception_parsing", "confidence": "med",
+     "evidence": "Node identification bug that misled several steps: 'My code is finding the wrong node because it's looking for white nodes with 80-90 pixels, and both the block's white part (85 pixels) and the frame (84 pixels) match.'"},
+    {"category": "latency_or_budget", "confidence": "med",
+     "evidence": "34 actions at 4.25x a baseline of 8, budget-terminated."}
+  ],
+  "rater_notes": "Goal is NOT unknown here — this is one of the minority of episodes with a correct explicit target. The gap is execution control."
+},
+"kaggle_v3::cn04-2fe56bfb_p0::L1": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "Objectives stay speculative from first contact to termination: 'The white structure could be the player character. The green frame could be a target/goal. The red blocks could be obstacles or items.' 381 actions later there is still no stated win condition."},
+    {"category": "exploration_or_probe_selection", "confidence": "med",
+     "evidence": "381 actions, 13.14x baseline, 60 reasoning steps, largely undirected probing."},
+    {"category": "progress_signal_misinterpretation", "confidence": "med",
+     "evidence": "Misreads the terminal signal: 'the result says game_over: true but level_completed: false', then interprets the screen as 'This is a reset state!' and is unsure whether the player is at its starting position."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated at 7920 s."}
+  ],
+  "rater_notes": null
+},
+"kaggle_v3::dc22-fdcac232_p0::L1": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "Opens with 'This looks like a matching puzzle... the goal might be to drag/click objects from the left to match them on the right, or vice versa' and is still guessing at the terminal step: 'Maybe the goal is not to change the blocks, but to arrange them in a specific pattern or to match the colors.'"},
+    {"category": "action_semantics_unknown", "confidence": "med",
+     "evidence": "Cannot establish what the controls do: the player 'is stuck inside the container', and clicking the crosses toggles inconsistently between transitions (b=1 -> b=47 -> b=1)."},
+    {"category": "exploration_or_probe_selection", "confidence": "med",
+     "evidence": "63 analysis turns for 67 actions; probes chosen by inspection rather than by discriminating power."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated; 1.14x baseline."}
+  ],
+  "rater_notes": null
+},
+"kaggle_v3::ft09-0d8bbf25_p0::L3": {
+  "primary_label": "latency_or_budget",
+  "labels": [
+    {"category": "latency_or_budget", "confidence": "high",
+     "evidence": "On a correct trajectory when the budget expired. It decoded the mechanic ('Decorations are STATIC target patterns'), verified 3 of 4 against the live grid with explicit MATCH checks, isolated the single conflicting cell ('Only (4,0) conflicts: (3,1) says O, (5,1) says R'), and its terminal plan is one concrete testable move: 'Toggle (4,0) from O to R and check if level completes.' 29 actions in 7920 s — time-bound, not stuck."},
+    {"category": "goal_unknown", "confidence": "low",
+     "evidence": "The goal model was largely correct but incomplete: the (4,0) conflict shows the combination rule for two overlapping 3x3 constraints was not fully resolved."}
+  ],
+  "rater_notes": "The strongest counter-example to goal_unknown in this batch, and the direct analogue of v2's g50t: correct goal, monotonic progress, out of time. Its existence is what keeps latency_or_budget from being purely an artifact of the uniform cut."
+},
+"kaggle_v3::g50t-5849a774_p0::L1": {
+  "primary_label": "exploration_or_probe_selection",
+  "labels": [
+    {"category": "exploration_or_probe_selection", "confidence": "med",
+     "evidence": "Correct, stable goal from step 1 ('Goal model: Navigate from the blue start to the blue end') and known action semantics, but maps the corridor graph by physically walking it and lands in a cycle it recognises: 'the player is stuck in a loop: DOWN from rows 8-12 to rows 32-36, then SPACE back to rows 8-12.' 109 actions, backtracking charged to the scored budget."},
+    {"category": "latency_or_budget", "confidence": "high",
+     "evidence": "Budget-terminated at 7920 s, 1.40x baseline, with a stated next plan."},
+    {"category": "action_semantics_unknown", "confidence": "low",
+     "evidence": "SPACE's teleport rule is only partly pinned — 'maybe SPACE always teleports to top-left' is left untested."}
+  ],
+  "rater_notes": "DIVERGES from the same game's v2 episode, which showed monotonic progress and was labelled latency_or_budget primary. Here it is explicitly cycling with RIGHT and DOWN both blocked. Same game, same configuration, different failure mode — exactly the cross-run instability task #8 is testing for."
+},
+"kaggle_v3::ka59-38d34dbb_p0::L2": {
+  "primary_label": "action_semantics_unknown",
+  "labels": [
+    {"category": "action_semantics_unknown", "confidence": "med",
+     "evidence": "Goal stated and pursued (convert N+B to N+W and seat each in a c square); blocked on whether objects can cross a barrier: 'The vertical N+W is blocked by the purple bar from reaching the bottom-left panel's c square.' Movement quanta are still being inferred at the terminal step ('each LEFT moves 3 cols for this object')."},
+    {"category": "goal_unknown", "confidence": "med",
+     "evidence": "Partially executed its own target and the level did not complete — 'I've converted all N+B to N+W and put 2 of them into c squares' — prompting a mid-episode revision it never resolved."},
+    {"category": "latency_or_budget", "confidence": "med",
+     "evidence": "159 actions, 1.46x baseline, budget-terminated."}
+  ],
+  "rater_notes": null
+},
+"kaggle_v3::lf52-271a04aa_p0::L1": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "First hypothesis (collect all green cells) is refuted by its own test — 'Maybe the goal is not to collect all green cells, but to do something else' — and the terminal step is still generating candidates: 'Maybe the goal is to merge all green cells into a single cell, and then click on that cell.'"},
+    {"category": "perception_parsing", "confidence": "med",
+     "evidence": "Sustained failure to map the grid: 'My grid mapping was off. Let me re-examine the structure more carefully', followed by repeated column recounts of the same ASCII row."},
+    {"category": "action_semantics_unknown", "confidence": "med",
+     "evidence": "'The RIGHT action didn't move the purple player (still at (57, 6)), but board_changed is True' — cannot attribute the change to the action."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated; 38 actions over 44 analysis turns."}
+  ],
+  "rater_notes": null
+},
+"kaggle_v3::lp85-305b61c3_p0::L2": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "Establishes real mechanics (clicking R1 moves the yellow blocks vertically, R2 horizontally by 3 cols) with no win condition to aim them at: 'Maybe the goal is to click the player/target a specific number of times', and terminally 'Let me try clicking the yellow blocks themselves to see if that increases the score.'"},
+    {"category": "action_semantics_unknown", "confidence": "med",
+     "evidence": "Mapping of which R block drives which yellow block is still unresolved at termination: 'R3 doesn't affect the yellow blocks' sits unexplained beside R1 and R2 both moving them."},
+    {"category": "exploration_or_probe_selection", "confidence": "med",
+     "evidence": "159 actions at 4.18x baseline, top_action_share 0.588 — over half the actions are one repeated click."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated at 7920 s."}
+  ],
+  "rater_notes": "Good mechanics, no objective — the batch's clearest instance of the corpus-wide pattern."
+}
+}

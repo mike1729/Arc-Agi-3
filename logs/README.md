@@ -42,6 +42,8 @@ by counting `evidence.reasoning_by_step` excerpts in every `logs/*.json` that is
 |---|---:|---|
 | `s1d_corpus_pooled.json` | 4,185 | v2+v3+v4 evidence packets — the largest concentration of reference output in the repository |
 | `s1d_corpus_refv2.json` | 1,494 | **tracked in git**, so it ships by default unless excluded deliberately |
+| `s1d_labels_v3v4_pass1/*.json` | 177 | label `evidence` quotes the reference's reasoning; tracked as the only record of 50 first-pass labels |
+| `s1d_labels_v2_pass1.json` | 25 | same, for v2 |
 | `s1d_corpus.json` | 520 | `evidence` holds the reference's reasoning text and tool code per episode |
 | `s1d_corpus_phase1.json` | 144 | same |
 | `s1d_episodes_kaggle_reference.json` | — | same |

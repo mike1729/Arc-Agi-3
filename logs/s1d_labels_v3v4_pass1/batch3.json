@@ -1,0 +1,121 @@
+{
+"kaggle_v3::tn36-ef4dde99_p0::L1": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "Goal stays a guess from first contact ('Likely need to click the correct button to solve the puzzle. The yellow shapes may indicate which button to press') to termination ('Button patterns alone haven't worked. Maybe button CLICK ORDER matters, or maybe I need to click on button sub-parts')."},
+    {"category": "exploration_or_probe_selection", "confidence": "med",
+     "evidence": "Toggles all ten buttons in one batch without a discriminating hypothesis, then cannot attribute the result; 193 actions at 6.03x baseline across 31 distinct action types."},
+    {"category": "invalid_output_interface", "confidence": "med",
+     "evidence": "Repeated tool truncation shapes the episode: 'The code timed out again. It seems like even batching actions into a single action() call per pattern is too slow.'"},
+    {"category": "irreversible_mistake", "confidence": "low",
+     "evidence": "'Game over again after timeout' — terminal states reached while probing."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated at 7920 s."}
+  ],
+  "rater_notes": null
+},
+"kaggle_v3::tr87-cd924810_p0::L1": {
+  "primary_label": "latency_or_budget",
+  "labels": [
+    {"category": "latency_or_budget", "confidence": "high",
+     "evidence": "On a correct, verifiable trajectory when time expired. Built a hash-based matcher over symbols and cells, confirmed 'P-0 matches Cell (0,1) ...', 'P-1 matches Cell (1,1) ...', and was resolving P-2's target by enumerating its seven rotation states against every cell hash. 55 actions at 1.02x baseline over 51 analysis turns — thinking-bound, not stuck."},
+    {"category": "goal_unknown", "confidence": "med",
+     "evidence": "The symbol-to-cell mapping IS the win condition and was still being derived: 'P-3 doesn't match any cell', 'P-2's target cell is not Cell (2,1)'."},
+    {"category": "perception_parsing", "confidence": "med",
+     "evidence": "Several turns lost to extraction error: 'the cells in the grid are not pure P/B patterns. They have g (gray) characters mixed in ... I need to extract just the symbol part.'"}
+  ],
+  "rater_notes": "Second clear counter-example to goal_unknown in the corpus. Notable that it reached hash-level rigour — this is the reference at its strongest."
+},
+"kaggle_v3::tu93-0768757b_p0::L3": {
+  "primary_label": "latency_or_budget",
+  "labels": [
+    {"category": "latency_or_budget", "confidence": "high",
+     "evidence": "Cleared level 2, parsed the level-3 maze, identified player, goal and traps, computed a valid trap-avoiding route ('Path: (4,5) -> (3,5) -> ... Actions: UP, LEFT, LEFT, UP, LEFT, LEFT, DOWN, DOWN, RIGHT') and executed it as the budget ran out. 5 actions at 0.15x baseline."},
+    {"category": "perception_parsing", "confidence": "med",
+     "evidence": "Repeated ASCII column-alignment errors consumed most of the episode: 'Hmm, that doesn't match. Let me re-count from the full r...', with the player cell repeatedly missed by the grid parser."}
+  ],
+  "rater_notes": "THIN EPISODE — only 2 steps carry reasoning and 19,389 chars of evidence, well below the corpus median. Flag for exclusion in any robustness check that drops low-evidence episodes, as the v2 analysis did for ft09 and tu93."
+},
+"kaggle_v3::vc33-5430563c_p0::L2": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "First goal model is explicit ('Align the player's yellow strip with the black bar's yellow segment') and refuted by its own test — 'clicking on the yellow segment doesn't do anything special even when aligned'. The replacement is a guess about white-area sequences: 'Try sequence: move to rightmost, click target; move to middle... See if this completes the level.'"},
+    {"category": "action_semantics_unknown", "confidence": "med",
+     "evidence": "The click rule is only partly characterised: 'clicking on the target at the same position only has an effect on the first click (or alternating clicks)'."},
+    {"category": "hidden_state_aliasing_or_memory", "confidence": "low",
+     "evidence": "Same click at the same position yields an effect once and not again, implying a latched state the agent never models explicitly."},
+    {"category": "exploration_or_probe_selection", "confidence": "med",
+     "evidence": "77 actions at 4.28x baseline over 48 analysis turns."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated at 7920 s."}
+  ],
+  "rater_notes": null
+},
+"kaggle_v3::wa30-ee6fef47_p0::L1": {
+  "primary_label": "action_semantics_unknown",
+  "labels": [
+    {"category": "action_semantics_unknown", "confidence": "high",
+     "evidence": "Explicit self-report: 'I don't know the exact movement mechanics - the player seems to move in larger steps than expected, or the board scrolls.' Arithmetic confirms it cannot close the model: '16 LEFT actions moved the player from col 60 to col 0 ... each LEFT action moves 60/16 = 3.75 columns. That doesn't make sense.' Wrap-around is observed but never incorporated."},
+    {"category": "exploration_or_probe_selection", "confidence": "high",
+     "evidence": "Self-reported waste: 'I've been wasting too many actions moving around' — 381 actions at 5.37x baseline, most of them traversal."},
+    {"category": "goal_unknown", "confidence": "med",
+     "evidence": "Target identification never firms up beyond 'these look like targets or collectibles'."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated; 499 s remaining noted at 331 actions."}
+  ],
+  "rater_notes": null
+},
+"kaggle_v4::ar25-0c556536_p0::L2": {
+  "primary_label": "action_semantics_unknown",
+  "labels": [
+    {"category": "action_semantics_unknown", "confidence": "high",
+     "evidence": "Movement quanta are learned correctly (3 cols per LEFT/RIGHT, 3 rows per UP/DOWN) but the terminal condition is not: 'The game ended because I moved the face too far to the right, causing it to cross the divider ... But earlier the face crossed the divider and didn't cause game over.'"},
+    {"category": "irreversible_mistake", "confidence": "high",
+     "evidence": "'GAME OVER! After 2x RIGHT, the game ended.' The level resets and the divider relocates ('The divider is now at cols 36-38, which is different from before. The layout has changed!'), discarding the mapping built so far."},
+    {"category": "hidden_state_aliasing_or_memory", "confidence": "med",
+     "evidence": "The same visible move across the divider is fatal on one occasion and not on another, and the discriminating variable is never identified."},
+    {"category": "goal_unknown", "confidence": "med",
+     "evidence": "The dots-turn-yellow-on-overlap observation is never converted into a tested win condition."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated; 112 actions at 2.24x baseline."}
+  ],
+  "rater_notes": "DIVERGES from v3's ar25 (same game, same configuration), which was goal_unknown primary with no game-over at all. Third same-game cross-run divergence after g50t and sp80."
+},
+"kaggle_v4::bp35-0a0ad940_p0::L2": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "Its working objective is falsified and replaced by an explicit list of untested candidates: 'the goal is NOT to clear blocks until the bar reaches zero. Instead, the goal might be: 1. Clear a specific number of blocks 2. Clear blocks in a specific order 3. Clear blocks until the bar reaches a specific value 4. Some other objective.'"},
+    {"category": "action_semantics_unknown", "confidence": "high",
+     "evidence": "Identical-looking clears produce opposite effects and the rule is only conjectured: 'Previously, clearing blocks caused them to regenerate ... this time, clearing one block caused the green blocks to decrease from 14 to 13. Also, the purple bar increased from 501 to 502.' -> 'Maybe the blocks in different rows behave differently.'"},
+    {"category": "irreversible_mistake", "confidence": "med",
+     "evidence": "'The game is over again' after driving the purple bar to zero."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated; 163 actions at 3.40x baseline."}
+  ],
+  "rater_notes": "DIVERGES from v3's bp35, which held the goal (collect blocks) and failed on one block's semantics. Here the goal itself collapses."
+},
+"kaggle_v4::cd82-fb555c5d_p0::L2": {
+  "primary_label": "action_semantics_unknown",
+  "labels": [
+    {"category": "action_semantics_unknown", "confidence": "high",
+     "evidence": "Target is known (match the reference: white wedge over purple) and the whole episode is spent characterising the stamp operator — 'the RIGHT-DOWN stamp painted the BOTTOM 5 rows with a solid color', 'the LEFT-DOWN stamp created a diagonal on the LEFT side' — ending with 'Let me systematically map out all stamp positions and their effects', i.e. the operator model was still incomplete."},
+    {"category": "exploration_or_probe_selection", "confidence": "med",
+     "evidence": "78 actions at 9.75x an 8-action baseline, spent enumerating stamp geometry rather than deducing it."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated at 7920 s."}
+  ],
+  "rater_notes": "AGREES with v3's cd82 (same game, same primary). A stability datapoint in the direction of the ranking holding."
+},
+"kaggle_v4::cn04-2fe56bfb_p0::L1": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "Develops a real hypothesis — the two C-shapes interlock, 'the white shape's body fills the green shape's opening, and the green shape's body fills the white shape's opening' — but never converts it into a tested win condition, closing with 'Goal model: Need to find winning configuration - maybe specific overlap + color combo.'"},
+    {"category": "irreversible_mistake", "confidence": "med",
+     "evidence": "'Game over again', with the board returned to its initial configuration."},
+    {"category": "progress_signal_misinterpretation", "confidence": "med",
+     "evidence": "Cannot tell termination from reset: 'Game over again, but image shows initial state - appears reset!'"},
+    {"category": "exploration_or_probe_selection", "confidence": "med",
+     "evidence": "229 actions at 7.90x baseline over 73 analysis turns."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated at 7920 s."}
+  ],
+  "rater_notes": "AGREES with v3's cn04 on primary, though this run got materially further — v3 never proposed an interlock hypothesis at all."
+}
+}

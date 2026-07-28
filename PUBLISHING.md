@@ -55,6 +55,8 @@ following would leak it:
 | `logs/` | **check first** — run artifacts embed reference prompts and model output |
 | `logs/s1d_corpus_refv2.json` | **NEVER** — 1,494 verbatim reference reasoning excerpts. **Tracked**, so it ships with the repo unless excluded deliberately |
 | `logs/s1d_corpus_pooled.json` | **NEVER** — 4,185 excerpts across v2/v3/v4, the largest single concentration of reference output in the repository |
+| `logs/s1d_labels_v3v4_pass1/*.json` | **NEVER** — 177 labels whose `evidence` field quotes the reference's reasoning verbatim. Tracked (they are the only record of 50 first-pass labels) but never published |
+| `logs/s1d_labels_v2_pass1.json` | **NEVER** — same, for v2's 25 |
 
 `agent/patches/` and `logs/` are the easy mistakes: both look like our own work and both contain
 reference-derived material.

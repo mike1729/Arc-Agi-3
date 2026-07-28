@@ -1,0 +1,125 @@
+{
+"kaggle_v4::ft09-0d8bbf25_p0::L2": {
+  "primary_label": "exploration_or_probe_selection",
+  "labels": [
+    {"category": "exploration_or_probe_selection", "confidence": "high",
+     "evidence": "Found the mechanic early ('clicking on blue cells inside the bordered grid changes them to red') and then exhaustively enumerated a 16-state space by trial: 'I've now tried 14 out of 16 states', with a hand-maintained list of tried/untried combinations, rather than deducing the target from the three reference grids on screen."},
+    {"category": "goal_unknown", "confidence": "med",
+     "evidence": "Knows the win condition is a pattern match but not WHICH pattern: 'The goal is probably to make the pattern inside the bordered grid match one of the other three grids.'"},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated; 35 actions at 2.92x baseline over 42 analysis turns."}
+  ],
+  "rater_notes": null
+},
+"kaggle_v4::g50t-5849a774_p0::L1": {
+  "primary_label": "hidden_state_aliasing_or_memory",
+  "labels": [
+    {"category": "hidden_state_aliasing_or_memory", "confidence": "med",
+     "evidence": "Detects a hidden reconfiguration it cannot model: hashing the maze at each chamber gives eight distinct values ([8,14] cc5204b4..., [8,20] c6edccbb..., [8,26] 06fae216..., ...), and it concludes 'the maze hash is different at each chamber. This confirms that the maze configuration changes as the agent moves.' Visually similar chambers therefore have different connectivity."},
+    {"category": "exploration_or_probe_selection", "confidence": "med",
+     "evidence": "200 actions at 2.56x baseline mapping the maze by walking it."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated at 7920 s with a stable, correct goal held throughout."},
+    {"category": "action_semantics_unknown", "confidence": "low",
+     "evidence": "SPACE's role is probed but never resolved."}
+  ],
+  "rater_notes": "THIRD DISTINCT PRIMARY for g50t across three runs of one configuration — v2 latency_or_budget, v3 exploration_or_probe_selection, v4 hidden_state_aliasing_or_memory. The single strongest instability signal in the corpus, and it matters because g50t was v2's flagship counter-example to goal_unknown."
+},
+"kaggle_v4::ka59-38d34dbb_p0::L1": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "Tests its hypothesis and rejects it with nothing to replace it: 'No game over, no level completed. So having the left green square inside the left charcoal square with W center is not the goal.'"},
+    {"category": "action_semantics_unknown", "confidence": "med",
+     "evidence": "An unexplained side effect goes unmodelled: 'It seems like the centers were swapped when I moved the left green square LEFT.'"},
+    {"category": "exploration_or_probe_selection", "confidence": "med",
+     "evidence": "138 actions at 4.93x baseline over 85 analysis turns."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated at 7920 s."}
+  ],
+  "rater_notes": "Different LEVEL from v3's ka59 (L1 here, L2 there), so this is not a paired same-level comparison."
+},
+"kaggle_v4::lf52-271a04aa_p0::L2": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "Explicit exhaustion: 'I've been stuck on this level for a while. Let me take a step back and reconsider the game from scratch', then 'I'm running out of ideas.' No win condition is ever stated for level 2."},
+    {"category": "retrieval_or_context", "confidence": "med",
+     "evidence": "Repeatedly re-derives its own past from the transition log rather than from a maintained belief: 'let me re-examine the early history of level 2 more carefully', 'let me look at the history more carefully to understand what happened in level 1 and the transition to level 2.'"},
+    {"category": "exploration_or_probe_selection", "confidence": "med",
+     "evidence": "110 actions across 85 analysis turns with clicks that repeatedly change only the timer bar."},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated at 7920 s."}
+  ],
+  "rater_notes": "Different LEVEL from v3's lf52 (L2 here, L1 there)."
+},
+"kaggle_v4::lp85-305b61c3_p0::L2": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "Objective never established: 'Let me continue exploring to find the goal pattern', 'Maybe the goal isn't about shifting blocks at all', and terminally 'I should try to find the winning configuration.'"},
+    {"category": "progress_signal_misinterpretation", "confidence": "high",
+     "evidence": "Four consecutive steps spent unable to determine whether the episode had ended, on contradictory signals: \"The session message says 'The game is over' but valid actions still include MOUSE\", then 'state: GAME_OVER, game_over: True, executed: False', then finally 'the game wasn't actually over - it was in a temporary GAME_OVER state that cleared after taking another action.'"},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated; 141 actions at 3.71x baseline."}
+  ],
+  "rater_notes": "The strongest progress_signal_misinterpretation evidence anywhere in the corpus, but SECONDARY: the objective was already absent before the game-over confusion arose, so goal_unknown is causally earlier."
+},
+"kaggle_v4::ls20-9607627b_p0::L1": {
+  "primary_label": "action_semantics_unknown",
+  "labels": [
+    {"category": "action_semantics_unknown", "confidence": "high",
+     "evidence": "Operated most of the episode on a movement model it finally overturned: 'Blocks confirmed: Can only move UP/DOWN at cols 34-38, LEFT/RIGHT at rows 45-49', then at the terminal step 'BIG DISCOVERY! Pressing RIGHT at rows 30-34 moved the blocks from cols 34-38 to cols 39-43! So RIGHT works at non-bottom positions!' The wrong model had led it to conclude 'All 9 positions tried: None completed level.'"},
+    {"category": "progress_signal_misinterpretation", "confidence": "med",
+     "evidence": "A false positive from the change flag cost several steps: 'the LEFT action didn't cause any gameplay change. The board_changed=True was just because the HUD bar changed.'"},
+    {"category": "goal_unknown", "confidence": "med",
+     "evidence": "Goal stays conjectural: 'Possibly align blocks with white cross or blue pattern at a specific grid position.'"},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated; 76 actions at 3.45x baseline."}
+  ],
+  "rater_notes": "DIVERGES from v3's ls20 (goal_unknown primary). Both runs transposed player and target; only this one recovered a corrected action model, and only in its final step."
+},
+"kaggle_v4::m0r0-492f87ba_p0::L1": {
+  "primary_label": "goal_unknown",
+  "labels": [
+    {"category": "goal_unknown", "confidence": "high",
+     "evidence": "Reaches a correct and non-obvious mechanic — 'KEY INSIGHT - squares move together! LEFT moves them apart, RIGHT moves them together' — and can only propose brute force: 'Let me systematically try all combinations of positions with SPACE.'"},
+    {"category": "exploration_or_probe_selection", "confidence": "high",
+     "evidence": "219 actions at 7.30x baseline enumerating reachable positions, with top_action_share 0.489."},
+    {"category": "action_semantics_unknown", "confidence": "med",
+     "evidence": "Movement limits behave inconsistently: 'the right square went to col 49? That's beyond the previous maximum of col 44', and 'the right square didn't move when I pressed RIGHT. This is strange.'"},
+    {"category": "latency_or_budget", "confidence": "med", "evidence": "Budget-terminated at 7920 s."}
+  ],
+  "rater_notes": "Different LEVEL from v3's m0r0 (L1 here, L2 there), but the same primary and the same signature — precise mechanics, absent objective."
+},
+"kaggle_v4::r11l-495a7899_p0::L2": {
+  "primary_label": "latency_or_budget",
+  "labels": [
+    {"category": "latency_or_budget", "confidence": "med",
+     "evidence": "Coherent goal and a working mechanic at termination: 'Clicking purple nodes moves white cross to that position and shifts orange square', with a concrete next move — 'Continue clicking purple nodes to move white cross around diamond. Try (15,58) next.' 38 actions at 1.15x baseline over 38 analysis turns."},
+    {"category": "action_semantics_unknown", "confidence": "med",
+     "evidence": "The click rule has unexplained gaps: 'Clicking (19, 57) had no effect. The state is the same as before', and an earlier chain hypothesis had to be abandoned."},
+    {"category": "goal_unknown", "confidence": "low",
+     "evidence": "The convergence target ('bring them all to the diamond') is inferred from the objects' motion rather than confirmed."}
+  ],
+  "rater_notes": "DIVERGES from v3's r11l (action_semantics_unknown primary), where the click rule broke down entirely. Here it held."
+},
+"kaggle_v4::re86-8af5384d_p0::L3": {
+  "primary_label": "action_semantics_unknown",
+  "labels": [
+    {"category": "action_semantics_unknown", "confidence": "high",
+     "evidence": "Cannot position reliably because the movement quantum is non-integer and unmodelled: 'DOWN: 11 rows for 6 steps = 1.83 rows/step; RIGHT: 6 cols for 4 steps = 1.5 cols/step', leaving it unable to place targets on the X's arms ('none of the targets are on the arms yet')."},
+    {"category": "latency_or_budget", "confidence": "high",
+     "evidence": "33 actions against an 86-action baseline (0.38x) across only 12 analysis turns — budget-terminated with most of the action budget unspent."},
+    {"category": "reasoning_inconsistency", "confidence": "low",
+     "evidence": "Acted for several steps on a reading of its own data that it later retracted: 'The earlier observation that shapes reset was incorrect - I must have misread the data.'"},
+    {"category": "goal_unknown", "confidence": "med",
+     "evidence": "The collection rule (targets on the arms vs at the destination) is still contested at termination."}
+  ],
+  "rater_notes": "DIVERGES from v3's re86 (goal_unknown primary). First and only instance of reasoning_inconsistency evidence in the corpus, recorded at low confidence because the retraction was a correct self-correction rather than an unresolved contradiction."
+},
+"kaggle_v4::s5i5-18d95033_p0::L2": {
+  "primary_label": "latency_or_budget",
+  "labels": [
+    {"category": "latency_or_budget", "confidence": "high",
+     "evidence": "Goal is explicit and the trajectory is monotonic at termination: red dot driven from (55,31) to (46,34) toward a cross at (31,52), with 'Path to right is clear! Let me try orange right to move it right toward col 52.' 128 actions at 1.44x baseline, budget-terminated mid-approach."},
+    {"category": "action_semantics_unknown", "confidence": "med",
+     "evidence": "Growth quanta and travel limits are only partly characterised: 'the growth is not exactly 9px each time', 'sky blue right moves the red dot UP by 3 each time, but stopped after 3 clicks', and the red dot repeatedly 'disappeared' without explanation."}
+  ],
+  "rater_notes": "DIVERGES sharply from v3's s5i5, which spent the same budget on 13 actions and never left the hypothesis stage. Same game, same configuration, and this run was executing a correct plan when time ran out."
+}
+}

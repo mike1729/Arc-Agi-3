@@ -245,12 +245,26 @@ CLAUDE.md
 # Losing them means re-deriving them, and a missing one fails silently rather than loudly.
 #
 # The three lines below are order-dependent and must stay together. Git does not descend into
-# an ignored DIRECTORY, so `!/logs/*/run_config.json` alone matches nothing: `/logs/*` has
+# an ignored DIRECTORY, so `!/logs/*/run_config.json
+
+# EXCEPTION 3: the v3/v4 first-pass label batches. They live in a subdirectory, so EXCEPTION 1's
+# `!/logs/*.json` never reached them and `/logs/*/*` excluded them — leaving 50 of the pooled corpus's
+# 75 first-pass labels in no commit, and the corpus unreproducible from tracked inputs. 58 KB total.
+# They quote the reference model's reasoning in each label's `evidence` field, so they are TRACKED but
+# NEVER PUBLISHED — same bucket as the corpus JSONs. See PUBLISHING.md and logs/README.md.
+!/logs/s1d_labels_v3v4_pass1/*.json` alone matches nothing: `/logs/*` has
 # already excluded `logs/kaggle_v3/` itself. Un-ignore the directories, re-ignore their
 # contents, then re-admit the one file.
 !/logs/*/
 /logs/*/*
 !/logs/*/run_config.json
+
+# EXCEPTION 3: the v3/v4 first-pass label batches. They live in a subdirectory, so EXCEPTION 1's
+# `!/logs/*.json` never reached them and `/logs/*/*` excluded them — leaving 50 of the pooled corpus's
+# 75 first-pass labels in no commit, and the corpus unreproducible from tracked inputs. 58 KB total.
+# They quote the reference model's reasoning in each label's `evidence` field, so they are TRACKED but
+# NEVER PUBLISHED — same bucket as the corpus JSONs. See PUBLISHING.md and logs/README.md.
+!/logs/s1d_labels_v3v4_pass1/*.json
 
 # S1-b: throwaway working copy of the vendored reference. Rebuilt by
 # agent/harness/build_local.sh from agent/reference/ + agent/patches/. Never edit it directly.
