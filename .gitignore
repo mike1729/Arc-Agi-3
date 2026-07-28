@@ -247,6 +247,21 @@ CLAUDE.md
 !/logs/s2_rerate_worksheet*.ratings-template.json
 !/logs/README.md
 
+# SAME RULE, S1-d re-rate. Each of these is ~5 MB of the REFERENCE MODEL'S REASONING for 30 episodes
+# — the identical material `s1d_corpus_pooled.json` already carries, copied twice more. Neither holds
+# anything that cannot be recomputed: the draw is deterministic in (corpus, n, seed), and the second
+# pass is that draw plus its labels. The LABELS are the only new information and they ARE tracked, in
+# `s1d_labels_rerate_pass2.json` (52 KB) — same bucket as `s1d_labels_v3v4_pass1/`.
+#
+# Rebuild them with `agent/harness/s1d_rerate_rebuild.py`, and `--verify` checks the rebuilt bytes
+# against the SHA-256s `s1d_rerate_result.json` committed to — so the promoted gate stays verifiable
+# from a clean clone WITHOUT these two files in the history. The `.manifest.json` sidecar is small and
+# load-bearing (it is the authoritative sample commitment, and it records the exact `source` string the
+# draw was invoked with), so it stays tracked.
+/logs/s1d_rerate_draw.json
+/logs/s1d_rerate_pass2.json
+!/logs/s1d_rerate_draw.manifest.json
+
 # EXCEPTION 2: the RECONSTRUCTED run_config.json in each Kaggle run directory. Kaggle's
 # kernel output does not include one, so these are derived by hand from each run's own log
 # and taaf_setup_env.json. They are small, and they are load-bearing twice over:
@@ -258,14 +273,7 @@ CLAUDE.md
 # Losing them means re-deriving them, and a missing one fails silently rather than loudly.
 #
 # The three lines below are order-dependent and must stay together. Git does not descend into
-# an ignored DIRECTORY, so `!/logs/*/run_config.json
-
-# EXCEPTION 3: the v3/v4 first-pass label batches. They live in a subdirectory, so EXCEPTION 1's
-# `!/logs/*.json` never reached them and `/logs/*/*` excluded them — leaving 50 of the pooled corpus's
-# 75 first-pass labels in no commit, and the corpus unreproducible from tracked inputs. 58 KB total.
-# They quote the reference model's reasoning in each label's `evidence` field, so they are TRACKED but
-# NEVER PUBLISHED — same bucket as the corpus JSONs. See PUBLISHING.md and logs/README.md.
-!/logs/s1d_labels_v3v4_pass1/*.json` alone matches nothing: `/logs/*` has
+# an ignored DIRECTORY, so `!/logs/*/run_config.json` alone matches nothing: `/logs/*` has
 # already excluded `logs/kaggle_v3/` itself. Un-ignore the directories, re-ignore their
 # contents, then re-admit the one file.
 !/logs/*/

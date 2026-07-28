@@ -3,38 +3,8 @@
   "gate_invalid_reasons": null,
   "result_schema_version": 3,
   "result_kind": "score",
-  "superseded": {
-    "sha256": "88ef3bc870eb44d8fd19dfb9fe5e14375e0390762cdef34d83f7d1418a4ca927",
-    "result_kind": "invalidation",
-    "gate_valid": false,
-    "promoted_from": null,
-    "categories_driving_build_order": null,
-    "n_episodes": null,
-    "inputs": null,
-    "invalidated_at": "2026-07-28T21:19:48+02:00"
-  },
-  "invalidation_chain": [
-    {
-      "sha256": "88ef3bc870eb44d8fd19dfb9fe5e14375e0390762cdef34d83f7d1418a4ca927",
-      "result_kind": "invalidation",
-      "gate_valid": false,
-      "promoted_from": null,
-      "categories_driving_build_order": null,
-      "n_episodes": null,
-      "inputs": null,
-      "invalidated_at": "2026-07-28T21:19:48+02:00"
-    },
-    {
-      "sha256": "3b775845bbd5bb46b599abea2c3bf3ecff265989b9b74eb781cfa218b8ebed04",
-      "result_kind": "invalidation",
-      "gate_valid": false,
-      "promoted_from": null,
-      "categories_driving_build_order": null,
-      "n_episodes": null,
-      "inputs": null,
-      "invalidated_at": "2026-07-28T16:21:32+02:00"
-    }
-  ],
+  "superseded": null,
+  "invalidation_chain": [],
   "scored": "s1d_blind_rerate.py score",
   "inputs": {
     "first_pass": {
@@ -154,7 +124,5 @@
     101,
     102
   ],
-  "interpretation_limit": "bounds label STABILITY, not correctness. An LLM re-rating an LLM may share systematic blind spots (S1-E10); no human-rated sample bounds that.",
-  "promoted_from": "logs/s1d_rerate_run1.json",
-  "promotion_note": "recomputed from the inputs named by promoted_from; the submitted payload's own verdict was not trusted"
+  "interpretation_limit": "bounds label STABILITY, not correctness. An LLM re-rating an LLM may share systematic blind spots (S1-E10); no human-rated sample bounds that."
 }

@@ -27,21 +27,26 @@ their index and their interpretation.
 | Sprint | Days | State | Decides (binding) | Evidence |
 |---|---:|---|---|---|
 | **S0** starter submission | 0.5 / 0.5 | ✅ **complete** — public score 0.06 | execution path only | [`ledger`](../submissions/ledger.md) |
-| **S1** baseline reproduction | 6 / **2** | ⚠️ **measurement done, DEGRADED payload, gate reopened** | SPEC §4.1 reset posture · D0 latency inputs · SPEC §2 per-action budget | §6, [`s1-closeout`](../notes/s1-closeout.md) |
+| **S1** baseline reproduction | 6 / **2** | ✅ **complete 2026-07-28 — DEGRADED payload, no hidden score** · gate applied (κ 0.7207, 30/30, floor 0.40); build order filled | SPEC §4.1 reset posture · D0 latency inputs · SPEC §2 per-action budget | §6, [`s1-closeout`](../notes/s1-closeout.md) |
 | **S2** F1 + F3 generators | 3.5 / — | ▶️ **next** | decides no component, but **builds SPEC §4.9** — Tier 1 substrate — and carries its own gate, SPEC §12.1 **step 0** (schedule day A5-G). Passing it releases D0 and all procedural-dependent build work; failing it leaves W1's non-dependent substrate free to continue | §7 |
 | **S3** objective screening | 5 / — | not started | **R0 / SPEC §11** — the predictive objective | §8 |
 | **S4** ARC advisor test | 2.5 / — | not started | **SPEC §11.2 rung gates** — is Tier 3 retained at all | §9 |
 | **S5** decision audit | 1 / — | not started | **SPEC §12.2 slack policy** — build / defer / drop | §10 |
 | *(G0-R, G0-A)* | — | spec-side, W7 | **SPEC §9 gate G0** | SPEC §9 |
 
-**Three things are open right now and block their own sprints:**
+**Two things are open right now and block their own sprints:**
 
-1. **S1's blind re-rate has not run.** `agreement_floor: 0.40` has been applied to nothing, and three
-   manifest roll-up fields are still null. S1 is *reopened*, not complete — §6.
-2. **`gate_manifest.yaml → s2` is `NOT_STARTED`** while S2 begins. Pre-registration must precede the
-   step it governs — §11.
-3. **Two pre-registrations coexist** — the manifest and SPEC §13 both predeclare numbers. Open item 1
+1. **`gate_manifest.yaml → s2` is `NOT_STARTED`** while S2 begins. Pre-registration must precede the
+   step it governs — §11. This was listed alongside S1's open gate; it is now an **S2 governance
+   blocker on its own**, and nothing in S1 waits on it.
+2. **Two pre-registrations coexist** — the manifest and SPEC §13 both predeclare numbers. Open item 1
    in [`README.md`](README.md).
+
+**Closed 2026-07-28 — S1's blind re-rate.** `agreement_floor: 0.40` has now been applied: 30 of the 75
+labelled episodes, drawn stratified, re-rated in a fresh `claude-opus-5` context, overall κ **0.7207**.
+`logs/s1d_rerate_result.json` is a promoted `gate_valid: true` result and the four manifest roll-up
+fields are filled from it. **S1 closes on the DEGRADED branch: `hidden_score` is null and stays null** —
+no submission has ever carried an entrant-authored payload — §6.
 
 ---
 
@@ -206,7 +211,7 @@ result. It measures Kaggle's Random Agent, not anything of ours.
 
 ---
 
-## 6. S1 — Baseline reproduction · **REOPENED**
+## 6. S1 — Baseline reproduction · **COMPLETE (DEGRADED branch)**
 
 **6 days budgeted, 2 spent.** Reproduce one strong public local-model agent; accept its harness rather
 than build one — that is where the saving came from.
@@ -223,18 +228,68 @@ than build one — that is where the saving came from.
 | Reset and action accounting | `accumulates`, `r` = 2.0357, `c_reset` = 1 |
 | Packaging | **SCOPE CHANGED** — the reproduction is not a candidate payload |
 
-**S1 closes when three things happen**, not before — a stage cannot close on a pre-registered gate it
-never ran:
+**S1 closed on 2026-07-28.** The three conditions it was reopened for are all discharged:
 
-1. the corpus is rebuilt from the three single-pass runs *(done — 75 episodes, all labelled)*;
+1. the corpus is rebuilt from the three single-pass runs — **75 episodes, all labelled**;
 2. the re-rate is drawn and scored as an **independent re-rate, same model** (S1-E10 — not delayed
-   test-retest; an LLM rater has no memory to decay), **including re-rating v2 on the scripted
-   worksheet**, since those labels came from a different, unreproducible evidence slice;
-3. categories below `agreement_floor: 0.40` are excluded and the manifest's three null roll-up fields
+   test-retest; an LLM rater has no memory to decay), on the scripted worksheet for all 30 sampled
+   episodes including the v2 ones;
+3. categories below `agreement_floor: 0.40` are excluded and the manifest's four null roll-up fields
    are filled from what survives.
 
-The measurement work of S1 is done and is not repeated by this. What reopens is **the gate**, and the
-cost falls on the float §2 banks — which is what the float is for.
+### 6.1 The blind re-rate — result
+
+30 of the 75 labelled episodes, stratified on first-pass `primary_label`, oversampling `goal_unknown`
+and `exploration_or_probe_selection` (S1-E3/E4 eligibility: **1 of its 4 first-pass episodes eligible**,
+6 of 25 games qualify). Re-rated by `claude-opus-5` in a fresh context with no access to the first pass.
+**Overall κ 0.7207** on primary label, 25 of 30 exact matches. Cooling period **INAPPLICABLE**, not
+satisfied — S1-E10.
+
+| Category | κ primary | κ any-label | Drives build order |
+|---|---:|---:|---|
+| `goal_unknown` | 0.7945 | 0.5161 | ✅ |
+| `action_semantics_unknown` | 0.6296 | 0.5714 | ✅ |
+| `exploration_or_probe_selection` | 0.6512 | 0.4690 | ✅ |
+| `progress_signal_misinterpretation` | 1.0 | 0.5833 | ✅ |
+| `latency_or_budget` | 0.7826 | **0.011** | ❌ fails any-label |
+| `irreversible_mistake` | **0.0** | 0.5946 | ❌ fails primary |
+| `retrieval_or_context` | — | **0.2941** | ❌ |
+| `perception_parsing` | — | **0.1045** | ❌ |
+| `hidden_state_aliasing_or_memory` | — | **0.0** | ❌ |
+| `invalid_output_interface` | — | **0.0** | ❌ |
+| `reasoning_inconsistency` | *(never drawn)* | *(never drawn)* | ❌ — untested, not failed |
+
+**`latency_or_budget` is the instructive exclusion.** Its primary κ is high (0.7826) and its any-label
+κ is ~0 — because **all 75 episodes were budget-terminated**, so the label applies vacuously everywhere
+and the two passes differ mainly on whether termination *caused* the failure or merely ended it. In the
+sample the first pass attached it to **27 of 30** episodes and the re-rate to **11**, overlapping on 10;
+the re-rate applied the definition's "rather than because of a decision error" clause and the first pass
+largely did not. It carries the second-highest `episode_share` in the corpus (0.8267) and would have
+ranked high on frequency alone. The two-axis rule is what caught it: a category that is always
+technically present discriminates nothing, and building for it first would have been building for the
+budget rather than for a decision failure.
+
+### 6.2 Limitations of the gate, recorded rather than argued away
+
+- **It bounds label STABILITY, not correctness.** An LLM re-rating an LLM may share systematic blind
+  spots (S1-E10); no human-rated sample bounds that.
+- **The evidence slice is an opening-and-closing one** — first analysis step plus the last two, at
+  fixed caps. `hidden_state_aliasing_or_memory` is under-counted **by construction**, because the
+  repeated states it is defined on sit in the elided middle. It is also one of the excluded categories,
+  so nothing here rehabilitates it.
+- **The two passes rated matched evidence for 22 of 30 episodes, not all 30.** The v2 first pass
+  predates `s1d_worksheet.py` and used an unreproducible ad-hoc slice; the re-rate used the scripted
+  worksheet throughout. Diagnostic split: **v2 subset 8/8 exact, κ 1.0** · **v3+v4 subset 17/22, κ
+  0.6194**. The mismatch therefore did **not** inflate agreement — the matched-evidence subset is the
+  *more conservative* number, and 0.7207 is if anything flattered by the 8 unmatched episodes. At n=8
+  this is a diagnostic, not a finding.
+- **Four categories drive the build order; seven do not.** Six were measured and excluded, one was
+  never drawn. That is a real narrowing of what S1 can order, and it is the point of having run
+  the gate.
+
+Artifacts: [`logs/s1d_rerate_result.json`](../logs/s1d_rerate_result.json) (promoted, `gate_valid:
+true`) · `logs/s1d_rerate_draw.json` + its `.manifest.json` commitment · `logs/s1d_rerate_pass2.json` ·
+roll-ups generated by `agent/harness/s1d_rollup.py`, which `--verify` re-checks against the artifacts.
 
 ---
 

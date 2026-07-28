@@ -44,6 +44,8 @@ by counting `evidence.reasoning_by_step` excerpts in every `logs/*.json` that is
 | `s1d_corpus_refv2.json` | 1,494 | **tracked in git**, so it ships by default unless excluded deliberately |
 | `s1d_labels_v3v4_pass1/*.json` | 177 | label `evidence` quotes the reference's reasoning; tracked as the only record of 50 first-pass labels |
 | `s1d_labels_v2_pass1.json` | 25 | same, for v2 |
+| `s1d_labels_rerate_pass2.json` | 30 | same, for the blind re-rate's second pass. **Tracked** — the only record of those 30 ratings, and the gate result cannot be re-verified without them |
+| `s1d_rerate_draw.json`, `s1d_rerate_pass2.json` | 30 each | **NOT tracked** (`.gitignore`) — ~5 MB apiece of full evidence packets, the same material `s1d_corpus_pooled.json` already holds. Rebuilt by `agent/harness/s1d_rerate_rebuild.py`; `--verify` checks the rebuild against the SHA-256s the promoted gate recorded |
 | `s1d_corpus.json` | 520 | `evidence` holds the reference's reasoning text and tool code per episode |
 | `s1d_corpus_phase1.json` | 144 | same |
 | `s1d_episodes_kaggle_reference.json` | — | same |

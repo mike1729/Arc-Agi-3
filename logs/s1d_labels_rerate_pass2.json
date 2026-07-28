@@ -1,0 +1,710 @@
+{
+  "what": "S1-d blind re-rate \u2014 SECOND PASS LABELS ONLY, without the evidence packets.",
+  "why_this_file_exists": "logs/s1d_rerate_pass2.json is ~5 MB because it carries the full evidence packet for every episode \u2014 the reference model's reasoning, verbatim, which the tracked corpus already holds. These labels are the only information in it that cannot be recomputed, so they are tracked here and the packets are rebuilt by agent/harness/s1d_rerate_rebuild.py.",
+  "rebuild": ".venv/bin/python agent/harness/s1d_rerate_rebuild.py [--verify]",
+  "draw_parameters": {
+    "requested": 30,
+    "seed": 20260726,
+    "corpus": "logs/s1d_corpus_pooled.json",
+    "corpus_digest": "3e0abbc631bf93c8"
+  },
+  "rerate_provenance": {
+    "rater": "claude-opus-5",
+    "context": "fresh session, no access to the first pass (independent re-rate, S1-E10)",
+    "date": "2026-07-28",
+    "worksheet": "first1+last2, r1000/c700/t350 \u2014 s1d_worksheet.py over the blinded draw, the same fixed slice the v3/v4 first pass rated from",
+    "instrument": "agent/harness/s1d_worksheet.py (unmodified constants)"
+  },
+  "ratings": {
+    "kaggle_v3::cn04-2fe56bfb_p0::L1": {
+      "primary_label": "action_semantics_unknown",
+      "labels": [
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "high",
+          "evidence": "Step 59: 'Wait, the static red blocks moved UP by 15 rows? That's strange. They should be static' and 'the player moved UP by 5 rows. So the static red blocks moved UP by 15 rows, which is 3 times the player's movement.' Predicted delta (static) vs observed (15 rows) for a movement action used across 381 actions."
+        },
+        {
+          "category": "perception_parsing",
+          "confidence": "med",
+          "evidence": "Within step 59 the state description flips three times on the same feature: 'The static red blocks are gone! ... they're not visible' \u2192 'the static red blocks are now to the left of the white frame' \u2192 'Actually, the static red blocks didn't move' \u2192 segmentation shows they moved 15 rows. The blocks' position is causally relevant to the move it then chooses."
+        },
+        {
+          "category": "goal_unknown",
+          "confidence": "med",
+          "evidence": "381 actions against a 29-action human baseline (13.14x) with no restated objective in the terminal steps; step 60's only plan is 'Try pressing SPACE to restart.'"
+        },
+        {
+          "category": "irreversible_mistake",
+          "confidence": "med",
+          "evidence": "Step 60: 'The game is over! ... the result says game_over: true but level_completed: false. So this is a failure state, not a success state' \u2014 the transition ends the level and the agent's terminal action is a restart attempt."
+        }
+      ],
+      "rater_notes": "Independent attempt at the same game as kaggle_v2::cn04; this slice fails on mechanics rather than on an unstated goal, so it is labelled differently from that episode."
+    },
+    "kaggle_v2::s5i5-18d95033_p0::L1": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Step 41: 'I've been stuck on this level for a long time' followed by three objective guesses as questions \u2014 'What if the goal is to click on the red crosses in a specific order...? Or ... multiple times? Or ... when the shapes are in a specific state?'. Step 40 had already eliminated its previous hypothesis: 'So having both shapes shrunk is not the goal.'"
+        },
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "med",
+          "evidence": "Step 41: 'No change to the shapes when clicking on [10, 52]. So clicking on the red cross doesn't change the shapes' \u2014 and the terminal action repeats the same probe class on the mirrored cross, action([{'action': 'MOUSE', 'row': 52, 'col': 10}]). 28 distinct actions over only 48 actions, top_action_share 0.125."
+        }
+      ],
+      "rater_notes": "Container/shape-matching game. The agent uses level_completed correctly as a test signal, so no progress-signal label; the failure is that it has no model of what the crosses are for."
+    },
+    "kaggle_v3::m0r0-492f87ba_p0::L2": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Step 52: 'Let me reconsider the game. I've been exploring the eye movement mechanics, but I haven't found the goal yet.' Explicit, at the terminal step, after 40 analysis turns."
+        },
+        {
+          "category": "latency_or_budget",
+          "confidence": "high",
+          "evidence": "45 actions against a 111-action human baseline (0.41x) with budget_terminated True \u2014 the episode consumed under half the human action allowance and ended on the analysis budget, at the moment the agent issued its first MOUSE probe."
+        },
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "med",
+          "evidence": "Step 52's findings are six restatements of movement limits ('Eyes can move UP/DOWN between rows 10-13 and 14-17 ... Eyes can go as far apart as cols 6-9 and 54-57 ... SPACE doesn't seem to do anything'), while the unexplained checkered strip goes unprobed until the terminal action, action([{'action': 'MOUSE', 'row': 32, 'col': 28}]) \u2014 a higher-yield legal action available throughout."
+        }
+      ],
+      "rater_notes": "Both high labels tie, so the fixed order selects goal_unknown; the low action count also argues the agent was comprehension-starved rather than action-starved."
+    },
+    "kaggle_v4::tr87-cd924810_p0::L1": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Step 16 content: 'Blue source grids are [6, 8, 0, 2, 4], so pink targets should be [7, 9, 1, 3, 5]' followed immediately by 'P1 appears fixed at G11, which contradicts target G9' \u2014 the inferred win condition is self-contradictory at termination, after 157 actions vs a 54-action baseline."
+        },
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "high",
+          "evidence": "Step 16: 'P4's cycle: The symbols change completely! It's not just rotating the same symbol - it's cycling through different grid symbols' while 'P1's cycle: All 10 steps show Grid 11, rot 1. This means P1 is FIXED' \u2014 UP/DOWN was modelled as rotation and observed as symbol substitution, with different behaviour per position."
+        },
+        {
+          "category": "perception_parsing",
+          "confidence": "med",
+          "evidence": "Step 15: 'P3 doesn't match any grid symbol with rotations or flips! ... This is a unique pattern not found in the grid', and step 16 flags the reader itself: 'b) My identify_pattern function is wrong and always returns (11, 1) for P1.' The symbol identities are exactly what the matching plan is built on; one position is carried as -1 in 'Pink IDs: [5, 11, 1, -1, 7]'."
+        },
+        {
+          "category": "retrieval_or_context",
+          "confidence": "low",
+          "evidence": "Step 1: 'The output was truncated. Let me get a more focused summary of the board structure' and 'The _center key was added in a previous Python call but isn't persisted' \u2014 board analysis lost to truncation and non-persistent context, re-derived rather than retrieved."
+        }
+      ],
+      "rater_notes": "Symbol-matching game with the highest repetition in the corpus (top_action_share 0.694, 5 distinct actions). A reset mid-episode also re-randomised the puzzle ('the game doesn't reset to the exact same initial state'), invalidating the earlier symbol table."
+    },
+    "kaggle_v2::lf52-271a04aa_p0::L2": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Step 22 states a confirmed win condition ('Level completes when all crosses activated'); by step 43 the agent is asking 'Let me think about what the goal could be: 1. Navigate the player to a specific position 2. Collect crosses by moving adjacent to them 3. Reach an exit position' \u2014 three competing objectives, none validated, at 321 actions vs a baseline of 81."
+        },
+        {
+          "category": "progress_signal_misinterpretation",
+          "confidence": "med",
+          "evidence": "Terminal step 44: 'The game is over! ... Wait, the game is over but we're still on level 2. Let me check if this is a game over (failure) or level completed (success).' The agent cannot classify the terminal marker and its recorded belief remains undetermined."
+        },
+        {
+          "category": "irreversible_mistake",
+          "confidence": "med",
+          "evidence": "Step 44: 'The game is over! The player moved DOWN 8 times and now the game ended.' The episode terminates on that transition with no level advance."
+        },
+        {
+          "category": "retrieval_or_context",
+          "confidence": "low",
+          "evidence": "The step-22 record \u2014 'Pattern confirmed: click first cross \u2192 click g marks \u2192 cross activated (removed) ... Need to repeat pattern 3 more times' \u2014 is nowhere referenced at step 43, where the agent restarts objective search from scratch."
+        }
+      ],
+      "rater_notes": "Genuine ambiguity: the 20 elided steps may have completed the cross phase and opened a legitimately new navigation sub-puzzle, in which case the retrieval label is wrong and the goal shift is real. Kept retrieval at low for that reason."
+    },
+    "kaggle_v4::ka59-38d34dbb_p0::L1": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Step 73: 'No game over, no level completed. So having the left green square inside the left charcoal square with W center is not the goal', followed by the observation that 'The current state is similar to the initial state' \u2014 138 actions (4.93x the 28-action baseline) returning to the start configuration with no win condition found."
+        },
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "med",
+          "evidence": "Step 72: 'It seems like the centers were swapped when I moved the left green square LEFT' \u2014 a directional move produced an unpredicted colour swap across both squares' centres, after LEFT had been used many times."
+        },
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "med",
+          "evidence": "Terminal tool_code is a blind ten-step batch, action(['RIGHT'] x10), to 'see if it can pass through the purple doorway', issued after 85 analysis turns and 138 actions with only 13 distinct actions."
+        }
+      ],
+      "rater_notes": "Two green squares and two charcoal targets; the agent seats one correctly, gets no signal, and cannot tell which of several placements the level actually wants."
+    },
+    "kaggle_v3::lp85-305b61c3_p0::L2": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Step 10: 'Maybe the goal is to click the player/target a specific number of times'; terminal content at step 34: 'Let me try clicking the yellow blocks themselves to see if that increases the score.' After 159 actions (4.18x the 38-action baseline) the win condition is still a guess."
+        },
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "high",
+          "evidence": "Step 33: 'Clicking R1 (top row) is moving the yellow blocks vertically. This is different from what I expected.' Step 34: 'After clicking R2, the yellow block at (26, 35) moved to (26, 32) ... After clicking R3, the yellow blocks didn't change.' Three nominally identical controls with three different effects, none predicted."
+        },
+        {
+          "category": "perception_parsing",
+          "confidence": "med",
+          "evidence": "Step 10 collapses the controls into one object \u2014 'ONLY clicking the player (R) or target (N) causes any changes' \u2014 while step 34 enumerates three distinct ones: 'R blocks: (17, 20), (26, 14), (35, 14)'. The omitted distinction is what determines each click's effect."
+        },
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "med",
+          "evidence": "Step 10: 'Let me try clicking the player multiple times to see if it moves or if the level completes after a certain number of clicks' \u2014 a repeat-until-something-happens probe; top_action_share 0.588 over 159 actions."
+        }
+      ],
+      "rater_notes": "Row-shifting puzzle. The agent spends the episode discovering that its single 'player' abstraction is actually three separate shift controls."
+    },
+    "kaggle_v2::cd82-fb555c5d_p0::L1": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Terminal step 92 discards its own objective with no replacement: 'I've been assuming the goal is to match the reference panel (white-above-purple), but maybe I'm wrong' and 'What if the reference panel is not the target state, but rather shows the two AVAILABLE colors?' \u2014 106 analysis turns, 116 actions, no win condition established."
+        },
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "med",
+          "evidence": "Step 91: board_changed=true after UP, but 'UP just affected the bottom bar (timer/progress bar), not the gameplay blocks'; step 92's replay shows 'The second SPACE did nothing (no change). Then DOWN did nothing. Then clicking the middle block did nothing.' Predicted block-level effects vs observed HUD-only deltas for actions used many times earlier."
+        },
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "med",
+          "evidence": "Step 92: 'Clicking the bottom block didn't change anything (colors stayed the same). The bottom bar changed from 55 to 54 pixels (timer decrement).' The agent's own step-91 summary is 'I've been going in circles'; 20 distinct actions over 116 actions with top_action_share 0.284. Click game, so the higher-yield coordinate alternative is not enumerable."
+        }
+      ],
+      "rater_notes": "Two-block colour-ordering puzzle. The reference-panel reading anchors the whole episode and is never falsified or confirmed; everything downstream is probing under that wrong or unverified frame."
+    },
+    "kaggle_v2::sc25-635fd71a_p0::L1": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Step 60: 'Maybe the goal isn't about matching the purple dots with W tiles. Maybe the goal is something else entirely', after step 59's 'The W tiles are in the correct cross pattern matching the purple dots. But the level doesn't complete.' 287 actions against a 36-action human baseline (7.97x)."
+        },
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "med",
+          "evidence": "Step 60 lists four exhausted strategies ('1. Setting W tiles to match purple dot pattern ... 4. Clicking blue square and purple dot panel - doesn't complete') and the terminal tool_code launches another tile-cycling sweep, spending a resource the agent identified at step 59 as depleting: 'As I take actions, it shrinks. When it reaches zero, the game ends.'"
+        }
+      ],
+      "rater_notes": "The agent correctly reads the green bar as a consumable budget one step before termination but does not change probe policy in response."
+    },
+    "kaggle_v4::m0r0-492f87ba_p0::L1": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Step 36 records 'SPACE: no level completion' twice, and the terminal content is 'Let me systematically try all combinations of positions with SPACE' \u2014 the win condition is unknown and being enumerated over positions at 219 actions vs a 30-action baseline (7.30x)."
+        },
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "high",
+          "evidence": "Step 37: 'the right square went to col 49? That's beyond the previous maximum of col 44' and 'After RIGHT from (39, 9) and (34, 49): left went to (39, 14), right stayed at (34, 49). So the right square didn't move when I pressed RIGHT. This is strange.' The mirror-movement rule established at step 36 fails repeatedly at step 37."
+        },
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "med",
+          "evidence": "The terminal strategy is exhaustive position enumeration with a SPACE test at each ('Let me systematically try all combinations of positions with SPACE'), at 219 actions with top_action_share 0.489 and no new information per repetition."
+        }
+      ],
+      "rater_notes": "The linked-squares insight at step 36 is correct and useful; the episode fails because nothing tells the agent which linked configuration wins, so it converts the whole action budget into a position sweep."
+    },
+    "kaggle_v3::g50t-5849a774_p0::L1": {
+      "primary_label": "action_semantics_unknown",
+      "labels": [
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "high",
+          "evidence": "Step 32 predicts 'the player can move RIGHT from cols 14-18 to cols 20-24, which is the white corridor'; step 33 opens 'RIGHT from rows 32-36, cols 14-18 didn't move the player.' Predicted delta vs observed no-op for RIGHT, used throughout the 109-action episode."
+        },
+        {
+          "category": "perception_parsing",
+          "confidence": "med",
+          "evidence": "Step 32 reads the frame as 'Row 32: BBBBBBWWWWWWWWWWWWWWWWWWWBRBWW. The white corridor is at cols 20-37. The player is at cols 14-18. So the player is to the left of the white corridor' \u2014 a parsed connectivity between cols 18 and 20 that the next step's blocked RIGHT shows is not present."
+        },
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "med",
+          "evidence": "Step 33: 'the player is stuck in a loop: DOWN from rows 8-12, cols 14-18 to rows 32-36, cols 14-18, then SPACE back to rows 8-12, cols 14-18.' The terminal tool_code spends four more UP actions re-traversing that same loop; 5 distinct actions, top_action_share 0.495."
+        },
+        {
+          "category": "latency_or_budget",
+          "confidence": "med",
+          "evidence": "109 actions vs a 78-action human baseline (1.40x) with 45 analysis turns and budget_terminated True \u2014 the agent was not action-starved, and the run ended while a fresh route plan was still queued."
+        }
+      ],
+      "rater_notes": "Genuinely undecidable between perception_parsing and action_semantics_unknown for the blocked RIGHT: the slice cannot distinguish a misread corridor from a movement rule the agent has not learned. Primary given to action_semantics_unknown on confidence, but the misparse may be causally upstream."
+    },
+    "kaggle_v2::sk48-d8078629_p0::L1": {
+      "primary_label": "action_semantics_unknown",
+      "labels": [
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "high",
+          "evidence": "Step 30: 'After moving UP 2 times: - Red: rows 13-16 (was 19-22, moved UP 6 rows!) - Blue: rows 19-22 (was 31-34, moved UP 12 rows!) - Green: rows 37-40 (was 37-40, didn't move!) This is unexpected.' Step 29 shows the same mismatch for DOWN ('Wait, Red didn't move! ... But Blue and Green moved DOWN 6 rows each'). UP/DOWN had been used throughout the 230-action episode."
+        },
+        {
+          "category": "goal_unknown",
+          "confidence": "med",
+          "evidence": "Step 1 content states 'Goal model: Likely need to interact with colored blocks in the toolbar's order (red \u2192 green \u2192 blue)' \u2014 a guess that is never revisited or tested; steps 29 and 30 are entirely movement forensics, and 230 actions (3.77x baseline) produced no advance."
+        }
+      ],
+      "rater_notes": "Trail/block-pushing game. The terminal steps are dominated by an unmodelled coupling between agent movement and block displacement; the stated goal is plausible but untested, so it is held at med."
+    },
+    "kaggle_v2::cn04-2fe56bfb_p0::L1": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Steps 107 and 108 both end with 'I've been trying many orientations and positions without success. Let me think about what the goal might be.' \u2014 354 actions against a 29-action human baseline (12.21x) with the objective still an open question."
+        },
+        {
+          "category": "retrieval_or_context",
+          "confidence": "med",
+          "evidence": "Steps 107 and 108 are the same paragraph with the direction flipped ('U-shape (open at top) ... move the white shape UP' vs 'U-shape (open at bottom) ... move the white shape DOWN'); the record of which orientations and positions were already tried exists in its own log and is not retrieved, only re-asserted as 'many orientations and positions without success'."
+        },
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "med",
+          "evidence": "Terminal tool_code is a blind 10-action batch, action(['DOWN','DOWN','DOWN','DOWN','LEFT','LEFT','LEFT','LEFT','LEFT','LEFT']), pure repositioning after 108 turns of the same failing strategy; only 7 distinct actions across 354 actions."
+        }
+      ],
+      "rater_notes": "Independent attempt at the same game as kaggle_v3::cn04; rated on its own slice. The near-verbatim repetition across the last two steps is the strongest signal here."
+    },
+    "kaggle_v3::re86-8af5384d_p0::L3": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Step 38: 'I've been collecting orange squares one by one, but the score hasn't changed'; step 54: 'Maybe the goal is not to collect squares, but to positi[on]'. At termination the agent is still executing collection moves it doubts are the objective."
+        },
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "high",
+          "evidence": "Step 55: '[15, 51] and [33, 33] were NOT collected, even though they're on the diagonals from [24, 42] at distance 9. So the X does NOT collect squares on its diagonals.' The diagonal-collection rule had governed dozens of prior moves."
+        },
+        {
+          "category": "progress_signal_misinterpretation",
+          "confidence": "med",
+          "evidence": "Step 55: 'But wait, the score is still 2, not 3. So collecting squares doesn't increase the score?' \u2014 each collection had been treated as progress while the score marker never moved (step 38: 'the score hasn't changed')."
+        },
+        {
+          "category": "latency_or_budget",
+          "confidence": "high",
+          "evidence": "Step 55 opens 'I'm running low on time (172 seconds remaining), so I need to be efficient'; counters show 78 actions against an 86-action human baseline (0.91x) with budget_terminated True."
+        }
+      ],
+      "rater_notes": "Under-budget on actions and still exploratory on objective: the wall-clock ended it, but the agent had no candidate win condition to spend the remaining actions on."
+    },
+    "kaggle_v4::r11l-495a7899_p0::L2": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "med",
+          "evidence": "Step 46: 'Maybe the bottom chain is complete, and the top chain needs to be completed' and 'Maybe the chain is complete, but I need to click something else to advance' \u2014 the terminal objective is a guess, with no advance across 38 actions."
+        },
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "med",
+          "evidence": "Step 13 states the rule 'Clicking diamond shifts chain objects closer'; step 46 opens 'Clicking (19, 57) had no effect. The state is the same as before' \u2014 predicted shift vs observed no-op for a click type demonstrated at step 13."
+        },
+        {
+          "category": "latency_or_budget",
+          "confidence": "med",
+          "evidence": "38 actions against a 33-action human baseline (1.15x) over 38 analysis turns, budget_terminated True, while the agent was still making measured progress at step 47 ('White cross moved from (18, 57) to (17, 60) ... Orange square moved from (19, 33) to (18, 34)') with a concrete next click queued at (15,58)."
+        },
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "low",
+          "evidence": "Step 46: 'Let me try clicking the orange square at (19, 33) again to see if it responds differently now' \u2014 re-clicking an element already recorded as unresponsive; 20 distinct actions over 38 actions, top_action_share 0.205."
+        }
+      ],
+      "rater_notes": "All non-low labels tie at med, so the fixed order selects goal_unknown. This episode is close to being purely budget-terminated: the chain model was advancing objects at the terminal step."
+    },
+    "kaggle_v4::sp80-589a99af_p0::L2": {
+      "primary_label": "action_semantics_unknown",
+      "labels": [
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "high",
+          "evidence": "Step 61 plans 'Move LEFT 4 to cols 40-59'; step 62 observes 'After LEFT 4: - Player at rows 24-27 cols 28-47' \u2014 LEFT displaced the player 16 columns, not 4, after 261 actions of using it, and step 62 then repeats the same arithmetic with 'Move RIGHT 12 to cols 40-59'."
+        },
+        {
+          "category": "goal_unknown",
+          "confidence": "med",
+          "evidence": "Step 10: 'Maybe the goal is to align the player with the charcoal/magenta target. Or maybe SPACE does something special'; step 62's 'Goal model: Extend red block by merging with player's adjacent position' is still unvalidated at 261 actions vs a 58-action baseline (4.50x)."
+        },
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "med",
+          "evidence": "Terminal tool_code spends twelve separate calls repositioning ('for i in range(12): action(['RIGHT'])') immediately after a four-action move that overshot by twelve columns, rather than one measured single-step probe; only 8 distinct actions across 261 actions."
+        }
+      ],
+      "rater_notes": "The adjacency rule for SPACE is correctly inferred at step 61; the episode fails on step size, an entirely separate and much simpler quantity the agent never measures."
+    },
+    "kaggle_v3::wa30-ee6fef47_p0::L1": {
+      "primary_label": "action_semantics_unknown",
+      "labels": [
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "high",
+          "evidence": "Step 58: '16 LEFT actions moved the player from col 60 to col 0, which is 60 columns. So each LEFT action moves 60/16 = 3.75 columns. That doesn't make sense.' Step 59 adds 'The player wrapped around the board.' After 331 actions the per-action displacement is still unmodelled."
+        },
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "high",
+          "evidence": "The agent's own verdict \u2014 'I've been wasting too many actions moving around' (step 58) and 'I've been spending too many actions moving around without making progress' (step 59) \u2014 with 381 actions vs a 71-action baseline and only 6 distinct actions. It issues 50-action batches (16 LEFT + 34 UP) where a single LEFT would resolve the step size; here the higher-yield alternative is a named action, not a coordinate."
+        },
+        {
+          "category": "goal_unknown",
+          "confidence": "med",
+          "evidence": "Step 1 offers only 'these look like targets or collectibles' for the charcoal-framed blue squares, and by step 58 the objective is still an unvalidated navigation target: 'To reach the right c frame at [24, 44-47]: need to move RIGHT about 44 columns and DOWN about 24 rows.'"
+        },
+        {
+          "category": "latency_or_budget",
+          "confidence": "med",
+          "evidence": "Step 58: 'The timer is running out (499 seconds remaining, but I've used 331 actions already)'; step 59: '(207 seconds remaining, 382 actions used)'; budget_terminated True. Proximate rather than root \u2014 the exhaustion follows from the wasted batches."
+        }
+      ],
+      "rater_notes": "Clearest case in the corpus where the higher-yield alternative for the exploration label is actually showable: a single directional action instead of a 50-action batch."
+    },
+    "kaggle_v4::sc25-635fd71a_p0::L1": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Step 1 content: 'Goal model: Unclear yet'; step 33: 'The pattern now has 4 white cross cells + 1 gray center. This matches the purple dot pattern (4 dots, no center). But the level is still not complete.' The inferred win condition is satisfied without an advance."
+        },
+        {
+          "category": "progress_signal_misinterpretation",
+          "confidence": "med",
+          "evidence": "Step 33: 'I think the progress bar is not a resource bar. It might be a different mechanism' \u2014 the depletion signal is discarded one step before the bar runs out and ends the game at step 34."
+        },
+        {
+          "category": "perception_parsing",
+          "confidence": "med",
+          "evidence": "Step 34: 'The progress bar shows {W: 29} ... Actually, looking at the image, the right edge is all green (N), not white (W) ... But the output shows {W: 29}, which means 29 white cells. This is confusing.' Its parse of the resource bar contradicts the frame on the feature that governs whether it can keep acting."
+        },
+        {
+          "category": "irreversible_mistake",
+          "confidence": "med",
+          "evidence": "Step 34: 'stop_detail: No further actions were executed because the previous action reached GAME_OVER; the runner will auto-reset before the next analyzer turn' \u2014 the cursor sweep depleted the bar and ended the level."
+        }
+      ],
+      "rater_notes": "Independent attempt at the same game as kaggle_v2::sc25. Both reach a matched cross pattern without completion, but this one additionally misreads and then exhausts the resource bar."
+    },
+    "kaggle_v3::su15-1944f8ab_p0::L2": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Step 47 offers four competing objectives \u2014 'Maybe the goal is to click the dots in a specific order, following the color indicators ... Or maybe the color indicators represent the colors of the squares that need to be absorbed into the circle' \u2014 and the terminal plan is still speculative: 'then click circle to absorb. Check if level completes.'"
+        },
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "med",
+          "evidence": "62 distinct actions across 146 actions with top_action_share 0.082 \u2014 near-uniform scattering; step 47 records one such probe's yield: 'Clicking the yellow square at [4, 31] didn't change anything. The board is the same.'"
+        },
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "med",
+          "evidence": "Step 48: 'clicking [37, 41] should have removed [40, 37]' but 'I notice there are 7 remaining sky blue dots (one was removed when I clicked [37, 41])' \u2014 predicted two-dot pair removal against an observed single removal, for a pairing rule established earlier."
+        }
+      ],
+      "rater_notes": "Highest action diversity in the corpus (62 distinct actions, top share 0.082), which reads as undirected search under an unresolved objective rather than deliberate probing."
+    },
+    "kaggle_v4::su15-1944f8ab_p0::L2": {
+      "primary_label": "action_semantics_unknown",
+      "labels": [
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "high",
+          "evidence": "Step 36: 'So clicking on a magenta square inside the blue blob caused game over. This means I should NOT have clicked on the magenta square inside the blue blob.' Clicking magenta squares had been the established move-the-square action throughout the episode; the predicted delta was a move, the observed delta was termination."
+        },
+        {
+          "category": "irreversible_mistake",
+          "confidence": "high",
+          "evidence": "Step 36: 'GAME OVER! I clicked on the magenta square inside the blue blob and the game ended', and its own summary 'Key mistake: Clicked on magenta square at (27,32) inside blue blob, triggering game over before level completion.'"
+        },
+        {
+          "category": "invalid_output_interface",
+          "confidence": "high",
+          "evidence": "Step 36: 'ACTION7 didn't work - Unknown action at index 1: ACTION7' \u2014 an illegal action emitted and rejected by the runtime, despite the prompt listing ACTION7 among valid actions."
+        },
+        {
+          "category": "latency_or_budget",
+          "confidence": "high",
+          "evidence": "Step 37: 'But wait, the time remaining is only 20 seconds! I need to act quickly'; 43 actions against a 42-action human baseline (1.02x), budget_terminated True."
+        },
+        {
+          "category": "goal_unknown",
+          "confidence": "med",
+          "evidence": "Step 36 summary: 'The goal of level 2 was unclear - possibly to move all 4 magenta squares to the blue blob, or to move them to specific positions.'"
+        }
+      ],
+      "rater_notes": "The fatal click carries both the mispredicted effect and the irreversibility; since they are the same transition they tie on confidence, and the fixed category order puts action_semantics_unknown (2) ahead of irreversible_mistake (7). A reader who anchors on the transition rather than the prediction would make irreversible_mistake primary."
+    },
+    "kaggle_v4::lp85-305b61c3_p0::L2": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Step 5 lists three guesses ('1. All middle rows matching (left = right) 2. Top and bottom rows matching 3. Some other symmetric pattern'); step 19 eliminates them ('The goal is not about matching colors at cols 23 and 35, or aligning yellow block[s]') and step 20's plan is still 'try to get row 35 to a symmetric state (col23=col35)' at 141 actions vs a 38-action baseline."
+        },
+        {
+          "category": "progress_signal_misinterpretation",
+          "confidence": "high",
+          "evidence": "Step 19: 'the message says The game is over. but the last_action_result shows state: NOT_FINISHED', then 'The left border is now completely green. This might be the winning condition! But the game ended with GAME_OVER, not level_co[mpleted]', then step 20: 'the game wasn't actually over - it was in a temporary GAME_OVER state that cleared after taking another action.' Several turns spent misreading the terminal marker in both directions."
+        },
+        {
+          "category": "irreversible_mistake",
+          "confidence": "med",
+          "evidence": "Step 19: 'state: GAME_OVER, game_over: True, executed: False, stop_reason: previous_game_over' \u2014 the shift sequence drove the left border fully green ('0 black pixels, 49 green pixels') and ended the game."
+        },
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "med",
+          "evidence": "Step 19: 'I notice that the code executed 22 actions, but I only tried 5 matching combinations' \u2014 22 actions spent to test 5 hypotheses; top_action_share 0.549 over 141 actions."
+        }
+      ],
+      "rater_notes": "Independent attempt at the same game as kaggle_v3::lp85; this one is dominated by terminal-state confusion, which does not appear in that episode's slice."
+    },
+    "kaggle_v3::ka59-38d34dbb_p0::L2": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "med",
+          "evidence": "Step 50: 'The level is not completed. I've converted all N+B to N+W and put 2 of them into c squares' \u2014 the inferred win condition (convert every N object and seat it in a c square) is satisfied in part without any advance, and the agent then speculates about which c squares count."
+        },
+        {
+          "category": "perception_parsing",
+          "confidence": "med",
+          "evidence": "Step 50 asserts 'All N objects are now N+W (green with white centers)' and then, reading the ASCII in the same step, contradicts itself: 'row 44 shows NcN at cols 30-32. This means the vertical N+W has a c (charcoal) center, not w (white). But I clicked on it to convert it from N+B to N+W.' Centre colour is the feature its placement decisions depend on."
+        },
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "low",
+          "evidence": "Step 50 concludes 'The 6x6 N+W is also in the bottom-right panel and can't cross the purple bar'; the terminal action spends four more moves on exactly that, result = action(['LEFT']*4)."
+        }
+      ],
+      "rater_notes": "Both med labels are tied, so the fixed category order puts goal_unknown first; it is also the causally upstream one, since the placement objective drives the conversions."
+    },
+    "kaggle_v3::r11l-495a7899_p0::L2": {
+      "primary_label": "action_semantics_unknown",
+      "labels": [
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "high",
+          "evidence": "Step 74: 'The orange didn't move! The white ring moved from (21, 58) to (35, 45), but the orange stayed at (17, 38). This is strange. Before, clicking purple pixels moved the orange. Now it doesn't.' The rule had been confirmed on transitions 81, 100 and 112 before failing on 113."
+        },
+        {
+          "category": "perception_parsing",
+          "confidence": "med",
+          "evidence": "Step 73 registers the distinguishing feature and then discards it: 'I see (35, 45) and (48, 54) which are the dark gray ring positions. These are also purple pixels now? That's interesting' \u2014 followed immediately by 'Let me try clicking (35, 45) which is closer to the target direction.' Its state description treats a ring position as an ordinary path pixel."
+        },
+        {
+          "category": "goal_unknown",
+          "confidence": "low",
+          "evidence": "94 actions against a 33-action baseline (2.85x) with the terminal content reopening the target itself: 'Plan: Re-examine the game state and check for the orange diamond target.'"
+        }
+      ],
+      "rater_notes": "Chain/path game. The agent had a working transport rule and lost it by applying it to a class of pixel it had itself flagged as different one step earlier."
+    },
+    "kaggle_v4::bp35-0a0ad940_p0::L2": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Step 47: 'This suggests that the goal is NOT to clear blocks until the bar reaches zero. Instead, the goal might be: 1. Clear a specific number of blocks 2. Clear blocks in a specific order 3. Clear blocks until the bar reaches a specific value 4. Some other objective.' Four candidates, none validated, at 163 actions vs a 48-action baseline."
+        },
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "high",
+          "evidence": "Step 48: 'Previously, clearing blocks caused them to regenerate (green blocks increased). But this time, clearing one block caused the green blocks to decrease from 14 to 13. Also, the purple bar increased from 501 to 502 pixels. Previously, clearing blocks decreased the bar.' Same action, opposite observed deltas on both tracked quantities."
+        },
+        {
+          "category": "progress_signal_misinterpretation",
+          "confidence": "med",
+          "evidence": "Step 47: 'Cleared 5 blocks - Purple bar disappeared - Game over: True - Green blocks: 20 (increased from 17)' \u2014 clearing had been treated as progress while the block count rose and the bar drained."
+        },
+        {
+          "category": "irreversible_mistake",
+          "confidence": "med",
+          "evidence": "Step 47: 'when it reached zero (or below), the game ended. But the game ended without completing the level' \u2014 the clearing sequence drained the purple bar and terminated the level, requiring a reset."
+        }
+      ],
+      "rater_notes": "The step-48 row-dependence discovery ('Maybe the blocks in different rows behave differently') arrives at the terminal step; the episode ends before it can be tested."
+    },
+    "kaggle_v4::tu93-0768757b_p0::L2": {
+      "primary_label": "action_semantics_unknown",
+      "labels": [
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "high",
+          "evidence": "Step 14: 'R block moves LEFT when player moves RIGHT, staying on the SAME row. Collision causes game over' \u2014 discovered only after 'T123: RIGHT ... player=None (player disappeared!)', 'T128: RIGHT ... player=None', 'T133: RIGHT ... player=None'. RIGHT had been used since level 1 with no such model."
+        },
+        {
+          "category": "irreversible_mistake",
+          "confidence": "high",
+          "evidence": "Step 14: 'T124: RESET ... T129: RESET ... T134: RESET, step 134->135, game_over=True' with 'Player has limited lives (2 resets allowed)' \u2014 three fatal collisions, the third exhausting the resets and ending the level."
+        },
+        {
+          "category": "retrieval_or_context",
+          "confidence": "high",
+          "evidence": "Step 14: 'T3 is from LEVEL 1, not level 2! The transitions list contains ALL transitions from the start of the game, not just the current level. So my earlier analysis of T0-T9 was wrong - those are transitions from level 1, not level 2.' The correct records were in its own store; it analysed the wrong slice of them."
+        },
+        {
+          "category": "latency_or_budget",
+          "confidence": "med",
+          "evidence": "21 actions against a 16-action human baseline (1.31x), budget_terminated True; step 9 notes 'Current step is 104. If the limit is around 100-105, we might not have enough steps', and the episode ends at step 15 with a correct path just derived ('Path: RIGHT, RIGHT, UP, RIGHT, RIGHT, UP') but mis-executed."
+        }
+      ],
+      "rater_notes": "The only episode in the corpus where the win condition is correctly identified throughout ('the goal is at (0, 12)'), so no goal_unknown label. The failure is a moving hazard whose coupling to the agent's own action was never modelled."
+    },
+    "kaggle_v3::lf52-271a04aa_p0::L1": {
+      "primary_label": "goal_unknown",
+      "labels": [
+        {
+          "category": "goal_unknown",
+          "confidence": "high",
+          "evidence": "Step 22: 'Maybe the goal is not to collect all green cells, but to do something else'; step 23: 'Maybe the goal is to merge all green cells into a single cell, and then click on that cell to complete the level. But currently, there are 3 g objects, not [1]'. No confirmed win condition at termination."
+        },
+        {
+          "category": "perception_parsing",
+          "confidence": "med",
+          "evidence": "Step 1: 'My grid mapping was off. Let me re-examine the structure more carefully. The cells seem to be 5x5 with 2-cell borders, but my column calculations were wrong.' Cell geometry is exactly what its MOUSE coordinates target."
+        },
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "med",
+          "evidence": "Step 23: 'The RIGHT action didn't move the purple player (still at (57, 6)), but board_changed is True ... Maybe the UP, DOWN, LEFT, RIGHT actions are not for moving the player, but for something else.' Step 22 shows the same for clicks: 'Clicking on (19, 24) didn't change anything ... The board_changed is True, but the g objects are still at the same positions.'"
+        },
+        {
+          "category": "latency_or_budget",
+          "confidence": "med",
+          "evidence": "Only 38 actions against a 32-action human baseline (1.19x) but 44 analysis turns, budget_terminated True \u2014 the run exhausted analysis budget, not action budget, with the terminal tool_code still reconstructing the merge history."
+        }
+      ],
+      "rater_notes": "Most of this episode's budget went into parsing an L-shaped grid the agent never mapped correctly; the goal remained a menu of guesses throughout."
+    },
+    "kaggle_v3::ft09-0d8bbf25_p0::L3": {
+      "primary_label": "latency_or_budget",
+      "labels": [
+        {
+          "category": "latency_or_budget",
+          "confidence": "high",
+          "evidence": "29 actions vs a 23-action human baseline (1.26x), budget_terminated True, with a single concrete pending move at termination: 'Plan: Toggle (4,0) from O to R and check if level completes.' The terminal step 23 is only a state re-read, not a dead end."
+        },
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "med",
+          "evidence": "Step 14: 'I clicked: (1,0): b->O \u2713 (1,1): O->b... but the image shows orange at (1,1)' and 'Now ALL the orange cells have decorations, not just (1,1) and (3,1)' \u2014 the predicted toggle delta and the predicted immutability of decorated cells both fail against the observed frame."
+        },
+        {
+          "category": "goal_unknown",
+          "confidence": "low",
+          "evidence": "Step 22: 'Current grid matches 3/4 decorations. Only (4,0) conflicts: (3,1) says O, (5,1) says R.' The agent's inferred win condition (satisfy every decoration) is internally inconsistent \u2014 two decorations demand opposite values for the same cell \u2014 and it never resolves which reading is the actual condition."
+        }
+      ],
+      "rater_notes": "By far the most competent episode in the first ten: an efficient action count, a static-target model reached at step 22, and one toggle left to test when the budget ended."
+    },
+    "kaggle_v3::sb26-7fbdac44_p0::L2": {
+      "primary_label": "exploration_or_probe_selection",
+      "labels": [
+        {
+          "category": "exploration_or_probe_selection",
+          "confidence": "high",
+          "evidence": "Step 89 enumerates roughly 22 untried orderings ('R, Y, N, M ... M, Y, N, R') and the terminal tool_code tries the next one \u2014 one bit per trial, at 252 actions against a 28-action human baseline (9.00x), 36 distinct actions. The higher-yield alternative is named by the agent itself at step 88: 'what if the correct order is based on the bottom palette positions'."
+        },
+        {
+          "category": "goal_unknown",
+          "confidence": "med",
+          "evidence": "Step 16: 'Now the dots are: blue, green, yellow, purple - which matches the top reference exactly! Let me try SPACE to submit/complete the level' \u2014 the inferred completion condition is wrong (73 further steps follow), and step 88 confirms 'the order R, N, M, Y was wrong.'"
+        },
+        {
+          "category": "retrieval_or_context",
+          "confidence": "low",
+          "evidence": "Step 89: 'I've tried many permutations. Let me think about what I haven't tried:' \u2014 the trial record exists in its own log, but the untried set is re-derived by listing all permutations rather than retrieved."
+        }
+      ],
+      "rater_notes": "Tension worth flagging: the agent's objective (fill the container with the right colours in the right order) is essentially correct, so goal_unknown is weak; what is missing is any inference procedure for the ordering, which is squarely the exploration category. Primary set accordingly."
+    },
+    "kaggle_v2::ft09-0d8bbf25_p0::L3": {
+      "primary_label": "latency_or_budget",
+      "labels": [
+        {
+          "category": "latency_or_budget",
+          "confidence": "high",
+          "evidence": "Counters: actions 0 vs human baseline 23 (0.00x), analysis_turns 4, budget_terminated True. Level 3 opens at step 28 ('Level 2 completed! Now I'm on level 3') and the terminal tool_code is still a read-only ASCII inspection ('# Let me look at the ascii to understand the center cell structure better'). The attempt ended before a single action was issued."
+        },
+        {
+          "category": "goal_unknown",
+          "confidence": "med",
+          "evidence": "No objective is representable anywhere in the level-3 log: the only content is structural ('So the grid is diamond-shaped: R R R / R C R / R R R R R ...') and the last reasoning is still enumerating centre-cell node geometry. Confounded by having had only 4 turns."
+        }
+      ],
+      "rater_notes": "The episode is shown essentially whole (4 turns, 8,919 chars). This is a budget artefact, not a decision failure \u2014 the level-3 attempt never began."
+    },
+    "kaggle_v2::sp80-589a99af_p0::L2": {
+      "primary_label": "progress_signal_misinterpretation",
+      "labels": [
+        {
+          "category": "progress_signal_misinterpretation",
+          "confidence": "high",
+          "evidence": "Step 38: 'pressing SPACE resulted in done=True. The timer is 26, not 0, so this is likely level_completed=True' \u2014 a game-over read as a completion; step 45 shows the truth ('pressing SPACE resulted in game_over=True but level_completed=False') and the agent is still saying 'I'm not sure if this was level_completed or game_over.'"
+        },
+        {
+          "category": "action_semantics_unknown",
+          "confidence": "med",
+          "evidence": "Step 46: 'the blue bar expanded back to 80 pixels (20 columns) at rows 16-19, cols 28-47 after pressing SPACE at rows 8-11. This is different from the previous run where the blue bar stayed at 48 pixels' \u2014 SPACE's effect on the bar is repeatedly mispredicted after dozens of prior observations."
+        },
+        {
+          "category": "irreversible_mistake",
+          "confidence": "med",
+          "evidence": "Steps 38 and 45 both open with 'The game is over again' and step 45 records 'game_over=True but level_completed=False' \u2014 SPACE at the wrong bar position ends the level and forces a reset, repeatedly."
+        },
+        {
+          "category": "latency_or_budget",
+          "confidence": "med",
+          "evidence": "62 actions vs a 58-action human baseline (1.07x) over only 10 analysis turns, budget_terminated True, with the terminal tool_code still mid-experiment ('# Let me check current state and try pressing SPACE again')."
+        }
+      ],
+      "rater_notes": "The misread of done=True at step 38 is what makes the rest of the episode a re-run of a known failure, so it is taken as causally earliest."
+    }
+  }
+}

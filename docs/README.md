@@ -104,6 +104,16 @@ detail: >
   Goal inference remains the largest single lever — that is not in dispute — but it
   earns integration through G0 rather than inheriting priority.
 revisit_if: the blind re-rate shows the instability is a rating artifact, not the agent.
+revisit_outcome: >
+  NOT TRIGGERED — checked 2026-07-28 against the completed blind re-rate
+  (logs/s1d_rerate_result.json, gate_valid). goal_unknown's primary-label kappa is
+  0.7945 over 30 episodes: rating the SAME episode twice, blind, reproduces the
+  primary label most of the time. That bounds the rating-noise channel and leaves
+  the 75/53/27 cross-run swing pointing at real run-to-run variation, which is the
+  reading the decision already assumed. It does not SETTLE the question — kappa is
+  measured within one rater on one evidence slice, and goal_unknown's any-label
+  kappa is a much weaker 0.5161 — but the condition for revisiting is not met and
+  the decision stands unchanged.
 effective_spec_sections: ["§3", "§9", "§9.7"]
 approved_at: 2026-07-28
 ```

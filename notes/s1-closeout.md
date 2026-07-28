@@ -1,7 +1,98 @@
 # S1 Close-out
 
-**Status: IN PROGRESS.** S1-a complete; S1-b complete with a caveat; S1-c partial; S1-d and S1-e not
-started. This file is written incrementally, not at the end.
+**Status: CLOSED 2026-07-28, on the DEGRADED branch.** S1-a through S1-e are complete, the blind
+re-rate is scored and promoted, and the manifest's four roll-up fields are filled from it. **No hidden
+score exists and none is coming from S1** — the reproduction was withdrawn as a candidate payload by
+operator decision on 2026-07-26, so S1 exits via §4.7's DEGRADED branch by scope change rather than by
+a rejected submission.
+
+> The opening status line above was stale for two days: it read *"S1-d and S1-e not started"* while
+> both had run. This file is written incrementally, which is why the body below is a session log in
+> date order rather than a summary — but a status line that describes a state two sessions old is worse
+> than no status line, because it is read first and believed.
+
+| | |
+|---|---|
+| **Gate** | `agreement_floor: 0.40` **APPLIED** — overall κ **0.7207**, 30 of 30 scored, floor exactly 0.40 |
+| **Build order** | `goal_unknown` → `action_semantics_unknown` → `exploration_or_probe_selection` → `progress_signal_misinterpretation` |
+| **Excluded** | 6 measured and below floor · 1 (`reasoning_inconsistency`) never drawn · 2 (`coordinate_unreachable`, `planning_depth`) structurally unobservable |
+| **Hidden score** | **null**, permanently for S1. DEGRADED branch, costs recorded in the manifest |
+| **Result of record** | [`logs/s1d_rerate_result.json`](../logs/s1d_rerate_result.json) — promoted, `gate_valid: true`, carrying its own invalidation chain |
+| **Still open, not S1's** | `gate_manifest.yaml → s2` is `NOT_STARTED`. That was listed as an S1 exit item; with the gate closed it is an **S2 governance blocker** and blocks nothing in S1 |
+
+---
+
+## Session log — 2026-07-28 · the gate, applied
+
+The measurement work was already done; what was missing was the gate itself, and running it changed
+the build order rather than confirming it.
+
+**Procedure, in the pre-registered order.** Label → sample → blind → re-rate → score → promote. The
+sample was drawn by `s1d_blind_rerate.py draw` over the 75-episode pooled corpus at the pre-registered
+`n = 30` and the default seed, stratified on first-pass `primary_label`, oversampling `goal_unknown`
+(44 of 44 eligible) and `exploration_or_probe_selection` (**1 of 4 eligible** under S1-E4 — the
+eligible pool is a minority by construction, and that fraction is reported beside the statistic
+because an agreement number computed on a subset must say which subset). The draw wrote its
+authoritative `.manifest.json` sidecar; scoring re-derives the selection from the corpus rather than
+believing it.
+
+**The second pass was produced in a fresh `claude-opus-5` context** with no access to this repository
+at all — not the labels, not the notes, not the manifest. It was given exactly two files: the
+taxonomy brief and a worksheet rendered by the unmodified `s1d_worksheet.py` from the *blinded* draw,
+so the evidence slice matches the first pass's by construction rather than by assertion.
+
+**Result: κ 0.7207 overall, 25 of 30 exact matches on primary label.** Four categories clear the floor
+on both axes and drive the build order; six were measured and excluded; one was never drawn.
+
+### What the gate actually changed
+
+Two things, and neither was predictable from the frequency table alone.
+
+**1. `latency_or_budget` is out, and it was the second-most-frequent label in the corpus.** Its primary
+κ is 0.7826 — high — while its any-label κ is 0.011. All 75 episodes were budget-terminated, so the
+label is available everywhere; the two passes then diverged on whether termination *caused* the failure
+or merely ended it. The first pass attached it to 27 of the 30 sampled episodes, the re-rate to 11,
+overlapping on 10. Its `episode_share` of 0.8267 would have put it near the top of any
+frequency-ordered build list. **The two-axis rule is what caught it**, and a gate defined on primary
+agreement alone would have passed it at 0.78.
+
+**2. `irreversible_mistake` inverts the same pattern** — any-label κ 0.5946, primary κ 0.0. The raters
+agree it is *present* and disagree entirely about whether it is *causally earliest*. Also excluded, and
+for the opposite reason.
+
+Both are arguments for the rule the scorer already encodes: the weaker axis decides.
+
+### `reasoning_inconsistency` was not tested, and that is not the same as failing
+
+It carries 1 episode in 75 and was not drawn into the sample, so it has no κ at all. The manifest
+records it as `agreement_status: "untested"` rather than folding it in with the six that were measured
+and failed. Both are excluded from the build order; only one of them is evidence about label stability.
+A row that reads `survives_agreement_floor: false` with a null κ beside six real κs would otherwise be
+read as a seventh failure.
+
+### The one asymmetry left in the measurement
+
+The v2 first-pass labels predate `s1d_worksheet.py` and came from an ad-hoc, unreproducible slice; the
+re-rate used the scripted worksheet for all 30. So 22 of 30 episodes were rated on matched evidence and
+8 were not. **This did not inflate the result.** Split by provenance: the 8 v2 episodes agree 8/8
+(κ 1.0), the 22 matched ones 17/22 (κ 0.6194). The matched-evidence subset is the *more conservative*
+number, so 0.7207 is if anything flattered by the unmatched 8 rather than propped up by them. At n = 8
+this is a diagnostic and not a finding — but the direction is the one that costs nothing to accept.
+
+Re-doing the v2 first pass on the scripted worksheet would fix the asymmetry and **break the
+pre-registration**: the order is label → sample → blind, the corpus digest commits every first-pass
+annotation, and re-labelling after the draw is precisely what that digest exists to prevent. Left as a
+recorded limitation.
+
+### Closing on DEGRADED
+
+S1 exits without a hidden score, permanently. The reproduction stopped being a candidate payload on
+2026-07-26, so the leaderboard reference S1-f was designed to establish does not exist and cannot be
+retrofitted by any further S1 work. The costs are recorded in the manifest and are unchanged by the
+gate closing: S5's B axis has no score to read, and **S4 rests on a local paired control** — same
+games, same budget, same model, advisor on versus off — with **replicates mandatory**, because two
+identical 25-game reference runs disagreed on cleared-level count in 9 of 25 games and the mean score
+moved 2.19 → 1.14. A local positive establishes that the advisor helps *here*, not on the hidden set.
 
 ---
 
@@ -63,7 +154,7 @@ defects in this repository, not in the reading of it.
 | 3 | Corpus builder deduplicated on `(game, level)`, discarding the replicates S1-E11 was filed to obtain | **fixed, then re-scoped by S1-E14** — `--replicates` keys on `(game, level, run, pass)` and ownership keys on a **configuration signature** rather than the run directory, so same-configuration replicates pool across runs while a differently-configured run is still refused |
 | 4 | Re-rate script recorded a 48 h cooling period and `delayed test-retest`, contradicting S1-E10 | **fixed** — reports `independent re-rate, same model`; cooling recorded as INAPPLICABLE, not as satisfied |
 | 5 | Threshold `evidence_ref` pointed at a path that does not exist, and "26 games" described two different cohorts | **S1-E13** — see below |
-| 6 | §4 marked S1 complete with the agreement gate unapplied and three roll-up fields still null | **S1 reopened** |
+| 6 | §4 marked S1 complete with the agreement gate unapplied and three roll-up fields still null | **S1 reopened** — and **discharged 2026-07-28**: gate applied at κ 0.7207, all four roll-up fields filled. The finding was correct and the re-open was worth its float; the gate excluded `latency_or_budget`, the corpus's second-most-frequent label |
 
 ### ⚠ Finding 1 was not hypothetical — the three-pass run ran one pass
 
@@ -115,6 +206,12 @@ is unapplied and `failure_frequency_ranking`, `build_order` and `viability_verdi
 measurement work stands and is not repeated; what reopens is the gate. Cost falls on the ~4 days of float
 §4 banks, which is what the float is for.
 
+> **DISCHARGED 2026-07-28** — see the session log at the top of this file. The gate ran at the
+> pre-registered floor on the pre-registered sample size, and the roll-up fields are filled from the
+> promoted result. Keeping this section is not an oversight: it records *why* a day of float was spent
+> re-opening a stage that had already been marked complete once, and the reason it was right to spend
+> it is that the gate excluded the corpus's second-most-frequent label.
+
 ---
 
 ## ⛔ Publishing policy
@@ -165,6 +262,13 @@ resolved, no re-rate sample should be drawn** — the draw script refuses unlabe
 refuse an under-powered one. If it is still open at S1-g, the consequence must be stated: no agreement
 statistic means the `agreement_floor: 0.40` gate cannot be applied, and categories would drive the build
 order with no stability check at all.
+
+> **RESOLVED — and not by choosing between runtime and power.** S1-E11/S1-E14 enlarged the corpus
+> instead: three configuration-identical single-pass runs pool to **75 episodes**, so the
+> pre-registered `sample_size: 30` became a **40% sample** rather than the near-tautological 30-of-30
+> that made this erratum urgent. The draw executed on 2026-07-28 at exactly 30, and `score` enforces
+> the constraint this section worried about — both `requested` and the scored count must equal the
+> pre-registered 30 or `gate_valid` is withheld. The stated consequence never had to be invoked.
 
 ## Actionable queue while S1-e runs## Actionable queue while S1-e runs (all CPU-only — must not contend for the GPU)
 
