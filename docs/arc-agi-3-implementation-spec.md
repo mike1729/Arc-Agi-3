@@ -279,6 +279,28 @@ the level. Prevents a noisy classifier from fragmenting events and repeatedly wa
 A modest shared grid encoder scoring only the common candidate set of §4.5. Heads, with **frozen
 targets**:
 
+**Amendment 2026-07-28 (`EVAL-SCOPE-2026-07-28`), two clarifications that change what gets built:**
+
+**(a) Scoring granularity — one encoder pass per STEP, not per candidate.** The encoder runs once on
+the observation and emits a spatial map (Track A §5: output grid 8×8 or 16×16, token width 128–192,
+depth 4–6). Heads are **dense over that map**: the coordinate head scores every location
+simultaneously — structurally a segmentation head, consistent with Track A §14's factorization
+\(P(a,x,y) = P(a)P(x,y \mid a, z_t, c_t)\) — and discrete-action heads read the pooled embedding with a
+small action embedding, batched across ACTION1–5. **The evaluator's cost is therefore O(1) in candidate
+count.** §2's (candidate count) × (predictor passes per candidate) product governs the **belief
+model's rollout** (§11), not this component. An implementation that runs the encoder per candidate is
+non-conforming; it costs ~40× at a typical candidate budget and would consume the fast loop by itself.
+
+**(b) "Shared" means shared across this component's own heads — NOT shared with the belief model.**
+The evaluator and the belief model (§11) have **separate encoders**, and the reason is measurement
+integrity rather than modularity. The evaluator ships at step 4 (W3) trained on exact factual targets;
+the belief model's objective is chosen at R0 (W5) by comparing latent, reconstructive and exact-delta
+arms. If those arms inherited an encoder already pretrained on exact factual supervision, **every arm
+would carry exact supervision and the comparison would be confounded** — the precise failure §11.3 and
+S3's mandatory arm C exist to prevent, and the one S5 names as "JEPA strong only with exact
+auxiliaries, meaning the auxiliaries carry the result." Encoder weights never cross between the two.
+Sharing *inputs* — the canonicalizer, delta compiler and candidate set — is required and unaffected.
+
 - **P(no-op), P(visible change), P(persistent change)** — exact settled-frame labels.
 - **P(progress event)** — predicts a **predeclared observable event class** (level/score marker or
   registered progress signature). Never long-term goal utility; never trained on executive or goal
@@ -294,6 +316,18 @@ targets**:
   w_r P(\text{irrev})\), weights in §13.1. Stage-4b weak labels (executive preferences) may
   additionally train this head only; they never enter the progress-event head.
 - **Uncertainty / OOD.**
+
+**Data sourcing.** Factual heads are data-rich (one transition = 4,096 dense cell labels; ~11,400
+logged transitions already exist). The **progress-event head is the binding constraint**: measured
+prevalence is 0.90% in human replays (1,613 terminal transitions in 180,173 actions) and 0.47% in
+reference-agent logs, and the §13.5 partition leaves **849–1,286** real positives depending on how it
+is drawn. **Amendment 2026-07-28 (`PARTITION-2026-07-28`):** stratifying on terminal count alone is
+insufficient — the same draw moves the no-op head's supervision over a **21%–97%** range and ACTION6
+transitions over **22%–99%**, both far more volatile than terminals. **The partition is drawn under the
+multi-criterion balance constraint of §13.5**, not one stratifier.
+Procedural F1/F3 is the only source whose progress prevalence and counterfactual labels are design
+parameters, which makes the S2 generators primary supervision for this component and not only an
+instrument for objective screening. Sizing: [`notes/evaluator-training-data.md`](../notes/evaluator-training-data.md).
 
 **Supervision honesty — three stages:** **4a** factual heads on executed transitions + procedural
 branches (exact, free labels) · **4b** weak candidate value (pointwise, biased, declared) ·
@@ -809,7 +843,19 @@ priced 2–3 days each; Branch A requires ≥ 5 slack days at Aug 22.
 
 ### 13.5 Public-game partition and leakage policy `[frozen at step 1]`
 
-**17 development games / 8 validation games**, drawn before step 4. Validation games are excluded
+**17 development games / 8 validation games**, drawn before step 4.
+
+**Draw method** `[amended 2026-07-28 — PARTITION-2026-07-28]`**.** Not uniform, and not stratified on a
+single criterion. The draw is accepted only when **four** quantities each land within a pre-registered
+tolerance of the 17/8 proportional share: **terminal-transition count · no-op count · ACTION6
+transition count · total transitions.** Reject-sample until all four hold; record the realized shares
+alongside the partition. Measured basis (`logs/s2_corpus_census.json`): across the 25 public games the
+worst-to-best dev share is 21%–97% for no-op positives, 22%–99% for ACTION6, 32%–96% for discrete
+counterfactual pairs, 44%–87% for transitions, and 53%–80% for terminals — six games contain no ACTION6
+at all and five contain almost no no-ops, so single-criterion stratification leaves three of the four
+signals unconstrained. The tolerance is pre-registered in `gate_manifest.yaml`.
+
+Validation games are excluded
 from: branching rounds R1–R3 · threshold and weight tuning · ablation iteration · click-salience
 training · G0 training data (their replays are quarantined). ACTION6 availability statistics may use
 all 25 (descriptive). Public validation is **external-validity evidence with veto power** (§6.7);
