@@ -1,0 +1,233 @@
+{
+ "worksheet_id": "c9bedd49a71484af",
+ "drawn_from": "logs/s2_goal_predicates_labelled.json",
+ "pass": "second",
+ "round": 3,
+ "raters": "8 fresh-context claude-opus-5 agents, disjoint size-balanced batches, per-rater scratch dirs",
+ "dated": "2026-07-28",
+ "ratings": {
+  "g08": {
+   "predicate_classes": [
+    "counts",
+    "region_membership"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "Win predicate cbdhpcilgb() requires, for every (key,count) pair in level data, that the number of objects of that key whose center lies inside a goal-tagged region sprite exactly equals count; advance is deferred ~10 frames after that predicate flips the phase flag to the win state.",
+   "digest": "778de488fb8499cd",
+   "item_digest": "778de488fb8499cd"
+  },
+  "g15": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "guard_form": "delegated",
+   "notes": "pbznecvnfr(): every goal tile must be latched, and a tile latches only when the avatar stands on it with its cycled (shape,color,rotation) triple exactly equal to that tile's prescribed triple via bejndxqqzf; step budget only resets/loses, it is not part of the advance test.",
+   "item_digest": "6538e5cd3fc63d05"
+  },
+  "g02": {
+   "predicate_classes": [
+    "symmetry_and_template_match",
+    "state_relations"
+   ],
+   "guard_form": "delegated",
+   "notes": "cgj(): for every clue sprite, each of its 8 neighbours at +/-4 offsets must be same-colour-as-clue or different-colour-as-clue exactly as prescribed by the zero/non-zero cells of the clue's own 3x3 pixel template; player establishes it by click-cycling neighbour colours.",
+   "item_digest": "b8e043340eba141f"
+  },
+  "g22": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "guard_form": "delegated",
+   "notes": "neurwiqfry(): every sprite of the target tag must have some sprite of the piece tag at identical (x,y); pieces are rotated/resized by clicks and the check runs one step later because the pending-move dict defers commit.",
+   "item_digest": "5794167a41de4a55"
+  },
+  "g23": {
+   "predicate_classes": [
+    "ordered_event_programs",
+    "symmetry_and_template_match"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "Advance is a 16-tick timer whose flag is set by the interpreter dbfxrigdqx() when the output cursor reaches the last target cell filled; the player must compose an ordered instruction program (slot tiles + stacked repeat frames, run via ACTION5) whose emitted colours match every target cell in order, any mismatch aborting the run.",
+   "item_digest": "f2fc104dac7ad24d"
+  },
+  "g11": {
+   "predicate_classes": [
+    "all_instances_transformed",
+    "state_relations"
+   ],
+   "guard_form": "inline",
+   "notes": "Inline count of still-active mirror sprites == 0 in step: the four mirrored-movement sprites must all be pairwise co-located (merged, set INTANGIBLE and added to the merged set), i.e. every tracked instance removed from play.",
+   "item_digest": "fe93f5d484ebd45e"
+  },
+  "g05": {
+   "predicate_classes": [
+    "state_relations",
+    "event_occurrence"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "next_level fires when the 2-frame exit animation drains; that animation is armed by deymuvatgy(), called from step() only when a directional ACTION1-4 move makes try_move of the player return a sprite named 'exydhv' \u2014 i.e. the player must walk into the exit object (evidence does not show whether that object is itself gated).",
+   "item_digest": "ccea7199760c435f"
+  },
+  "g16": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "guard_form": "delegated",
+   "notes": "Delegated predicate ielczunthe(): for every sprite of the mover class there must exist a target sprite containing the mover's colour, on the same lateral coordinate, whose wall lies in the wall set adjacent to the platform the mover rests against under the level's gravity axis; failure of any one mover returns False.",
+   "item_digest": "53fa7bcabd612e07"
+  },
+  "g14": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "guard_form": "instance_flag",
+   "notes": "Advance reads latched win flag uyawyyswbya (+ no group mid-flash); the player-establishable condition set at its write site is: after a drag animation completes with no hazard collision, EVERY name-keyed mover overlaps its own matched target sprite (keys containing 'dirwzt' excluded; a fallback branch defers to helper ldzvchvkvp, not shown in evidence).",
+   "item_digest": "0a3d0dd136d7ce31"
+  },
+  "g17": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "region_membership"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "Phase counter kdkehgjrzq 0->1->2 runs move-then-settle; only when the settle predicate tnwgpjxbwe() passes is the inline test evaluated: at least one mover exists and every mover sprite sits exactly on the coordinates of some exit sprite.",
+   "item_digest": "a81c6f8880f0ac69"
+  },
+  "g19": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "region_membership"
+   ],
+   "guard_form": "delegated",
+   "notes": "step() delegates to ymzfopzgbq(): every block-tagged sprite must occupy a cell in the goal-footprint set built at on_set_level AND not be currently attached to any pusher (absent from the carrier map).",
+   "item_digest": "e7e74eed2f33fb3d"
+  },
+  "g24": {
+   "predicate_classes": [
+    "state_relations",
+    "region_membership"
+   ],
+   "guard_form": "delegated",
+   "notes": "Advance guard delegates to a method returning player-sprite.x/y == goal-sprite.x/y (tags 'jfva' vs 'goknoi'); early returns mean it is only evaluated after a directional move, but the condition itself is pure coincidence of the avatar with the fixed goal cell (step budget and support check drive lose, not advance).",
+   "item_digest": "b6283e081703f3fe"
+  },
+  "g07": {
+   "predicate_classes": [
+    "symmetry_and_template_match",
+    "quantified_object_conditions"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "Immediate guard is only an animation counter reaching len(pairs)*(palette-1); the player-establishable condition is bsqsshqpox(), which greedily parses the fixed input sprite sequence with the (LHS,RHS) rule pairs and requires the player-edited output sequence to match name-for-name at every aligned position with nothing left over.",
+   "item_digest": "cec4a035cd6d84e0"
+  },
+  "g03": {
+   "predicate_classes": [
+    "event_occurrence"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "Advance needs engine flag iajuzrgttrv, set unconditionally by win() inside a handler taking a single typed entity argument, and is resolved only on the step after the render queue drains (<=1 frame left); the call site of that handler - the actual player-establishable trigger - is not present in the evidence, so the goal is a discrete win event of unknown antecedent.",
+   "item_digest": "6410114a2a9dab9c"
+  },
+  "g00": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "guard_form": "delegated",
+   "notes": "Delegated predicate requires, for both tag pairings, that every container sprite has some partner sprite nested exactly inside it (partner.x == c.x+1, partner.y == c.y+1, height/width == c's minus 2) - a universally quantified existential over an exact geometric fit relation.",
+   "item_digest": "46256f0c5a7c917b"
+  },
+  "g12": {
+   "predicate_classes": [
+    "state_relations"
+   ],
+   "guard_form": "instance_flag",
+   "notes": "Advance flag qgzorkgosv is set when mrzduxdbbk() -> safkknjslo, i.e. the currently-active avatar sits at a fixed (+1,+1) offset from the single tagged goal sprite; record/replay-clone and pressure-plate machinery only constrain reachability, not the predicate.",
+   "item_digest": "5090a51b7ff45260"
+  },
+  "g21": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "state_relations"
+   ],
+   "guard_form": "instance_flag",
+   "notes": "Flag rqolqpqwo is set when delegated sjwqloivve() finds no visible sprite retaining an unpaired marker pixel (colour 8 or 13) - i.e. for every piece every marker cell must coincide with exactly one other piece's marker cell (len(bucket)==2 pairing built in uqlndqojuf), so a universal over objects plus a pairwise co-location relation with an exactly-two cardinality.",
+   "item_digest": "49e58ad67ab3a417"
+  },
+  "g13": {
+   "predicate_classes": [
+    "state_relations"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "Advance reads sub-object flag nkuphphdgrp only once frames_to_render drains; win() is invoked from move/fall handlers (destination cell == ['fjlzdjxhant'], or landed_on_gem from fsvnqdbzrp), several through animation callbacks - the player-establishable condition is the avatar coming to occupy the goal-object cell.",
+   "item_digest": "24b38d5356e791f7"
+  },
+  "g04": {
+   "predicate_classes": [
+    "symmetry_and_template_match",
+    "quantified_object_conditions"
+   ],
+   "guard_form": "delegated",
+   "notes": "jeiavrvavi() composites every movable piece onto a canvas copy and returns True only if every target sprite's non-transparent, non-wildcard(4) pixel equals the composite, i.e. the arrangement reproduces the reference pattern.",
+   "item_digest": "836f085c6260b5b0"
+  },
+  "g09": {
+   "predicate_classes": [
+    "symmetry_and_template_match",
+    "state_relations"
+   ],
+   "guard_form": "inline",
+   "notes": "Player-built 10x10 sprite must equal the reference sprite's pixels on every cell outside both diagonals (X-shaped mask); the early return only asserts both sprites exist.",
+   "item_digest": "761dda97e42e38f8"
+  },
+  "g18": {
+   "predicate_classes": [
+    "all_instances_transformed",
+    "quantified_object_conditions"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "After ACTION5 launches the multi-step spill from the sources, advance needs every receiver reached and recoloured (all of mxdlffpzkc() in cevwbinfgl) with no hazard sprite hit (kfdcqkodyy False), evaluated once the propagation front list empties (lybfalkrdl).",
+   "item_digest": "116b873ef6099248"
+  },
+  "g20": {
+   "predicate_classes": [
+    "state_relations",
+    "symmetry_and_template_match"
+   ],
+   "guard_form": "instance_flag",
+   "notes": "Win latch nyhaiggftp is set when the right machine's object matches its target in x, y, scale, rotation and colour after the clicked program's stepwise execution drains the animation queue; the click budget bar only drives the lose branch.",
+   "item_digest": "b6f3edcf5e5127db"
+  },
+  "g10": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "region_membership"
+   ],
+   "guard_form": "instance_flag",
+   "notes": "Advance reads a boolean set on the move that made vplrhaovhr() true: every target sprite's cell is non-empty in the composited raster, i.e. all goal cells covered by a piece or by one of its mirror-reflected copies.",
+   "item_digest": "28dc869fd3bc9df0"
+  },
+  "g01": {
+   "predicate_classes": [
+    "symmetry_and_template_match",
+    "quantified_object_conditions"
+   ],
+   "guard_form": "deferred_animation",
+   "notes": "Guard is a 35-tick flash counter started when gvtmoopqgy() returned true; the real condition is that for every colour-matched pair of trains the tile colours under corresponding body indices are equal for the partner's full body length.",
+   "item_digest": "781766f6c1116dce"
+  },
+  "g06": {
+   "predicate_classes": [
+    "quantified_object_conditions",
+    "region_membership"
+   ],
+   "guard_form": "delegated",
+   "notes": "Helper returns true only when every sprite of tag A sits on a 'goal' sprite and every sprite of tag B sits on a 'goal-o' sprite, i.e. all blocks type-matched onto their goal cells after a rotation-button click.",
+   "item_digest": "fd3e4b6f9a7a40d5"
+  }
+ }
+}

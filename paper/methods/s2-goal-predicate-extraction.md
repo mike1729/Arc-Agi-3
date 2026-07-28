@@ -2,9 +2,11 @@
 
 *Written 2026-07-28, the day the extraction was built (§5 standing obligation). Implementation:
 `agent/harness/{s2_goal_predicates,s2_apply_labels}.py`; outputs `logs/s2_goal_predicates.json`,
-`logs/s2_labels_round2.json`, `logs/s2_goal_predicates_labelled.json`. Round 1's inputs and results
-are quarantined under `logs/quarantine/s2-superseded-worksheet-2026-07-28/`; the worksheet they used
-differs from the corrected extraction on seventeen of twenty-five packets.*
+`logs/s2_labels_round3.json`, `logs/s2_rerate_r3_pass2.json`, `logs/s2_rerate_r3_result.json`.
+Round 1's inputs and results are quarantined under
+`logs/quarantine/s2-superseded-worksheet-2026-07-28/`; round 2's (`s2_labels_round2.json`,
+`s2_rerate_r2_*.json`) are retained as the record of a measurement over packets that five extraction
+repairs have since changed. Neither is current.*
 
 ## Why the predicates are measured rather than inferred
 
@@ -79,101 +81,81 @@ Two frequencies are reported. The primary share ranks what each predicate mainly
 share counts every class judged present, so that a class which is pervasive as a component but never
 dominant does not read as absent.
 
-## Agreement, round 2
+## Agreement, round 3
 
-The section this replaces reported round 1, in which the first pass was the same agent that built the
-extraction and the second was fresh contexts. Two defects were then found by review: the extraction
-silently discarded the assignment sites of any attribute written in more than six places, including
-attributes the advance guard reads directly, and name resolution iterated a set, so the identical
-corpus hashed differently on every run. Correcting both changed seventeen of twenty-five packets, and
-round 1's figures — a primary-class kappa of 0.537 — describe a corpus that no longer exists. They are
-not reported here as a comparison, because round 2 does not measure the same thing.
+Three rounds were run. Only the third is a measurement; the earlier two are the record of finding out
+why they were not. Round 1 paired the extraction's own author against fresh readers over packets since
+invalidated, and reported 0.537. Round 2 was the first with both passes in fresh contexts and reported
+0.858, but six environments in it were rated blind to their own deciding condition. Round 3 follows
+five extraction repairs, each found by a rater who was required to report a missing condition rather
+than fetch it from the source.
 
-Round 2 changed the design in three ways. Both passes are fresh contexts, so the statistic is
-reader-against-reader rather than author-against-reader. Batches are balanced by evidence volume
-rather than by item count, because the corrected packets range from fourteen lines to over two
-thousand and an unbalanced split would enter reader fatigue as if it were item difficulty. And raters
-are confined to the packet: where the evidence does not contain the deciding condition they are
-required to say so rather than consult the environment source. In round 1 raters on both passes
-silently filled such gaps from the source, which is how the two passes came to rate different
-material.
+Cohen's kappa on the primary class is **0.947** over all twenty-five environments (observed 0.960,
+expected 0.243), and 0.940 over the twenty-two whose packets are complete. Seventeen of twenty-five
+received identical class sets, and the mean Jaccard is 0.807. Agreement on `guard_form` is **1.000** —
+the two passes agree without exception on how each condition is reached from the advance site, which
+is the structural question every one of the repairs was about.
 
-Cohen's kappa on the primary class is 0.858 over all twenty-five environments (observed agreement
-0.880, expected 0.155). Exact agreement on the full class set is 0.640 and the mean Jaccard 0.767;
-sixteen of twenty-five environments received identical class sets. Agreement on `guard_form` — the
-structural question of how the condition is reached from the advance site — is 0.920.
+Exactly one primary assignment differs, and it is not a disagreement about content: both passes chose
+the same two classes for that environment and ordered them differently. There is no environment where
+the passes read different conditions.
 
-Only three primary assignments differ, and two are near-misses rather than genuine disagreements: one
-pair chose the same two classes and ordered them differently, and in another the second pass returned
-a strict superset of the first. The third is an environment whose deciding predicate is absent from
-its packet, so the two passes were reasoning about different things by construction.
+The repairs are what moved the figure, not the raters. Five of round 2's six blind environments now
+carry their condition in the packet and are read identically by both passes: one went from a blind
+"an event fired" to a state relation in both passes; another from two passes disagreeing while blind
+to an identical pair of classes; a third from reporting as *unconditional* to a call-site move
+condition read the same way twice. Three environments remain flagged, and only one seriously — a
+sub-engine whose win event is reached through two hops of delegation where the extraction follows one.
+The other two are missing peripheral helpers that neither pass treated as load-bearing.
 
-Restricted to the nineteen environments whose packets are complete, kappa is 0.871 and only those two
-near-misses remain. That the figure barely moves is itself informative: the under-determined packets
-are not where the readers disagree, because a packet that visibly lacks its condition produces a
-cautious label from both readers rather than two confident and different ones.
+## What the corpus says
 
-## What the corrected corpus says
+Quantified object conditions are the primary class in nine and ten of twenty-five across the two
+passes, and present in thirteen and fourteen — universals of the form "every object of this kind
+stands in this relation to one of those". State relations are primary in five and six and present in
+twelve and fourteen. Symmetry and template match is primary in five in both.
 
-Both passes now agree on the shape of the distribution, and it is not the shape round 1 reported.
+Two results survived all three rounds and are firmer for it.
 
-Quantified object conditions are the primary class in six of twenty-five environments in both passes —
-not the ten that round 1 claimed. State relations are primary in four and five, and are the most
-common component. Symmetry and template match, event occurrence and all-instances-transformed each
-sit at three or four primary. Counts and ordered event programs are primary once each in both passes.
+Region membership is the primary class in **zero** environments in both passes while present in five
+and six. It is real and never dominant: a component of goals rather than a shape of them.
 
-Two of the ten pre-specified classes are effectively unexercised by this corpus. Action-conditioned
-terminal triggers were not assigned by either pass, in any position. Cumulative counters were not
-assigned as a primary class by either pass and appear once as a component. A closed class library was
-adopted precisely so that this could be observed rather than absorbed, and it is the more useful
-finding: the library is not incomplete, it is oversized for the public set.
-
-Neither pass reached for the escape category. Nothing in these twenty-five environments demanded a
-class the library lacks.
+Action-conditioned terminal triggers and cumulative counters are at **zero in every position, in both
+passes**. Two of the ten pre-specified classes are unexercised by this corpus. Round 1 concluded the
+opposite — that every class occurred and the library was therefore adequate — and that conclusion was
+an artifact of packets that did not contain their conditions. Neither pass in any round reached for
+the escape category, so nothing in these environments demanded a class the codebook lacks. The
+codebook is oversized for the public set, not incomplete.
 
 ## Limitations
 
 Both passes are the same model family in fresh contexts, so kappa bounds the *stability* of the
-labelling and never its correctness. A confound reproduced identically by two readers raises the
-figure rather than exposing anything, and one model reading obfuscated source may share systematic
-blind spots with another. A human re-rate remains outstanding, and no figure here should be compared
+labelling and never its correctness. A confound reproduced by two readers raises the figure rather
+than exposing anything. A human re-rate remains outstanding, and no figure here should be compared
 against a literature expecting human test-retest.
 
-Each pass is five raters over disjoint batches rather than one rater over all twenty-five, so the
-statistic compares two composite readers and mixes between-rater variance into what is reported as
-item variance. Balancing batches by evidence volume removes the largest confound this introduces but
-not the effect itself.
+Each pass is eight raters over disjoint batches, so the statistic compares two composite readers.
+Batches are balanced by evidence volume rather than item count, which removes the largest confound
+that introduces — one environment's packet is larger than most whole batches and was rated alone,
+so its label carries no cross-item calibration.
 
-**Six environments were rated on packets that do not contain their deciding condition**, and both
-passes flagged them rather than filling them from source. Three distinct extraction gaps remain
-responsible: the arming call site of a trigger method is not followed; a scripted win event inside an
-embedded sub-engine is not crossed into; and a predicate reached through a local binding — `x =
-self.method()` in the enclosing function — never enters resolution. Every label on those six is a
-judgment about a condition the rater could not see, and the class frequencies should be read as
-resting on nineteen environments, not twenty-five.
+Three environments were still rated without their full deciding condition. One is materially
+affected; for the other two both passes judged the missing helper peripheral and labelled from what
+was present. Frequencies rest on twenty-two environments read completely and three read partially.
 
-**The packets these figures were computed over have themselves since been superseded.** Two further
-gaps were found and closed while round 2's second pass was already running: container mutation
-(`self.d[k] = v`, `del`, and mutating method calls) was not recognised as a write at all, and
-module-level functions were never indexed, which additionally required collecting bare-name calls
-since the reference walk only gathered attributes. Closing them changes sixteen of twenty-five
-packets. The corpus was deliberately not regenerated mid-flight, so round 2 measures two readers on
-identical material and its kappa stands; its class distribution is provisional until a round 3 over
-the corrected packets.
+The packets are verbose in a way that should be fixed before anyone reads this corpus again: roughly
+forty-four per cent of the largest ones is duplicated text, because several writes to the same guard
+flag each emit their own overlapping window of the enclosing function. The corpus grew from 18.6k to
+45.8k lines across the repairs, and about half of that growth is repetition rather than coverage. It
+is redundant rather than misleading, so it does not threaten these labels, but it inflates every
+reader's load and should be deduplicated by emitting each distinct source region once.
 
-**Round 2's kappa is not currently reproducible, and that is a defect in the instrument rather than
-in the round.** The scorer bound the worksheet to the corpus but never bound the submitted second
-pass to the worksheet. Item ids are positional (`g00`..`g24`), so a ratings file fits any worksheet of
-the same size: the superseded round's ratings scored cleanly against the corrected worksheet and
-reported a kappa of 0.659 with seventeen of twenty-five packets changed underneath. Two passes rating
-different material is not an agreement measurement, and nothing in the artifact said so.
-
-The binding now exists — `draw` emits a `worksheet_id` over the ordered (item, packet-digest) pairs
-plus a pre-filled ratings template carrying it and the per-item digests, and `score` refuses a pass
-whose binding does not match. Round 2's ratings predate it and therefore **refuse**, so **0.858 is
-recorded here as the figure that round produced, not as a figure this repository can currently
-re-derive.** It should be treated as provisional on exactly the same footing as the class
-distribution, and superseded by round 3 rather than compared against it.
+Round 3's second pass is bound to the worksheet it was produced from by a worksheet identifier and a
+per-item digest. This closes a hole in our own verifier rather than in the extraction: item ids are
+positional and the draw seed is fixed, so a ratings file fits any worksheet of the same size, and the
+digest check proved worksheet-against-corpus while never proving ratings-against-worksheet. Round 2's
+0.858 was true but unprovable for exactly that reason, and it is reported here as superseded rather
+than as a comparison.
 
 Frequencies are over environments, not over levels. Cross-level transfer in this benchmark is
 parameterized rather than literal — the family persists while targets, regions and orderings change —
