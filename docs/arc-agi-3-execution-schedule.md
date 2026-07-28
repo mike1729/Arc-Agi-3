@@ -56,7 +56,7 @@ numbers**, or the same conflict recurs at every subsequent block.
 
 | Day | Date | Work | Done means |
 |---|---|---|---|
-| A1 | Tue Jul 28 | Resolve pre-registration ownership (open item 1). Write and freeze `s2`. Draw the **blind re-rate** sample from the 75-episode corpus | `s2` block `frozen`; re-rate sample drawn and blinded |
+| A1 | Tue Jul 28 | Resolve pre-registration ownership (open item 1). Write and freeze `s2`. Draw the **blind re-rate** sample from the 75-episode corpus | ✅ re-rate drawn, blinded, **scored and promoted** (κ 0.7207, 30/30) — S1 CLOSED · ✅ `s2` written as a full block · ⚠️ `s2` is `DRAFT` not `frozen`: PROPOSED values need operator acceptance before A2 · ⚠️ open item 1 **not** resolved — `s2` was scoped to avoid adding to the collision instead |
 | A2 | Wed Jul 29 | S2 — F1 generator: aliasing mechanic, **variable-length frame sequences**, ARC conventions (64×64, values 0–15, per-game action availability) | F1 emits, conventions asserted in a test |
 | A3 | Thu Jul 30 | S2 — F1 three ceilings: observation-only · history-oracle · hidden-state-oracle | required pattern observed, or task declared not history-resolvable |
 | A4 | Fri Jul 31 | S2 — F3 generator: sparse delayed causal memory at the pre-registered delay and bit sparsity | F3 emits; delay verified by construction |
@@ -190,8 +190,9 @@ compressed; they are the submission.**
 
 | Item | Needed by | Start by |
 |---|---|---|
-| Pre-registration ownership (open item 1) | S2 Day 1 | **today** |
-| Blind re-rate sample + rating | S5's B/M axes | **today** (A1) |
+| Pre-registration ownership (open item 1) | S2 Day 1 | **still open** — `s2` was written without resolving it, by registering only what SPEC §4.9 marks unregistered and citing §13.1/§9.4/§9.5 rather than restating them |
+| Blind re-rate sample + rating | S5's B/M axes | ✅ **done 2026-07-28** — κ 0.7207, promoted, S1 closed |
+| **Accept the `s2` PROPOSED values** | **A2, Wed Jul 29** | **the block is DRAFT until this happens** — `s2.open_before_A2` |
 | S3/S4 replicate counts registered | A6 / A11 | A1–A2 |
 | Public-game partition (17 dev / 8 validation) | W1 step 1, frozen | before W1 — **drawn before step 4, never backfilled** |
 | **Procedural-suite acceptance (SPEC §12.1 step 0)** | **A5-G, Mon Aug 3** | **gates D0; its four numeric criteria are the `s2` pre-registration, so they land on A1** |

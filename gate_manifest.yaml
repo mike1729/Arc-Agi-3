@@ -7,7 +7,9 @@
 #            (kappa 0.7207, 30 of 30, floor 0.40), and results.total_failure_episodes /
 #            failure_frequency_ranking / build_order / viability_verdict are filled from it.
 #            `hidden_score` stays null: no submission has carried an entrant-authored payload.
-#            S2 pre-registration is still NOT_STARTED — an S2 blocker, no longer an S1 one)
+#            S2 pre-registration drafted the same day — `s2` is now a full block at status: DRAFT,
+#            written before the A2 generator work it governs. It freezes once the operator accepts
+#            or replaces its PROPOSED values; see `s2.open_before_A2`)
 # Build:     docs/arc-agi-3-implementation-spec.md      (binding for Aug 24 -> Oct 18)
 #
 # RULES
@@ -1254,6 +1256,28 @@ s1:
   # Results — filled at S1-g (Day 7 AM).
   # -----------------------------------------------------------------------------
   results:
+    # ---------------------------------------------------------------------------------
+    # STAGE CLOSURE. `status: frozen` at the top of this block is about the PRE-REGISTRATION —
+    # it says the numbers stopped moving on 2026-07-26, not that the stage finished. The stage's
+    # own state is recorded here, because a reader asking "is S1 done?" was previously answered
+    # only by prose in notes/ and by a header comment, neither of which a script can read.
+    # ---------------------------------------------------------------------------------
+    stage_status: CLOSED
+    closed_on: 2026-07-28
+    closed_branch: DEGRADED
+    closure_conditions_discharged:
+      - "corpus rebuilt from three configuration-identical single-pass runs — 75 episodes, all labelled"
+      - "blind re-rate drawn, scored and PROMOTED as an independent re-rate, same model (S1-E10):
+         overall kappa 0.7207, 30 of 30 scored, floor exactly the pre-registered 0.40"
+      - "categories below the floor on either axis excluded; the four roll-up fields below filled
+         from the promoted result by agent/harness/s1d_rollup.py"
+    closure_note: "S1 was marked complete once before, on 2026-07-27, with the gate unapplied — that is
+                   what reopened it (external review finding 6). The distinction this field now makes
+                   explicit: a stage closes on its GATE, not on its measurements being finished."
+    reopened_history:
+      - {date: 2026-07-27, reason: "agreement gate unapplied; three roll-up fields null",
+         source: "external review of the three-pass / re-rate path, finding 6"}
+
     # PROVISIONALLY DEGRADED, 2026-07-27. Not because a submission was rejected — because the payload
     # S1-f was designed around was withdrawn by operator decision on 2026-07-26 (see
     # threshold_verdicts.packaging). No submission has been attempted, so this is not yet the §4.7
@@ -1874,7 +1898,337 @@ verification:
 # =====================================================================================
 # Later stages — stubs. Freeze each before its step, per §10.
 # =====================================================================================
-s2: {status: NOT_STARTED}   # value/distance-to-goal criterion per family; F1 three-ceiling margins; F3 delay length and bit sparsity
+# =====================================================================================
+# S2 — procedural suite (F1 + F3). Written 2026-07-28 (schedule day A1), BEFORE the generator
+# work it governs, which starts A2 (Wed Jul 29). This is the pre-registration the spec calls for
+# at §4.9: "All four go into gate_manifest.yaml before the work that consumes them, per the
+# pre-registration rule — not backfilled from whatever the generator turns out to produce."
+# =====================================================================================
+s2:
+  # DRAFT, NOT frozen — deliberately, and the distinction is the whole point of the vocabulary.
+  # Values below are in two kinds:
+  #   ACCEPTED  — derived from a measurement or from an already-registered constant. Stated with
+  #               its derivation, so it can be checked rather than believed.
+  #   PROPOSED  — a judgment this file suggests and that the OPERATOR has not accepted. Every one
+  #               is a real trade with a cost stated beside it. `PROPOSED` values must be accepted
+  #               or replaced before A2 begins, exactly as the s1 block's were before S1-b.
+  # Freezing this block with an unaccepted judgment inside it would be the failure the vocabulary
+  # exists to prevent: a number nobody chose, cited afterwards as pre-registered.
+  status: DRAFT
+  drafted_on: 2026-07-28
+  freeze_condition: "every PROPOSED value accepted or replaced by the operator; then status: frozen,
+                     frozen_on set, and every later change becomes a dated erratum"
+  governs: "schedule days A2-A5 (generator build) and A5-G (SPEC §12.1 step 0 acceptance)"
+  authority: "SPEC §4.9 is the governing interface list and the source of the six acceptance
+              criteria. This block registers the NUMBERS §4.9 declares unregistered; it does not
+              restate the interface and does not redefine any criterion."
+
+  # ---------------------------------------------------------------------------------
+  # SCOPE — and a deliberate non-answer to open item 1.
+  # ---------------------------------------------------------------------------------
+  # docs/README.md open item 1: the manifest and SPEC §13 both predeclare numbers, and both claim
+  # the pre-registration role. That is a governance decision for the operator and is NOT resolved
+  # here. What this block does instead is avoid ADDING to the collision: it registers only
+  # quantities SPEC §4.9 explicitly marks `not registered`, and CITES §13.1 / §9.4 / §9.5 for
+  # everything they already fix rather than restating their values. If open item 1 later resolves
+  # toward the spec, this block migrates whole; nothing in it has to be reconciled first.
+  scope_note: "registers only quantities SPEC §4.9 marks `not registered`; cites §13.1/§9.4/§9.5
+               rather than duplicating them. Open item 1 is untouched and still open."
+
+  # ---------------------------------------------------------------------------------
+  # What has ALREADY run, and why it is not a pre-registration violation.
+  # ---------------------------------------------------------------------------------
+  # Artifacts named `s2_*` already exist in logs/. They are NOT the generator: they are the
+  # measurement work that FEEDS this pre-registration, which is the correct order.
+  prior_work_not_governed_by_this_block:
+    - what: "goal-predicate extraction across all 25 public games (s2_goal_predicates.py), rated and
+             blind-re-rated to kappa 0.947 on primary class over the whole 25-game corpus"
+      why_not_governed: "evidence about what the REAL environments use as win conditions. It informs
+                         the value/distance-to-goal criterion and the goal-family question below;
+                         the generator does not exist yet and nothing here was fitted to it"
+      artifact: "logs/s2_goal_predicates_labelled.json; logs/s2_rerate_r3_result.json"
+    - what: "replay corpus census (s2_replay_ingest.py, s2_corpus_census.py) — 180,144 transitions,
+             516,260 grids, the frame-length distribution and the 0.90% progress prevalence"
+      why_not_governed: "measurement of the corpus that the fidelity targets below are set AGAINST.
+                         Setting a target from a measurement is the intended direction"
+      artifact: "logs/s2_corpus_census.json; notes/screening-training-data.md"
+    - what: "ARC convention measurement across all 25 games (measure_arc_conventions.py), 2026-07-26"
+      why_not_governed: "same — it is the observation-fidelity target, measured before the thing
+                         it constrains was designed"
+      artifact: "logs/s2_arc_conventions.json"
+
+  # =================================================================================
+  # ACCEPTANCE — SPEC §4.9's six criteria. Four numeric, two structural.
+  # A5-G reads exactly the registered values below. `[ACCEPTED]` / `[PROPOSED]` per §4.9's own
+  # framing that "acceptance and pre-registration are one piece of work".
+  # =================================================================================
+  acceptance:
+
+    # ---------------------------------------------------------------- 1. throughput
+    throughput:
+      status: ACCEPTED
+      value_transitions_per_second: 3710
+      rule: "sustained, measured over >= 60 s of continuous generation at the emitted frame-length
+             distribution — NOT a burst figure and NOT measured on single-frame observations"
+      derivation: "notes/screening-training-data.md §2, from notes/local-compute-options.md's measured
+                   7.22 steps/s benchmark: K=16 transitions x batch 32 = 512 transitions per gradient
+                   step, at 138 ms/step => 3,710 transitions/s to keep the GPU compute-bound.
+                   This is arithmetic over a measurement, not a target chosen for convenience."
+      on_fail: "S3 becomes DATA-bound rather than compute-bound and the 46.2 h estimate is wrong by
+                the shortfall factor. Two documented escapes, and the second is not free:
+                (a) parallelise generation across cores;
+                (b) pre-generate a fixed corpus — which reintroduces the epoch question S3 otherwise
+                    escapes and therefore triggers `min_distinct_transitions_if_pregenerated` below."
+      escape_b_threshold:
+        status: PROPOSED
+        min_distinct_transitions_if_pregenerated: 2560000
+        rationale: "notes/screening-training-data.md marks this `[judgment]`: <= 20 epochs for a 21.2M
+                    model over the 51.2M presentations one run consumes. It is a judgment about
+                    memorisation headroom, not a measurement, so it is PROPOSED here rather than
+                    inherited as though it were derived."
+
+    # ---------------------------------------------------- 2. held-out instance count
+    held_out_instance_count:
+      status: PROPOSED
+      per_family: 200
+      total_across_F1_and_F3: 400
+      rule: "disjoint AT THE INSTANCE LEVEL, never a random transition split (SPEC §9.4). An instance
+             is one hidden-mechanic parameterisation with its own seed."
+      rationale: "three consumers set the floor, and the binding one is the quantile estimate.
+                  SPEC §13.1 defines q_hi / q_lo as the 90th and 50th percentiles of procedural
+                  held-out calibration error; a 90th percentile read off fewer than ~100 units is
+                  dominated by its own tail. 200 leaves the estimate stable under the instance-level
+                  clustering SPEC §9.4 requires, and leaves headroom for §6.4 clause 3's ECE and
+                  §9.4's held-out-goal-parameter split to be cut from the same pool without
+                  re-using instances across purposes."
+      why_proposed: "no document fixes this. The 100-unit floor is a statistical rule of thumb, and
+                     the 2x headroom is a judgment about how many disjoint uses the pool must serve.
+                     Both are arguable; neither is measured."
+      on_fail: "q_hi/q_lo are estimated on a sample too small to support the percentile, so the tau
+                controller is calibrated against noise. Recorded as untested rather than passed."
+
+    # ------------------------------------------------- 3. instance diversity per family
+    instance_diversity_per_family:
+      status: PROPOSED
+      distinct_hidden_mechanic_parameterisations: 2000
+      rule: "counted as distinct PARAMETERISATIONS of the hidden mechanic, not distinct seeds of one
+             parameterisation. Two instances differing only by RNG stream are one parameterisation."
+      rationale: "this is the number notes/screening-training-data.md §2(b) exists to warn about:
+                  'Generate 51.2M transitions from 20 hidden-mechanic parameterizations and a
+                  21M-parameter model memorizes the mapping, producing a clean, well-controlled,
+                  meaningless positive.' The doc's own bound is 'hundreds-to-low-thousands of
+                  instances/family', explicitly labelled a planning judgment. 2,000 sits at the top
+                  of that stated range because the failure is ASYMMETRIC: too few silently produces
+                  a positive result that means nothing, while too many costs only generation time,
+                  which criterion 1 already requires be cheap."
+      why_proposed: "the source calls its own range a planning judgment, not a threshold."
+      on_fail: "an F1 positive is uninterpretable — indistinguishable from memorisation of a small
+                mechanic set. This is the single most dangerous unmet criterion in the block, because
+                unlike the others it fails by producing a RESULT rather than an error."
+
+    # ------------------------------------------------- 4. progress-event prevalence
+    progress_event_prevalence:
+      status: PROPOSED
+      value: 0.05
+      measured_anchor: 0.0090          # 1,614 terminal transitions of 180,144 replay transitions
+      rule: "prevalence of progress-bearing transitions among all emitted transitions, per family,
+             held within +/- 0.01 absolute of the registered value and REPORTED per family"
+      rationale: "the observed 0.90% is the anchor, not the target. notes/screening-training-data.md
+                  is explicit that 'generating at 0.9% wastes the one degree of freedom procedural
+                  data offers' — the point of a generated source is that this is a DESIGN PARAMETER
+                  (SPEC §4.9, §5). 5% is ~5.5x the observed rate: far enough above it to give §5's
+                  progress head a workable positive count, close enough to stay in the same regime
+                  as the real distribution rather than training a head on a prevalence the
+                  environment never exhibits."
+      why_proposed: "the 5.5x factor is a judgment. SPEC §3.2 requires this be registered AND
+                     calibrated; calibration against the real rate is a separate obligation this
+                     value does not discharge."
+      calibration_obligation: "SPEC §3.2 — a head trained at 5% and deployed against 0.9% is
+                               miscalibrated by construction. Record the reweighting or the
+                               prior correction wherever the progress head is evaluated."
+
+    # ------------------------------------------------- 5. generator correctness (structural)
+    generator_correctness:
+      status: PROPOSED                 # the PATTERN is fixed by SPEC §4.9; the MARGINS are not
+      f1_three_ceilings:
+        required_pattern: "observation-only < history-oracle ~= hidden-state-oracle"
+        pattern_source: "SPEC §4.9 validity conditions — binding, not proposed"
+        margins:
+          separation_obs_vs_history: ">= 10 pp, or max(10pp, min(20pp, 2*sigma_baseline)) where
+                                      sigma is estimable from >= 4 seeds"
+          equivalence_history_vs_hidden: "|history-oracle - hidden-state-oracle| <= 5 pp, AND the
+                                          one-sided 90% lower confidence bound on
+                                          (history-oracle - hidden-state-oracle) > -5 pp"
+          margin_rationale: "both borrow SPEC §9.5's ALREADY-REGISTERED margin structure rather than
+                             inventing a scale: §9.5's offline margin rule is
+                             max(10pp, min(20pp, 2*sigma_baseline)) with a 10pp floor at fewer than
+                             4 seeds, and its 1-completion non-inferiority clause is
+                             'regression <= 3pp and one-sided 90% lower bound > -5pp'. Reusing a
+                             registered shape is weaker than deriving one, and it is stated as such."
+        why_proposed: "SPEC §4.9 fixes the pattern and leaves 'the registered margins' to this file.
+                       No document fixes what '<' and '~=' mean numerically."
+        on_fail: "if history-oracle sits far below hidden-state-oracle the task is NOT learnably
+                  history-resolvable, and model failure on it is EXPECTED rather than informative.
+                  SPEC §4.9: without this ceiling that would be misread as a model result."
+      f3_delay_verified_by_construction:
+        rule: "the delay is verified BY CONSTRUCTION — the generator asserts that the causal bit is
+               written at step t, has no observable effect through step t+delay-1, and determines the
+               transition at t+delay. It is NEVER inferred from a trained model's behaviour."
+        rule_source: "SPEC §4.9 acceptance, structural criterion 1 — binding, not proposed"
+        delay_length_steps:
+          status: PROPOSED
+          min: 12
+          max: 24
+          sampled: "uniformly per instance over [min, max]"
+          rationale: "the delay must exceed the longest horizon the objective is TRAINED on, or the
+                      latent arm has gradient pressure to keep the bit and F3 tests nothing.
+                      SPEC §11.1 trains direct multi-horizon heads at 1, 2 and 4 steps and names an
+                      8-step rollout; the S3 compute benchmark uses a K=16 transition window.
+                      min 12 clears the 8-step rollout with margin; max 24 puts the consequence
+                      outside the 16-step window entirely, so the range spans 'beyond what is
+                      trained' to 'beyond what is even seen together'."
+          why_proposed: "12 and 24 are chosen relative to registered horizons (4, 8, 16); the
+                         clearances themselves are judgments."
+        bit_sparsity:
+          status: PROPOSED
+          causal_cells_per_instance: 1
+          fraction_of_grid: "1 / 4096 (one cell of 64x64)"
+          rationale: "SPEC §4.9 and §7 both define F3 as 'a ONE-CELL change with no short-term
+                      effect'. One cell is the definition, not a tuning choice; it is registered
+                      here so acceptance has a value to read."
+          distractor_cells_changed_per_instance:
+            status: PROPOSED
+            value: 8
+            rationale: "without distractors the causal cell is the only thing that changes and F3
+                        degenerates into change-detection. 8 keeps the causal cell at ~11% of
+                        changed cells — findable, not trivially so. Judgment; no source fixes it."
+
+    # ------------------------------------------------- 6. observation fidelity (structural)
+    observation_fidelity:
+      status: ACCEPTED                 # every row is MEASURED; none of it is a choice
+      rule: "emitted observations match EVERY row below. SPEC §4.9: any mismatch is a failure and is
+             reported; it is never absorbed as a tolerable difference."
+      measured_targets:
+        grid_shape: "64x64 at reset, always"
+        cell_values: "0-15, and all sixteen occur"
+        levels_per_instance: "6-10 (mode 6)"
+        action_availability: "fixed per instance, not per state — per-state variation is permitted by
+                              the interface but NOT evidenced in any measured game"
+        frames_per_observation:
+          distribution_must_match: true
+          single_frame_share: 0.710
+          mean: 2.86
+          max_observed: 404
+          source: "logs/s2_corpus_census.json; notes/screening-training-data.md §3 — 516,260 grids
+                   over 180,144 transitions"
+      measurement_source: "logs/s2_arc_conventions.json (25/25 public games, 2026-07-26);
+                           logs/s2_corpus_census.json (340 replays, 2026-07-28)"
+      tolerance: "distributional rows are compared by two-sample test on the frame-length
+                  distribution; categorical rows are exact. The test and its threshold are the one
+                  part of this criterion still unregistered — see open_before_A2 below."
+
+  # =================================================================================
+  # Frame cap — a COST decision that observation fidelity collides with.
+  # =================================================================================
+  # Flagged as item 3 in notes/screening-training-data.md's risk table, needed A2, currently absent.
+  # It belongs here because it is the one place where fidelity (criterion 6) and the sprint budget
+  # are in direct tension, and resolving it silently at implementation time would quietly weaken
+  # a registered criterion.
+  frame_cap:
+    status: PROPOSED
+    encoder_frames_max: 8
+    generator_emits: "the FULL measured distribution, uncapped — the cap is an ENCODER-side
+                      truncation, never a generator-side one. Capping the generator would make the
+                      emitted distribution violate criterion 6 by construction."
+    rationale: "notes/screening-training-data.md §5(a): at the measured mean of 2.86 grids an
+                uncapped S3 run costs ~132 h against a 120 h budget — it does not fit in its 5 days.
+                A cap of 8 frames covers 92.5% of observations and lands at ~97 h. The source calls
+                this 'a real modelling decision, not a detail' and says to decide it on A2 rather
+                than discover it as an OOM on A6."
+    cost_if_wrong: "uncapped overruns S3's only decision-bearing block by ~12 h; a tighter cap
+                    discards more of the long tail, which is exactly where multi-frame observations
+                    carry the consequence of an action."
+    must_be_reported: "the truncation rate and what it discards, wherever an S3 result is cited"
+
+  # =================================================================================
+  # Value / distance-to-goal criterion — the S2 stub's first named obligation.
+  # =================================================================================
+  value_criterion:
+    status: PROPOSED
+    evaluation_only: true
+    evaluation_only_rule: "BINDING, SPEC §4.9: if it trains a value head, an objective comparison
+                           silently becomes supervised action ranking. It is exposed to evaluation
+                           and ranking code only, and never appears in any arm's training target."
+    per_family:
+      F1:
+        criterion: "exact shortest-path distance to the nearest goal-satisfying state, in actions,
+                    computed by the generator from ground truth"
+        rationale: "F1's mechanic is a hidden switch/counter/phase over an otherwise fully known
+                    state, so exhaustive shortest-path is computable by construction"
+      F3:
+        criterion: "same shortest-path distance, computed on the POST-COMMIT state — i.e. conditioned
+                    on the value already written to the causal cell"
+        rationale: "before the causal bit is set the true distance is not a function of the observed
+                    state at all, which is the whole point of F3. A single unconditioned number would
+                    be wrong for exactly the transitions the family exists to test."
+    goal_predicate_families_to_instantiate:
+      status: PROPOSED
+      measured_evidence: "logs/s2_goal_predicates_labelled.json — all 25 public games, primary class
+                          per game, blind re-rate kappa 0.947. Measured primary distribution:
+                          quantified_object_conditions 9, state_relations 6,
+                          symmetry_and_template_match 5, all_instances_transformed 2,
+                          event_occurrence 1, ordered_event_programs 1, counts 1"
+      instantiate: ["quantified_object_conditions", "state_relations"]
+      rationale: "the two most frequent primary classes cover 15 of 25 public games between them.
+                  A generator whose goal predicates are drawn from classes the real environments
+                  rarely use tests transfer to a distribution that does not exist."
+      # ------------------------------------------------------------------------------
+      # A FINDING THAT AFFECTS A LATER DECISION, recorded here because this is where the
+      # evidence landed. SPEC §9.6 Fork G-F Branch A proposes building F4 ordered-event-program
+      # and F5 cumulative-counter families, at 2-3 build-days each, to make family transfer
+      # testable. The measured predicate distribution is awkward for exactly those two:
+      #   * `ordered_event_programs` is the PRIMARY goal class in 1 of 25 public games;
+      #   * `cumulative_counters` is in the codebook's `unused_classes` — it is the primary
+      #     goal class in ZERO of 25, and appears in no game's label set at all.
+      # So Branch A would spend >= 5 build-days making transfer testable across goal structures
+      # the public set almost never uses as win conditions. That does not settle the Aug 22
+      # decision — the hidden set is not the public set, and testability has value independent
+      # of frequency — but it is evidence the decision should be taken against, and it did not
+      # exist when §9.6 was written.
+      # ------------------------------------------------------------------------------
+      fork_g_f_caveat:
+        finding: "SPEC §9.6 Branch A's two proposed families are the two the public set exercises
+                  least: ordered_event_programs is primary in 1/25, cumulative_counters in 0/25
+                  (codebook `unused_classes`)"
+        consequence: "raise at the Aug 22 Fork G-F decision. Does NOT auto-select Branch B"
+        evidence: "logs/s2_goal_predicates_labelled.json frequencies; kappa 0.947 re-rate"
+
+  # =================================================================================
+  # Failure branch — restated from SPEC §4.9 because acceptance reads it, not because it is new.
+  # =================================================================================
+  on_acceptance_failure:
+    binding_source: "SPEC §4.9 failure branch, amended 2026-07-28 by S2-GATE-2026-07-28"
+    continues: "W1's non-dependent substrate — harness, accounting, replay, terminal-transition
+                logging, the §13.5 partition"
+    blocked: "D0 and every procedural-dependent item, until acceptance passes"
+    blocked_means: "NOT ATTEMPTED. A D0 threshold that reads held-out procedural environments is
+                    recorded `untested`, never `passed`. §10.1's freeze-before-inspection rule is
+                    unaffected."
+    calendar_cost: "deliberately NOT absorbed by these criteria — docs/README.md open item 6"
+
+  # =================================================================================
+  # What must be settled before A2 (Wed Jul 29) — the operator's list.
+  # =================================================================================
+  open_before_A2:
+    - "accept or replace every PROPOSED value above. They are: pre-generated-corpus threshold,
+       held-out instance count, instance diversity, progress prevalence, F1 margins, F3 delay range,
+       F3 bit sparsity and distractor count, frame cap, and the value criterion with its families"
+    - "the observation-fidelity test for the frame-length distribution — WHICH two-sample test and at
+       what threshold. Registered as an obligation above but not as a number; a fidelity criterion
+       whose comparison is chosen after seeing the output is not a criterion"
+    - "whether the 3.5-day S2 budget still holds. It predates SPEC §4.9's three added interface
+       requirements (ground-truth state IDs, seed/random-stream control with CRN declared, on-demand
+       generation) and has not been re-examined since 2026-07-28"
 s3: {status: NOT_STARTED}   # primary metric + threshold per screening question; T_v, T_r; rescue coefficients; evaluator-doing-the-work criterion
 s4: {status: NOT_STARTED}   # JEPA retention threshold — what advisor improvement at what latency cost
 s5: {status: NOT_STARTED}   # B/M/U/C pattern mapping to each §11 branch

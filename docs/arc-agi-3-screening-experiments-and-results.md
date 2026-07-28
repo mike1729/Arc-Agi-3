@@ -36,11 +36,14 @@ their index and their interpretation.
 
 **Two things are open right now and block their own sprints:**
 
-1. **`gate_manifest.yaml → s2` is `NOT_STARTED`** while S2 begins. Pre-registration must precede the
-   step it governs — §11. This was listed alongside S1's open gate; it is now an **S2 governance
-   blocker on its own**, and nothing in S1 waits on it.
+1. **`gate_manifest.yaml → s2` is `DRAFT`, not `frozen`.** It was written 2026-07-28, before the A2
+   generator work it governs, so the pre-registration order holds. What remains is **operator
+   acceptance of its PROPOSED values** — they must be accepted or replaced before A2 begins, exactly
+   as S1's were before S1-b. The list is `s2.open_before_A2`; the numbers are summarised in §11.
 2. **Two pre-registrations coexist** — the manifest and SPEC §13 both predeclare numbers. Open item 1
-   in [`README.md`](README.md).
+   in [`README.md`](README.md). The `s2` block deliberately does **not** resolve this: it registers
+   only quantities SPEC §4.9 marks unregistered and cites §13.1/§9.4/§9.5 rather than restating them,
+   so it adds nothing to the collision and can migrate whole if the item resolves toward the spec.
 
 **Closed 2026-07-28 — S1's blind re-rate.** `agreement_floor: 0.40` has now been applied: 30 of the 75
 labelled episodes, drawn stratified, re-rated in a fresh `claude-opus-5` context, overall κ **0.7207**.
@@ -475,12 +478,26 @@ meaning the auxiliaries carry the result.**
 
 ## 11. Still to pre-register
 
-Into `gate_manifest.yaml`, **before the step it governs.** S1 is frozen with results; **S2–S5 are all
-still `NOT_STARTED`.**
+Into `gate_manifest.yaml`, **before the step it governs.** S1 is frozen and **CLOSED** with results;
+**S2 is drafted** (2026-07-28, before the A2 work it governs); **S3–S5 remain `NOT_STARTED`.**
+
+**S2 — drafted, not yet frozen.** Every number SPEC §4.9 listed as unregistered now has a registered
+value, in two kinds. **Derived and accepted:** generator throughput **3,710 transitions/s** (arithmetic
+over the measured 7.22 steps/s benchmark — 512 transitions/gradient step at 138 ms) and the full
+observation-fidelity table (measured across 25/25 games and 340 replays, including the frame-length
+distribution: 71.0% single, mean 2.86, max 404). **Proposed, awaiting operator acceptance:** held-out
+instance count · instance diversity per family · progress-event prevalence (against a measured 0.90%
+anchor) · F1's three-ceiling margins · F3's delay length and bit sparsity · the encoder frame cap ·
+the value criterion and its goal families.
+
+The block freezes when those are accepted or replaced — `s2.open_before_A2` is the list. Proposed
+values borrow already-registered structure where one exists (F1's margins reuse SPEC §9.5's margin
+rule; F3's delay range is set against §11.1's trained horizons of 1/2/4 steps, the 8-step rollout and
+the K=16 window) rather than inventing a scale, and each says which it is.
 
 | Sprint | Numbers required |
 |---|---|
-| **S2** | value/distance-to-goal criterion per family · F1's three-ceiling margins · F3's delay length and bit sparsity · **the frame-sequence length distribution the generators emit** · **the generator's distinct-instance count and held-out instance count** · **the encoder's frame cap** · **procedural progress-event prevalence** · **generator throughput** (SPEC §4.9 names it unregistered; below its compute-bound rate S3 becomes data-bound) |
+| **S2** | ~~all registered~~ — drafted 2026-07-28; PROPOSED values pending acceptance before A2 |
 | **S3** | primary metric and threshold for each of the five questions · `T_v`, `T_r` · the rescue recipe's fixed coefficients · the evaluator-doing-the-work criterion · **the parameter count**, currently a guess · **the step count** ("matched optimization budget" currently has no number) |
 | **S4** | the retention threshold — what advisor improvement at what latency cost · **the replicate count** (§4.2) · **the step budget and model size** · **the train/held-out game split, and whether it is drawn as the SPEC §13.5 partition** |
 | **S5** | the B/M/U/C pattern mapping to each branch |
@@ -503,7 +520,10 @@ Sizing rationale: [`screening-training-data.md` §7](../notes/screening-training
 4. **Public games are materially easier than hidden ones** — 13.33% public against 7.78% semi-private
    for the ARC-standardized frontier reference. **A public number is never evidence of hidden
    generalization.**
-5. **The rater is an LLM, not a human** (S1-E10), and the blind re-rate has not run.
+5. **The rater is an LLM, not a human** (S1-E10). The blind re-rate has now run (κ 0.7207, §6.1), but
+   it is an LLM re-rating an LLM: it bounds label **stability**, not correctness, and the two passes
+   may share systematic blind spots that no amount of agreement between them would reveal. Nothing in
+   this document rests on a human-rated sample.
 
 ---
 
