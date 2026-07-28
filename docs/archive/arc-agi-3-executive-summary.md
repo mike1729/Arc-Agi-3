@@ -2,7 +2,7 @@
 
 **Frozen 2026-07-23.** Companions: [`arc-agi-3-execution-plan.md`](arc-agi-3-execution-plan.md)
 (schedule, gates, decision rules) and
-[`arc-agi-3-ship-jepa-x-architecture.md`](arc-agi-3-ship-jepa-x-architecture.md) (component
+[`arc-agi-3-ship-jepa-x-architecture.md`](../arc-agi-3-ship-jepa-x-architecture.md) (component
 specification).
 
 ## Abstract

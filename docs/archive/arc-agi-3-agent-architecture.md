@@ -2,13 +2,13 @@
 
 **Written 2026-07-25, revised 2026-07-25. Expository pass 2026-07-27** — §§3.1, 3.2, 3.4 and 3.5 each
 gained a *what it is* opening, because each previously began mid-specification and assumed
-[Track A](arc-agi-3-ship-jepa-x-architecture.md); §3.1's three identity components are now defined,
+[Track A](../arc-agi-3-ship-jepa-x-architecture.md); §3.1's three identity components are now defined,
 with the observation hash expanded (what canonicalization covers, why the hash and not the encoder
 representation, and three open specification questions); §10's five otherwise-undefined "retained"
 terms now carry pointers. **No design decision changed** — the three open questions in §3.1 are
 recorded as open, not answered.
 Complements
-[`arc-agi-3-ship-jepa-x-architecture.md`](arc-agi-3-ship-jepa-x-architecture.md) rather than
+[`arc-agi-3-ship-jepa-x-architecture.md`](../arc-agi-3-ship-jepa-x-architecture.md) rather than
 superseding it: that document remains the reference for the learned predictive components, which are
 retained here in reduced but non-trivial roles.
 
@@ -106,7 +106,7 @@ interval.
 states it has stood in; edges are transitions it has executed.** Nothing in it is predicted or
 inferred — an edge exists because an action was taken and an outcome was recorded. That is what
 *exact* means here, and it is why the archive outranks every other source (§2). Node and edge fields
-are specified in [Track A §9.1–9.2](arc-agi-3-ship-jepa-x-architecture.md); the one worth repeating is
+are specified in [Track A §9.1–9.2](../arc-agi-3-ship-jepa-x-architecture.md); the one worth repeating is
 that every edge stores **the model's prediction and its error at execution time**, which makes the
 archive a running scorecard for the belief model and not only a map of the game.
 
@@ -136,7 +136,7 @@ record a contradiction, so nothing downstream can falsify anything.
 
 #### What the observation hash covers
 
-Not the raw payload — the output of [Track A §4.1](arc-agi-3-ship-jepa-x-architecture.md)'s
+Not the raw payload — the output of [Track A §4.1](../arc-agi-3-ship-jepa-x-architecture.md)'s
 canonicalizer, whose preserve-list *is* the specification: categorical cell values (the integers 0–15,
 never a rendered image) · original frame dimensions · frame separation · padding marked explicitly ·
 metadata and available-action masks. Canonicalization strips serialization-level noise so that two
@@ -538,16 +538,58 @@ heads at 1/2/4 with composition consistency · counterfactual action ranking · 
 audit and attribution ladder · the diagnostic contract · the procedural boundary suite (now training
 and evaluation infrastructure for the belief model, D0, and R0).
 
-*Five of those names appear nowhere else in this document. They are specified elsewhere, and this list
-is the only place they are claimed — so the pointers matter:*
+*Five of those names appear nowhere else in this document, and this list is the only place they are
+claimed. Their original definition sites were the two documents frozen on 2026-07-23; those moved to
+`archive/` on 2026-07-28, so the definitions are **reproduced here in full** rather than pointed at.
+This subsection is now the definition site.*
 
-| Term | Defined in | In one line |
-|---|---|---|
-| **demotion ladder** | [Track A §21](arc-agi-3-ship-jepa-x-architecture.md), reliability governor | the four fallback modes the agent drops through when it stops being trustworthy: full hierarchical → sequential flat → exact archive/graph → conservative frontier exploration |
-| **common-candidate audit** | [`execution-plan.md` §6.7](arc-agi-3-execution-plan.md) | every arm ranks the *same* candidate set, so any difference is the ranker's and not the proposal mechanism's — this is what makes §3.4's recall metric interpretable |
-| **attribution ladder** | [`architecture-alternatives.md` §11](arc-agi-3-architecture-alternatives.md) | the four rungs separating "the model is wrong" from "the interface is wrong"; called the most transferable scientific asset in the project, and it works for any pair of arms |
-| **diagnostic contract** | [`execution-plan.md` §6.7](arc-agi-3-execution-plan.md) | the frozen baselines every condition is read against (copy-last-observation, random ranking, exact-simulator planning, archive baseline) plus the reported metrics — and the standing refusal to let unchanged-cell accuracy stand in for dynamics knowledge |
-| **procedural boundary suite** | [`executive-summary.md`](arc-agi-3-executive-summary.md), *Controlled mechanism study* | synthetic generators producing many independent environments while varying one factor at a time. **S2's F1 and F3 are the two families of this suite that survive the screening sprint** |
+**demotion ladder** *(also Track A §21, reliability governor)* — the fallback modes the agent drops
+through when it stops being trustworthy: full sequential hierarchical agent → sequential flat model →
+exact archive and graph agent → conservative frontier exploration. Triggered by rollout disagreement
+beyond tolerance · exact-delta error rising sharply · reachability calibration failure · no validated
+subgoal · high rule-shift probability · time reserve below the required margin.
+
+**common-candidate audit** *(= the same-candidate oracle audit)* — identical candidate sequences are
+rolled through every model and executed in the deterministic simulator, giving ground-truth candidate
+quality **with no learned judge.** Four stages, each isolating one failure source:
+
+1. **candidate quality** — best true outcome in the set → sampler or horizon limits;
+2. **rollout fidelity** — predicted versus exact outcomes → dynamics;
+3. **terminal evaluation conditional on exact endpoints** — exact endpoints fed through each
+   condition's frozen encoder and head, removing rollout error → interface and geometry;
+4. **closed-loop executed result** → replanning, compounding error, execution.
+
+Two candidate pools are required: a fixed-size **exogenous** pool generated independently of all
+conditions, which carries the primary audit, and a fixed-size **union** pool sampled evenly from all
+model proposal sources, which is secondary with its endogeneity named. This is what makes §3.4's
+recall metric interpretable — same candidates for every arm, so a difference is the ranker's.
+
+**attribution ladder** — the four rungs within stage 3 above, separating "the model is wrong" from
+"the interface is wrong": (i) simulator-state oracle ranking → (ii) a shared frozen external
+featurizer of representation-independent grid features (changed-cell counts, object statistics, event
+flags) → (iii) condition encoder plus a linear or bilinear comparator → (iv) condition encoder plus
+full head. The gaps are the reading: (i)→(ii) feature sufficiency · (ii)→(iii) representation
+accessibility · (iii)→(iv) nonlinear interface value. Works for *any* pair of arms, which is why
+[`architecture-alternatives.md` §11](../arc-agi-3-architecture-alternatives.md) calls this apparatus the
+most transferable scientific asset in the project.
+
+**diagnostic contract** — the frozen baselines every condition is read against: copy-last-observation
+persistence · random candidate ranking · exact-simulator planning under the same candidate budget ·
+archive or exact-transition-table baseline where applicable. Reported per condition: whole-frame exact
+match · changed-cell precision, recall, F1 · irreversible-event and level-transition prediction
+accuracy · multi-step exact-rollout survival · counterfactual action discrimination. If the token loss
+uses change weighting, the weighting rule is frozen from outer-train data only. **Unchanged-cell
+accuracy never substitutes for dynamics knowledge.**
+
+**procedural boundary suite** — synthetic generators producing many independent environments while
+varying one factor at a time: visible versus partially observable state · fixed versus
+environment-specific action semantics · smooth versus exact irreversible transitions · broad versus
+one-cell-critical state relevance · direct versus non-greedy prerequisite goals · unimodal versus
+genuinely aliased successors · short versus compositional horizons · familiar versus held-out
+combinations of mechanics. Committed as **eight paired one-factor-at-a-time micro-environments with
+easy and stress arms — not a 2⁸ factorial.** **S2's F1 and F3 are the two families of this suite that
+survive the screening sprint**, and the implementation spec carries them as Tier 1 "procedural suite
+core (F1, F3)".
 
 **Dropped from the deployed agent:** unbounded and 8-step latent rollout as a production dependency ·
 learned latent goal geometry · automatic latent subgoals · learned event hierarchy · test-time

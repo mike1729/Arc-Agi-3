@@ -1,106 +1,99 @@
-# Stage 0 — Component Inventory and Screening Sprint
+# Screening Experiments and Results — S0 through S5
 
-**Written 2026-07-25. Restructured 2026-07-27** — component-first, with S0 and S1 actuals folded in.
-Revision log at §15. Supersedes the build orders in
-[`arc-agi-3-agent-architecture.md`](arc-agi-3-agent-architecture.md) §9 and
-[`arc-agi-3-execution-plan.md`](arc-agi-3-execution-plan.md) §13. Both architecture documents are held as
-candidate designs; neither is committed.
+> **This document does not define the deployed architecture.** It supplies evidence for the gates and
+> decisions in [`arc-agi-3-implementation-spec.md`](arc-agi-3-implementation-spec.md). Where the two
+> conflict, **the implementation specification governs** until explicitly amended. A result recorded
+> here becomes binding only through a dated amendment to that document — never automatically.
 
-**Utility ordering** (governs everything below, and is not derived from the experiment): **leaderboard
-score is primary.** The paper is a continuous by-product (§11), not a fallback activated later. The
-"leaderboard placement is a non-goal" line in the execution plan is superseded.
+**Written 2026-07-25. Restructured 2026-07-27** (component-first). **Re-scoped 2026-07-28** to the
+evidence-and-results role, on the arrival of the binding implementation specification. Revision log
+at §15.
 
-**What this is.** A **component-screening sprint**, not a publishable experiment. §2 lists what the
-agent must contain by the Oct 18 feature freeze; §3 records what has been measured about it; §§5–10
-assign each remaining question to the sprint that answers it. Two seeds and two synthetic families are
-adequate for a build decision; they are not adequate for a scientific claim, and confirmatory
-replication happens later on whichever contrast survives integration (§14).
+*Historical note, retained because it explains what this file used to be:* until 2026-07-28 this
+document claimed to supersede the build orders in `agent-architecture.md` §9 and
+[`execution-plan.md`](archive/arc-agi-3-execution-plan.md) §13, and held both architecture documents
+as uncommitted candidate designs. **That claim is withdrawn.** The implementation specification is
+now binding for everything built, and its §3 tier table replaces the component inventory that used to
+stand at §2 here.
 
-**Section references** in the form **B §3.1** point to [Track B](arc-agi-3-agent-architecture.md);
-**A §16** to [Track A](arc-agi-3-ship-jepa-x-architecture.md). Bare `§n` is this document.
+**What this is.** A **component-screening sprint**, not a publishable experiment. Two seeds and two
+synthetic families are adequate for a build decision; they are **not** adequate for a scientific
+claim, and confirmatory replication happens later on whichever contrast survives integration (§14).
+
+**What this owns:** S0–S5 protocols · hypotheses and experimental arms · schedules and compute
+budgets · actual results · deviations and amendments · limitations · the evidence behind each gate
+decision · pre-registration records · the S5 decision audit.
+
+**What it does not own:** component definitions and interfaces · tier membership · runtime
+arbitration · build order and slack policy · production retention rules · predeclared production
+tolerances · fallback behaviour. All of those live in the specification.
+
+**Governance is one-way:**
+
+```
+experiments produce evidence  →  decision register evaluates it
+                              →  implementation spec is amended  →  code implements the amendment
+```
+
+**Section references** in the form **SPEC §9** point to
+[the implementation specification](arc-agi-3-implementation-spec.md); **A §16** to
+[Track A](arc-agi-3-ship-jepa-x-architecture.md). Bare `§n` is this document.
 
 **Budget.** 40–50 h/week solo. Focused working days (~5/week).
 
 
 
-## 2. The component inventory
+## 2. Which binding decision each experiment informs
 
-**What the agent must contain by Oct 18.** Drawn from [Track B](arc-agi-3-agent-architecture.md) §§3–5,
-which is the deployed agent and therefore the thing that is actually shipped;
-[Track A](arc-agi-3-ship-jepa-x-architecture.md) supplies the specification for the learned parts. This
-list is the spine of the project: every sprint below exists to decide a row in it, and anything not on
-this list is not being built.
+**The component inventory that stood here is withdrawn.** The binding tier table is
+[SPEC §3](arc-agi-3-implementation-spec.md), and the binding build order is SPEC §12. Nothing in this
+document defines a component, a tier, or an interface.
 
-Tiers are **dependency order**, not priority. The rule that makes them useful is B §9's: *a
-submittable agent exists at the end of Tier 1, so nothing in Tier 2 or beyond is on the critical path
-for having a submission.*
+### 2.1 Experiment → decision map
 
-### Tier 0 — Infrastructure
+The inverse of SPEC §1.1's table. Each sprint names exactly which binding decision it feeds, and what
+the specification consumes from it.
 
-Without these nothing else is measurable. No retention gate — they are not optional.
+| Sprint | Informs (binding) | Output the spec consumes | Status |
+|---|---|---|---|
+| **S0** | execution path only | that a submission can pass validation + hidden rerun | **complete** — public score 0.06 |
+| **S1** | SPEC §4.1 reset posture · D0 §10.1 latency inputs · SPEC §2 per-action budget | reset **Case**, `r`, `c_reset` · measured latency table · failure-frequency ranking · the variance floor | **complete, DEGRADED** on payload |
+| **S2** | nothing directly — builds the instruments | F1 and F3 generators, matching measured ARC conventions | next |
+| **S3** | **R0 / SPEC §11** predictive objective | latent vs reconstructive vs exact-delta, and whether rollout pays | not started |
+| **S4** | **SPEC §11.2 rung gates** — belief-model production value | retain or drop rungs, at what latency cost | not started |
+| **S5** | **SPEC §12.2 slack policy** | build / defer / drop per component | not started |
+| *(G0-R, G0-A)* | **SPEC §9 gate G0** | integrate recognizer and/or ranker, or defer | spec-side; W7 |
 
-| Component | What it does | State |
+**S2 and S3 do not inform the goal decision.** That is gate G0's business (SPEC §9), and §3.2 below
+records why the gap exists and how the specification closed it.
+
+### 2.2 Tier snapshot — which ordering was in force when each measurement was designed
+
+Measurements are designed against an architecture, so a measurement outlives the ordering that
+motivated it and must be read against the ordering that was current at the time.
+
+| In force | Ordering | Measurements designed under it |
 |---|---|---|
-| Harness, packaging, offline bundle | runs an agent inside the sandbox with no internet | **done** — S0 path proof, S1 reproduction |
-| Action accounting + scoring model | converts actions to score; decides the controller | **measured** (R2) — accumulates, `r` = 2.0357, `c_reset` = 1 |
-| Deterministic replay | makes any offline measurement reproducible | **measured** (R1) — byte-identical across 2 games × 2 prefixes × 3 replays |
-| Measurement + labelling pipeline | failure taxonomy, evidence packets, frequency stats | **done** — `agent/harness/`, 25 labelled episodes |
-| **Entrant-authored payload** | a submission that is ours, under a clean licence | **MISSING** — this is the DEGRADED branch (§6) |
+| **2026-07-27 → 07-28** *(withdrawn)* | Tier 1 submittable agent → **Tier 2 goal induction** → Tier 3 belief model → Tier 4 gated extensions. Goal induction ranked second on the strength of S1-d's 75%. | S1-d labelling and frequency ranking · the §3.2 coverage-gap analysis · §4's float claims |
+| **2026-07-28 → present** *(binding, SPEC §3)* | Tier 1 substrate → **Tier 2 cheap delegation layer** (evaluator + invocation gate) → Tier 3 belief-model rungs, verified programs, **G0 experiments** → Tier 4 goal-model production integration, rung 6, hierarchy | everything from S2 onward |
 
-### Tier 1 — The submittable agent
+**The reordering looked like a disagreement on 07-27; the 07-28 cross-run result largely settles it in
+the specification's favour.** The withdrawn ordering promoted goal induction on a single-run
+`primary_share` of 75%. Re-measured across three runs of one byte-identical configuration, that share
+fell **75% → 53% → 27%** (§3.1). Whether that is real run-to-run variation or a rating artifact is
+**not yet established** — the only re-rate available is partial (17 of 25), not blind, and covers
+primary labels only; it is consistent with real variation and cannot demonstrate it. Either way the
+conclusion for the ordering is the same: a build order pinned to a statistic this unstable is the
+failure mode, whereas a **gate** with predeclared margins and a non-inferiority floor — what SPEC §9
+makes G0 — is the right instrument. The blind re-rate decides which explanation holds, not whether the
+ordering was sound.
 
-Track B build-order steps 1–3. Contains **no learned dynamics.** This is the floor: if everything below
-fails, this still scores.
+What still stands from the withdrawn ordering: `goal_unknown` is the **top pooled category in all three
+runs** (76% / 56% / 44%), its `episode_share` is flat at 76–92%, and nothing else is close. So goal
+inference remains the largest single lever; what the evidence no longer supports is *scheduling* it
+ahead of everything else on the strength of one number. Sections §3.2 and §3.3 below were written under
+the withdrawn ordering and are annotated where that matters.
 
-| Component | What it does | Addresses (S1-d episode_share, L2+) |
-|---|---|---|
-| Exact archive, context-conditioned (B §3.1) | node = (observation hash, context signature, history class); the system of record | `retrieval_or_context` 16.7% · `hidden_state_aliasing_or_memory` 16.7% |
-| Multiview state compiler (B §3.2) | grid, deltas, components, motifs, regions, relations — as *candidates with confidence* | `perception_parsing` 16.7% |
-| ACTION6 candidate system (B §3.4) | coordinate proposal with a diversity quota; recall measured at top-1/3/6/∞ | 19 of 25 public games open with ACTION6 |
-| Direct executive policy + guards (B §4, B §3.5) | one capable local model in role modes; legality, availability, **irreversible-risk veto** | `irreversible_mistake` 33.3% · `invalid_output_interface` 8.3% |
-
-### Tier 2 — The measured bottleneck
-
-**S1-d says build these first.** They address the failure mode carrying 75% of L2+ primary labels and
-92% of all episodes. This tier has no learned dynamics either, and that is the uncomfortable part (§3.3).
-
-| Component | What it does | Addresses (S1-d primary, L2+) |
-|---|---|---|
-| **Goal induction over terminal transitions (B §5.2)** | hypothesise the win condition from what terminal transitions have in common; carry a *set*, not a point estimate | **`goal_unknown` 75.0%** |
-| Belief ledger (B §5.1) | rules · goals · unknowns · refutations, as the durable state of record | `goal_unknown` (retention across the episode) |
-| Probe / exploration controller (A §16) | choose the action that most discriminates competing hypotheses per unit of score | `exploration_or_probe_selection` — 0% primary but **61.5% of L1 episodes** |
-| Progress and event predicate | distinguish level-completed from game-over from no-op | `progress_signal_misinterpretation` 8.3% |
-
-### Tier 3 — The learned belief model (the JEPA component, B §3.3)
-
-The project's namesake, and **third in the measured build order.** Gated by **R0**; the objective is
-chosen by S3 and retention decided by S4.
-
-| Rung | Capability | Addresses | Retained if it beats |
-|---:|---|---|---|
-| 1 | predictive sufficiency | precondition for 2–6 | whitened probes at chance |
-| 2 | system identification | `action_semantics_unknown` **8.3% primary / 50.0% episode** | explicit enumeration + ledger probe selection |
-| 3 | counterfactual discrimination | candidate pruning, no-op avoidance | random · affordance-only · archive nearest-neighbour |
-| 4 | composition, 2 and 4 step | look ahead without waking the executive | iterated-copy baseline and 1-step-only |
-| 5 | relational transfer | levels 2..N, which carry the level-position weight | held-out layout and colour-permutation eval |
-| 6 | mechanism-based retrieval | fewer executive wake-ups | exact-hash retrieval and a frozen feature baseline |
-
-Rungs 1–3 come largely from one-step training; 4–6 do not. **Eight-step and beyond is not on the
-production path.** Composition consistency is retained as a training loss regardless, because it is what
-separates a compositional transition model from a local lookup table.
-
-### Tier 4 — Gated extensions
-
-Built only if the tier below it pays, measured against the tier below it (B §8).
-
-| Component | Not built until |
-|---|---|
-| Verified partial programs (B §5.3) | they reduce wasted actions or search cost against direct policy + archive alone |
-| Model search / program search in the control portfolio (B §3.5) | the belief model has passed rungs 3–4 *for that context* |
-| Grounded hierarchy (A §12) | goals are executable, local rules reliable, flat search demonstrably inadequate, **and** an oracle decomposition helps |
-| Test-time gradient adaptation (A §22) | explicitly dropped from the deployed agent; research-track only |
-
----
 
 ## 3. What S1 measured, and what it ranks
 
@@ -141,36 +134,45 @@ is how often it is designated primary. **Tier 2 stays ahead of Tier 3.** What do
 `action_semantics_unknown` at 24–33% in the later runs is a far stronger second than v2's 8% — and it is
 a **Tier 3 rung-2** capability, so the gap between the tiers is narrower than the first pass implied.
 
-### 3.2 The coverage gap — read this before S2 starts
+### 3.2 The coverage gap — **CLOSED 2026-07-28 by SPEC §9**
 
-**The dominant measured failure has no experiment in this sprint.**
+**The problem, as identified 2026-07-27:** the dominant measured failure had no experiment anywhere in
+the S2 → S3 → S4 chain.
 
 | | screened by | measures |
 |---|---|---|
-| `goal_unknown` — **75%** | *nothing* | — |
-| `action_semantics_unknown` — 8.3% | S2 F1 → S3 | objective A/B/C on history-required aliasing |
-| `hidden_state_aliasing_or_memory` — **0% primary**, 16.7% episode | S2 F1 → S3 | as above |
+| `goal_unknown` — 75% / 53% / 27% primary L2+ across runs | *nothing, at the time* | — |
+| `action_semantics_unknown` — 8% / 24% / 33% | S2 F1 → S3 | objective A/B/C on history-required aliasing |
+| `hidden_state_aliasing_or_memory` — 0% primary, 17% episode | S2 F1 → S3 | as above |
 | (no observed instance) | S2 F3 → S3 | sparse delayed causal memory |
 
-F1 targets a category that is 0% primary and 16.7% episode-share in L2+. F3 targets a mechanism that
-**did not occur in the corpus at all** — it is a hypothesis about where latent objectives fail, not an
-observed failure. That is legitimate: **F1 and F3 are instruments for screening objectives, not a
-ranking of what to build.** The distinction is exactly the one §2 draws between tiers and priorities.
+F1 targets a category that is 0% primary. F3 targets a mechanism that **did not occur in the corpus at
+all** — a hypothesis about where latent objectives fail, not an observed failure. That is legitimate:
+**F1 and F3 are instruments for screening objectives, not a ranking of what to build.** What was not
+legitimate was leaving it implicit, because S2 → S3 as specified screens only the transition-prediction
+objective and **could return a clean, well-controlled answer about a component that is not the
+bottleneck.**
 
-What is *not* legitimate is leaving it implicit. As specified, S2→S3 screens the transition-prediction
-objective — Tier 3 — while the measurement says the binding constraint is Tier 2. **S3 can therefore
-return a clean, well-controlled answer about a component that is not the bottleneck.**
+**How it was closed.** Not by any of the three options recorded here on 07-27 — accept the gap, add an
+F5 family to S2, or add a goal readout to S4. The implementation specification instead created a
+dedicated gate:
 
-**Open decision, for the operator, before S2 starts:**
+- **G0-R** — post-outcome recognition: terminal / progress-bearing classification, prerequisite and
+  partial-progress grading, ledger goal-hypothesis pruning. Runs independently of any transition model,
+  in parallel with R0.
+- **G0-A** — pre-action utility, with the **outcome source declared** (exact branch · cheap-evaluator
+  prediction · belief-model prediction · verified program), credited per source against that source's
+  frozen progress-event-head ranking.
+- **Fork G-F** (SPEC §9.6) adds **F4 ordered-event-program** and **F5 cumulative-counter** families —
+  essentially option (b), but two families rather than one and conditioned on ≥ 5 build-days of slack at
+  Aug 22, falling to "family transfer declared untestable and reported as such" otherwise.
+- A decision table (SPEC §9.7) covering all four outcomes, with the fallback being a heuristic plus
+  executive structural goal system.
 
-| | Cost | Effect |
-|---|---|---|
-| (a) accept the gap | 0 | Tier 2 is built on the S1 measurement without further screening. Defensible — a *measured* need does not obviously require screening |
-| (b) add an F5 goal-inference family to S2 | ~1 d of the 4-day float (§4) | S3 gains an arm that speaks to the bottleneck; S2 grows 3.5 → 4.5 d |
-| (c) **add a goal-hypothesis readout to S4** *(recommended)* | ~0.25 d inside S4's existing 2.5 | S4 already decides retention; its readouts (§9) currently omit goal inference entirely. Cheapest, and it lands where the decision is made |
-
-(c) is recommended because it is nearly free and because S4 is where JEPA is retained or dropped — a
-retention decision that never tested the dominant failure mode is the weaker artifact.
+This is stronger than any option on the 07-27 table, and the cross-run instability in §3.1 is why: a
+gate with predeclared margins tolerates an unstable measurement in a way a build-order promotion does
+not. **S2 and S3 still do not speak to goal inference, and under the current specification they are not
+required to.**
 
 ### 3.3 The tension this creates, recorded rather than smoothed
 
@@ -183,15 +185,22 @@ correctly concluded the goal was elsewhere, and could generate no replacement hy
 Track A's parameter budget is dominated by transition prediction. Goal inference is a **1.0M-parameter
 head — 5% of the budget against 75–92% of the episodes.**
 
-Three honest readings, and choosing between them is a decision for the operator:
+Three honest readings, recorded 2026-07-27:
 
-1. **The build order follows the measurement** — Tier 2 before Tier 3.
+1. **The build order follows the measurement** — goal work before transition prediction.
+   **⚠ Weakened 2026-07-28.** This reading rested on the single-run 75%, which fell to 27% by v4
+   (§3.1). It survives only in the weaker form the pooled numbers support: goal inference is the
+   largest single lever, not that it should be scheduled first.
 2. **A latent world model is instrumental to goal inference** — you cannot hypothesise a win condition
    over a representation you do not have. Defensible, but it is an argument, not a measurement, and it is
    the kind of argument that survives any result.
 3. **The reference's bottleneck is not ours** — it has a 27B LLM doing perception; a 20M model may fail
-   elsewhere. Also defensible, and it implies this corpus ranks *the reference's* build order. **S4 is
-   what settles it**, which is a second reason for §3.2(c).
+   elsewhere. Also defensible, and it implies this corpus ranks *the reference's* build order, not ours.
+
+**How it was resolved:** by none of the three. SPEC §9 makes goal inference a **gate** rather than a
+position in the build order, which is the response that does not depend on which reading is right. The
+1.0M/20M budget imbalance recorded above is a Track A fact and remains unaddressed — the specification
+defers belief-model internals to Track A (SPEC §11), so nothing has yet re-argued that split.
 
 What is not defensible is proceeding as though the measurement came out the other way.
 
@@ -603,3 +612,62 @@ editing without a log entry is not.
 |---|---|
 | 2026-07-25 | Written; final revision under the score-primary utility ordering |
 | 2026-07-27 | **Restructured component-first.** New §2 (component inventory, five tiers) and §3 (what S1 measured). Sprint sections renumbered §5–§10 and each now states which inventory rows it decides. S0 and S1 marked complete with actuals and verdicts. New: §3.2 coverage gap and its open decision · §3.4 variance floor as a constraint on S3/S4 · §4 float and its claims · §6 DEGRADED branch consequences · §7 measured ARC conventions including the variable-length frame sequence requirement · §10 state-entering-S5 column · this log. Former §11's forward reference to "S1's failure-frequency ranking" replaced by the measured ranking itself |
+
+---
+
+## 16. Appendix — evaluation apparatus (definition site)
+
+These five terms are **evaluation apparatus**: they define how a measurement is read, not what the
+agent contains, so they belong with the evidence rather than with the specification. Their original
+definition sites were the two documents frozen 2026-07-23, archived 2026-07-28; they passed briefly
+through `agent-architecture.md` §10, archived the same day. **This appendix is the definition site.**
+Only the *procedural boundary suite* also appears in the specification, as Tier 1's "procedural suite
+core (F1, F3)".
+
+**demotion ladder** *(also Track A §21, reliability governor)* — the fallback modes the agent drops
+through when it stops being trustworthy: full sequential hierarchical agent → sequential flat model →
+exact archive and graph agent → conservative frontier exploration. Triggered by rollout disagreement
+beyond tolerance · exact-delta error rising sharply · reachability calibration failure · no validated
+subgoal · high rule-shift probability · time reserve below the required margin.
+
+**common-candidate audit** *(= the same-candidate oracle audit)* — identical candidate sequences are
+rolled through every model and executed in the deterministic simulator, giving ground-truth candidate
+quality **with no learned judge.** Four stages, each isolating one failure source:
+
+1. **candidate quality** — best true outcome in the set → sampler or horizon limits;
+2. **rollout fidelity** — predicted versus exact outcomes → dynamics;
+3. **terminal evaluation conditional on exact endpoints** — exact endpoints fed through each
+   condition's frozen encoder and head, removing rollout error → interface and geometry;
+4. **closed-loop executed result** → replanning, compounding error, execution.
+
+Two candidate pools are required: a fixed-size **exogenous** pool generated independently of all
+conditions, which carries the primary audit, and a fixed-size **union** pool sampled evenly from all
+model proposal sources, which is secondary with its endogeneity named. This is what makes §3.4's
+recall metric interpretable — same candidates for every arm, so a difference is the ranker's.
+
+**attribution ladder** — the four rungs within stage 3 above, separating "the model is wrong" from
+"the interface is wrong": (i) simulator-state oracle ranking → (ii) a shared frozen external
+featurizer of representation-independent grid features (changed-cell counts, object statistics, event
+flags) → (iii) condition encoder plus a linear or bilinear comparator → (iv) condition encoder plus
+full head. The gaps are the reading: (i)→(ii) feature sufficiency · (ii)→(iii) representation
+accessibility · (iii)→(iv) nonlinear interface value. Works for *any* pair of arms, which is why
+[`architecture-alternatives.md` §11](arc-agi-3-architecture-alternatives.md) calls this apparatus the
+most transferable scientific asset in the project.
+
+**diagnostic contract** — the frozen baselines every condition is read against: copy-last-observation
+persistence · random candidate ranking · exact-simulator planning under the same candidate budget ·
+archive or exact-transition-table baseline where applicable. Reported per condition: whole-frame exact
+match · changed-cell precision, recall, F1 · irreversible-event and level-transition prediction
+accuracy · multi-step exact-rollout survival · counterfactual action discrimination. If the token loss
+uses change weighting, the weighting rule is frozen from outer-train data only. **Unchanged-cell
+accuracy never substitutes for dynamics knowledge.**
+
+**procedural boundary suite** — synthetic generators producing many independent environments while
+varying one factor at a time: visible versus partially observable state · fixed versus
+environment-specific action semantics · smooth versus exact irreversible transitions · broad versus
+one-cell-critical state relevance · direct versus non-greedy prerequisite goals · unimodal versus
+genuinely aliased successors · short versus compositional horizons · familiar versus held-out
+combinations of mechanics. Committed as **eight paired one-factor-at-a-time micro-environments with
+easy and stress arms — not a 2⁸ factorial.** **S2's F1 and F3 are the two families of this suite that
+survive the screening sprint**, and SPEC §3 carries them as Tier 1 "procedural suite
+core (F1, F3)".

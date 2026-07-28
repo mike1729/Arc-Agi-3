@@ -1,7 +1,7 @@
 # S0 + S1 — Day-by-Day Execution Plan
 
 **Written 2026-07-25.** Operationalizes §5 and §6 of
-[`arc-agi-3-decision-experiments.md`](arc-agi-3-decision-experiments.md). That document is the authority;
+[`arc-agi-3-screening-experiments-and-results.md`](../arc-agi-3-screening-experiments-and-results.md). That document is the authority;
 where this one disagrees, it is wrong. Nothing here re-decides scope — it fixes dates, deliverables, exit
 criteria, and the escalation rules the sprint document leaves open.
 

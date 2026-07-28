@@ -12,7 +12,7 @@ throughout means Trajectory Reachability Metrics.
 
 **Companions.** [`arc-agi-3-executive-summary.md`](arc-agi-3-executive-summary.md) (posture,
 priors, expected outcomes) and
-[`arc-agi-3-ship-jepa-x-architecture.md`](arc-agi-3-ship-jepa-x-architecture.md) (component
+[`arc-agi-3-ship-jepa-x-architecture.md`](../arc-agi-3-ship-jepa-x-architecture.md) (component
 specification).
 
 Where the two source drafts of this plan diverged, the frozen quantitative spine governs: three
@@ -682,7 +682,7 @@ parser and archive → v0–v1; spatial-latent sequential inference → v2; mult
 hierarchy, and reachability-constrained subgoals → v5 behind G4; grounded macros and ACTION6
 factorization → v1/v3; goal-hypothesis bank, heuristics first → v3/v5. The full component
 specification is in
-[`arc-agi-3-ship-jepa-x-architecture.md`](arc-agi-3-ship-jepa-x-architecture.md).
+[`arc-agi-3-ship-jepa-x-architecture.md`](../arc-agi-3-ship-jepa-x-architecture.md).
 
 Standing design choices: coordinate actions are factored as P(ACTION6) × P(x,y | state, context)
 with candidates drawn from object centroids, changed components, boundaries, and unexplored cells,

@@ -2,8 +2,8 @@
 
 **Written 2026-07-25**, against
 [`arc-agi-3-ship-jepa-x-architecture.md`](arc-agi-3-ship-jepa-x-architecture.md),
-[`arc-agi-3-execution-plan.md`](arc-agi-3-execution-plan.md), and
-[`arc-agi-3-executive-summary.md`](arc-agi-3-executive-summary.md). Scope: architectural and
+[`arc-agi-3-execution-plan.md`](archive/arc-agi-3-execution-plan.md), and
+[`arc-agi-3-executive-summary.md`](archive/arc-agi-3-executive-summary.md). Scope: architectural and
 information-theoretic feasibility of the core idea. Schedule, compute cost, and person-time are
 deliberately excluded — this asks whether the design *can* work, not whether it fits in fifteen weeks.
 
