@@ -225,8 +225,8 @@ S1-b exit, quantization arm, RESET-ACCT) landed in iteration, where prior taint 
 and sc25 — the spec §9 motivating episode — landed one-shot, so it is confirmatory. Caveat:
 g50t (reserved) is the game whose human data is short two sessions, so its later external
 validation leans harder on fresh play. E2 drops the reserved games' episodes: 75 → 63. Repo
-state: the draw script, draw artifact and this note are **untracked — nothing is git-committed
-yet**; "adopted" is a design decision, not a version-control claim.
+state: draw script, draw artifact, packet builder, inventory and this note are committed as
+`c0fd2e3` (2026-07-29).
 
 **Packet inventory, measured 2026-07-29** (`agent/harness/gi1_packets.py --inventory` →
 `logs/gi1_packet_inventory.json`; `--selftest` green on ls20/vc33/m0r0): all 21 non-reserved
