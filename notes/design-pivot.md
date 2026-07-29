@@ -249,6 +249,17 @@ problem list instead of a traceback. The publishable gold intentionally excludes
 those strings copied competition source verbatim, while source path, function, transition line,
 and SHA-256 already pin the evidence without redistributing it.
 
+Structured outputs are parsed by `agent/harness/gi1_output_parser.py`: duplicate keys, repaired
+Markdown, non-finite numbers, contract drift, malformed ranks, and schema-invalid predicates are
+all parse failures. `agent/harness/gi1_k4_scorer.py` compares enum, integer, entity, and ordered
+entity-list fields mechanically through the shared schema and reports top-one/top-three class and
+predicate outcomes plus every field decision. It also exposes top-one and best-top-three
+`fields_correct`, `fields_total`, and field accuracy as headline outputs: exact free-text equality
+is too conservative to be the only treatment-sensitive predicate read. A parse failure records
+zero correct fields with the gold field count retained, not a dropped row. Exact
+`predicate_correct` remains the all-fields bar and is never inferred from partial credit. Semantic
+equivalences remain empty and unimplemented rather than being guessed by the scorer.
+
 The primary offline verdict therefore does not depend on open-ended S1-E10-style rating.
 
 ### 4.4 Shared discipline
@@ -388,8 +399,9 @@ they emit class votes rather than bindable predicates and cannot be scored on K4
 
 Select the champion on the six iteration games from the measured 27B-8bit pass:
 
-1. highest actionable-predicate correctness;
-2. class top-three accuracy as the tie-break.
+1. highest mean top-one field accuracy;
+2. exact top-one predicate correctness;
+3. class top-three accuracy as the final tie-break.
 
 Freeze the champion before opening the one-shot set.
 
