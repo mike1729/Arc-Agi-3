@@ -131,6 +131,54 @@ written Jul 29 – Aug 3. If S2 slips or ships a narrow generator, those nine de
 
 ---
 
+## Cross-game sample-size audit — 2026-07-29
+
+**This is a finding about what the counts support, not an architecture decision or a specification
+amendment.** The difficulty ratings above measure whether labels can be acquired. They do not measure
+whether those labels support generalization to an unseen game.
+
+For transition-local factual targets, a transition or cell can be a meaningful unit: exact delta,
+visible change and no-op labels repeat the same observable definition across games. For artifacts
+whose target depends on a game's action semantics, goal, useful probes, irreversible consequences or
+the value of invoking the executive, the relevant independent domain is the **game**, not the row.
+After the §13.5 partition, training has at most **17 public-game domains**. More replay rows, branches
+or locally forked successors from those games increase within-game coverage; they do not increase the
+number of independent games.
+
+The same distinction applies to procedural data. Held-out seeds, instances, hidden-mechanic
+parameterisations, layouts and colour permutations test transfer inside the generator grammar.
+Alias and Delay provide two procedural families. Arbitrarily many transitions from them are not
+arbitrarily many independent game semantics, and an unseen procedural instance is not by itself an
+unseen-game test.
+
+| Artifact | Nominal count in this note | Independent-domain reading |
+|---|---:|---|
+| **Click salience proposer** | 56,347 replay ACTION6 transitions before the draw | drawn from 19 ACTION6 games corpus-wide and at most 17 dev games; labels record coordinates humans clicked, while unclicked coordinates are unobserved rather than demonstrated-useless |
+| **P(progress event) + G0-R** | 850–1,287 dev replay terminals after the draw | approximately **50–76 terminals per dev game**, but only 17 game domains; procedural positives add examples of the registered generator event classes, not new ARC games |
+| **Reversibility** | 5,065 demonstrated-reversible replay transitions; zero demonstrated-irreversible | positive examples remain clustered by game, and the missing real negative class is unchanged; procedural or local-fork search adds labels inside known families/games |
+| **Candidate value / G0-A** | predicted outcome sources become available when their upstream components ship | upstream predictions are inputs, not independent utility labels; exact-branch evidence, if acquired on the dev partition, still spans at most 17 games |
+| **Learned gate** | target ≥ 800 valid disagreement states, nominal ceiling 2,040 | 800 states are not 800 independent task domains; they are clustered by state, trajectory and at most 17 games, and the label depends on game-local progress and hypothesis-resolution semantics |
+| **Learned probe selection** | no labels now; shares the branching source | repeated resolved hypotheses within the same games increase within-game coverage but not the diversity of hypothesis spaces or probe semantics |
+| **Rung-3 counterfactual discrimination / causal ACTION6 recall** | 23,032 effective-action replay pairs, only 204 involving progress; branching planned | most replay pairs distinguish change from no-op, not value; the value-bearing evidence is both scarce and game-clustered |
+| **Uncertainty / OOD** | no dataset assembled; expected from held-out and procedural data | eight quarantined public games provide a game-held-out check, not a representative sample of hidden-game OOD; held-out procedural instances remain inside Alias/Delay |
+| **Belief model and multi-horizon heads** | 180,144 replay transitions + 12,475 agent transitions + procedural | enough presentations for within-corpus predictive training and objective screening; the ARC-trained condition still learns from at most 17 games, while S2 contributes only two mechanic families |
+| **Rung-5 relational transfer** | held-out layouts and colour-role permutations promised by S2 | tests nuisance and layout transfer within a generator family; it does not add a held-out mechanic or goal family |
+
+Two consequences follow for reading the inventory:
+
+1. **Label availability and cross-game evidence are separate axes.** An artifact can score 0–4 for
+   acquisition and still have weak evidence for unseen-game deployment.
+2. **Local forking cannot cure a domain-count shortage.** It can supply the missing counterfactual or
+   verified-no-return label kinds on dev games, but the independent-game ceiling remains 17.
+
+The factual heads are the least affected by this correction because their targets are defined directly
+from observations. The largest nominal-count / independent-domain gaps are in learned goal or value
+artifacts, causal ranking, invocation utility, probe selection, reversibility risk and OOD. Existing
+fallbacks, gates and component commitments are unchanged by this note; their interpretation must not
+cite transition volume alone as evidence of hidden-game generalization.
+
+---
+
 ## The three actions this table argues for
 
 1. **Price the counterfactual budget once, across all six consumers** — not per component. Today
