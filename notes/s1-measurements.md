@@ -21,14 +21,14 @@ Plus `taaf.game.GameRun`: `history: list[ActionRecord]` (`action`, `generated_to
 unlike AERA), `levels_completed`, `final_score`, `solver_note`, `state ∈ {won, gave_up, cancelled,
 crashed}`. Also `transcripts/<game>_p<pass>.txt` and `prompts/prompt.log`.
 
-**`save_request_logs` (D6) is the load-bearing instrumentation flag.** Set true it writes
+**`save_request_logs` (DEV-6) is the load-bearing instrumentation flag.** Set true it writes
 `requests.jsonl` carrying the full `messages` array, `tools`, `tool_choice`, `finish_reason`,
 `analysis_step`, `action` and `request_index_within_turn` — i.e. the `prompt_context_snapshot` and
 `raw_model_output` several categories are defined on.
 
 > ⚠ **CORRECTED TWICE, 2026-07-26.**
-> **(a)** The table first claimed D6 was already enabled. It was not — the first two ft09 runs produced
-> no `requests.jsonl`, so the four categories marked "available with D6" had no supporting evidence.
+> **(a)** The table first claimed DEV-6 was already enabled. It was not — the first two ft09 runs produced
+> no `requests.jsonl`, so the four categories marked "available with DEV-6" had no supporting evidence.
 > **(b)** The correction to (a) then over-generalised, asserting the JSON config "is not a complete
 > control surface" and that `analyzer.save_request_logs` "is never read". **That was wrong.** The
 > reference's `Makefile` *does* read it — `ANALYZER_SAVE_REQUEST_LOGS ?= $(CONFIG_VALUE)
@@ -44,7 +44,7 @@ explicitly, and the effective values must be verified from the `HarnessSolver(..
 assumed from the JSON.
 
 **The model's reasoning is exposed.** The MLX server returns `reasoning_content` separately from
-`content` (591 and 665 chars in the two D5 probes), so `reasoning_text` is available verbatim.
+`content` (591 and 665 chars in the two DEV-5 probes), so `reasoning_text` is available verbatim.
 
 ## Field availability — fill Day 2 (S1-b), before any labelling
 
@@ -71,11 +71,11 @@ Verdicts: `available` · `partial` (say which half) · `unavailable`.
 | 4 | `hidden_state_aliasing_or_memory` | both frames, both actions, both outcomes | **available** — full grids per step make observationally-identical states directly detectable | — | — |
 | 5 | `coordinate_unreachable` | candidate set at the step + the coordinate that later worked | **UNAVAILABLE** (corrected) — `valid_actions` is *a list of action **names*** (`prompts.py`: "the current list of valid action names"; sandbox coerces with `[str(item) for item in ...]`). There is **no coordinate candidate set** anywhere, so "a required ACTION6 coordinate was never present in the candidate set" is not decidable from any log | no — would need solver-side coordinate proposal logging | — |
 | 6 | `planning_depth` | shortest known successful sequence length vs the agent's effective horizon | **UNAVAILABLE** — see the callout below | no | — |
-| 7 | `exploration_or_probe_selection` | action taken + its no-op/redundant outcome + the available alternative | **partial** (corrected) — no-op is `available` (board equality). Alternatives are available only at **action-name granularity**; for ACTION6 games the "higher-yield alternative" is a *coordinate*, which is not enumerable. So: usable on simple-action games, weak on click games | partly | D6 |
+| 7 | `exploration_or_probe_selection` | action taken + its no-op/redundant outcome + the available alternative | **partial** (corrected) — no-op is `available` (board equality). Alternatives are available only at **action-name granularity**; for ACTION6 games the "higher-yield alternative" is a *coordinate*, which is not enumerable. So: usable on simple-action games, weak on click games | partly | DEV-6 |
 | 8 | `progress_signal_misinterpretation` | score/level marker vs the agent's recorded belief | **partial** — markers `available` (`score`, `level`, `reward`); belief is prose only | no | — |
 | 9 | `irreversible_mistake` | the transition + the subsequent dead-end | **available** — boards plus terminal `state` | — | — |
-| 10 | `invalid_output_interface` | raw agent output + the rejection | **available via D6b** — the stock logger writes only the request, so raw output was recoverable only from the *next* turn's history (losing every episode's final turn) and rejections not at all. **D6b patches the vendored core** to log `response_message` (content + `tool_calls` + `reasoning`), `usage`, and an `api_error` record (exception, status code, body). Logging only; control flow unchanged | added by patch | **D6b** |
-| 11 | `retrieval_or_context` | the stored record + the context snapshot that omitted it | **available** — `requests.jsonl` stores the full `messages` array, which *is* the context snapshot | enabled via `--save-request-logs` | D6 |
+| 10 | `invalid_output_interface` | raw agent output + the rejection | **available via DEV-6b** — the stock logger writes only the request, so raw output was recoverable only from the *next* turn's history (losing every episode's final turn) and rejections not at all. **DEV-6b patches the vendored core** to log `response_message` (content + `tool_calls` + `reasoning`), `usage`, and an `api_error` record (exception, status code, body). Logging only; control flow unchanged | added by patch | **DEV-6b** |
+| 11 | `retrieval_or_context` | the stored record + the context snapshot that omitted it | **available** — `requests.jsonl` stores the full `messages` array, which *is* the context snapshot | enabled via `--save-request-logs` | DEV-6 |
 | 12 | `reasoning_inconsistency` | reasoning text + action | **available** — `reasoning_content` verbatim, paired with the executed action via `analysis_step` | — | — |
 | 13 | `latency_or_budget` | timing and budget counters at the terminal step | **available** — `ActionRecord.wallclock_seconds`, `generated_tokens`, `uncached_input_tokens`, against `max_actions` / `max_runtime_minutes` | — | — |
 
@@ -119,7 +119,7 @@ Two consequences to check before Day 5, not after:
 
 ## Latency
 
-### D11 — local model switched to the MoE. ~5.2× faster, and it closes the stack gap
+### DEV-11 — local model switched to the MoE. ~5.2× faster, and it closes the stack gap
 
 Operator decision: *"we need some benchmark, don't need exact reproduction; better to have fast one."*
 The reference is a benchmark to instrument, not an artefact to reproduce byte-for-byte.
@@ -140,7 +140,7 @@ so this is memory traffic, exactly as predicted, not a tuning artefact.
 
 **Capability preserved, and this determined which build was chosen.** The `OptiQ` MoE variant was
 rejected: it drops `vision_config`, and the harness runs `multimodal.context: current_grid`. The plain
-4-bit build keeps vision, keeps the `qwen3_coder` tool parser, is Apache-2.0, and **passes the D5 probe**
+4-bit build keeps vision, keeps the `qwen3_coder` tool parser, is Apache-2.0, and **passes the DEV-5 probe**
 with a usable `python` tool call.
 
 **Concurrency (synthetic, 256-token generations):** 84.4 tok/s at N=1 → **198.3 at N=4** → 218 at N=6.
@@ -156,12 +156,12 @@ CUDA — pending confirmation from real-workload measurement.
 
 **The accepted cost, stated plainly.** The Day-5 taxonomy will be gathered on a model that is **neither
 the reference nor the submission** (which runs Qwen3.6-27B dense at FP8 on Kaggle CUDA). This compounds
-the D2 concern rather than resolving it: a model that changes *which* failures dominate would misrank the
+the DEV-2 concern rather than resolving it: a model that changes *which* failures dominate would misrank the
 build order. The mitigation is the completed Kaggle reference run — per-game outcomes for the true
 reference model across all 25 games — against which the local MoE run can be compared to bound how far
 the substitution moves behaviour.
 
-### 🔴 D11 evaluation — the MoE is a throughput vehicle, NOT a taxonomy vehicle
+### 🔴 DEV-11 evaluation — the MoE is a throughput vehicle, NOT a taxonomy vehicle
 
 The speed gain is real and so is the cost. Same game (`vc33`), same harness, same prompts, same
 instrumentation — only the model differs.
@@ -180,7 +180,7 @@ frequent used 45 times (20% of all actions). Brute-force repetition over a narro
 exploration. **Zero timeouts** — the harness is sound; this is the model.
 
 Repeated identical actions are not inherently wrong here (AERA documents 8 of 25 public games as solvable
-by "repeated actions with sufficient budget"). But under R2 = `accumulates` with `c_reset` = 1, **every
+by "repeated actions with sufficient budget"). But under RESET-ACCT = `accumulates` with `c_reset` = 1, **every
 repetition is a scored action**, and score is `(baseline/actions)²` — so this is the single most
 expensive failure mode the metric can punish.
 
@@ -287,14 +287,14 @@ These are first-class knobs the reference already exposes, so bounding them is a
 deviation rather than a code change — but it is still a deviation with a real fidelity cost, and it must
 be measured as its own contrast rather than folded in silently.
 
-#### 🔴 D9 — WITHDRAWN AS A RESULT. Not a negative result; **not measured**.
+#### 🔴 DEV-9 — WITHDRAWN AS A RESULT. Not a negative result; **not measured**.
 
 Everything previously written here — "no measurable speedup", the 284 vs 317/324 s/action comparison, the
 `mean 1.97 calls/turn` figure, the 193 s decode / 124 s overhead decomposition, and the "cost driver is
 per-call long-context processing" conclusion — **is withdrawn**. Three independent defects, each fatal on
 its own:
 
-1. **Neither arm executed a game action.** Both the baseline and the D9 runs were ft09, and ft09 produced
+1. **Neither arm executed a game action.** Both the baseline and the DEV-9 runs were ft09, and ft09 produced
    *zero* `action` records. "No speedup in seconds-per-action" is not a finding when no actions occurred;
    the quantity was never measured.
 2. **The baseline was not the reference.** It ran at the code-default `tool_steps = 12`, reached via the
@@ -307,9 +307,9 @@ The `mean 1.97 calls/turn` figure that "explained" the null was itself wrong —
 `request` and `response` records. Corrected: **mean 2.62, with 21% of turns reaching the cap of 4**, so
 the cap plausibly *did* bind, which removes the mechanism the null rested on.
 
-**Defensible statement:** D9's effect on action throughput was **not measured**. Deciding whether to
+**Defensible statement:** DEV-9's effect on action throughput was **not measured**. Deciding whether to
 retain or revert it on performance grounds requires a **matched-duration rerun against the canonical
-baseline** (`run_local.sh`, `tool_steps = 0`) on a game the agent actually acts in. D9 remains reverted —
+baseline** (`run_local.sh`, `tool_steps = 0`) on a game the agent actually acts in. DEV-9 remains reverted —
 but on fidelity grounds (fewer deviations is better absent evidence), *not* because it was shown useless.
 
 **Also withdrawn:** the concurrency conclusion drawn from these runs. The claim that vc33 was "~4× faster
@@ -357,7 +357,7 @@ The consolidated view makes two things plain that the individual runs did not:
    the table deliberately; a summary that silently dropped failed runs would misrepresent the day.
 
 Calls per turn (`paper/figures/s1_calls_per_turn.md`) — ⚠ **corrected**. The first figures (43 turns,
-mean 1.91, 13% at cap) double-counted: D6 writes a `request` **and** a `response` record sharing the same
+mean 1.91, 13% at cap) double-counted: DEV-6 writes a `request` **and** a `response` record sharing the same
 index, so every response with index 1 looked like a new turn. Filtering to `event == "request"`:
 
 | run | turns | mean calls/turn | max | at cap of 4 |
@@ -368,8 +368,8 @@ index, so every response with index 1 looked like a new turn. Filtering to `even
 non-terminal-run policy forbids.*
 
 So the earlier claim that the cap "did not bind" is **weaker than stated** — a fifth of turns reached it.
-The D9 conclusion still stands, but for a different and now-primary reason: **the ft09 runs executed no
-game actions at all**, so D9 was never comparing action throughput in the first place.
+The DEV-9 conclusion still stands, but for a different and now-primary reason: **the ft09 runs executed no
+game actions at all**, so DEV-9 was never comparing action throughput in the first place.
 
 ## Submission contract — read from the reference notebook, 2026-07-26 (S1-f prep)
 
@@ -428,7 +428,7 @@ purely our misconfiguration, but the difference between a 1% and a 62% failure r
 between an occasional retry and a harness that cannot measure anything. Raising it locally remains
 required; the reference's own value should be recorded as marginal rather than correct.
 
-### 🔴 D13 — the 2048-token server default. My "click games are slow locally" conclusion was WRONG.
+### 🔴 DEV-13 — the 2048-token server default. My "click games are slow locally" conclusion was WRONG.
 
 `mlx_vlm`'s `DEFAULT_MAX_TOKENS = 2048` (`generate/dispatch.py:38`) applies whenever the client sends no
 `max_tokens`. The reference config sets `analyzer.max_output: 0`, which means *unbounded* to the client —
@@ -441,7 +441,7 @@ grid routinely exceeds 2048, so click games were **truncated mid-reasoning**, re
 | `lp85-305b61c3` | generations | `length` truncations | actions | level 1 |
 |---|---:|---:|---:|---|
 | 2048 cap (default) | 7 | **3** | 1 in 30 min | not cleared |
-| **16384 cap (D13)** | 12 | **0** | **6** | **cleared** |
+| **16384 cap (DEV-13)** | 12 | **0** | **6** | **cleared** |
 
 Post-fix, lp85 cleared level 1 in **6 actions against a human baseline of 17** — a level score of
 **115, saturating the cap**. The reference spent 79 actions on that game for one level.
@@ -453,12 +453,12 @@ games are ACTION6 and were all affected.
 
 **Class of error, repeated.** This is the third instance of the same failure: a value that is harmless on
 the reference stack and wrong on ours, inherited without audit — after the 120 s `analyzer.timeout`
-(D10) and the Makefile bypass. The correct action when substituting the serving layer (D1) was to audit
+(DEV-10) and the Makefile bypass. The correct action when substituting the serving layer (DEV-1) was to audit
 **every** server-side default at that moment, not to discover them one failure at a time.
 
-**Closed-run confirmation.** lp85 ran to its cap with D13 in place:
+**Closed-run confirmation.** lp85 ran to its cap with DEV-13 in place:
 
-| | local dense (D13) | Kaggle reference |
+| | local dense (DEV-13) | Kaggle reference |
 |---|---:|---:|
 | levels cleared | 1 of 8 | 1 of 8 |
 | actions | **31** | 79 |
@@ -469,8 +469,8 @@ The scores match exactly because both cleared one level of eight and the game sc
 cap. **Local dense reproduced the reference's outcome on this game exactly**, using 2.5× fewer actions.
 That is the third independent confirmation that V8-as-corrected models the scorer.
 
-**Latency, concurrency 1, post-D13:** per-decision p50 **158 s**, p95 **878 s**, max 877.94 s — against
-a 900 s timeout. The D10 ceiling is still *nearly* binding; a slower game or a longer context would trip
+**Latency, concurrency 1, post-DEV-13:** per-decision p50 **158 s**, p95 **878 s**, max 877.94 s — against
+a 900 s timeout. The DEV-10 ceiling is still *nearly* binding; a slower game or a longer context would trip
 it. 77% of actions were committed in batches, which is why the per-action p50 reads 0.09 s and must not
 be quoted as the model cost.
 
@@ -537,7 +537,7 @@ has no further idea. That points at `goal_unknown` or exploration exhaustion rat
 
 **3. It is near-human-efficient when it succeeds** (median 1.19×). So the gap to a competitive score is
 **not** efficiency on solved levels — it is *how many levels get solved at all*. Under the surgical
-controller (R2 = `accumulates`), that matters: optimising action efficiency would chase a 1.19× → 1.0×
+controller (RESET-ACCT = `accumulates`), that matters: optimising action efficiency would chase a 1.19× → 1.0×
 gain while the real loss is the 22 of 25 games that never reach level 3.
 
 #### Direct contrast with the local runs — the substitution check S1-E5 asked for
@@ -556,7 +556,7 @@ to run S1-e on the dense model.
 ### 🔴 The development/submission divergence — a consequence of local-only, and a caveat on S1-d
 
 Kaggle provides CUDA. A Day-6 payload therefore runs **vLLM + FP8 on an RTX PRO 6000** — the reference
-stack unmodified. **D1 and D2 do not propagate to the submission at all**: the MLX 4-bit port is a
+stack unmodified. **DEV-1 and DEV-2 do not propagate to the submission at all**: the MLX 4-bit port is a
 *local development and instrumentation vehicle*, not the submitted artifact.
 
 That is good for the submission's fidelity, and it creates two problems that must not be discovered at
@@ -567,7 +567,7 @@ S1-g:
    submitted agent's runtime envelope. `per_action_latency` must therefore be read against the
    *submission* stack before it can gate anything, or its verdict scoped explicitly to local development.
 2. **Failure frequencies labelled locally are labelled on a different model.** The Day-5 run at MLX 4-bit
-   produces the taxonomy that ranks the build order, but the agent that gets submitted is FP8. D2's
+   produces the taxonomy that ranks the build order, but the agent that gets submitted is FP8. DEV-2's
    "unquantified capability loss" was recorded as a fidelity risk; this is where it bites — a quantization
    that changes *which* failures dominate would misrank §11's construction order. The gap is not
    currently measured in either direction.
@@ -628,7 +628,7 @@ times in the same order of wall-clock. That is not a throughput problem — it i
 converge on a decision. It plausibly belongs to `exploration_or_probe_selection` or `goal_unknown` in the
 taxonomy, and it should be labelled on the Day-5 run rather than treated as a latency observation.
 
-**Consequently the D9 comparison compared analysis throughput, not action throughput**, and every
+**Consequently the DEV-9 comparison compared analysis throughput, not action throughput**, and every
 seconds-per-action figure quoted for ft09 in this file and in commit messages is withdrawn.
 
 #### 🔴 ROOT CAUSE FOUND — it was a timeout misconfiguration, not agent behaviour
@@ -653,7 +653,7 @@ timed-out requests**. The agent was not deliberating; it was being cut off mid-g
 
 **This is my error, and it is the same class as the Makefile bypass.** `analyzer.timeout: 120` is the
 *reference's* value, calibrated for FP8 on an RTX PRO 6000. On MLX 4-bit at 3–17 tok/s it is far too
-short, and it should have been adjusted as part of the D3/D4 stack substitution. It was not.
+short, and it should have been adjusted as part of the DEV-3/DEV-4 stack substitution. It was not.
 
 It also explains vc33's late-episode "stall" without appeal to agent behaviour: early generations on
 short contexts completed inside 120 s; as context accumulated they slowed past the timeout and began
@@ -666,7 +666,7 @@ misconfigured harness, not the agent:
 - both stall mechanism hypotheses, and the taxonomy implications drawn from them;
 - any per-action rate, since a majority of requests never returned.
 
-**What survives.** R1/R2 and the controller fork (no model involved), the S2 conventions (no model
+**What survives.** REPLAY-DET/RESET-ACCT and the controller fork (no model involved), the S2 conventions (no model
 involved), the S1-b hard exit (vc33 *did* clear level 1 in 9 actions — the completed transitions are
 real), and the concurrency sweep (synthetic, short prompts, no timeouts).
 
@@ -714,7 +714,7 @@ The consolidated view makes two things plain that the individual runs did not:
    the table deliberately; a summary that silently dropped failed runs would misrepresent the day.
 
 Calls per turn (`paper/figures/s1_calls_per_turn.md`) — ⚠ **corrected**. The first figures (43 turns,
-mean 1.91, 13% at cap) double-counted: D6 writes a `request` **and** a `response` record sharing the same
+mean 1.91, 13% at cap) double-counted: DEV-6 writes a `request` **and** a `response` record sharing the same
 index, so every response with index 1 looked like a new turn. Filtering to `event == "request"`:
 
 | run | turns | mean calls/turn | max | at cap of 4 |
@@ -725,8 +725,8 @@ index, so every response with index 1 looked like a new turn. Filtering to `even
 non-terminal-run policy forbids.*
 
 So the earlier claim that the cap "did not bind" is **weaker than stated** — a fifth of turns reached it.
-The D9 conclusion still stands, but for a different and now-primary reason: **the ft09 runs executed no
-game actions at all**, so D9 was never comparing action throughput in the first place.
+The DEV-9 conclusion still stands, but for a different and now-primary reason: **the ft09 runs executed no
+game actions at all**, so DEV-9 was never comparing action throughput in the first place.
 
 ## Submission contract — read from the reference notebook, 2026-07-26 (S1-f prep)
 
@@ -752,7 +752,7 @@ CLI and pointed `--re-arc-environments-dir` at.
 ### 🔴 The development/submission divergence — a consequence of local-only, and a caveat on S1-d
 
 Kaggle provides CUDA. A Day-6 payload therefore runs **vLLM + FP8 on an RTX PRO 6000** — the reference
-stack unmodified. **D1 and D2 do not propagate to the submission at all**: the MLX 4-bit port is a
+stack unmodified. **DEV-1 and DEV-2 do not propagate to the submission at all**: the MLX 4-bit port is a
 *local development and instrumentation vehicle*, not the submitted artifact.
 
 That is good for the submission's fidelity, and it creates two problems that must not be discovered at
@@ -763,7 +763,7 @@ S1-g:
    submitted agent's runtime envelope. `per_action_latency` must therefore be read against the
    *submission* stack before it can gate anything, or its verdict scoped explicitly to local development.
 2. **Failure frequencies labelled locally are labelled on a different model.** The Day-5 run at MLX 4-bit
-   produces the taxonomy that ranks the build order, but the agent that gets submitted is FP8. D2's
+   produces the taxonomy that ranks the build order, but the agent that gets submitted is FP8. DEV-2's
    "unquantified capability loss" was recorded as a fidelity risk; this is where it bites — a quantization
    that changes *which* failures dominate would misrank §11's construction order. The gap is not
    currently measured in either direction.
@@ -824,7 +824,7 @@ times in the same order of wall-clock. That is not a throughput problem — it i
 converge on a decision. It plausibly belongs to `exploration_or_probe_selection` or `goal_unknown` in the
 taxonomy, and it should be labelled on the Day-5 run rather than treated as a latency observation.
 
-**Consequently the D9 comparison compared analysis throughput, not action throughput**, and every
+**Consequently the DEV-9 comparison compared analysis throughput, not action throughput**, and every
 seconds-per-action figure quoted for ft09 in this file and in commit messages is withdrawn.
 
 #### Preliminary mechanism for the zero-action stall — REVISED, and the first hypothesis was wrong
@@ -901,7 +901,7 @@ The consolidated view makes two things plain that the individual runs did not:
    the table deliberately; a summary that silently dropped failed runs would misrepresent the day.
 
 Calls per turn (`paper/figures/s1_calls_per_turn.md`) — ⚠ **corrected**. The first figures (43 turns,
-mean 1.91, 13% at cap) double-counted: D6 writes a `request` **and** a `response` record sharing the same
+mean 1.91, 13% at cap) double-counted: DEV-6 writes a `request` **and** a `response` record sharing the same
 index, so every response with index 1 looked like a new turn. Filtering to `event == "request"`:
 
 | run | turns | mean calls/turn | max | at cap of 4 |
@@ -912,8 +912,8 @@ index, so every response with index 1 looked like a new turn. Filtering to `even
 non-terminal-run policy forbids.*
 
 So the earlier claim that the cap "did not bind" is **weaker than stated** — a fifth of turns reached it.
-The D9 conclusion still stands, but for a different and now-primary reason: **the ft09 runs executed no
-game actions at all**, so D9 was never comparing action throughput in the first place.
+The DEV-9 conclusion still stands, but for a different and now-primary reason: **the ft09 runs executed no
+game actions at all**, so DEV-9 was never comparing action throughput in the first place.
 
 ## Submission contract — read from the reference notebook, 2026-07-26 (S1-f prep)
 
@@ -939,7 +939,7 @@ CLI and pointed `--re-arc-environments-dir` at.
 ### 🔴 The development/submission divergence — a consequence of local-only, and a caveat on S1-d
 
 Kaggle provides CUDA. A Day-6 payload therefore runs **vLLM + FP8 on an RTX PRO 6000** — the reference
-stack unmodified. **D1 and D2 do not propagate to the submission at all**: the MLX 4-bit port is a
+stack unmodified. **DEV-1 and DEV-2 do not propagate to the submission at all**: the MLX 4-bit port is a
 *local development and instrumentation vehicle*, not the submitted artifact.
 
 That is good for the submission's fidelity, and it creates two problems that must not be discovered at
@@ -950,7 +950,7 @@ S1-g:
    submitted agent's runtime envelope. `per_action_latency` must therefore be read against the
    *submission* stack before it can gate anything, or its verdict scoped explicitly to local development.
 2. **Failure frequencies labelled locally are labelled on a different model.** The Day-5 run at MLX 4-bit
-   produces the taxonomy that ranks the build order, but the agent that gets submitted is FP8. D2's
+   produces the taxonomy that ranks the build order, but the agent that gets submitted is FP8. DEV-2's
    "unquantified capability loss" was recorded as a fidelity risk; this is where it bites — a quantization
    that changes *which* failures dominate would misrank §11's construction order. The gap is not
    currently measured in either direction.
@@ -1011,17 +1011,17 @@ times in the same order of wall-clock. That is not a throughput problem — it i
 converge on a decision. It plausibly belongs to `exploration_or_probe_selection` or `goal_unknown` in the
 taxonomy, and it should be labelled on the Day-5 run rather than treated as a latency observation.
 
-**Consequently the D9 comparison compared analysis throughput, not action throughput**, and every
+**Consequently the DEV-9 comparison compared analysis throughput, not action throughput**, and every
 seconds-per-action figure quoted for ft09 in this file and in commit messages is withdrawn.
 
 #### Preliminary mechanism — one observed instance, NOT a frequency claim
 
-During a four-turn stall on vc33 (actions static at 25 while analysis went 17→20), the D6 request log
+During a four-turn stall on vc33 (actions static at 25 while analysis went 17→20), the DEV-6 request log
 shows the agent issuing a segmentation inspection and then **repeating the byte-identical inspection**
 before eventually acting. A redundant probe with zero information yield.
 
 **Precision that matters for the taxonomy:** these are *tool* calls, not game actions. Under the surgical
-controller (R2 = `accumulates`, `c_reset` = 1), wasted **game** actions cost score directly; wasted
+controller (RESET-ACCT = `accumulates`, `c_reset` = 1), wasted **game** actions cost score directly; wasted
 **tool** calls cost only wall-clock. So this instance is a **latency** pathology, not a scoring one, and
 labelling it `exploration_or_probe_selection` — a category defined on *actions* — would be a category
 error unless the definition is read as covering tool-level probing too. **Resolve that scoping question
@@ -1039,9 +1039,9 @@ not as a measured frequency.
 
 ## Reset and action accounting
 
-### R1 — knowledge preservation across RESET. **Result: `deterministic`** (2026-07-26)
+### REPLAY-DET — knowledge preservation across RESET. **Result: `deterministic`** (2026-07-26)
 
-Script `agent/harness/r1_determinism.py`; raw `logs/r1_determinism.json`. Sampling exactly as
+Script `agent/harness/replay_determinism.py`; raw `logs/replay_determinism.json`. Sampling exactly as
 pre-registered: 2 distinct public games (`ft09-0d8bbf25`, `ls20-9607627b`), 2 prefixes each (10 and 40
 scripted actions), 3 replays per prefix, exact frame-sequence equality.
 
@@ -1079,13 +1079,13 @@ prefix while a 40-action prefix on the same environment matched. **A metadata-on
 happened to agree everywhere would have produced a confident `deterministic` with no pixel ever
 compared.** The falsification check above now exists to make that failure mode impossible to repeat.
 
-### R2 — action accounting
+### RESET-ACCT — action accounting
 
-**Unblocked**: R2's precondition is `r1 == deterministic`, which now holds. Not yet run — it needs live
+**Unblocked**: RESET-ACCT's precondition is `replay_determinism == deterministic`, which now holds. Not yet run — it needs live
 scorecards (close-then-read, forced by V7) and the three preconditions checked before any score is read.
 
-**Result: `accumulates`** (2026-07-26). Script `agent/harness/r2_action_accounting.py`; raw
-`logs/r2_action_accounting.json`. Game `tu93-0768757b`, H(level 1) = 19, `a = max(20, round(1.5×19)) = 28`,
+**Result: `accumulates`** (2026-07-26). Script `agent/harness/reset_accounting.py`; raw
+`logs/reset_accounting.json`. Game `tu93-0768757b`, H(level 1) = 19, `a = max(20, round(1.5×19)) = 28`,
 `w = a = 28`, 3 repetitions per arm on independent scorecards.
 
 | Arm | Score | `actions` | `resets` |
@@ -1097,7 +1097,7 @@ scorecards (close-then-read, forced by V7) and the three preconditions checked b
 Within-arm spread 0.0 for both.
 
 **Waste validity — checked before any score was read**, as the pre-registration demands: **84/84** wasted
-actions accepted *and* **84/84** produced an observable state change. This is the check that prevents R2
+actions accepted *and* **84/84** produced an observable state change. This is the check that prevents RESET-ACCT
 reading `restarts` when the truth is `accumulates`; had the wasted actions been no-ops the two arms would
 have scored alike and the answer would have inverted.
 
@@ -1132,8 +1132,8 @@ clear, and it is exactly what the `a ≈ 1.5H` rule exists for.
 
 #### Scope limits
 
-- **Offline environment files, not competition mode** (V5–V7 differ) — same caveat as R1.
-- **One game.** R2's design is deliberately single-game, because identifiability requires `H` and the
+- **Offline environment files, not competition mode** (V5–V7 differ) — same caveat as REPLAY-DET.
+- **One game.** RESET-ACCT's design is deliberately single-game, because identifiability requires `H` and the
   level weight to cancel. So this is not a design flaw — but generalisation of the accounting rule across
   games is untested and must not be asserted.
 - **Spread was 0.0 trivially**, because the offline environment is deterministic. The `spread ≤ 0.10`
@@ -1142,25 +1142,25 @@ clear, and it is exactly what the `a ≈ 1.5H` rule exists for.
 
 ### 🎯 Controller fork — RESOLVED
 
-`R1 = deterministic` + `R2 = accumulates` → **surgical information-per-action**.
+`REPLAY-DET = deterministic` + `RESET-ACCT = accumulates` → **surgical information-per-action**.
 
 Replay is reliable, but **every probe costs score directly**: wasted actions accumulate across resets, and
 the RESET itself is scored. Information is not free, so the aggressive explore-then-speedrun controller
 would bleed score on every probe. This is also the conservative branch the pre-registration says to
 default to under doubt — but here it is not a default, it is the measured outcome.
 
-- R1 result: `deterministic` — see above
-- R2 result: `accumulates`
+- REPLAY-DET result: `deterministic` — see above
+- RESET-ACCT result: `accumulates`
 - Controller selected: **surgical information-per-action**
-- R2 result:
+- RESET-ACCT result:
 - Controller selected:
 
 ---
 
-## S1-e, 2026-07-26: non-convergent generation — distinct from D13 truncation
+## S1-e, 2026-07-26: non-convergent generation — distinct from DEV-13 truncation
 
 First `finish_reason: length` since `analyzer.max_output` was raised to 16384. It is **not** a
-recurrence of D13, and the distinction matters because the two imply opposite fixes.
+recurrence of DEV-13, and the distinction matters because the two imply opposite fixes.
 
 `g50t-5849a774`, analysis step 1, concurrency 2:
 
@@ -1171,7 +1171,7 @@ reasoning          0 chars
 content            49,532 chars
 ```
 
-**D13 was a cap set too low** — 2048 by the server default — cutting off legitimate coordinate reasoning
+**DEV-13 was a cap set too low** — 2048 by the server default — cutting off legitimate coordinate reasoning
 mid-thought. **This is a generation that does not converge.** The content is coherent and
 non-degenerate: 705 lines, 625 distinct, 11.3% repetition. The model segments the maze, enumerates the
 pixel extents of each white passage, and traces candidate paths — real work, continued past any point

@@ -23,9 +23,9 @@ Random rollouts searching for a scripted level-1 completion. **5000 samples foun
 That negative result is the justification for switching to systematic search: the space is roughly
 4^60 and is not reachable by sampling. Superseded by `bfs_level1.py`.
 
-## `bfs_level1.py` → `logs/r2_solution_tu93.json`
+## `bfs_level1.py` → `logs/reset_accounting_solution_tu93.json`
 
-Breadth-first search for a scripted level-1 completion, valid because R1 established that these offline
+Breadth-first search for a scripted level-1 completion, valid because REPLAY-DET established that these offline
 environments replay exactly. Result, verified to reproduce on replay:
 
 ```
@@ -33,9 +33,9 @@ tu93-0768757b   18 actions   960 nodes expanded   reproduces: true
 action_ids = [4, 2, 2, 4, 1, 4, 2, 2, 3, 3, 2, 4, 4, 2, 4, 1, 4, 2]
 ```
 
-## `find_arm_a_sequence.py` → `logs/r2_arm_a_tu93.json`
+## `find_arm_a_sequence.py` → `logs/reset_accounting_arm_a_tu93.json`
 
-R2 needs a completion of **exactly** the pre-registered length `a = max(20, round(1.5·H))` — 28 for
+RESET-ACCT needs a completion of **exactly** the pre-registered length `a = max(20, round(1.5·H))` — 28 for
 `tu93` (H=19). The length is load-bearing, not cosmetic: `a ≥ 20` keeps `1/a ≤ 0.05`, which is what
 absorbs `c_reset` into the tolerance band. Found by padding a 10-step walk onto the 18-action solution:
 
@@ -45,11 +45,11 @@ tu93-0768757b   a = 28   walk_len = 10   reproduces: true
 
 ## `d5_probe.py` → verified, no artifact file
 
-D5 was named in the reference freeze as "the most likely single point of failure": `tool_call_parser:
+DEV-5 was named in the reference freeze as "the most likely single point of failure": `tool_call_parser:
 qwen3_coder` and `reasoning_parser: qwen3` are vLLM *server-side* features, and if the MLX server did
 not implement them the solver could not act at all. The probe confirmed the local MLX server returns
 parsed OpenAI `tool_calls`, with the parser inferred from the chat-template markers. Every subsequent
-run exercises this continuously — a run that produces actions has re-verified D5 by construction, which
+run exercises this continuously — a run that produces actions has re-verified DEV-5 by construction, which
 is why the probe is not worth keeping.
 
 ## `concurrency_sweep.py` → `logs/concurrency_sweep.json`, `logs/concurrency_sweep_merged.json`
@@ -82,7 +82,7 @@ figures are script-generated, so a later reader looking for the generator would 
 empty, and add a second generator here — splitting the figure pipeline across two entry points.
 `make_run_tables.py` is the single entry point.
 
-## `r1_determinism.py` → `logs/r1_determinism.json`, H1
+## `replay_determinism.py` → `logs/replay_determinism.json`, H1
 
 Replay determinism. Two games, two prefix lengths, three replays each, **byte-identical throughout**.
 
@@ -98,7 +98,7 @@ which silently omits the numpy `frame` field, so it compared metadata only and n
 The corrected version asserts grids are present before comparing. Outcome recorded as H1 in
 `paper/hypotheses.md`.
 
-## `r2_action_accounting.py` → `logs/r2_action_accounting.json`, H2
+## `reset_accounting.py` → `logs/reset_accounting.json`, H2
 
 Whether the scored action count restarts after a reset or accumulates. **ACCUMULATES**, and the reset is
 itself a scored action:
@@ -110,7 +110,7 @@ r = 2.0357   verdict: accumulates   (pre-registered band [1.85, 2.20])
 
 Two independent estimators agreed to four decimal places — `√(1.0232 / 0.2469)` and the direct action
 count `57/28`. `c_reset` was pre-registered as unknown and absorbed by requiring `a ≥ 20`; it was
-instead **resolved to 1**. Full derivation in `notes/s1-measurements.md` §R2; outcome as H2 in
+instead **resolved to 1**. Full derivation in `notes/s1-measurements.md` §RESET-ACCT; outcome as H2 in
 `paper/hypotheses.md`.
 
 Consequence, which outlives the script: the controller is *surgical information-per-action* — every
@@ -124,7 +124,7 @@ probe costs score directly.
 |---|---|
 | `measure_arc_conventions.py` | its output drives the keyboard/ACTION6 split now in use, and that output is gitignored — deleting the script would make the split unreproducible from the repo alone |
 
-R1 and R2 were retired on the standing rule: an experiment that has run, and whose result is recorded in
+REPLAY-DET and RESET-ACCT were retired on the standing rule: an experiment that has run, and whose result is recorded in
 a tracked file, does not need its code kept. Both are cited in `gate_manifest.yaml`, and the citation
 now points at the recorded result rather than at runnable code. Re-running either would require
 rewriting it from the method description in `notes/s1-measurements.md`.

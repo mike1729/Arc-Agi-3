@@ -80,7 +80,7 @@ bounded by `(sum of completed level indices) / (sum of all level indices) × 100
 **V15 narrowed.** The public leaderboard's **1.86** is on the scorer's 0–100 scale and is therefore not
 a contradiction. The remaining open discrepancy is our S0 random agent's Kaggle score of **0.06** despite
 the retained evidence showing zero completed levels. The LB `1.21` comparison remains reported rather
-than gated because the readable notebook did not reproduce its milestone score and our D1/D2/D4 stack
+than gated because the readable notebook did not reproduce its milestone score and our DEV-1/DEV-2/DEV-4 stack
 differs—not because the score scale is unknown.
 
 ---
@@ -149,7 +149,7 @@ CUDA wheelhouse are **not needed locally** — only the 439 KB source bundle plu
 Interactive "Save & Run" plays the competition's **bundled environment files offline, with no gateway**;
 only a real competition rerun (`KAGGLE_IS_COMPETITION_RERUN`) waits for the Kaggle gateway and plays the
 live Arcade. So local instrumented play needs neither the online API nor internet. The online API remains
-reachable from the M5 Pro separately, which is what the reset experiment (R1/R2) requires.
+reachable from the M5 Pro separately, which is what the reset experiment (REPLAY-DET/RESET-ACCT) requires.
 
 Reference operating point: `max_runtime_minutes: 45` per game, `n_passes: 20`, `concurrent_jobs: 32`,
 `context_window: 32768` (server `max_model_len` 65536), `temperature 0.6 / top_p 0.95 / top_k 20`,
@@ -177,15 +177,15 @@ vendored reference itself is never edited in place.
 
 | # | Deviation | Why | Risk it introduces |
 |---|---|---|---|
-| D1 | vLLM server → `mlx_vlm` OpenAI-compatible server | no CUDA/Metal vLLM path | serving-side behaviour differences |
-| D2 | FP8 → MLX 4-bit `mlx-community/Qwen3.6-27B-4bit` | FP8 needs Hopper/Blackwell | **unquantified capability loss** |
-| D3 | `base_url` / `provider` / `model_name` in `inference.json` | point at the local server | none — the config is designed for this |
-| D4 | `concurrent_jobs: 32` → reduced | one 20-core GPU cannot serve 32 concurrent 32k-context requests | **changes the batching factor — see §5** |
-| D5 | Client-side tool-call / reasoning parsing shim, *if required* | `tool_call_parser: qwen3_coder` and `reasoning_parser: qwen3` are vLLM-side; MLX may not implement them | **the most likely single point of failure** |
-| D6 | Instrumentation hooks for the §4.2.1 transition schema | S1's whole purpose | must not alter solver control flow |
-| D7 | Skip the 27 GB FP8 snapshot and the CUDA wheelhouse | not loadable locally | none locally; both required again if we escalate to hybrid |
+| DEV-1 | vLLM server → `mlx_vlm` OpenAI-compatible server | no CUDA/Metal vLLM path | serving-side behaviour differences |
+| DEV-2 | FP8 → MLX 4-bit `mlx-community/Qwen3.6-27B-4bit` | FP8 needs Hopper/Blackwell | **unquantified capability loss** |
+| DEV-3 | `base_url` / `provider` / `model_name` in `inference.json` | point at the local server | none — the config is designed for this |
+| DEV-4 | `concurrent_jobs: 32` → reduced | one 20-core GPU cannot serve 32 concurrent 32k-context requests | **changes the batching factor — see §5** |
+| DEV-5 | Client-side tool-call / reasoning parsing shim, *if required* | `tool_call_parser: qwen3_coder` and `reasoning_parser: qwen3` are vLLM-side; MLX may not implement them | **the most likely single point of failure** |
+| DEV-6 | Instrumentation hooks for the §4.2.1 transition schema | S1's whole purpose | must not alter solver control flow |
+| DEV-7 | Skip the 27 GB FP8 snapshot and the CUDA wheelhouse | not loadable locally | none locally; both required again if we escalate to hybrid |
 
-**D5 is the one to test first on Day 2**, before anything else is built on top of it. If the local server
+**DEV-5 is the one to test first on Day 2**, before anything else is built on top of it. If the local server
 cannot emit parseable tool calls, the solver cannot act, and no amount of downstream work compensates.
 
 ---
@@ -218,7 +218,7 @@ through S1-e; it blocks only the Day-6 payload if TAAF code ships inside it.
 §4.3 requires per-action latency "under the *actual* batching pattern — N parallel stateless game threads
 over one shared GPU", and warns that a single-threaded number misleads by the batching factor.
 
-D4 changes that factor. The reference runs `concurrent_jobs: 32` against a datacentre GPU; one M5 Pro GPU
+DEV-4 changes that factor. The reference runs `concurrent_jobs: 32` against a datacentre GPU; one M5 Pro GPU
 serving a 27B model at 32k context cannot hold 32 concurrent streams. **Whatever concurrency we actually
 run is the number the latency table must be generated at, and it must be recorded beside every latency
 figure.** A p50 measured at concurrency 4 is not comparable to the reference's, and any extrapolation to
@@ -235,7 +235,7 @@ The user's decision was *"local only first, and if it proves not optimal then hy
 not decidable in the moment, so it is fixed here in advance. **Escalate to hybrid (local harness +
 rented CUDA for the reference run) on the first of:**
 
-1. **D5 fails and no client-side shim works by end of Day 2** — the local server cannot produce parseable
+1. **DEV-5 fails and no client-side shim works by end of Day 2** — the local server cannot produce parseable
    tool calls, so the solver cannot act.
 2. **Day-3 end, still no scored public level locally** — this is already §7 ladder item 2, which currently
    points at `reference_alternate`. Note the correlation problem in §7 below: the alternate is *also*
@@ -262,7 +262,7 @@ it is taken. Escalating is **not** a descope — it buys fidelity back; the day 
 | **Self-contained** | Yes — no external solver dataset; the notebook carries its own logic (103 KB source) |
 | **Reproduction target** | LB **0.86**, reported on the scorer's 0–100 scale |
 | **Local substitute weights** | a 4-bit MLX Gemma-4-31B build — **must be identified and its license checked on the day it is needed**, not assumed |
-| **Permitted deviations** | D1–D6 as above, with the Gemma model substituted for Qwen |
+| **Permitted deviations** | DEV-1–DEV-6 as above, with the Gemma model substituted for Qwen |
 
 **Selection rationale.** Chosen over ko0kip's Gemma reflection agent because it reports a concrete
 leaderboard score, which criterion (3) requires and ko0kip's does not supply. Chosen for **decorrelation**
@@ -272,7 +272,7 @@ the primary says nothing about the alternate. Its self-containedness also makes 
 vendor on Day 4, which is the point at which the alternate gets used at all.
 
 **Stated limitation of this alternate — the honest part.** It shares the primary's vLLM/CUDA serving
-stack. It therefore hedges **solver-specific** failure and hedges **nothing** about the D1/D2/D5 stack
+stack. It therefore hedges **solver-specific** failure and hedges **nothing** about the DEV-1/DEV-2/DEV-5 stack
 risk, which is the likeliest local failure mode. There is no available alternate that hedges stack risk,
 because *every* strong public reference uses this stack. The hedge against stack risk is the §6
 accelerator escalation, not this alternate. §7 of the execution plan sends a Day-4 miss to the alternate;
@@ -285,7 +285,7 @@ switching references to fix a stack problem would cost a day and change nothing.
 
 ```
 agent/reference/taaf/          # Kaggle dataset snapshot, byte-for-byte, unmodified
-agent/patches/                 # D1–D7, one patch file each; the diff is the audit trail
+agent/patches/                 # DEV-1–DEV-7, one patch file each; the diff is the audit trail
 ```
 
 Local prerequisites to confirm before S1-b starts: `mlx-vlm` installed and serving

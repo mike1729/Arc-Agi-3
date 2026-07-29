@@ -77,7 +77,7 @@ def legal_action_reliability(run_dir: Path, executed_events: int, pass_key: str 
     threshold was unmeasurable, because the agent builds action lists programmatically. That was
     looking in the wrong place. `_compact_action_result` emits `requested_count`, `executed_count`,
     `stopped_early` and `stop_reason` directly, and those payloads are fed back to the model as tool
-    output — so they are captured verbatim in the D6 request logs.
+    output — so they are captured verbatim in the DEV-6 request logs.
 
     One subtlety: the fields are only emitted when `batch_size > 1 or stopped_early` (tool_agent.py
     ~1437). A single action that executed normally carries neither, and counts 1/1 implicitly.
@@ -157,7 +157,7 @@ def legal_action_reliability(run_dir: Path, executed_events: int, pass_key: str 
         "rejection_taxonomy": stops or {},
         "executed_action_events": executed_events,
         "method": ("read from the harness's own requested_count/executed_count in action results, "
-                   "captured verbatim in the D6 request logs. Single non-early-stopped actions omit "
+                   "captured verbatim in the DEV-6 request logs. Single non-early-stopped actions omit "
                    "the fields and count 1/1."),
     }
 

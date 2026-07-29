@@ -103,8 +103,8 @@ moved 2.19 → 1.14. A local positive establishes that the advisor helps *here*,
 | Item | Result |
 |---|---|
 | **S1-a** | Reference frozen (Tufa duck harness, Qwen3.6-27B-FP8) + alternate (mbmmurad Gemma-4-31B). All `PROPOSED` values resolved; manifest frozen |
-| **R1** | `deterministic` — 2 games × 2 prefixes × 3 replays, byte-identical, falsification check passed |
-| **R2** | `accumulates`, `r` = 2.0357, waste validity 84/84. **`c_reset` = 1 measured** (RESET is itself scored) |
+| **REPLAY-DET** | `deterministic` — 2 games × 2 prefixes × 3 replays, byte-identical, falsification check passed |
+| **RESET-ACCT** | `accumulates`, `r` = 2.0357, waste validity 84/84. **`c_reset` = 1 measured** (RESET is itself scored) |
 | **Controller fork** | **surgical information-per-action** — every probe costs score |
 | **S1-b hard exit** | vc33 level 1 in **9 actions** (baseline 7), score **60.49**, log on disk |
 | **S2 inheritance** | Measured across all 25 games and reproducible (`measure_arc_conventions.py`) |
@@ -117,7 +117,7 @@ moved 2.19 → 1.14. A local positive establishes that the advisor helps *here*,
 |---|---:|---:|---:|
 | Kaggle reference (27B dense FP8) | **2/7** | 49 | **10.71** — saturated the completed-weight cap |
 | local dense (27B MLX 4-bit) | 1/7 | **9** | 2.16 |
-| local MoE (35B-A3B, D11) | 0/7 | **742** | 0.00 |
+| local MoE (35B-A3B, DEV-11) | 0/7 | **742** | 0.00 |
 
 **Conclusion: the MoE is a throughput vehicle, not a taxonomy vehicle.** ~5.2× faster per action and
 ~70× faster in wall-clock per action, with no progress. Use it for harness, latency and iteration work;
@@ -127,11 +127,11 @@ gather the Day-5 taxonomy on the dense 27B.
 
 1. **120 s analyzer timeout** — the reference's value, calibrated for FP8 on an RTX PRO 6000. Locally
    **62% of generations exceeded it**, so most requests were cut off and retried. Every earlier local
-   measurement of *agent behaviour* was measuring a misconfigured harness. Fixed as **D10**.
+   measurement of *agent behaviour* was measuring a misconfigured harness. Fixed as **DEV-10**.
 2. **Makefile bypass** — driving `inference.framework.run` directly drops every config-sourced setting
-   to its code default. This silently disabled D6 request logging and replaced `tool_steps: 0`
+   to its code default. This silently disabled DEV-6 request logging and replaced `tool_steps: 0`
    (unlimited) with 12. Fixed by `agent/harness/run_local.sh`.
-3. **The same bug, in my own launcher** — `--analyzer-timeout` was never passed, so D10 had no effect on
+3. **The same bug, in my own launcher** — `--analyzer-timeout` was never passed, so DEV-10 had no effect on
    its first attempt. Caught because 6 timeouts in 25 minutes is impossible at a 900 s limit.
 4. **Action counts were event-row counts** — `analysis` snapshots counted as actions. The hard-exit score
    was understated 2.4×, and the ft09 runs reported 24/8/20 actions when they executed **zero**.
@@ -287,7 +287,7 @@ Ordered by whether S1-e's output depends on them.
 
 ### Closes an open threshold
 
-3. **D12 — runtime action logging.** `legal_action_validity` is currently *not measurable*: the agent
+3. **DEV-12 — runtime action logging.** `legal_action_validity` is currently *not measurable*: the agent
    builds action lists programmatically, so `emitted` cannot be recovered from tool source. A patch
    logging every action passed to `action()` at runtime would make it a real number. Cheap to write;
    needs a run to validate, so it would apply to a later run rather than S1-e.
@@ -296,7 +296,7 @@ Ordered by whether S1-e's output depends on them.
 
 4. **Methods prose** for S1-c and S1-d into `paper/methods/`, written the day they were built.
 5. **`paper/hypotheses.md` / `related-work.md`** — the daily 30 min. Related-work already has the field
-   survey; hypotheses has had nothing added today despite R1/R2 resolving the controller fork.
+   survey; hypotheses has had nothing added today despite REPLAY-DET/RESET-ACCT resolving the controller fork.
 
 ### Needs a decision or an outward-facing action — NOT mine to take
 
@@ -373,8 +373,8 @@ everything measured. **Leave this open and widen the probe before S2 commits to 
 
 - **Scoring** as V8 corrects it: `min(115, (baseline/actions)² × 100)` per level on a 0–100 scale, level
   score capped at 115, game score capped at completed-weight fraction, unweighted mean across games.
-- **`c_reset = 1`** — RESET is itself a scored action (measured in R2).
-- **Determinism** — offline environments replay exactly (R1), so generator-side reproducibility is a fair
+- **`c_reset = 1`** — RESET is itself a scored action (measured in RESET-ACCT).
+- **Determinism** — offline environments replay exactly (REPLAY-DET), so generator-side reproducibility is a fair
   assumption for the offline path.
 
 ## S2 inheritance (original stub)

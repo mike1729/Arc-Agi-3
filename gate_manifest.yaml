@@ -51,13 +51,13 @@ errata:
     effective_replacements:
       per_level_max_percent: 115.0
       per_level_max_unit: 1.15
-      r2_cap_check: "check saturation against 1.15 on the unit scale (or 115 on the percent scale);
+      reset_accounting_cap_check: "check saturation against 1.15 on the unit scale (or 115 on the percent scale);
                      the chosen a = 1.5H produces approximately 0.444 (44.4), so remains clear"
       v15_leaderboard_claim: "WITHDRAWN — leaderboard values such as 1.86 are on the scorer's 0-100
                               scale and do not exceed the maximum"
       reproduction_fidelity_rationale: "The LB comparison remains reported rather than gated because
                                         the readable reference notebook did not reproduce its milestone
-                                        score and D1/D2/D4 change the stack; V15 is no longer a reason"
+                                        score and DEV-1/DEV-2/DEV-4 change the stack; V15 is no longer a reason"
     note: "verification is still DRAFT and is corrected in place below. Frozen S1 values are not edited
            in place; this dated entry is their authoritative override."
 
@@ -81,13 +81,13 @@ errata:
                                    from a lever that was never measured."
       stratification: "stratify by primary_label; oversample goal_unknown AND
                        exploration_or_probe_selection (replacing planning_depth)."
-      why_that_replacement: "the replacement must be (a) observable — it is, with D6 request logs
+      why_that_replacement: "the replacement must be (a) observable — it is, with DEV-6 request logs
                              supplying the candidate action set — and (b) genuinely contestable, so the
                              agreement statistic does real work. exploration_or_probe_selection is
                              judgement-heavy ('chose an action of low information yield when a
                              higher-yield legal action was available') and is the nearest thing this
                              architecture can express to a planning failure.
-                             It is ALSO now the highest-value category to measure well: R2 returned
+                             It is ALSO now the highest-value category to measure well: RESET-ACCT returned
                              `accumulates` with c_reset = 1, so the controller is surgical
                              information-per-action and EVERY PROBE COSTS SCORE. How often the reference
                              wastes actions on low-yield probes bears directly on the build order."
@@ -102,7 +102,7 @@ errata:
     date: 2026-07-26
     scope: ["s1.blind_rerate.stratification"]
     correction: "S1-E2 justified exploration_or_probe_selection as the replacement oversampling stratum
-                 on the grounds that D6 request logs supply the candidate action set. That is only
+                 on the grounds that DEV-6 request logs supply the candidate action set. That is only
                  partly true and S1-E2 overstated it: `valid_actions` is a list of ACTION NAMES, not
                  ACTION6 coordinates, so on click games the 'higher-yield alternative' the category is
                  defined against is not enumerable. The corrected field-availability table marks the
@@ -151,7 +151,7 @@ errata:
     date: 2026-07-26
     scope: ["s1.reference_primary.weights_url", "s1.reference_primary.model",
             "s1.reference_primary.quantization", "s1.reference_primary.permitted_deviations"]
-    correction: "D11 — the LOCAL SUBSTITUTE MODEL changes from mlx-community/Qwen3.6-27B-4bit (dense) to
+    correction: "DEV-11 — the LOCAL SUBSTITUTE MODEL changes from mlx-community/Qwen3.6-27B-4bit (dense) to
                  mlx-community/Qwen3.6-35B-A3B-4bit (MoE, 256 experts, 8 active). The reference itself is
                  unchanged: Qwen3.6-27B-FP8 remains what the Kaggle path runs and what the notebook
                  measurement used."
@@ -167,11 +167,11 @@ errata:
                                 aggregate. NOTE: synthetic short-prompt benchmark; the real-workload
                                 figure is lower and must be re-measured from an agent run"
       capability_preserved: "vision_config present (the OptiQ MoE variant lacks it and was rejected);
-                             tool_parser qwen3_coder unchanged; D5 probe PASSES with a usable python
+                             tool_parser qwen3_coder unchanged; DEV-5 probe PASSES with a usable python
                              tool call. Apache-2.0, same as the dense build"
     accepted_cost: "THE DAY-5 TAXONOMY WILL BE GATHERED ON A MODEL THAT IS NEITHER THE REFERENCE NOR THE
                     SUBMISSION. The submission runs Qwen3.6-27B dense at FP8 on Kaggle CUDA. This
-                    compounds rather than resolves the D2 quantization concern: a model that changes
+                    compounds rather than resolves the DEV-2 quantization concern: a model that changes
                     WHICH failures dominate would misrank the build order. State this in the close-out
                     as a limitation on the ranking, not as a footnote."
     mitigation: "the Kaggle reference run (logs/kaggle-reference/) gives per-game outcomes for the TRUE
@@ -600,6 +600,54 @@ errata:
                     because a quota reading taken mid-run is not a baseline, and the next person to
                     check will otherwise repeat the mistake."
 
+  - id: S1-E17
+    date: 2026-07-29
+    scope: ["s1 (whole block — terminology only)", "s1.reset_experiment"]
+    kind: "TERMINOLOGICAL. Changes no registered value, threshold, procedure or result."
+    correction: "The S1 reset experiment's two sub-experiments were named R1 and R2. Those names
+                 COLLIDE with the build-phase branching rounds R1-R3 (SPEC §12.1 steps 6/9/11,
+                 §13.1), and the collision is live in a single file: SPEC line 58 reads
+                 'S1 reset experiment (R1, R2)' while SPEC line 7 reads 'n_causal feasibility
+                 decision at R1', meaning the W4 branching round. A third sense existed in
+                 docs/arc-agi-3-architecture-alternatives.md, where R1-R8 were design REQUIREMENTS.
+                 Separately, the permitted-deviation series D1-D13 collided with gate D0 (§10.1) —
+                 two unrelated series sharing a prefix and a number space, with no document
+                 acknowledging the split — and ALSO with that same alternatives document, where
+                 D1-D9 were design ALTERNATIVES."
+    renames:
+      R1: "REPLAY-DET — replay determinism across RESET. Result `deterministic`, unchanged"
+      R2: "RESET-ACCT — action accounting across RESET. Result `accumulates`, r = 2.0357,
+           c_reset = 1, unchanged"
+      D1_to_D13: "DEV-1 .. DEV-13 (including DEV-6b) — permitted deviations from the vendored
+                  reference. Every deviation's content is unchanged"
+      keys_and_artifacts: "`r1_knowledge_preservation` -> `replay_determinism`;
+                           `r2_action_accounting` -> `reset_accounting`;
+                           `r2_cap_check` -> `reset_accounting_cap_check`;
+                           logs/r1_determinism.json -> logs/replay_determinism.json;
+                           logs/r2_action_accounting.json -> logs/reset_accounting.json;
+                           logs/r2_arm_a_tu93.json -> logs/reset_accounting_arm_a_tu93.json;
+                           logs/r2_solution_tu93.json -> logs/reset_accounting_solution_tu93.json"
+    unchanged: "EVERY measured value, threshold, verdict, procedure and result. `deterministic`,
+                `accumulates`, r = 2.0357, waste validity 84/84, c_reset = 1 and the surgical
+                information-per-action controller fork all stand exactly as recorded. The evidence
+                files hold byte-identical content under their new names."
+    not_renamed:
+      D0: "the executive-viability gate (SPEC §10.1) keeps its name — it is a pre-registered gate
+           referenced throughout the build calendar, and the deviations are S1-local bookkeeping"
+      branching_rounds: "R1-R3 on the dev partition keep their names, for the same reason"
+      architecture_alternatives: "renamed IN THEIR OWN FILE ONLY — R1-R8 -> REQ-1..REQ-8 and
+                                  D1-D9 -> ALT-1..ALT-9. Both series are defined and used solely in
+                                  docs/arc-agi-3-architecture-alternatives.md; nothing cites them
+                                  from outside, which is why a local rename discharges them"
+    why_an_erratum: "the `s1:` block is `status: frozen`, and the freeze rule admits no in-place
+                     edit — every change is a dated entry here. A rename touches no pre-registered
+                     quantity, so it could have been argued to fall outside the rule. Recording it
+                     anyway is the cheaper error: a reader diffing the frozen block later finds the
+                     reason here instead of an unexplained change."
+    reason: "raised 2026-07-29 while renaming the generator families (Alias/Delay/Order/Count); the
+             same audit found these. Precedent: `F1` had been serving as both a family name and the
+             classification metric in the same document."
+
 # =====================================================================================
 # S0 — External execution-path proof.
 # =====================================================================================
@@ -642,7 +690,7 @@ s1:
     escalate_to: "hybrid — local harness + instrumentation + reset experiment; rented CUDA for the
                   Day-5 reference run"
     escalation_triggers:                    # first one to fire wins; charge the cost in the ledger same-day
-      - "D5 fails and no client-side tool-call/reasoning shim works by end of Day 2"
+      - "DEV-5 fails and no client-side tool-call/reasoning shim works by end of Day 2"
       - "Day-3 end, still no scored public level locally AND the failure is stack-shaped, not
          solver-shaped — escalate the ACCELERATOR, not the reference (see reference_alternate.limitation)"
       - "sustainable local concurrency < 4 — Day-5 volume cannot support the frequency ranking"
@@ -689,7 +737,7 @@ s1:
       (4) winner license CC-BY 4.0 -> applies to a winning submission; affects no candidate choice.
       NET: criterion (1) clears. The only open item is a redistribution question with a known remedy."
 
-    quantization: "reference FP8 -> local MLX 4-bit (D2)"
+    quantization: "reference FP8 -> local MLX 4-bit (DEV-2)"
     accelerator: "reference: Kaggle machine_shape NvidiaRtxPro6000 (team dev on B200 x2).
                   ours: Apple M5 Pro, 20-core GPU, 51.84 GiB recommendedMaxWorkingSetSize, NO CUDA"
 
@@ -700,7 +748,7 @@ s1:
     # So the swap replaces the SERVER, not the solver, and criterion (4) harness reuse survives.
     batching_pattern: "reference: concurrent_jobs 32, n_passes 20, context_window 32768
                        (server max_model_len 65536), prefix caching on, max_runtime_minutes 45/game.
-                       LOCAL: concurrency REDUCED (D4) — one 20-core GPU cannot hold 32 concurrent 32k
+                       LOCAL: concurrency REDUCED (DEV-4) — one 20-core GPU cannot hold 32 concurrent 32k
                        streams. Whatever concurrency is actually run IS the number the latency table is
                        generated at, and must be recorded beside every latency figure (see
                        viability_thresholds.per_action_latency)"
@@ -709,7 +757,7 @@ s1:
                                 OFFLINE with no gateway; only a real competition rerun
                                 (KAGGLE_IS_COMPETITION_RERUN) waits for the Kaggle gateway and plays the
                                 live Arcade. So local instrumented play needs neither the online API nor
-                                internet; the online API stays separately reachable for R1/R2.
+                                internet; the online API stays separately reachable for REPLAY-DET/RESET-ACCT.
                                 Sampling: temperature 0.6, top_p 0.95, top_k 20, thinking enabled,
                                 multimodal context current_grid at upscale 4"
 
@@ -726,16 +774,16 @@ s1:
                           verdict."
 
     permitted_deviations:
-      - "D1: vLLM server -> mlx_vlm OpenAI-compatible server (no CUDA/Metal vLLM path)"
-      - "D2: FP8 -> MLX 4-bit mlx-community/Qwen3.6-27B-4bit (FP8 needs Hopper/Blackwell).
+      - "DEV-1: vLLM server -> mlx_vlm OpenAI-compatible server (no CUDA/Metal vLLM path)"
+      - "DEV-2: FP8 -> MLX 4-bit mlx-community/Qwen3.6-27B-4bit (FP8 needs Hopper/Blackwell).
              RISK: unquantified capability loss"
-      - "D3: base_url / provider / model_name in inference.json (the config is designed for this)"
-      - "D4: concurrent_jobs 32 -> reduced. RISK: changes the batching factor the latency budget rests on"
-      - "D5: client-side tool-call / reasoning parsing shim IF REQUIRED — tool_call_parser qwen3_coder
+      - "DEV-3: base_url / provider / model_name in inference.json (the config is designed for this)"
+      - "DEV-4: concurrent_jobs 32 -> reduced. RISK: changes the batching factor the latency budget rests on"
+      - "DEV-5: client-side tool-call / reasoning parsing shim IF REQUIRED — tool_call_parser qwen3_coder
              and reasoning_parser qwen3 are vLLM-SIDE features MLX may not implement.
              THE MOST LIKELY SINGLE POINT OF FAILURE; test FIRST on Day 2, before anything is built on it"
-      - "D6: instrumentation hooks for the transition schema — must not alter solver control flow"
-      - "D7: skip the 27 GB FP8 snapshot and the 4.8 GiB CUDA wheelhouse (not loadable locally;
+      - "DEV-6: instrumentation hooks for the transition schema — must not alter solver control flow"
+      - "DEV-7: skip the 27 GB FP8 snapshot and the 4.8 GiB CUDA wheelhouse (not loadable locally;
              both required again on escalation to hybrid)"
 
   # The alternate is frozen to the SAME schema as the primary, on Day 1, under the same criteria.
@@ -759,12 +807,12 @@ s1:
     quantization: "reference vLLM (bf16/auto) -> local MLX 4-bit"
     accelerator: "reference: Kaggle machine_shape NvidiaRtxPro6000, enable_internet false. ours: M5 Pro"
     batching_pattern: "vLLM via philipvonderlind/vllm-deps + mbmmurad/vllm-0-23-0-tf5-wheelhouse;
-                       locally the same D1/D4 substitution and concurrency reduction as the primary"
+                       locally the same DEV-1/DEV-4 substitution and concurrency reduction as the primary"
     expected_public_behaviour: "self-contained notebook (103 KB source) carrying its own solver logic —
                                 materially faster to vendor than the primary's multi-repo framework,
                                 which matters because Day 4 is when the alternate gets used at all"
     reproduction_target: "LB 0.86, subject to the same V15 caveat as the primary — reported, not gated"
-    permitted_deviations: ["D1-D6 as for the primary, with Gemma substituted for Qwen"]
+    permitted_deviations: ["DEV-1-DEV-6 as for the primary, with Gemma substituted for Qwen"]
 
     selection_rationale: "Chosen over ko0kip's Gemma-4-31B Reflection Agent because it reports a concrete
       leaderboard score, which criterion (3) requires and ko0kip's does not supply. Chosen for
@@ -774,7 +822,7 @@ s1:
 
     # STATED HONESTLY: this alternate does NOT hedge the risk most likely to bite.
     limitation: "It shares the primary's vLLM/CUDA serving stack, so it hedges SOLVER-SPECIFIC failure and
-      hedges NOTHING about the D1/D2/D5 stack risk — the likeliest local failure mode. No available
+      hedges NOTHING about the DEV-1/DEV-2/DEV-5 stack risk — the likeliest local failure mode. No available
       alternate hedges stack risk, because EVERY strong public reference uses this stack. The hedge
       against stack risk is accelerator_policy.escalation_triggers, not this alternate.
       CONSEQUENCE FOR escalation.day4_am_hard_decision: that rule sends a Day-4 miss to the alternate,
@@ -805,10 +853,10 @@ s1:
       scalar_resolved_on: "Day 3 (S1-c), from the measured median actions/game; recorded in
                            notes/s1-measurements.md as DERIVED, never as chosen"
 
-      # D4 makes this mandatory rather than tidy: our batching factor differs from the reference's.
+      # DEV-4 makes this mandatory rather than tidy: our batching factor differs from the reference's.
       concurrency_must_be_recorded: true
       concurrency_note: "the reference runs concurrent_jobs 32 on a datacentre GPU; we run reduced
-                         concurrency on one 20-core GPU (D4). A p50 measured at concurrency 4 is NOT
+                         concurrency on one 20-core GPU (DEV-4). A p50 measured at concurrency 4 is NOT
                          comparable to the reference's. Record the concurrency beside EVERY latency
                          figure and state the factor explicitly in any extrapolation — never scale
                          silently. Report median and p95, never mean"
@@ -821,7 +869,7 @@ s1:
       #   (a) the reference's own author reports the readable notebook did NOT reproduce the milestone
       #       score ("we haven't had the same lucky result with this one"), so run-to-run variance is
       #       large and undocumented;
-      #   (b) we run a different quantization, serving stack and accelerator (D1/D2/D4);
+      #   (b) we run a different quantization, serving stack and accelerator (DEV-1/DEV-2/DEV-4);
       #   (c) V15 — the leaderboard scale is not explained by the documented methodology.
       # A tolerance band on a number that fails all three would manufacture a verdict rather than read one.
       gated:
@@ -833,7 +881,7 @@ s1:
                     a reference point. It does NOT require the gap produce a pass/fail, and under V15 it
                     cannot honestly do so"
       on_fail: "an unexplained gap means something other than the reference was reproduced. Name which of
-                D1/D2/D4/D5 is the suspected cause before proceeding"
+                DEV-1/DEV-2/DEV-4/DEV-5 is the suspected cause before proceeding"
       revisit_if: "V15 resolves — if the leaderboard scale becomes interpretable, a gated tolerance can be
                    added by dated erratum"
 
@@ -909,7 +957,7 @@ s1:
       cross_game_comparison_permitted: false        # explicitly prohibited — not identifiable
       scripted_prefix_required: true                # a stochastic policy makes the arms incomparable
       read_by_closing: true                         # forced by V7 (hidden in-flight scorecards)
-      run_order: "R1 before R2 — R2's estimator is invalid if the level re-randomizes"
+      run_order: "REPLAY-DET before RESET-ACCT — RESET-ACCT's estimator is invalid if the level re-randomizes"
       repetitions_per_arm: 3                        # ACCEPTED 2026-07-26 — median ratio is the statistic
 
       # RESOLVED 2026-07-26 as a RULE, not a scalar. H (the human action baseline) is game-specific and
@@ -929,7 +977,7 @@ s1:
         required_because: "level-position weighting mixes levels into one number; without per-level
                            scores the ratio is underdetermined"
         fallback: "restrict both arms to level 1 and close immediately; if still not separable,
-                   record r2 as `blocked` rather than forcing a reading"
+                   record reset_accounting as `blocked` rather than forcing a reading"
         satisfied: null
       v6_permits_same_game_repeat:
         required_because: "the whole design rests on repeating one game across scorecards"
@@ -942,11 +990,11 @@ s1:
         method: "verify from the arm-A score BEFORE running arm B"
         satisfied: null
 
-    r1_knowledge_preservation:
+    replay_determinism:
       question: "after RESET, does an identical scripted action prefix produce an identical
                  observation sequence?"
       # One prefix replayed once shows only that ONE prefix was repeatable ONCE. It supports no claim
-      # about the level, the game, or the environment class — and R1 selects the global controller.
+      # about the level, the game, or the environment class — and REPLAY-DET selects the global controller.
       sampling:                        # ACCEPTED 2026-07-26 at the proposed values
         games: 2                       # >=2 distinct public games; one game cannot ground a class claim
         prefixes_per_game: 2           # one short (~10 actions), one longer (~40) so depth-only divergence is reachable
@@ -962,12 +1010,12 @@ s1:
                 controller is correct; runtime determinism detection becomes a build item"
         re_randomizes: "divergence everywhere -> only structural knowledge transfers"
         inconclusive: "divergence not reproducible across replays -> something else varies; do not
-                       proceed to R2 on an unstable base"
+                       proceed to RESET-ACCT on an unstable base"
       # RESULT, filled 2026-07-26. Filling a `result:` slot is the intended use of the block, not an
       # amendment to the pre-registration — the sampling and criterion above are unchanged.
       result: deterministic
       result_recorded_on: 2026-07-26
-      evidence_ref: "logs/r1_determinism.json; agent/harness/r1_determinism.py"
+      evidence_ref: "logs/replay_determinism.json; agent/harness/replay_determinism.py"
       measured:
         games: ["ft09-0d8bbf25", "ls20-9607627b"]
         prefix_lengths: [10, 40]
@@ -993,9 +1041,9 @@ s1:
       # `inconclusive`. The corrected digest hashes the grids and excludes per-call metadata.
       superseded_first_run: "reported `inconclusive` from a metadata-only digest; discarded, not reported"
 
-    r2_action_accounting:
+    reset_accounting:
       question: "does the scored action count accumulate across resets, or restart?"
-      runs_only_if: "r1 == deterministic. Under r1 == mixed, may be run on a game that tested
+      runs_only_if: "replay_determinism == deterministic. Under r1 == mixed, may be run on a game that tested
                      deterministic and reported as game-specific, never as a global finding"
 
       # N_B = a + w + c_reset, where c_reset in {0,1} is whether RESET is itself scored — unknown, and
@@ -1004,7 +1052,7 @@ s1:
       min_a: 20
 
       # THE CONFOUND THAT INVERTS THE ANSWER: if the w wasted actions are rejected as illegal, or are
-      # no-ops the scorer does not count, arm B scores like arm A and R2 reads `restarts` when the truth
+      # no-ops the scorer does not count, arm B scores like arm A and RESET-ACCT reads `restarts` when the truth
       # is `accumulates` — selecting the aggressive controller in a world where every probe costs score.
       waste_validity_check:
         requirement: "every one of the w actions must be ACCEPTED by the API and produce an OBSERVABLE
@@ -1029,7 +1077,7 @@ s1:
       # RESULT, filled 2026-07-26. Filling a `result:` slot is the intended use of the block.
       result: accumulates
       result_recorded_on: 2026-07-26
-      evidence_ref: "logs/r2_action_accounting.json; agent/harness/r2_action_accounting.py"
+      evidence_ref: "logs/reset_accounting.json; agent/harness/reset_accounting.py"
       measured:
         game: "tu93-0768757b"
         H_level1: 19
@@ -1043,7 +1091,7 @@ s1:
         classification_band: "accumulates_if r in [1.85, 2.20] -> 2.0357 falls inside"
 
       # WASTE VALIDITY — checked BEFORE any score was read, exactly as the pre-registration requires.
-      # This is the check that stops R2 reading `restarts` when the truth is `accumulates`.
+      # This is the check that stops RESET-ACCT reading `restarts` when the truth is `accumulates`.
       waste_validity_result: "VALID — 84/84 wasted actions ACCEPTED and 84/84 produced an OBSERVABLE
                               STATE CHANGE across the three arm-B repetitions"
 
@@ -1061,8 +1109,8 @@ s1:
 
       scope_limits:
         - "OFFLINE competition environment files, not competition mode — V5-V7 restrictions differ.
-           Same caveat as R1"
-        - "ONE game (tu93-0768757b). R2's design is deliberately single-game for identifiability (H and
+           Same caveat as REPLAY-DET"
+        - "ONE game (tu93-0768757b). RESET-ACCT's design is deliberately single-game for identifiability (H and
            the level weight must cancel), so this is not a design flaw — but generalisation of the
            ACCOUNTING RULE across games is untested and must not be asserted"
         - "within-arm spread is 0.0 because the offline environment is deterministic. The spread <= 0.10
@@ -1083,17 +1131,17 @@ s1:
                             pre-registered 28 rather than using the shortest solution found"
 
     controller_fork:
-      # R1 deterministic + R2 restarts   -> aggressive identify-then-execute (explore, then speedrun)
-      # R1 deterministic + R2 accumulates-> surgical information-per-action
-      # R1 mixed                         -> no global controller; runtime determinism detection + switch
-      # R1 re-randomizes + either        -> speedrun unavailable; exploration must generalize
+      # REPLAY-DET deterministic + RESET-ACCT restarts   -> aggressive identify-then-execute (explore, then speedrun)
+      # REPLAY-DET deterministic + RESET-ACCT accumulates-> surgical information-per-action
+      # REPLAY-DET mixed                         -> no global controller; runtime determinism detection + switch
+      # REPLAY-DET re-randomizes + either        -> speedrun unavailable; exploration must generalize
       # inconclusive / blocked           -> DEFAULT TO SURGICAL. The conservative branch is merely
       #                                     suboptimal if wrong; the aggressive branch is catastrophic
       #                                     if wrong. Re-run the probe at the first slack in S2.
-      # SELECTED 2026-07-26 from R1 = deterministic + R2 = accumulates.
+      # SELECTED 2026-07-26 from REPLAY-DET = deterministic + RESET-ACCT = accumulates.
       selected: "surgical information-per-action"
       selected_on: 2026-07-26
-      rationale: "R1 deterministic + R2 accumulates is the SURGICAL branch: replay is reliable, but every
+      rationale: "REPLAY-DET deterministic + RESET-ACCT accumulates is the SURGICAL branch: replay is reliable, but every
                   probe costs score directly because wasted actions accumulate across resets AND the
                   RESET itself is scored (c_reset = 1 measured). Information is NOT free, so the
                   aggressive explore-then-speedrun controller would bleed score on every probe"
@@ -1330,7 +1378,7 @@ s1:
       legal_action_validity:
         # CORRECTED 2026-07-26 (twice). First recorded as NOT MEASURABLE. That was wrong: the harness
         # itself emits requested_count / executed_count / stopped_early / stop_reason in every action
-        # result, and those payloads reach the model as TOOL messages, so D6 captures them verbatim.
+        # result, and those payloads reach the model as TOOL messages, so DEV-6 captures them verbatim.
         # The first attempt parsed action() calls out of tool SOURCE (undercounts — the agent builds
         # lists programmatically); the second looked for the wrong nesting. The payload sits at
         # {"tool":..., "returncode":..., "result": {<action result>}}.
@@ -1345,7 +1393,7 @@ s1:
                  executed_count from action results. Single non-early-stopped actions omit both fields
                  and count 1/1 (tool_agent.py emits them only when batch_size > 1 or stopped_early)"
         rejection_taxonomy_source: "stop_reason on stopped_early results; empty so far"
-        no_patch_needed: "D12 (runtime action logging) was considered and is NOT required — the data is
+        no_patch_needed: "DEV-12 (runtime action logging) was considered and is NOT required — the data is
                           already captured by the running instrumentation. The S1-e run does not need
                           restarting"
         evidence_ref: "logs/s1c_20260726_164355_s1e-dense-c01.json"
@@ -1381,7 +1429,7 @@ s1:
                                  action span, so roughly half the wall-clock is in non-acting turns."
         evidence_ref: "logs/s1c_*s1e*.json (26 games); agent/harness/s1c_measure.py"
         superseded_measurement: "MoE, concurrency 4: per_decision p50 0.74 s / p95 22.42 s. Different
-                                 model (Qwen3.6-35B-A3B MoE, rejected under D11/S1-E5) and different
+                                 model (Qwen3.6-35B-A3B MoE, rejected under DEV-11/S1-E5) and different
                                  concurrency; not comparable and not a contradiction."
       per_action_latency_p95:
         verdict: "PASS — 361.33 s against a 675.00 s threshold (S1-E12). FAIL at 258.51 s under the
@@ -1469,7 +1517,7 @@ s1:
       license_weights:
         verdict: CLEAR
         measured: "Qwen/Qwen3.6-27B is Apache-2.0 and the MLX 4-bit conversion inherits it. The MoE
-                   substitute (mlx-community/Qwen3.6-35B-A3B-4bit, D11/S1-E5) is also Apache-2.0.
+                   substitute (mlx-community/Qwen3.6-35B-A3B-4bit, DEV-11/S1-E5) is also Apache-2.0.
                    This is the bucket the plan calls 'the real screen', and it clears for both"
         evidence_ref: "notes/s1-reference-freeze.md §4; huggingface Qwen/Qwen3.6-27B" 
       license_winner_cc_by:
@@ -1510,7 +1558,7 @@ s1:
       exploration_or_probe_selection: partial     # alternatives only at action-name granularity
       progress_signal_misinterpretation: partial  # markers available, belief is prose
       irreversible_mistake: available
-      invalid_output_interface: available         # via D6b (response payload + rejection logging)
+      invalid_output_interface: available         # via DEV-6b (response payload + rejection logging)
       retrieval_or_context: available
       reasoning_inconsistency: available
       latency_or_budget: available
@@ -1815,7 +1863,7 @@ verification:
                             score = min(weighted_mean, completed_weight / total_weight * 100)"
       consequence: "AERA remains unsuitable as a score reproduction target: it caps the ratio at 1.0
                     before squaring, uses a 0-1 scale, and estimates per-level actions as
-                    total_actions/n_levels. Check R2 cap saturation against 1.15 on the unit scale
+                    total_actions/n_levels. Check RESET-ACCT cap saturation against 1.15 on the unit scale
                     (or 115 on the percent scale), not 1.3225"
     V9_rate_limit:
       claim: "online ARC API is capped at 600 req/min; no separate Kaggle-local request cap is documented"
@@ -1891,7 +1939,7 @@ verification:
         - "S0 limb (0.06 with zero levels) — withdrawn as a conflation of two different runs"
       consequence: "reproduction_fidelity remains REPORTED, NOT GATED — but V15 was never the reason.
                     The surviving reasons are the reference author's own failure to reproduce the 1.21
-                    with the readable notebook, and our D1/D2/D4 stack delta"
+                    with the readable notebook, and our DEV-1/DEV-2/DEV-4 stack delta"
       method_note: "both limbs were self-inflicted — one a scale misreading, one a cross-run attribution.
                     Standing habit adopted: every verification claim names the artifact it rests on"
 

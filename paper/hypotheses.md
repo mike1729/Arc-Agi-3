@@ -10,7 +10,7 @@ no refutation condition is not a hypothesis.
 
 ## Resolved by measurement — 2026-07-26
 
-### H1 — Replay determinism (R1)
+### H1 — Replay determinism (REPLAY-DET)
 
 **Stated before running.** After a level reset, an identical scripted action prefix produces an
 identical observation sequence.
@@ -23,7 +23,7 @@ byte-identical throughout. Scope limit recorded and not exceeded: this is the of
 which is evidence about the game code and **not** a test of competition mode. The supported claim is
 "these tested prefixes replay exactly, offline" — not "everything learned transfers".
 
-### H2 — Action accounting across resets (R2)
+### H2 — Action accounting across resets (RESET-ACCT)
 
 **Stated before running.** Either the scored action count restarts after a reset, or it accumulates.
 The two imply different agents, so the experiment was designed to separate them by a factor of two.

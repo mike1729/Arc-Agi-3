@@ -96,7 +96,7 @@ each one steers the next through the conversation history, and a single divergen
 the whole trajectory. The agent is a chaotic system by construction. `LOCAL_ANALYZER_SEED` is a settable
 env var, so a seeded replicate is available if a future experiment wants one.
 
-Note that R1 measured the *environment* to be deterministic. Both facts hold: identical action sequences
+Note that REPLAY-DET measured the *environment* to be deterministic. Both facts hold: identical action sequences
 replay identically, and the agent does not produce identical action sequences.
 
 ---

@@ -174,20 +174,20 @@ This is one cheap experiment that should be run before anything else is built.
 
 An architecture with a high chance of success on ARC-AGI-3 should:
 
-- **R1.** Represent state **object-relationally**, with exact grid state retained underneath.
-- **R2.** Represent goals as **executable predicates**, induced from completion states, portable
+- **REQ-1.** Represent state **object-relationally**, with exact grid state retained underneath.
+- **REQ-2.** Represent goals as **executable predicates**, induced from completion states, portable
   across levels of a game.
-- **R3.** Represent rules **explicitly enough to be refuted** by a single contradicting transition.
-- **R4.** Do **all heavy reasoning offline**, emitting vetted plans; never learn by acting when it can
+- **REQ-3.** Represent rules **explicitly enough to be refuted** by a single contradicting transition.
+- **REQ-4.** Do **all heavy reasoning offline**, emitting vetted plans; never learn by acting when it can
   learn by thinking.
-- **R5.** Use a **strong action prior** (behavior cloning + candidate generators) to make search
+- **REQ-5.** Use a **strong action prior** (behavior cloning + candidate generators) to make search
   tractable, especially for coordinate actions.
-- **R6.** Keep an **exact archive and verifier** so model error costs efficiency, never correctness.
-- **R7.** **Carry induced knowledge across levels** explicitly.
-- **R8.** **Degrade gracefully** to a working non-learned agent.
+- **REQ-6.** Keep an **exact archive and verifier** so model error costs efficiency, never correctness.
+- **REQ-7.** **Carry induced knowledge across levels** explicitly.
+- **REQ-8.** **Degrade gracefully** to a working non-learned agent.
 
-The current design satisfies R6 and R8 excellently, R5 partly, R4 partly, R7 implicitly, and R1, R2,
-R3 poorly.
+The current design satisfies REQ-6 and REQ-8 excellently, REQ-5 partly, REQ-4 partly, REQ-7 implicitly, and REQ-1, REQ-2,
+REQ-3 poorly.
 
 ---
 
@@ -195,7 +195,7 @@ R3 poorly.
 
 Nine candidates, described at the level needed to compare them.
 
-### D1. Cell-level reconstruction-free latent world model *(current primary arm)*
+### ALT-1. Cell-level reconstruction-free latent world model *(current primary arm)*
 
 Spatial cell latents, EMA target, action-conditioned predictor, exact auxiliaries, hierarchy,
 archive, verifier.
@@ -206,7 +206,7 @@ around it is excellent.
 data scale; latent geometry unusable as goal cost; rules learned implicitly and not refutable;
 objects rediscovered rather than given.
 
-### D2. Cell-level exact delta model
+### ALT-2. Cell-level exact delta model
 
 Same skeleton; predict sparse changed-cell deltas with categorical loss instead of latent targets.
 
@@ -215,7 +215,7 @@ machinery; sparse-delta output is cheap; directly verifiable against observation
 *Weaknesses:* still cell-level, so transfer across layouts relies on the network; rules still
 implicit and unrefutable; no goal machinery.
 
-### D3. Compact / discrete (VQ) latent + lightweight decoder
+### ALT-3. Compact / discrete (VQ) latent + lightweight decoder
 
 Compact learned state with an exact next-state decoder.
 
@@ -224,7 +224,7 @@ risk surface disappears; compact planning state; **permits decode → requantize
 snapping**, a direct fix for latent drift that reconstruction-free arms structurally cannot perform.
 *Weaknesses:* decoder cost per expansion; codebook collapse is a milder but real failure mode.
 
-### D4. **Object-slot JEPA** — latent prediction over object slots
+### ALT-4. **Object-slot JEPA** — latent prediction over object slots
 
 Slots from exact connected components; slot features (colour, shape, position, size, relations);
 relational transformer encoder; EMA target over slot embeddings; action-conditioned relational
@@ -242,29 +242,29 @@ counts; background/foreground ambiguity.
 *Mitigation:* hybrid tokens — slots as the primary carrier for dynamics, with coarse grid tokens
 retained as a parallel path. This is already close to the spec's §4.3, inverted.
 
-### D5. Object-relational exact model
+### ALT-5. Object-relational exact model
 
-As D4 but predicting **exact slot attribute deltas** (which object moved where, what changed colour,
+As ALT-4 but predicting **exact slot attribute deltas** (which object moved where, what changed colour,
 what appeared/disappeared) instead of slot embeddings.
 
-*Strengths:* all of D4's structural benefits, plus ground-truth-anchored dense supervision and exact
+*Strengths:* all of ALT-4's structural benefits, plus ground-truth-anchored dense supervision and exact
 verifiability. Predicting "object 3 translates by (0,−1), object 7 toggles state" is compact,
 learnable, verifiable, and transfers.
 *Weaknesses:* needs correspondence to be right; less "interesting" as a research object.
 
-### D6. Learned exact simulator + deep offline search (AlphaZero-shaped)
+### ALT-6. Learned exact simulator + deep offline search (AlphaZero-shaped)
 
 Train a model to be a drop-in simulator for exact next-state prediction; run classical search
 (A*/beam/MCTS) with a BC policy prior and learned value; archive overrides where known; every executed
 step verified.
 
-*Strengths:* maximal exploitation of R4 — search depth bounded only by wall-clock, not by score.
-Exact and verifiable. Aligned with the reference class's winning shape. Composes with D2/D3/D5 as the
+*Strengths:* maximal exploitation of REQ-4 — search depth bounded only by wall-clock, not by score.
+Exact and verifiable. Aligned with the reference class's winning shape. Composes with ALT-2/ALT-3/ALT-5 as the
 simulator.
 *Weaknesses:* compounding error over deep search unless verified; needs a good value/heuristic;
 does not by itself solve goal inference.
 
-### D7. Symbolic rule induction (program induction over transitions)
+### ALT-7. Symbolic rule induction (program induction over transitions)
 
 Typed object-relational rewrite rules: condition (object types, attributes, relations, region) →
 effect (translate, recolour, delete, spawn, toggle, merge). Induce by enumeration under a neural
@@ -281,7 +281,7 @@ recolouring, appearance/disappearance, merge/split, availability changes, irreve
 from "parser emits transformation hypotheses" to "rules composed of those transformations, filtered by
 consistency" is much smaller than it looks.
 
-### D8. Executable goal-predicate induction *(a module, not a competing architecture)*
+### ALT-8. Executable goal-predicate induction *(a module, not a competing architecture)*
 
 A grammar of goal predicates over the object graph — quantified relations, counts, region membership,
 alignment/symmetry, template match — induced by version-space filtering against level-completion
@@ -290,7 +290,7 @@ states, with a cross-game learned prior over predicate classes.
 *This composes with every other design and is the highest-value single addition available.* Treated
 separately in §6.
 
-### D9. In-context meta-learned agent (algorithm-distillation shape)
+### ALT-9. In-context meta-learned agent (algorithm-distillation shape)
 
 Train a sequence model across a large procedurally generated environment population to do in-context
 adaptation; deploy as a policy that improves within an episode.
@@ -307,30 +307,30 @@ sequence-context module, which the current design already has) rather than as th
 
 Scored against the requirements from §4. ● = strong, ◐ = partial, ○ = absent.
 
-| | R1 object | R2 goals | R3 refutable | R4 offline | R5 prior | R6 exact | R7 cross-level | R8 floor | Build risk |
+| | REQ-1 object | REQ-2 goals | REQ-3 refutable | REQ-4 offline | REQ-5 prior | REQ-6 exact | REQ-7 cross-level | REQ-8 floor | Build risk |
 |---|---|---|---|---|---|---|---|---|---|
-| **D1** cell latent *(current)* | ○ | ○ | ○ | ◐ | ◐ | ● | ◐ | ● | medium |
-| **D2** cell exact delta | ○ | ○ | ◐ | ● | ◐ | ● | ◐ | ● | low |
-| **D3** VQ latent + decoder | ○ | ○ | ◐ | ● | ◐ | ● | ◐ | ● | low–med |
-| **D4** object-slot JEPA | ● | ○ | ○ | ◐ | ◐ | ● | ● | ● | medium |
-| **D5** object exact delta | ● | ○ | ◐ | ● | ◐ | ● | ● | ● | low–med |
-| **D6** learned simulator + search | – | ○ | ◐ | ● | ● | ● | ◐ | ● | low–med |
-| **D7** symbolic rule induction | ● | ○ | ● | ● | ◐ | ● | ● | ● | **high** |
-| **D8** goal-predicate induction | – | ● | ● | ● | – | ● | ● | – | medium |
-| **D9** in-context meta-agent | ○ | ○ | ○ | ○ | ● | ◐ | ● | ○ | high |
+| **ALT-1** cell latent *(current)* | ○ | ○ | ○ | ◐ | ◐ | ● | ◐ | ● | medium |
+| **ALT-2** cell exact delta | ○ | ○ | ◐ | ● | ◐ | ● | ◐ | ● | low |
+| **ALT-3** VQ latent + decoder | ○ | ○ | ◐ | ● | ◐ | ● | ◐ | ● | low–med |
+| **ALT-4** object-slot JEPA | ● | ○ | ○ | ◐ | ◐ | ● | ● | ● | medium |
+| **ALT-5** object exact delta | ● | ○ | ◐ | ● | ◐ | ● | ● | ● | low–med |
+| **ALT-6** learned simulator + search | – | ○ | ◐ | ● | ● | ● | ◐ | ● | low–med |
+| **ALT-7** symbolic rule induction | ● | ○ | ● | ● | ◐ | ● | ● | ● | **high** |
+| **ALT-8** goal-predicate induction | – | ● | ● | ● | – | ● | ● | – | medium |
+| **ALT-9** in-context meta-agent | ○ | ○ | ○ | ○ | ● | ◐ | ● | ○ | high |
 
 My rough estimates for a compact (≈20M-parameter-class) agent, expressed on a public-set-like game
 distribution — hidden games should be discounted:
 
 | Architecture | Nonzero progress | Several games advanced past L1 | Multiple games completed end-to-end |
 |---|---:|---:|---:|
-| D1 cell latent + archive *(current)* | ~80% | ~55% | ~20% |
-| D2 cell exact delta + archive | ~85% | ~60% | ~25% |
-| D4 object-slot JEPA + archive | ~85% | ~65% | ~30% |
-| D5 object exact delta + archive | ~88% | ~70% | ~35% |
-| **any of the above + D8 goal induction** | **+3–5pp** | **+10pp** | **+20–25pp** |
-| **+ D6 deep search + BC prior** | +2pp | +8pp | +10pp |
-| D7 + D8 full neuro-symbolic | ~85% | ~70% | **~50%** |
+| ALT-1 cell latent + archive *(current)* | ~80% | ~55% | ~20% |
+| ALT-2 cell exact delta + archive | ~85% | ~60% | ~25% |
+| ALT-4 object-slot JEPA + archive | ~85% | ~65% | ~30% |
+| ALT-5 object exact delta + archive | ~88% | ~70% | ~35% |
+| **any of the above + ALT-8 goal induction** | **+3–5pp** | **+10pp** | **+20–25pp** |
+| **+ ALT-6 deep search + BC prior** | +2pp | +8pp | +10pp |
+| ALT-7 + ALT-8 full neuro-symbolic | ~85% | ~70% | **~50%** |
 
 The pattern to read out of that table: **swapping the dynamics arm buys ~5–15 percentage points.
 Adding goal induction buys ~20–25.** The arm question is not where the leverage is.
@@ -394,7 +394,7 @@ conclusion.
 
 This is the arm substitution proper. Two variants, and I would run both.
 
-### 8.1 The science-preserving substitution: D4, object-slot JEPA
+### 8.1 The science-preserving substitution: ALT-4, object-slot JEPA
 
 If the goal is to keep studying reconstruction-free latent prediction, **stop doing it over cells and
 do it over object slots.**
@@ -414,7 +414,7 @@ Concretely:
 - Auxiliaries as before, now at slot granularity: attribute deltas, appearance/disappearance, event
   type, irreversibility.
 
-Why this dominates D1 on the same research question:
+Why this dominates ALT-1 on the same research question:
 
 - **The sparse-causal-bit problem largely dissolves.** A switch's state is a slot attribute occupying
   a proportionate share of the representation, receiving proportionate gradient — not one cell in
@@ -428,7 +428,7 @@ Why this dominates D1 on the same research question:
 
 This is the recommendation I would make if the project keeps its current scientific identity.
 
-### 8.2 The score-maximizing substitution: D5, object-relational exact deltas
+### 8.2 The score-maximizing substitution: ALT-5, object-relational exact deltas
 
 Same representation, exact targets: predict which object moved where, what changed, what appeared. It
 is more sample-efficient, exactly verifiable, and directly consumable by the verifier and archive. For
@@ -450,7 +450,7 @@ Cheap, low-risk, and currently underused.
 - **Search depth as the free variable.** With an exactly-verified model, search until the wall-clock
   budget is spent, then emit a vetted plan. Every unit of thinking is free; every action is not.
 
-None of this requires changing the world model, and it composes with all of D1–D7.
+None of this requires changing the world model, and it composes with all of ALT-1–ALT-7.
 
 ---
 
@@ -471,7 +471,7 @@ survive any redesign.
   global rules (gravity, timers, propagation) as a separate class. Induced by enumeration under a
   neural proposal prior, filtered by consistency against **every** transition in the archive. One
   contradicting transition eliminates a rule permanently.
-- *1b, neural:* the object-relational model from §8 (D4 or D5), as fallback for games the grammar
+- *1b, neural:* the object-relational model from §8 (ALT-4 or ALT-5), as fallback for games the grammar
   does not cover.
 - *Arbitration:* run both; track per-game predictive accuracy on held-out recent transitions; use the
   winner, verified either way. Cheap, robust, and it converts "did we pick the right arm" from a
@@ -572,14 +572,14 @@ Three coherent paths, depending on which objective dominates.
 
 ### Path A — maximize expected benchmark score
 
-D5 (object-relational exact) + D8 (goal induction) + D6 (deep search) + D7 (symbolic rules) as the
+ALT-5 (object-relational exact) + ALT-8 (goal induction) + ALT-6 (deep search) + ALT-7 (symbolic rules) as the
 primary rule model with the neural arm as fallback. Neural components are proposers only.
 *Highest ceiling; highest build risk; weakest fit to the registered research question.*
 
 ### Path B — maximize the value of the research result *(my recommendation)*
 
-Substitute the arm to **object-slot JEPA (D4)** against an **object-relational exact (D5)** control,
-keep the cell-level pair as the second factor, add **D8 goal induction** and the **BC policy prior**
+Substitute the arm to **object-slot JEPA (ALT-4)** against an **object-relational exact (ALT-5)** control,
+keep the cell-level pair as the second factor, add **ALT-8 goal induction** and the **BC policy prior**
 as agent-side infrastructure shared by all arms. Refactor the primary factorial to representation ×
 target per §12.
 
@@ -591,7 +591,7 @@ one.
 
 ### Path C — minimize risk
 
-D2/D3 (cell exact delta, or VQ latent with decoder) + D8 + BC prior + search. Lowest build risk,
+ALT-2/ALT-3 (cell exact delta, or VQ latent with decoder) + ALT-8 + BC prior + search. Lowest build risk,
 solid floor, modest ceiling, and the least interesting paper. Worth naming because it is a legitimate
 choice and because it is what the project will fall back to if the arm substitution runs into
 trouble.
@@ -624,7 +624,7 @@ Stated plainly, because a recommendation without its failure modes is not usable
 - **The bootstrap problem is real.** Goal induction needs a first completion. On hidden games with no
   replays, that first completion must come from exploration. The cross-game prior helps; it does not
   eliminate the need to solve level 1 the hard way.
-- **Symbolic rule induction is where projects die.** I have weighted D7 as high build risk
+- **Symbolic rule induction is where projects die.** I have weighted ALT-7 as high build risk
   deliberately. The dual-implementation arbitration in §10 exists so that a partly-working rule
   induction layer is an asset rather than a sunk cost.
 - **Changing the registered design has a scientific cost.** The plan's erratum discipline exists for

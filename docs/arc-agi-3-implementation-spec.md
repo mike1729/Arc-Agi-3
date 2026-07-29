@@ -55,7 +55,7 @@ evidence belong here — never the experimental narrative.
 | Decision | Binding here | Evidence from | Output consumed |
 |---|---|---|---|
 | Executive viability | **D0** §10.1 | S1 measurements + a dedicated D0 run | model choice · per-action call budget |
-| Reset posture | §4.1 — **resolved** | S1 reset experiment (R1, R2) | no online branching; counterfactuals offline only |
+| Reset posture | §4.1 — **resolved** | S1 reset experiment (REPLAY-DET, RESET-ACCT) | no online branching; counterfactuals offline only |
 | Per-action budget | §2 | S1 latency table, re-measured at step 1 | candidate count × predictor passes |
 | Cheap evaluator retention | §5 | R1 branched audits | ranker version · fallback to archive + guards |
 | Invocation-gate operating point | §6, §13.1 | procedural τ sweep; public validation vetoes | τ, and the two selected operating points |

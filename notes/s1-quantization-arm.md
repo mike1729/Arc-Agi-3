@@ -98,7 +98,7 @@ from the reference in configuration. Five candidates were checked against the ve
 
 | candidate | verdict |
 |---|---|
-| full config diff | **faithful.** Only model, concurrency, and the D10/D13 fixes differ |
+| full config diff | **faithful.** Only model, concurrency, and the DEV-10/DEV-13 fixes differ |
 | `analyzer.tool_steps = 0` (unlimited) | **same**, and correctly exported by `run_local.sh` |
 | `analyzer.yield_seconds = 60` per-turn budget | **refuted — see below** |
 | `multimodal.context = current_grid`, upscale 4 | **same**, and every request carries an image part |
@@ -128,8 +128,8 @@ routine, up to 17. The budget is not binding.
    engine-specific.
 3. Concurrency 28 versus 1 — should not affect actions *per generation*, but is uncontrolled.
 
-These are exactly the deviations the reference freeze pre-registered as D1–D5, with D5 (tool calling)
-named "the most likely single point of failure". D5 passes *functionally* — tool calls parse — but
+These are exactly the deviations the reference freeze pre-registered as DEV-1–DEV-5, with DEV-5 (tool calling)
+named "the most likely single point of failure". DEV-5 passes *functionally* — tool calls parse — but
 "parses correctly" and "elicits the same behaviour" are different bars and only the first was tested.
 
 **What would settle it.** Rent one RTX PRO 6000 (the competition accelerator, $1.69/hr) and run

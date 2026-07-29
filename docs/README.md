@@ -40,6 +40,54 @@ document here.
 
 ---
 
+## Reading the identifiers
+
+Short prefixes are reused across unrelated axes. Three of them had genuinely collided by 2026-07-29
+and were renamed (erratum `S1-E17`, plus the family rename the same day); the rest are distinguished
+**only by their qualifier**, so the rule below is load-bearing rather than stylistic.
+
+| Prefix | Axis | Values |
+|---|---|---|
+| `S0`–`S5` | screening sprint stages | S0 starter · S1 baseline · S2 suite · S3 objectives · S4 advisor · S5 audit |
+| `W1`–`W8` | build weeks | Aug 24 → Oct 18 |
+| `A1`–`A13` | **schedule days inside Phase A** | A1 = Tue Jul 28 … A5-G = the step-0 gate |
+| `V1`–`V15` | verification items | `gate_manifest.yaml → verification` |
+| `S1-E1`–`S1-E17` | errata against the frozen `s1` block | append-only |
+| `D0` · `R0` · `G0` | **gates** | executive viability · belief-model viability · goal induction |
+| `DEV-1`–`DEV-13` | permitted deviations from the vendored reference | *(was `D1`–`D13`; collided with gate `D0`)* |
+| `REPLAY-DET`, `RESET-ACCT` | the S1 reset experiment | *(was `R1`, `R2`; collided with the branching rounds)* |
+| `R1`–`R3` | **branching rounds** on the dev partition | W4 · W6 · W8 |
+| `ALT-1`–`ALT-9` · `REQ-1`–`REQ-8` | design alternatives · design requirements | **local to [`architecture-alternatives`](arc-agi-3-architecture-alternatives.md)**; nothing cites them from outside |
+| `Alias`, `Delay` | procedural generator families | history-required aliasing · sparse delayed causal memory |
+| `Order`, `Count` | Fork G-F families, Branch A only | ordered-event-program · cumulative-counter |
+
+### The letter axes — five different things called "A"
+
+These are **not** renamed. They are always written with their qualifier, and that is the whole
+convention:
+
+| Written | Means |
+|---|---|
+| **arm** A / B / C | S3 objectives — latent · reconstructive · exact-delta |
+| **Track** A / B | research architecture · deployed score-oriented agent |
+| **Branch** A / B | Fork G-F — build the extra families · declare transfer untestable |
+| **Phase** A / B / C | calendar — sprint remainder · build · the tail |
+| **A**\<n\> | a Phase-A schedule day |
+
+> **Never drop the qualifier outside the section that defines it.** `gate_manifest.yaml` and the
+> execution schedule each carry four of these five axes. §8 of the screening document writes bare
+> `A`/`B`/`C` for the S3 arms and that is fine *there*; anywhere else it is ambiguous.
+>
+> **One overlap has no qualifier to lean on:** S5's audit axes are `B/M/U/C`, where **B** is baseline
+> readiness and **C** is feasibility — *not* the reconstructive and exact-delta arms. Always write
+> the whole string `B/M/U/C`; never a bare `B` or `C` for an audit axis.
+
+`F1` now means only the **classification metric**, and is written `F1 score`. It is no longer a
+family name — see the family rename of 2026-07-29 and
+[`docs/archive/README.md`](archive/README.md) for reading the pre-rename documents.
+
+---
+
 ## Decision register
 
 One entry per binding change to the specification. A result becomes binding **only** by appearing
@@ -213,17 +261,17 @@ approved_at: 2026-07-28
 decision_id: RESET-CASE-2026-07-28
 question: >
   SPEC §4.1 offered three reset-accounting regimes and §14 still listed the
-  reset posture as an open item, but S1's R1/R2 measured the answer on
+  reset posture as an open item, but S1's REPLAY-DET/RESET-ACCT measured the answer on
   2026-07-26. Which regime binds, and what does it settle about branching?
 evidence:
-  - experiment: S1 — R1 knowledge preservation, R2 action accounting
-  - artifact: gate_manifest.yaml       # r1_knowledge_preservation, r2_action_accounting
-  - artifact: logs/r1_determinism.json
+  - experiment: S1 — REPLAY-DET knowledge preservation, RESET-ACCT action accounting
+  - artifact: gate_manifest.yaml       # replay_determinism, reset_accounting
+  - artifact: logs/replay_determinism.json
   - artifact: notes/s1-closeout.md
   - finding: >
-      R1 = deterministic (ft09, ls20; prefixes 10 and 40; 3 replays each;
+      REPLAY-DET = deterministic (ft09, ls20; prefixes 10 and 40; 3 replays each;
       byte-identical, falsification check passed — grids genuinely vary within
-      a replay). R2 = accumulates, r = 2.0357, c_reset = 1 measured: wasted
+      a replay). RESET-ACCT = accumulates, r = 2.0357, c_reset = 1 measured: wasted
       actions carry across resets AND RESET is itself a scored action.
 decision: everything_scores__no_online_branching
 detail: >

@@ -5,24 +5,24 @@ WHAT THIS IS FOR
 `benchmark.json` keeps a full `history` of every action a run took, with exact coordinates for
 ACTION6. Combined with two facts already established, that turns a scored run into a solution library:
 
-  * R1 measured that the OFFLINE competition environments replay byte-identically — two games, two
+  * REPLAY-DET measured that the OFFLINE competition environments replay byte-identically — two games, two
     prefix lengths, three replays each. So a recorded prefix is reproducible, not merely a trace.
   * `actions_per_level` says exactly how many actions each level consumed, so the history splits at
     known boundaries.
 
-A level the run CLEARED therefore yields a *verified* action sequence that solves it. R2 needed one
+A level the run CLEARED therefore yields a *verified* action sequence that solves it. RESET-ACCT needed one
 such sequence and had to find it by breadth-first search (960 nodes expanded on `tu93`); the reference
 run contains dozens for free.
 
 USES
 ----
-  * scripted experiments that need a deterministic solve (R2's arms, replay determinism on click games)
+  * scripted experiments that need a deterministic solve (RESET-ACCT's arms, replay determinism on click games)
   * ground truth for "did the agent choose well", separate from "did the agent act"
   * a target for a world model: given the prefix, does it predict the observation that follows?
 
 SCOPE LIMIT, AND IT MATTERS
 ---------------------------
-R1's determinism result covers the OFFLINE environment files. Competition mode was never tested and
+REPLAY-DET's determinism result covers the OFFLINE environment files. Competition mode was never tested and
 `ONLY_RESET_LEVELS` / gateway behaviour may differ. These sequences are verified reproducible OFFLINE;
 treating them as competition-valid would exceed what was measured.
 
@@ -85,7 +85,7 @@ def extract(bench_path: Path, out: Path) -> int:
                 "action_ids": [(r.get("action") or {}).get("id") for r in seg],
                 # Verified means REPLAYED. Recording is not verification.
                 "verified": False,
-                "scope": "offline environment files only; competition mode untested (R1 scope limit)",
+                "scope": "offline environment files only; competition mode untested (REPLAY-DET scope limit)",
             }
             # A level is solved iff a later level was reached, i.e. it is below levels_completed.
             (solutions if level <= completed else partial).append(entry)
@@ -97,7 +97,7 @@ def extract(bench_path: Path, out: Path) -> int:
         "n_partial": len(partial),
         "definition": ("a SOLUTION is the action sequence for a level the run cleared; a PARTIAL is the "
                        "sequence for the level it stalled on, which is not a solution"),
-        "replay_basis": ("R1: offline environments replay byte-identically (2 games x 2 prefix lengths "
+        "replay_basis": ("REPLAY-DET: offline environments replay byte-identically (2 games x 2 prefix lengths "
                          "x 3 replays). Sequences here are RECORDED, not replayed — `verified` stays "
                          "false until independently confirmed."),
         "solutions": sorted(solutions, key=lambda s: (s["game"], s["level"])),

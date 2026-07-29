@@ -363,7 +363,7 @@ transition; Kaggle may apply a separate aggregation or rounding path; or the com
 incomplete.
 
 The LB `1.21` comparison remains **reported, not gated**, but V15 is no longer a reason. The remaining
-reasons are the readable reference notebook's undocumented run-to-run variance and the D1/D2/D4 stack
+reasons are the readable reference notebook's undocumented run-to-run variance and the DEV-1/DEV-2/DEV-4 stack
 changes.
 
 **To resolve on Day 2:** recompute S0 from the retained recording with the core formula; compare that
@@ -406,7 +406,7 @@ as a conflation of two runs.
 
 **What this does not change.** `reproduction_fidelity` stays *reported, not gated*. V15 was never the
 justification; the two reasons that survive intact are the reference author's own failure to reproduce
-the 1.21 with the readable notebook, and our D1/D2/D4 stack delta.
+the 1.21 with the readable notebook, and our DEV-1/DEV-2/DEV-4 stack delta.
 
 **Method note.** Both halves of V15 were self-inflicted — one from reading a number at the wrong scale,
 one from attributing evidence across runs. Neither would have survived naming *which artifact* each claim

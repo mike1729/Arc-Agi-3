@@ -79,7 +79,7 @@ games have now been re-run under the current config:
 
 | game | earlier (quarantined) | now (current config, concurrency 1) |
 |---|---|---|
-| `vc33` | 9 actions → **cleared L1** (baseline 7), D10 120 s timeout, conc 1 | 23 actions, level 0 |
+| `vc33` | 9 actions → **cleared L1** (baseline 7), DEV-10 120 s timeout, conc 1 | 23 actions, level 0 |
 | `lp85` | 6 actions → **cleared L1** (baseline 17), 900 s config, conc 2 | 4 actions, level 0 |
 
 `vc33` is the sharper case: it spent **2.5× more actions** than the run that cleared it and still did
@@ -217,4 +217,4 @@ The `re86` comparison (48 actions at concurrency 2 versus 36 at concurrency 1) i
 from a noisy policy, not a controlled A/B, and 48 vs 36 sits well inside plausible sampling variance.
 Calling the concurrency hypothesis "refuted" on one paired observation was an over-claim of the same
 kind as the original concurrency-4 confound. The manifest already sets the right standard elsewhere —
-R2 uses `repetitions_per_arm: 3` because the median is the statistic, and S3 pre-registers two seeds.
+RESET-ACCT uses `repetitions_per_arm: 3` because the median is the statistic, and S3 pre-registers two seeds.

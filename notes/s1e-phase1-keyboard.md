@@ -56,7 +56,7 @@ recorded per episode rather than discovered at labelling time.
 ## Health
 
 No read timeouts across the phase. One `finish_reason: length` in six games — `g50t`'s non-convergent
-generation, analysed separately in `notes/s1-measurements.md` and distinct from the D13 truncation
+generation, analysed separately in `notes/s1-measurements.md` and distinct from the DEV-13 truncation
 class. All other generations finished on `tool_calls`.
 
 ## Caveats that bound every number above

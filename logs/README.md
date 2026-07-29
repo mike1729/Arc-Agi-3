@@ -89,10 +89,10 @@ deliberately rather than copying by default.
 
 ### Safe — our own measurements
 
-`concurrency_sweep*.json`, `r1_determinism.json`, `r2_*.json`, `s1_run_summary.json`, `s1e_*_state.json`,
+`concurrency_sweep*.json`, `replay_determinism.json`, `reset_accounting*.json`, `s1_run_summary.json`, `s1e_*_state.json`,
 `s2_arc_conventions.json` — harness state and our own instrumentation output.
 
 ## Not tracked, deliberately
 
-`s1e_state_PRE-D13_discarded.json` — superseded by the D13 fix; kept locally for provenance, excluded
+`s1e_state_PRE-D13_discarded.json` — superseded by the DEV-13 fix; kept locally for provenance, excluded
 from the repository so it cannot be mistaken for live state.

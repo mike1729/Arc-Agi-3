@@ -181,8 +181,8 @@ reported by state, so a corpus can never quietly consist of interrupted runs.
 ## Actions taken, 2026-07-26 evening
 
 **Quarantined 17 run directories and 7 derived artifacts** to `logs/quarantine/` with a manifest giving
-a reason per run: 7 under the D10 120-second timeout, 2 with confirmed D13 truncation
-(`finish_reason=length`), 3 under a pre-D13 config, 2 conc-4 confounded chunks, 3 empty or killed early.
+a reason per run: 7 under the DEV-10 120-second timeout, 2 with confirmed DEV-13 truncation
+(`finish_reason=length`), 3 under a pre-DEV-13 config, 2 conc-4 confounded chunks, 3 empty or killed early.
 Moved, not deleted — `logs/` is gitignored, so deletion would be permanent, and this project keeps
 negative results with the configuration that produced them. One run survives:
 `20260726_195515_s1e-d13c2-c02`, correct config at concurrency 2, 204 actions — but `cancelled`, so

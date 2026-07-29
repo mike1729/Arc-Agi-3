@@ -142,7 +142,7 @@ should pick unilaterally:
 the platform's formula · latency table over environment step, evaluator forward pass and executive
 call *under the real batching pattern* · derived per-action budget.
 
-**Why it's cheap:** S1 already did this once. R1/R2 drove the offline environment files, reproduced
+**Why it's cheap:** S1 already did this once. REPLAY-DET/RESET-ACCT drove the offline environment files, reproduced
 the scoring formula exactly, and produced the accounting rule now binding in §4.1. The method is
 proven and the traps are known.
 
