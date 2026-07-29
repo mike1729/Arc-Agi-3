@@ -24,7 +24,7 @@ better-supported task.
 | Item | Decision |
 |---|---|
 | Development model | MoE 35B-A3B 4-bit, for prompt and pipeline debugging only |
-| Measurement model | `Qwen3.6-27B-8bit` for every GI-1 offline result |
+| Measurement model | `Qwen3.6-27B-8bit` for new offline queries; recorded S1 FP8 beliefs supply the E2 baseline |
 | Primary offline endpoint | Actionable predicate correctness, not coarse goal class |
 | Hard offline test | Rescue baseline-incorrect `goal_unknown` cases without regressing baseline-correct cases |
 | Behavioural test | Paired advisor-on/off runs on the Kaggle FP8 reference stack |
@@ -66,14 +66,24 @@ or contribute a reported result.
 After development:
 
 1. freeze all condition implementations;
-2. run every condition once on the six iteration games with `Qwen3.6-27B-8bit`;
+2. run conditions (b)–(f) once on the six iteration games, using
+   `Qwen3.6-27B-8bit` for (b)–(d);
 3. select the champion from that measured pass;
 4. freeze the champion and retrieval specification;
 5. only then open the one-shot set.
 
-Every reported offline GI-1 number comes from the 8-bit model. Condition (a) is rerun on that
-model at the same checkpoints; existing S1 rationales are cross-references, not baseline
-measurements.
+Every newly queried offline GI-1 number comes from the 8-bit model. Condition (a) is a
+**targeted control, not a full-grid arm**:
+
+- E1 reruns it only at the two gate regimes, where a matched comparison is required;
+- E2 reuses the goal beliefs recorded during the original S1 runs and queries (a) only where
+  that state is missing or cannot be reconstructed;
+- the iteration pass and E1's descriptive checkpoints do not run it.
+
+This preserves the comparisons that determine the verdict without paying to repeat a baseline
+already measured several times. Reusing S1 outputs in E2 introduces an FP8-versus-8-bit artifact
+difference; report that limitation explicitly. E4 on the exact Kaggle reference stack remains
+the model-matched behavioural test.
 
 The local 8-bit model runs at about 8.3 tokens/s and is not the same artifact lineage as the
 reference FP8 model. A 20-call pilot determines whether the grid fits local throughput. If it
@@ -129,7 +139,7 @@ Conditions (c) and (d) additionally receive object and count inventories, delta 
 terminal-packet abstracts.
 
 The digest may contain **no new information** beyond the canonical packet. It changes
-representation and computation, not evidence. Consequently:
+representation and computation, not evidence. At checkpoints where both conditions run:
 
 - (b) − (a) isolates output structure;
 - (c) − (b) isolates the evidence compiler.
@@ -163,7 +173,7 @@ is compatible with the replay licence.
 
 | ID | Inference | Output | Digest | Retrieval |
 |---|---|---|---:|---:|
-| (a) | Qwen | Free-form goal statement; rerun S1 status quo | No | No |
+| (a) | Qwen | Free-form S1 status quo; targeted matched control and reused S1 records | No | No |
 | (b) | Qwen | Hypothesis set over the 10-class codebook | No | No |
 | (c) | Qwen | Hypothesis set | Yes | No |
 | (d) | Qwen | Hypothesis set | Yes | Yes |
@@ -174,7 +184,7 @@ The planned contrasts are:
 
 | Contrast | What it estimates |
 |---|---|
-| (b) − (a) | Benefit of a constrained output structure |
+| (b) − (a) | Benefit of constrained output at the two E1 gate regimes |
 | (c) − (b) | Benefit of the evidence compiler |
 | (d) − (c) | Retrieval benefit for Qwen |
 | (f) − (e) | Retrieval benefit without Qwen |
@@ -225,22 +235,30 @@ The primary offline verdict therefore does not depend on open-ended S1-E10-style
 
 ### 4.4 Shared discipline
 
-Packets, checkpoints, model, sampling, and scoring remain identical across conditions except for
-the declared treatment. Labels are scoring inputs only, never runtime inputs. Every result must
-also state that public-game performance is not hidden-game performance (13.33% vs 7.78%).
+In E1, packets, checkpoints, model, sampling, and scoring remain identical across compared
+conditions except for the declared treatment. E2 deliberately uses the recorded S1 goal belief
+as its baseline; results must label the resulting FP8-versus-8-bit artifact difference. Labels
+are scoring inputs only, never runtime inputs. Every result must also state that public-game
+performance is not hidden-game performance (13.33% vs 7.78%).
 
 ## 5. Experiments
 
 ### E1: recognition ladder on human evidence
 
-For each non-reserved game, use three completion-bearing human sessions and evaluate all six
-conditions at:
+For each non-reserved game, use three completion-bearing human sessions. Evaluate conditions
+(b)–(f) at:
 
 - 10 actions with zero completions;
 - 30 actions with zero completions;
 - immediately after the first completion;
 - immediately after the second completion;
 - immediately after the third completion.
+
+Run condition (a) only at 30 actions with zero completions and immediately after the first
+completion. These are the two K1 gate regimes and the only E1 checkpoints where a matched
+free-form control changes a decision. Condition (a) is not champion-eligible, and rerunning it
+at 10 actions or after completions two and three would add descriptive cost without affecting a
+gate.
 
 The two zero-completion rows represent S1's stuck-on-level-1 regime. They are reported
 separately and never averaged into completion-bearing results.
@@ -253,8 +271,7 @@ E1 asks:
 
 ### E2: recognition from the agent's own evidence
 
-Replay evidence streams from the S1 failure corpus and evaluate conditions (a), the frozen
-champion, and (f) at:
+Replay evidence streams from the S1 failure corpus and evaluate the frozen champion and (f) at:
 
 - 10 actions into the stalled level attempt;
 - 30 actions into the stalled level attempt;
@@ -263,11 +280,17 @@ champion, and (f) at:
 The non-reserved corpus contains **63 episodes**, including **39 `goal_unknown` primaries across
 18 games**.
 
+For condition (a), extract the goal belief recorded by the original agent at or immediately
+before each checkpoint. Map that text to normalized predicate gold with the same blinded
+procedure used elsewhere. Query the 8-bit baseline only when the historical goal state is
+missing or cannot be scored. The `goal_unknown` failure label cannot substitute for this
+concrete predicate: it selects the difficult corpus but does not establish what goal the
+baseline predicted.
+
 Report `goal_unknown` and its complement separately. Because `goal_unknown` episodes were
 selected for the baseline agent not knowing the goal, condition (a) is near floor there by
 construction. The primary E2 read is therefore paired rescue under K4, not the champion's
-absolute accuracy. Predicate scoring uses the normalized gold; condition (a) first passes
-through blinded free-text mapping.
+absolute accuracy.
 
 ### E3: adaptation and completion ablation
 
@@ -315,7 +338,7 @@ Freeze the champion before opening the one-shot set.
 
 The confirmatory one-shot contrasts are:
 
-- champion vs (a);
+- champion vs (a) at the two shared E1 gate regimes and against the recorded S1 baseline in E2;
 - champion vs (e);
 - (d) vs (f).
 
@@ -358,7 +381,9 @@ procedure.
 
 #### K4 details
 
-Use only `goal_unknown` episode-levels that the rerun baseline (a) gets wrong.
+Use only `goal_unknown` episode-levels where the scored baseline predicate from condition (a)
+is wrong. In E2 this is normally the recorded S1 belief, not a rerun and never the
+`goal_unknown` category label itself.
 
 Pass requires:
 
@@ -455,24 +480,26 @@ action offset. Invalid rows are dropped and counted.
 
 ### 7.4 Runtime and annotation budget
 
-Estimated measured workload: about **1,830 8-bit calls**.
+Estimated measured workload: about **1,413 8-bit calls**, plus fallback baseline calls for any
+E2 checkpoint whose recorded S1 goal belief is missing or unscorable.
 
 | Component | Calculation | Calls |
 |---|---:|---:|
-| Iteration E1 | 6 games × 3 sessions × 5 checkpoints × 4 Qwen conditions | 360 |
-| One-shot E1 | 15 × 3 × 5 × 4 | 900 |
-| E2 | 63 episodes × 3 checkpoints × 2 Qwen conditions | 378 |
+| Iteration E1 | 6 games × 3 sessions × 5 checkpoints × 3 Qwen conditions, excluding (a) | 270 |
+| One-shot E1, conditions (b)–(d) | 15 × 3 × 5 × 3 | 675 |
+| One-shot E1, targeted condition (a) | 15 × 3 × 2 gate checkpoints | 90 |
+| E2 champion | 63 episodes × 3 checkpoints | 189 |
 | E3 ablation | 21 × 3 × 3 | 189 |
 
-Programmatic floors are effectively free.
+Programmatic floors and extraction of existing S1 baseline states are effectively free. Any
+necessary E2 baseline fallback query is counted separately and reported.
 
 Annotation is budgeted separately from model measurement:
 
 - gold generation uses source annotation, not 8-bit calls;
-- approximately 504 blinded mappings of condition (a):
-  - E1 iteration: 90,
-  - E1 one-shot: 225,
-  - E2: 189;
+- at most approximately 279 blinded mappings of condition (a):
+  - E1 one-shot targeted control: 90,
+  - E2 recorded S1 beliefs: up to 189;
 - enumerated-equivalence adjudications are additional and fully logged.
 
 Before the iteration pass, run a 20-call pilot at achievable concurrency. The local grid must
