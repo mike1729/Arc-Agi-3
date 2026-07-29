@@ -1,0 +1,77 @@
+{
+  "seed": 20260729,
+  "attempt": 0,
+  "labels_file": "logs/s2_goal_predicates_labelled.json",
+  "n_games": 25,
+  "iteration": [
+    "dc22",
+    "ft09",
+    "ls20",
+    "m0r0",
+    "tu93",
+    "vc33"
+  ],
+  "reserved": [
+    "g50t",
+    "r11l",
+    "su15",
+    "tr87"
+  ],
+  "one_shot": [
+    "ar25",
+    "bp35",
+    "cd82",
+    "cn04",
+    "ka59",
+    "lf52",
+    "lp85",
+    "re86",
+    "s5i5",
+    "sb26",
+    "sc25",
+    "sk48",
+    "sp80",
+    "tn36",
+    "wa30"
+  ],
+  "primary_class": {
+    "ar25": "quantified_object_conditions",
+    "bp35": "state_relations",
+    "cd82": "symmetry_and_template_match",
+    "cn04": "quantified_object_conditions",
+    "dc22": "state_relations",
+    "ft09": "symmetry_and_template_match",
+    "g50t": "state_relations",
+    "ka59": "quantified_object_conditions",
+    "lf52": "event_occurrence",
+    "lp85": "quantified_object_conditions",
+    "ls20": "state_relations",
+    "m0r0": "all_instances_transformed",
+    "r11l": "quantified_object_conditions",
+    "re86": "symmetry_and_template_match",
+    "s5i5": "quantified_object_conditions",
+    "sb26": "ordered_event_programs",
+    "sc25": "state_relations",
+    "sk48": "symmetry_and_template_match",
+    "sp80": "all_instances_transformed",
+    "su15": "counts",
+    "tn36": "state_relations",
+    "tr87": "symmetry_and_template_match",
+    "tu93": "quantified_object_conditions",
+    "vc33": "quantified_object_conditions",
+    "wa30": "quantified_object_conditions"
+  },
+  "constraint_audit": {
+    "iteration_simple_only": [
+      "ls20",
+      "tu93"
+    ],
+    "iteration_action6": [
+      "dc22",
+      "ft09",
+      "m0r0",
+      "vc33"
+    ],
+    "lp85_bucket": "one_shot"
+  }
+}
