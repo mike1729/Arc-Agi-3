@@ -243,6 +243,15 @@ performance is not hidden-game performance (13.33% vs 7.78%).
 
 ## 5. Experiments
 
+The four experiments answer different questions:
+
+| Experiment | Main uncertainty |
+|---|---|
+| E1 | Can the goal be recognized from controlled human evidence, and which treatment helps? |
+| E2 | Does the treatment still work on the agent's own incomplete and biased trajectories? |
+| E3 | Does observed completion evidence cause useful adaptation, and what part of it matters? |
+| E4 | Does a better goal belief improve actions and completed levels in closed-loop play? |
+
 ### E1: recognition ladder on human evidence
 
 For each non-reserved game, use three completion-bearing human sessions. Evaluate conditions
@@ -269,6 +278,14 @@ E1 asks:
 - How much evidence is required?
 - Which treatment provides the lift?
 
+**What this discovers:** E1 is the clean recognition test. Human replays provide successful
+trajectories at known evidence checkpoints, so failure cannot be blamed solely on the agent's
+poor exploration. The zero-completion checkpoints test whether narrowing, compilation, or
+cross-game retrieval can help before the agent has ever succeeded. The later checkpoints show
+how quickly the correct goal becomes identifiable after one or more examples. Comparisons
+between conditions attribute any improvement to output structure, the evidence compiler,
+retrieval, or Qwen itself.
+
 ### E2: recognition from the agent's own evidence
 
 Replay evidence streams from the S1 failure corpus and evaluate the frozen champion and (f) at:
@@ -292,6 +309,14 @@ selected for the baseline agent not knowing the goal, condition (a) is near floo
 construction. The primary E2 read is therefore paired rescue under K4, not the champion's
 absolute accuracy.
 
+**What this discovers:** E2 tests whether the E1 result survives the evidence the deployed
+agent actually produces. Those trajectories may be repetitive, incomplete, or focused on the
+wrong objects; a method that works only on clean human demonstrations would not solve the S1
+failure. E2 therefore asks whether the champion can recover concrete, actionable predicates in
+episodes where the original agent's goal belief was wrong, while preserving cases it already
+understood. It is the main bridge between offline recognition and the observed
+`goal_unknown` failure population.
+
 ### E3: adaptation and completion ablation
 
 E3 reuses E1's grid rather than creating another corpus.
@@ -308,6 +333,13 @@ a state that does not occur in deployment.
 Run conditions (d) and (f) to determine whether Qwen is required for adaptation or whether a
 programmatic posterior can carry it.
 
+**What this discovers:** E3 tests the mechanism behind improvement rather than only its final
+accuracy. A positive ladder slope would show that the system updates its belief as successful
+examples accumulate. The content ablation separates information in the terminal transition
+from the bare fact that a level was completed. Comparing (d) with (f) then shows whether that
+updating requires semantic inference from Qwen or can be carried by retrieval and a
+programmatic posterior.
+
 ### E4: paired behavioural test
 
 E4 is unlocked by K1, not blocked by a failed K4.
@@ -321,6 +353,13 @@ completions. Interpret it against the observed run-to-run noise: identical runs 
 level count on 20–36% of games.
 
 The E4 payload is the natural first method-bearing submission.
+
+**What this discovers:** E4 tests whether an improved offline goal description changes the
+agent's decisions enough to matter. A predicate can score as correct yet arrive too late, be
+ignored by the solver, or fail to identify a useful next action. Paired advisor-on/off runs
+measure the complete causal chain—from goal inference, through action selection, to completed
+levels—while the replicate and game-level pairing separate the treatment signal from the
+reference agent's substantial run-to-run noise.
 
 ## 6. Selection and decision rules
 
