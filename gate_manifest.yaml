@@ -2006,6 +2006,75 @@ s2:
       artifact: "logs/s2_arc_conventions.json"
 
   # =================================================================================
+  # TIMESTEP AND OBSERVATION — the definition SPEC §4.9 demands and no document fixes.
+  # =================================================================================
+  # SPEC §4.9: "Alias's timestep must be defined against this, because part of the history the
+  # aliasing test concerns lives INSIDE one observation." Acceptance criteria 5 and 6 both read
+  # this block. It is registered separately because a ceiling measured against an undefined
+  # timestep measures something other than what it claims — §4.9's own stated failure mode.
+  timestep_definition:
+    status: PROPOSED
+    drafted_on: 2026-07-29
+
+    # ------------------------------------------------- decision 1: forced, not chosen
+    timestep: "ONE ACTION = ONE TIMESTEP. The observation is a variable-length sequence of 1..N
+               grids. Intra-observation frames are NOT timesteps; they are structure INSIDE one."
+    timestep_is_forced: "criterion 6 requires the emitted frame-length distribution match the
+                         measured one. A frame-as-timestep generator emits 516,260 / 180,484 =
+                         2.86x too many steps and violates observation fidelity BY CONSTRUCTION.
+                         This decision is entailed, not a judgment."
+
+    # ------------------------------------------------- the two functions
+    settled_frame: "the LAST frame of the sequence. Already the operational definition in three
+                    places, so this restates rather than invents: agent/harness/s2_corpus_census.py
+                    line 178 (`settled = _hash(frame[-1])`), SPEC §5's outcome labels, and SPEC
+                    §6.6's 'canonical settled-observation hashes'."
+    two_functions:
+      settled_of_state: "settled(s) -> Grid. The canonical render of s at rest. A function of STATE
+                         ALONE — which is what makes the aliasing key well-posed."
+      emit_of_transition: "emit(s_prev, a, s) -> tuple[Grid, ...], length 1..N, with
+                           emit[-1] == settled(s). The observation is a function of the TRANSITION,
+                           not of the state. This is why 'two states are observationally identical'
+                           is ill-posed without settled()."
+
+    # ------------------------------------------------- decision 3: the aliasing key + invariant
+    aliasing_key: "settled(s1) == settled(s2), byte-equal, AND their optimal actions differ."
+    emit_non_leakage_invariant:
+      status: PROPOSED
+      rule: "emit() depends ONLY on (settled(s_prev), a, settled(s)). NEVER on hidden mechanic
+             fields — INCLUDING its length."
+      why: "frame lengths cluster DISCRETELY per game — ls20 emits only {1,2,6,17}, ar25 {1,2,3,8},
+            wa30 {1,2} (logs/s2_corpus_census.json) — so LENGTH ALONE is an event-class signal.
+            Without this invariant, two states with byte-equal settled frames may still emit 6 vs
+            17 frames; observation-only then separates them BY FRAME COUNT, the aliasing guarantee
+            is void, and every assertion on the settled-frame clause still passes. Silent failure."
+      relation_to_delay: "NOT a new rule. It is SPEC §4.9's Delay requirement ('no observable effect
+                          through t+delay-1') generalised to Alias. It is what 'hidden' means."
+      asserted_how: "per aliased pair, for every action: emitted sequences byte-equal INCLUDING
+                     length. Assertion lives in the generator, not in an analysis afterwards —
+                     same posture as delay_verified_by_construction."
+
+    # ------------------------------------------------- decision 2: what each ceiling sees
+    ceiling_information_sets:
+      status: PROPOSED
+      rule: "all three ceilings take the SAME observation object — the full 1..N sequence. The
+             ladder varies EXACTLY ONE thing: how many TIMESTEPS of observation are supplied."
+      observation_only: "o_t — the full frame sequence for step t"
+      history_oracle: "o_1 .. o_t, plus the oracle decoder"
+      hidden_state_oracle: "the true hidden mechanic fields of s"
+      why_not_settled_frame_only: "if ceiling 1 saw only the settled frame while ceiling 2 saw full
+                                   sequences across all steps, the gap between them would conflate
+                                   intra-step animation with inter-step history, and which of the
+                                   two Alias actually requires would be unrecoverable. That is
+                                   verbatim SPEC §4.9's failure: 'its ceilings measure something
+                                   other than what they claim.'"
+
+    why_proposed: "SPEC §4.9 demands the timestep be defined explicitly and fixes no definition.
+                   Decision 1 (timestep) is FORCED by criterion 6 and is not a judgment; decisions
+                   2 (ceiling information sets) and 3 (aliasing key + non-leakage invariant) are
+                   judgments and are the parts that need acceptance."
+
+  # =================================================================================
   # ACCEPTANCE — SPEC §4.9's six criteria. Four numeric, two structural.
   # A5-G reads exactly the registered values below. `[ACCEPTED]` / `[PROPOSED]` per §4.9's own
   # framing that "acceptance and pre-registration are one piece of work".
@@ -2095,6 +2164,100 @@ s2:
                                miscalibrated by construction. Record the reweighting or the
                                prior correction wherever the progress head is evaluated."
 
+      # ----------------------------------------------- added 2026-07-29
+      # Three things this criterion needs before A5-G can read it. None changes the 0.05; all three
+      # decide what 0.05 is a prevalence OF.
+      event_definition:
+        status: PROPOSED
+        added_on: 2026-07-29
+        problem: "this criterion registers a PROGRESS prevalence against a measured anchor that is a
+                  TERMINAL rate — 1,614 terminal transitions of 180,144. In the replay corpus the
+                  two are the SAME event: notes/screening-training-data.md line 92 labels that row
+                  'terminal (progress positive)', and no non-terminal progress signal is measured
+                  anywhere in the evidence. SPEC §4.9 writes 'terminal / progress predicate' and
+                  does not separate them either."
+        why_it_matters: "0.05 is one event every 20 actions. Against the 183 human level baselines
+                         in logs/s2_arc_conventions.json — median 60 actions/level, mean 93.6,
+                         p25 32 — the two readings diverge sharply. If progress events ARE
+                         terminals, procedural levels run ~20 actions: shorter than the human p25,
+                         and at 6-10 levels an instance is ~4.7x shorter than any measured game.
+                         If they are NOT terminals, 0.05 is coherent and the 0.90% figure is a
+                         different quantity that should not be cited as its anchor."
+        proposal: "PROGRESS EVENTS ARE NOT TERMINALS. A progress event is a sub-terminal marker;
+                   terminal transitions are a separate, separately-reported count. The 0.90%
+                   anchor is retained as the anchor for the TERMINAL rate, not for this criterion."
+        anchor_is_sound_either_way: "0.90% is not a logging artifact. The reference clears a level
+                                     every 112 actions against a human mean of 93.6 (implying
+                                     1.07%) and a human median of 60 (1.67%). Slightly worse than
+                                     human, which is what a reference agent should look like."
+
+        # --- amended later the same day; the sub-terminal proposal above has a cost it did not price
+        amendment_2026_07_29_terminal_is_a_subset:
+          finding: "ARC-AGI-3 REPORTS NO SCORE. Metadata key union over all 340 replay files /
+                    44,748 rows is game_id, frame, state, action_input, guid, full_reset,
+                    available_actions, levels_completed, win_levels — plus won/played/
+                    total_actions/cards on 68 session-summary tail lines. There is NO score field in
+                    any of the 25 games. SPEC §5 freezes this head's target as a 'level/score marker
+                    or registered progress signature'; the SCORE disjunct names an observable that
+                    does not exist, and the REGISTERED-SIGNATURE disjunct is per-game, so on an
+                    unseen game NOTHING is registered. Only the level marker survives, at 0.90%."
+          consequence_for_the_proposal_above: "sub-terminal progress markers can be DEFINED on the
+                                               procedural generator because the generator owns the
+                                               goal. On a hidden game there is no observable
+                                               sub-terminal signal at all. A head trained at 0.05
+                                               sub-terminal prevalence and deployed on a hidden game
+                                               is therefore not miscalibrated — IT IS PREDICTING A
+                                               DIFFERENT EVENT CLASS."
+          calibration_obligation_is_insufficient: "the registered calibration_obligation says to
+                                                   record the reweighting or prior correction.
+                                                   REWEIGHTING FIXES A PREVALENCE MISMATCH; IT
+                                                   CANNOT FIX AN EVENT-CLASS MISMATCH."
+          revised_proposal: "TERMINAL IS A STRICT SUBSET OF PROGRESS. Construct the procedural
+                             progress predicate as a GRADED signal whose extreme case is level
+                             completion, so that at deployment the head degrades to the terminal
+                             slice rather than predicting a class with no referent."
+          claim_scope: "ONLY TERMINAL-SLICE PERFORMANCE IS EVER CLAIMED ON REAL GAMES. Sub-terminal
+                        grading is a procedural-only construct, used for training density and for
+                        S3/R0 measurement, and is never asserted on a hidden game."
+          already_scoped_this_way_in_spec: "SPEC §9.1 gives G0-R 'prerequisite and partial-progress
+                                            grading · goal-family classification WHERE SYNTHETIC
+                                            TRUTH EXISTS'. The scope was already there; the earlier
+                                            proposal in this block did not carry it through."
+          argument: "notes/progress-head-and-goal-inference.md, 2026-07-29"
+
+      level_length_not_registered:
+        status: PROPOSED
+        added_on: 2026-07-29
+        gap: "criterion 6's fidelity table registers grid shape, cell values, LEVELS PER INSTANCE,
+              action availability and frames per observation. There is NO actions-per-level row, so
+              a generator emitting 20-action levels passes observation fidelity cleanly."
+        proposal: "register actions-per-level against the measured human distribution (183 levels,
+                   25 games: min 6, p25 32, median 60, mean 93.6, p75 119, max 578) rather than
+                   registering a terminal prevalence directly."
+        why_this_direction: "TERMINAL RATE IS POLICY-DEPENDENT and therefore not a generator
+                             property at all — 0.90% is the REFERENCE AGENT's rate on those games;
+                             a better agent has a higher rate on the identical environment. What
+                             the generator controls is how long a level IS. Setting level length is
+                             a design parameter; setting terminal rate is not."
+
+      sampling_policy_undeclared:
+        status: PROPOSED
+        added_on: 2026-07-29
+        problem: "`rule` above says 'prevalence of progress-bearing transitions among all emitted
+                  transitions'. Emitted BY WHAT POLICY? Progress density under a uniform-random
+                  policy and under a near-optimal one differ by orders of magnitude on the same
+                  generator, so 0.05 is not a well-defined quantity until the policy is named."
+        proposal: "prevalence is measured under the SAME declared policy that generates the S3
+                   training corpus, and that policy is registered here alongside the number. It is
+                   also the mechanism that makes prevalence a design parameter at all — an
+                   epsilon-mixture of ground-truth solution path and uniform-random lets epsilon be
+                   tuned to hit the registered prevalence, which no post-hoc filter can do without
+                   biasing the transition distribution."
+        consequence_if_left_open: "A5-G reads 0.05 +/- 0.01 off a corpus whose policy was chosen at
+                                   implementation time. The criterion would then be satisfiable by
+                                   choosing the sampler, which is the inversion the whole
+                                   pre-registration exists to prevent."
+
     # ------------------------------------------------- 5. generator correctness (structural)
     generator_correctness:
       status: PROPOSED                 # the PATTERN is fixed by SPEC §4.9; the MARGINS are not
@@ -2118,6 +2281,19 @@ s2:
         on_fail: "if history-oracle sits far below hidden-state-oracle the task is NOT learnably
                   history-resolvable, and model failure on it is EXPECTED rather than informative.
                   SPEC §4.9: without this ceiling that would be misread as a model result."
+        information_sets: "see timestep_definition.ceiling_information_sets — all three ceilings
+                           take the full 1..N frame sequence; the ladder varies timesteps only."
+        cap_coupling:
+          status: PROPOSED
+          added_on: 2026-07-29
+          rule: "run ceilings 1 and 2 at BOTH cap=inf and cap=frame_cap.encoder_frames_max, and
+                 report both."
+          why: "if the ceilings run uncapped while S3's encoders run capped, ceiling 2 is measured
+                on strictly MORE information than any model ever receives, and the ceiling-to-model
+                gap silently absorbs the cap. Ceiling 1 uncapped is conservative and harmless — it
+                can only understate observation-only. Ceiling 2 is not: it inflates the headroom
+                every S3 result is read against."
+          cost: "one extra pass on A3. It settles the attribution before S3 spends GPU on it."
       delay_verified_by_construction:
         rule: "the delay is verified BY CONSTRUCTION — the generator asserts that the causal bit is
                written at step t, has no observable effect through step t+delay-1, and determines the
@@ -2198,6 +2374,43 @@ s2:
                     carry the consequence of an action."
     must_be_reported: "the truncation rate and what it discards, wherever an S3 result is cited"
 
+    # ------------------------------------------------- added 2026-07-29
+    truncation_direction:
+      status: PROPOSED
+      rule: "TAIL-INCLUSIVE. The retained window ALWAYS contains the final frame."
+      why: "settled == frame[-1] (timestep_definition.settled_frame) and every SPEC §5 outcome
+            label is defined against the settled frame, so HEAD truncation discards the OUTCOME of
+            the action while keeping its lead-in. The cap number alone does not determine this and
+            it was unregistered until 2026-07-29."
+      permitted_variants: "tail-8, or first-k + last-(8-k) if the lead-in proves to matter. Both
+                           are tail-inclusive; head-8 is not permitted."
+
+    cost_restated_2026-07-29:
+      note: "the 92.5% in `rationale` above is correct but is measured in OBSERVATIONS, which is
+             the denominator that makes the cap look nearly free. The cost lands in GRIDS, and it
+             is concentrated in a few games. Reproduce from logs/s2_corpus_census.json `framelen`."
+      basis: "180,484 observations (= 180,144 transitions + 340 reset observations), 516,260 grids,
+              mean 2.860, max 404, single-frame share 70.984%"
+      by_cap:
+        cap_4:  {observations_untouched: 0.84968, grids_dropped: 0.42751}
+        cap_8:  {observations_untouched: 0.92470, grids_dropped: 0.26706}
+        cap_16: {observations_untouched: 0.98112, grids_dropped: 0.13439}
+        cap_32: {observations_untouched: 0.99422, grids_dropped: 0.07411}
+      concentration_at_cap_8:
+        note: "uneven by an order of magnitude. 7 of 25 games are untouched; the damage is
+               concentrated in games whose animations encode the consequence of an action."
+        tu93: {observations_truncated: 0.7645, grids_dropped: 0.3448,
+               flag: "the game the entire §4.1 reset-accounting posture rests on"}
+        sb26: {observations_truncated: 0.0879, grids_dropped: 0.7679}
+        g50t: {observations_truncated: 0.4454, grids_dropped: 0.3311}
+        bp35: {observations_truncated: 0.2758, grids_dropped: 0.4062}
+        untouched_games: 7
+      does_not_change_the_proposal: "8 is still the proposal — the ~97 h vs ~132 h budget argument
+                                     is unaffected. What changes is that acceptance now reads the
+                                     cost in the denominator that carries it, and the concentration
+                                     is on the record BEFORE the freeze rather than discovered when
+                                     an S3 result on tu93-like dynamics reads oddly."
+
   # =================================================================================
   # Value / distance-to-goal criterion — the S2 stub's first named obligation.
   # =================================================================================
@@ -2207,6 +2420,25 @@ s2:
     evaluation_only_rule: "BINDING, SPEC §4.9: if it trains a value head, an objective comparison
                            silently becomes supervised action ranking. It is exposed to evaluation
                            and ranking code only, and never appears in any arm's training target."
+
+    # ----------------------------------------------- added 2026-07-29
+    progress_must_not_be_derived_from_this:
+      status: PROPOSED
+      rule: "A PROGRESS EVENT IS AN OBSERVABLE MARKER, NEVER A DISTANCE DECREASE. The progress
+             predicate (SPEC §4.9 interface item 3) is defined as a level/score marker or a
+             registered signature — notes/training-data-master.md line 44 — and is NEVER defined as
+             `d(s_{t+1}) < d(s_t)` over the value criterion."
+      why: "SPEC §5's progress head is a TRAINED component. Define progress as a distance decrease
+            and the progress head trains on the value criterion by proxy, which voids
+            evaluation_only above. Nothing errors: the head trains, the objective comparison runs,
+            and the numbers look fine. Same silent-failure shape as instance_diversity — it fails
+            by producing a result."
+      separation_is_the_point: "interface items 3 and 4 are independent BY CONSTRUCTION or not at
+                                all. Item 3 says what happened; item 4 says how far away the goal
+                                is. One is observable to the agent in principle, the other never."
+      also_binds: "the terminal predicate feeding C6 — `nearest goal-satisfying state` IS item 3's
+                   terminal predicate, so item 4 depends on item 3. The dependency runs one way and
+                   must not be inverted."
     per_family:
       Alias:
         criterion: "exact shortest-path distance to the nearest goal-satisfying state, in actions,
@@ -2277,6 +2509,41 @@ s2:
     - "whether the 3.5-day S2 budget still holds. It predates SPEC §4.9's three added interface
        requirements (ground-truth state IDs, seed/random-stream control with CRN declared, on-demand
        generation) and has not been re-examined since 2026-07-28"
+    - "the `timestep_definition` block, added 2026-07-29. SPEC §4.9 demands the timestep be defined
+       explicitly and fixes no definition. Decision 1 (one action = one timestep) is FORCED by
+       criterion 6; what needs acceptance is decision 2 (all three ceilings take the full 1..N
+       sequence; the ladder varies timesteps only) and decision 3 (the aliasing key plus the emit()
+       non-leakage invariant). C1 is built against these TODAY"
+    - "`frame_cap.truncation_direction` — tail-inclusive, added 2026-07-29. Unregistered until now;
+       head truncation would discard the settled frame, which is the outcome every SPEC §5 label is
+       defined against"
+    - "`generator_correctness.alias_three_ceilings.cap_coupling` — whether A3 runs ceilings 1 and 2
+       at both cap=inf and cap=8. One extra pass; without it the ceiling-to-model gap absorbs the
+       frame cap"
+    - "the four additions to `progress_event_prevalence`, added 2026-07-29. None changes 0.05; all
+       decide what 0.05 is a prevalence OF. (a) are progress events terminals — proposed NO,
+       because at 0.05 a terminal reading gives ~20-action levels against a human p25 of 32;
+       (b) actions-per-level is unregistered, so criterion 6 does not catch that; (c) prevalence is
+       undefined until the SAMPLING POLICY is named, and without it A5-G's criterion is satisfiable
+       by choosing the sampler after the fact; (d) TERMINAL IS A STRICT SUBSET OF PROGRESS, because
+       ARC-AGI-3 reports no score (verified over all 340 replays) and sub-terminal progress has no
+       observable counterpart on a hidden game — (a) alone would train a phantom class"
+    - "NOT for this block, but raised by the same argument and needing a DATED SPEC AMENDMENT rather
+       than a manifest entry: SPEC §5 freezes the progress head's target as a 'level/score marker or
+       registered progress signature' and ARC-AGI-3 has NO SCORE FIELD. Also §9's decision table
+       silently promotes this head to the deployed goal signal if G0-A does not integrate; that
+       should be a declared branch. Both in notes/progress-head-and-goal-inference.md §9"
+    - "`value_criterion.progress_must_not_be_derived_from_this` — progress is an observable marker,
+       never a distance decrease. Without it SPEC §5's trained progress head trains on the
+       evaluation-only value criterion by proxy, and nothing errors"
+    - "NOT drafted, still open: acceptance tests NO §4.9 interface item. Walk the six criteria —
+       throughput, held-out count, diversity, prevalence, generator correctness, observation
+       fidelity — and none reads the successor interface (§4.9 item 2), the ground-truth state IDs
+       (item 7), CRN declaration (item 8) or on-demand generation (item 9). A generator can pass
+       §12.1 step 0 with item 2 absent or order-dependent, and R0's load-bearing held-out
+       counterfactual ranking then has no substrate in W5. Cheap to close while this block is
+       DRAFT (a C7 conformance check: `successors(s)[a] == step(s,a)` for every discrete a, and
+       state hash unchanged across the call); after freeze it costs a dated erratum"
 s3: {status: NOT_STARTED}   # primary metric + threshold per screening question; T_v, T_r; rescue coefficients; evaluator-doing-the-work criterion
 s4: {status: NOT_STARTED}   # JEPA retention threshold — what advisor improvement at what latency cost
 s5: {status: NOT_STARTED}   # B/M/U/C pattern mapping to each §11 branch
