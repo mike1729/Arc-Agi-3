@@ -28,7 +28,7 @@ their index and their interpretation.
 |---|---:|---|---|---|
 | **S0** starter submission | 0.5 / 0.5 | ✅ **complete** — public score 0.06 | execution path only | [`ledger`](../submissions/ledger.md) |
 | **S1** baseline reproduction | 6 / **2** | ✅ **complete 2026-07-28 — DEGRADED payload, no hidden score** · gate applied (κ 0.7207, 30/30, floor 0.40); build order filled | SPEC §4.1 reset posture · D0 latency inputs · SPEC §2 per-action budget | §6, [`s1-closeout`](../notes/s1-closeout.md) |
-| **S2** F1 + F3 generators | 3.5 / — | ▶️ **next** | decides no component, but **builds SPEC §4.9** — Tier 1 substrate — and carries its own gate, SPEC §12.1 **step 0** (schedule day A5-G). Passing it releases D0 and all procedural-dependent build work; failing it leaves W1's non-dependent substrate free to continue | §7 |
+| **S2** Alias + Delay generators | 3.5 / — | ▶️ **next** | decides no component, but **builds SPEC §4.9** — Tier 1 substrate — and carries its own gate, SPEC §12.1 **step 0** (schedule day A5-G). Passing it releases D0 and all procedural-dependent build work; failing it leaves W1's non-dependent substrate free to continue | §7 |
 | **S3** objective screening | 5 / — | not started | **R0 / SPEC §11** — the predictive objective | §8 |
 | **S4** ARC advisor test | 2.5 / — | not started | **SPEC §11.2 rung gates** — is Tier 3 retained at all | §9 |
 | **S5** decision audit | 1 / — | not started | **SPEC §12.2 slack policy** — build / defer / drop | §10 |
@@ -63,7 +63,7 @@ a different action would have done — information an on-policy replay cannot co
 **Measured inventory, 2026-07-28:** 340 human sessions (6.4 GB) provide **180,144 valid
 transitions**, including 171,199 changes, 8,945 no-ops, 1,614 terminal transitions, 56,347 ACTION6
 transitions and 516,260 grids (mean 2.86 per observation). Three reference-agent runs add **12,475
-transitions**, including 1,446 no-ops and 49 terminals. Procedural F1/F3 data is unbounded in
+transitions**, including 1,446 no-ops and 49 terminals. Procedural Alias/Delay data is unbounded in
 principle but **zero exists today**: S2 builds its source. Full census and derivations:
 [`screening-training-data.md`](../notes/screening-training-data.md).
 
@@ -73,7 +73,7 @@ hard-budget environment interaction with uncertain yield.
 
 | Consumer | How much is needed | What exists now | Difficulty | Verdict |
 |---|---|---|---:|---|
-| **S2 ceilings** | Enough disjoint instances to resolve the registered F1/F3 margins; counts are **not yet registered** | generated on demand after S2 exists | **4** | volume is elastic; instance diversity is the risk |
+| **S2 ceilings** | Enough disjoint instances to resolve the registered Alias/Delay margins; counts are **not yet registered** | generated on demand after S2 exists | **4** | volume is elastic; instance diversity is the risk |
 | **S3 A/B/C × rollout × seeds** | **51.2M transition presentations/run; 614.4M total** at 100k steps. If pre-generated, **≥2.56M distinct transitions** at ≤20 epochs and hundreds-to-low-thousands of instances/family are planning judgments, not thresholds | **0 procedural transitions** | **4** | not volume-limited after S2; throughput- and compute-limited |
 | **S4 ARC retraining** | A/B/C share one game-level split and one smaller, still-unregistered step budget | **180,144** replay transitions; any 17/8 split leaves 79,329–155,842 before the balance constraint | **1** | in hand, but epoch-limited: even 10k steps present 5.12M windows |
 | **Changed-region / no-op readouts** | no minimum registered | ≈**701M** cell labels on changed transitions; **8,945** replay + 1,446 agent no-op positives | **0–2** | changed-region solved; no-op adequate but partition-sensitive |
@@ -309,16 +309,20 @@ blocks.
 ⚠ **The 3.5-day budget predates the interface below.** It was priced against a shorter list; three
 requirements were added by SPEC §4.9 on 2026-07-28 and the budget has not been re-examined since.
 
-**F1 — history-required aliasing.** Visually identical observations require different actions because
+**Alias — history-required aliasing.** Visually identical observations require different actions because
 of a hidden switch, counter, or phase.
 
-**F3 — sparse delayed causal memory.** A one-cell change with no short-term effect that determines a
+**Delay — sparse delayed causal memory.** A one-cell change with no short-term effect that determines a
 later transition. **This is the central risk for reconstruction-free prediction:** the latent objective
 has almost no gradient pressure to preserve a bit whose consequence lies outside the training horizon,
-while an exact target retains it structurally. **F1 alone sits in the short-horizon regime where a
-latent predictor looks good, so without F3 any positive result is biased.**
+while an exact target retains it structurally. **Alias alone sits in the short-horizon regime where a
+latent predictor looks good, so without Delay any positive result is biased.**
 
-*(F2 and F4 are cut — they test capability-as-science more than build-relevant viability.)*
+*(Two further families from the original four were cut — they test capability-as-science more than
+build-relevant viability. They were `F2` and `F4` under the retired numbering, and are deliberately
+not renamed here: they were never specified beyond that line, so a name would imply a definition
+that does not exist. The `F4` of SPEC §9.6 was a **different** family — now `Order` — and the
+collision between the two is one reason the numbering was retired.)*
 
 ### Conventions the generators must match — measured, not documented
 
@@ -340,11 +344,11 @@ are a single grid, the mean is **2.86**, the maximum is **404**. Three consequen
 2. **Any encoder must consume 1–N frames.** A model assuming one grid silently discards most of the
    observation at exactly the steps where something interesting happened — invisible in aggregate loss.
    It also costs 2.86× the benchmarked compute (§2).
-3. **This interacts with F1 directly.** If an observation is itself a sequence, part of the "history"
-   the aliasing test is about lives *inside a single observation*. F1's timestep must be defined
+3. **This interacts with Alias directly.** If an observation is itself a sequence, part of the "history"
+   the aliasing test is about lives *inside a single observation*. Alias's timestep must be defined
    against this, or its ceilings measure something else.
 
-### F1 needs three ceilings, not one
+### Alias needs three ceilings, not one
 
 Oracle-hidden-state beating observation-only shows hidden information *matters*. It does not show that
 history contains enough to *recover* it. Run **observation-only** · **complete observable history with
@@ -415,7 +419,7 @@ rerun**; **collapse frequency reported as a result.**
 
 **The five questions:** (1) does history conditioning help at all? (2) does rollout add anything over
 the same representation without it? (3) does A beat B and C on counterfactual ranking regret and
-identification? (4) **does A retain the sparse delayed causal bit on F3?** (5) what is A's inference
+identification? (4) **does A retain the sparse delayed causal bit on Delay?** (5) what is A's inference
 cost per candidate against S1's per-action budget — noting S1's **wall-clock verdict was FAIL**, so
 this is a live constraint, not a formality.
 
@@ -462,7 +466,7 @@ progress event distinguishes two actions. Sizing:
 | Axis | Content | State entering S5 |
 |---|---|---|
 | **B** baseline readiness | accepted submission · hidden score · latency · reliability | **impaired** — no score unless §2 float claim 2 is spent |
-| **M** mechanism evidence | history effect · rollout effect · objective ranking · F3 retention · collapse frequency | from S3 |
+| **M** mechanism evidence | history effect · rollout effect · objective ranking · Delay retention · collapse frequency | from S3 |
 | **U** advisor utility | held-out readouts · closed-loop delta · latency cost | from S4, **local scope only** |
 | **C** feasibility | remaining calendar · integration complexity · remaining compute | ~46.2 h of 120 h used by S3 |
 
@@ -487,12 +491,12 @@ over the measured 7.22 steps/s benchmark — 512 transitions/gradient step at 13
 observation-fidelity table (measured across 25/25 games and 340 replays, including the frame-length
 distribution: 71.0% single, mean 2.86, max 404). **Proposed, awaiting operator acceptance:** held-out
 instance count · instance diversity per family · progress-event prevalence (against a measured 0.90%
-anchor) · F1's three-ceiling margins · F3's delay length and bit sparsity · the encoder frame cap ·
+anchor) · Alias's three-ceiling margins · Delay's causal-delay length and bit sparsity · the encoder frame cap ·
 the value criterion and its goal families.
 
 The block freezes when those are accepted or replaced — `s2.open_before_A2` is the list. Proposed
-values borrow already-registered structure where one exists (F1's margins reuse SPEC §9.5's margin
-rule; F3's delay range is set against §11.1's trained horizons of 1/2/4 steps, the 8-step rollout and
+values borrow already-registered structure where one exists (Alias's margins reuse SPEC §9.5's margin
+rule; Delay's causal-delay range is set against §11.1's trained horizons of 1/2/4 steps, the 8-step rollout and
 the K=16 window) rather than inventing a scale, and each says which it is.
 
 | Sprint | Numbers required |
@@ -550,7 +554,7 @@ is not.
 **Reference material, not overview.** These five terms define how a measurement is *read*, not what the
 agent contains, so they belong with the evidence. Their original definition sites were archived
 2026-07-28; **this appendix is now the definition site.** Only *procedural boundary suite* also appears
-in the specification, as Tier 1's "procedural suite core (F1, F3)".
+in the specification, as Tier 1's "procedural suite core (Alias, Delay)".
 
 **demotion ladder** *(also A §21)* — the fallback modes the agent drops through when it stops being
 trustworthy: full sequential hierarchical agent → sequential flat model → exact archive and graph
@@ -581,7 +585,7 @@ transferable scientific asset in the project.
 **diagnostic contract** — the frozen baselines every condition is read against: copy-last-observation
 persistence · random candidate ranking · exact-simulator planning under the same candidate budget ·
 archive or exact-transition-table baseline. Reported per condition: whole-frame exact match ·
-changed-cell precision, recall, F1 · irreversible-event and level-transition prediction accuracy ·
+changed-cell precision, recall, F1 score · irreversible-event and level-transition prediction accuracy ·
 multi-step exact-rollout survival · counterfactual action discrimination. If the token loss uses
 change weighting, the weighting rule is frozen from outer-train data only. **Unchanged-cell accuracy
 never substitutes for dynamics knowledge.**
@@ -592,7 +596,7 @@ environment-specific action semantics · smooth versus exact irreversible transi
 one-cell-critical state relevance · direct versus non-greedy prerequisite goals · unimodal versus
 genuinely aliased successors · short versus compositional horizons · familiar versus held-out
 combinations of mechanics. Committed as **eight paired one-factor-at-a-time micro-environments with
-easy and stress arms — not a 2⁸ factorial.** **S2's F1 and F3 are the two families that survive the
+easy and stress arms — not a 2⁸ factorial.** **S2's Alias and Delay are the two families that survive the
 screening sprint.**
 
 **goal-predicate class taxonomy** — the ten classes S2 labels a game's terminal transition against,

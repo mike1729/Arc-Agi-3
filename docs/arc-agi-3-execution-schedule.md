@@ -44,7 +44,7 @@ Aug 22 hard stop. That float is real and already has claims on it (§6).
 
 `gate_manifest.yaml → s2` is `NOT_STARTED`. The standing convention is that numbers enter the manifest
 **before** the step they govern. S2 cannot legitimately start until it carries: the value /
-distance-to-goal criterion per family · the three-ceiling margins validating F1 · F3's delay length and
+distance-to-goal criterion per family · the three-ceiling margins validating Alias · Delay's causal-delay length and
 bit sparsity · the frame-sequence length distribution the generators emit · and the **four numeric
 criteria of SPEC §12.1 step 0** — generator throughput, held-out instance count, instance diversity
 per family, procedural progress-event prevalence. Step 0's acceptance reads exactly these registered
@@ -57,16 +57,16 @@ numbers**, or the same conflict recurs at every subsequent block.
 | Day | Date | Work | Done means |
 |---|---|---|---|
 | A1 | Tue Jul 28 | Resolve pre-registration ownership (open item 1). Write and freeze `s2`. Draw the **blind re-rate** sample from the 75-episode corpus | ✅ re-rate drawn, blinded, **scored and promoted** (κ 0.7207, 30/30) — S1 CLOSED · ✅ `s2` written as a full block · ⚠️ `s2` is `DRAFT` not `frozen`: PROPOSED values need operator acceptance before A2 · ⚠️ open item 1 **not** resolved — `s2` was scoped to avoid adding to the collision instead |
-| A2 | Wed Jul 29 | S2 — F1 generator: aliasing mechanic, **variable-length frame sequences**, ARC conventions (64×64, values 0–15, per-game action availability) | F1 emits, conventions asserted in a test |
-| A3 | Thu Jul 30 | S2 — F1 three ceilings: observation-only · history-oracle · hidden-state-oracle | required pattern observed, or task declared not history-resolvable |
-| A4 | Fri Jul 31 | S2 — F3 generator: sparse delayed causal memory at the pre-registered delay and bit sparsity | F3 emits; delay verified by construction |
+| A2 | Wed Jul 29 | S2 — Alias generator: aliasing mechanic, **variable-length frame sequences**, ARC conventions (64×64, values 0–15, per-game action availability) | Alias emits, conventions asserted in a test |
+| A3 | Thu Jul 30 | S2 — Alias three ceilings: observation-only · history-oracle · hidden-state-oracle | required pattern observed, or task declared not history-resolvable |
+| A4 | Fri Jul 31 | S2 — Delay generator: sparse delayed causal memory at the pre-registered delay and bit sparsity | Delay emits; delay verified by construction |
 | A5 | Mon Aug 3 | S2 — generator interface complete **to SPEC §4.9, which governs**: legal actions · exact successor · terminal predicate · **evaluation-only** value criterion · hidden state · causal-relevance labels · recoloured/relaid variants with colour roles permuted · **ground-truth state IDs** · **instance seed + random-stream control, CRN declared not assumed** · **on-demand generation**. Methods prose | every §4.9 interface item present; S4 needs no re-engineering |
-| **A5-G** | Mon Aug 3 | **SPEC §12.1 step 0 — procedural-suite acceptance.** Six criteria (§4.9): throughput · held-out instance count · instance diversity · progress prevalence — each against its registered value — plus generator correctness (F1's three-ceiling pattern on registered margins; F3's delay verified by construction) and observation fidelity (every row of the measured convention table, including the frame-length distribution) | **pass recorded, or unmet criteria named** — on failure, W1's non-dependent substrate continues while **D0 and all procedural-dependent work are blocked**, recorded untested, never passed |
+| **A5-G** | Mon Aug 3 | **SPEC §12.1 step 0 — procedural-suite acceptance.** Six criteria (§4.9): throughput · held-out instance count · instance diversity · progress prevalence — each against its registered value — plus generator correctness (Alias's three-ceiling pattern on registered margins; Delay's causal delay verified by construction) and observation fidelity (every row of the measured convention table, including the frame-length distribution) | **pass recorded, or unmet criteria named** — on failure, W1's non-dependent substrate continues while **D0 and all procedural-dependent work are blocked**, recorded untested, never passed |
 | A6–A10 | Tue Aug 4 – Mon Aug 10 | **S3 — objective screening.** Six configurations (A/B/C × rollout), two paired seeds, matched information and matched ranking interface. Symmetric degeneracy monitoring | five screening questions answered with pre-registered metrics |
 | A11–A12 | Tue Aug 11 – Wed Aug 12 | **S4 — ARC advisor test.** Held-out games, frozen advisor interfaces. **Local paired control** (advisor on/off), **replicates mandatory** | retention verdict on rungs, stated at local-public scope only |
 | — | Thu Aug 13 – Fri Aug 21 | **float, 7 weekdays** — see §6 for its claims | |
 | A13 | Fri Aug 21 | **S5 — decision audit.** B/M/U/C. Stop implementing | four axes recorded; SPEC §3/§12 amended via the decision register |
-| — | **Sat Aug 22** | **Fork G-F decided.** Branch A if ≥ 5 build-days slack → build F4 ordered-event-program and F5 cumulative-counter families. Branch B otherwise → family transfer declared untestable and reported | one branch recorded in the register |
+| — | **Sat Aug 22** | **Fork G-F decided.** Branch A if ≥ 5 build-days slack → build the **Order** (ordered-event-program) and **Count** (cumulative-counter) families. Branch B otherwise → family transfer declared untestable and reported | one branch recorded in the register |
 
 **S3 is the long pole and it is compute-bound, not thinking-bound.** Measured locally: 21.2M parameters
 at 7.22 steps/s, 7.54 GB; twelve runs at 100k steps ≈ **46.2 h** against a 120 h budget. Over five

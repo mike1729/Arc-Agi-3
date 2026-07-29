@@ -113,7 +113,7 @@ to the reference rather than on the fastest available one.
 
 ## Standing hypotheses for the research question (not yet testable)
 
-### H6 — Latent prediction is insufficient under sparse delayed causal memory (F3)
+### H6 — Latent prediction is insufficient under sparse delayed causal memory (Delay)
 
 **Basis.** A reconstruction-free latent objective has little gradient pressure to preserve a bit whose
 consequence falls outside the training horizon; an exact target retains it structurally.

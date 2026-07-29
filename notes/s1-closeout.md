@@ -343,15 +343,15 @@ Seven single-frame observations, then **six frames** in one observation. This is
 
 **Consequences for S2 and S4, to be honoured at design time rather than patched later:**
 
-1. **The F1/F3 generators must emit variable-length frame sequences per observation**, not a fixed one
+1. **The Alias/Delay generators must emit variable-length frame sequences per observation**, not a fixed one
    grid per step. A generator that always emits one frame would produce a distribution the real
    environment never generates, and S4's advisor test would then be measured on a mismatch.
 2. **Any encoder must consume 1–N frames per step.** A model assuming a single grid silently discards up
    to five-sixths of the observation at exactly the steps where something interesting happened — which is
    the worst possible place to lose information, and would be invisible in aggregate loss.
-3. **This interacts directly with F1 (history-required aliasing).** If an observation is itself a short
+3. **This interacts directly with Alias (history-required aliasing).** If an observation is itself a short
    sequence, part of the "history" the aliasing test is about is *inside a single observation*. The
-   generator's notion of a timestep must be defined against this, or F1's ceilings measure something
+   generator's notion of a timestep must be defined against this, or Alias's ceilings measure something
    other than what they claim.
 4. Padding: grids are already uniformly 64×64, so no padding convention is needed — but record that this
    is *verified serialization*, not necessarily the environment's intrinsic grid size.

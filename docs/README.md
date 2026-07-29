@@ -25,7 +25,7 @@ row is either infrastructure or should not be run.
 | Document | Role |
 |---|---|
 | [`arc-agi-3-ship-jepa-x-architecture.md`](arc-agi-3-ship-jepa-x-architecture.md) | **Track A.** The belief model's internals — SPEC §11 specifies it only to admission level and defers the rest here. Also what S3's arms instantiate, and what the paper describes |
-| [`arc-agi-3-jepa-feasibility-analysis.md`](arc-agi-3-jepa-feasibility-analysis.md) | Can the design work? Source of the **F3 risk** — the central argument against reconstruction-free prediction |
+| [`arc-agi-3-jepa-feasibility-analysis.md`](arc-agi-3-jepa-feasibility-analysis.md) | Can the design work? Source of the **Delay risk** — the central argument against reconstruction-free prediction |
 | [`arc-agi-3-architecture-alternatives.md`](arc-agi-3-architecture-alternatives.md) | What would work better. Ordinal judgments, not measurements |
 | [`arc-agi-3-execution-schedule.md`](arc-agi-3-execution-schedule.md) | **Operational.** SPEC §12 and the sprint budgets on real dates, day-level for Phase A. Re-decides no scope — where it disagrees with the spec or the screening document, it is wrong. Phase C (Oct 19 – Nov 8) is proposed, not binding, pending open item 2 |
 | [`archive/`](archive/) | Superseded or spent. **Not authoritative, do not cite** |
@@ -337,8 +337,8 @@ detail: >
   instance diversity per family, progress-event prevalence — so acceptance and
   pre-registration are ONE piece of work, both landing in gate_manifest.yaml
   -> s2 before S2 runs. Two are STRUCTURAL with stated pass conditions:
-  generator correctness (F1's three-ceiling pattern on the registered margins;
-  F3's delay verified by construction) and observation fidelity (every row of
+  generator correctness (Alias's three-ceiling pattern on the registered margins;
+  Delay's causal delay verified by construction) and observation fidelity (every row of
   the measured convention table, including the frame-length distribution).
   An earlier draft listed five criteria that did not match the table it claimed
   to read: progress prevalence was in the table and not in acceptance, and the

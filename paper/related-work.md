@@ -28,7 +28,7 @@ internet, so an agent requiring a hosted-model call is ineligible by constructio
   in this environment class an exactly-verifiable model is a strong strategy, which is precisely why
   **arm C is mandatory** and why "JEPA vs reconstruction" would be the wrong framing. Its verification
   step — replay the model against recorded observations and reject on mismatch — is also the mechanism a
-  latent predictor structurally *cannot* perform, and is the concrete form of the F3 concern.
+  latent predictor structurally *cannot* perform, and is the concrete form of the Delay concern.
 
 ### Local open-weight agents — the eligible reference class
 

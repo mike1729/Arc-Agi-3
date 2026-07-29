@@ -94,7 +94,7 @@ exact factual labels at zero cost. But the reference cleared 18 levels in 3,806 
 211**, roughly half the human rate — so the whole agent corpus contributes on the order of ~50 progress
 positives. Negligible for that head; genuinely useful for the factual heads and for OOD calibration.
 
-### Procedural suite F1/F3 — unbounded, and prevalence is a design parameter
+### Procedural suite Alias/Delay — unbounded, and prevalence is a design parameter
 
 Exact ground truth by construction: successor for every legal action, terminal predicate, hidden
 mechanic state, causal-relevance labels. Two properties nothing else has:
@@ -102,7 +102,7 @@ mechanic state, causal-relevance labels. Two properties nothing else has:
 - **progress-event prevalence is chosen, not observed** — generate at 5% or 20% instead of 0.9%;
 - **counterfactual labels are free** — the generator knows what every unexecuted action would have done.
 
-This is why F1/F3 sit in Tier 1 as "procedural suite core" rather than with the research arms. **The
+This is why Alias/Delay sit in Tier 1 as "procedural suite core" rather than with the research arms. **The
 evaluator's training set at W3 is mostly whatever S2 builds in early August**, and that dependency is
 currently unpriced in either the spec or the schedule.
 
@@ -147,7 +147,7 @@ The negative class therefore has to be *searched for*, not observed — see §5 
 
 ### Consequences worth acting on
 
-0. ~~Count demonstrated-reversible pairs in the replays.~~ **Done 2026-07-28: 5,065 positives, and
+0. ~~Tally demonstrated-reversible pairs in the replays.~~ **Done 2026-07-28: 5,065 positives, and
    zero demonstrated-irreversible.** The remaining action is on the negative class, not the positive.
 1. **Draw the public-game partition under a multi-criterion balance constraint**, not stratified on
    terminal count alone. One-shot, irreversible; worth ~250 progress positives, ~6,800 no-op positives

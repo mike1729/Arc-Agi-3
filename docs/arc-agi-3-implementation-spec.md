@@ -97,9 +97,9 @@ Membership only; each component is defined in the section named beside it.
 
 | Tier | Components |
 |---|---|
-| **1 — unconditional substrate** | harness and accounting §4.1 · branching primitive §4.2 · canonicalizer and delta compiler §4.3 · archive §4.4 · ACTION6 candidate system §4.5 · minimal hypothesis store §4.6 · executive I/O contract §4.7 · terminal-transition logging §4.8 · procedural suite, F1 and F3 §4.9 · public-game partition §13.5 |
+| **1 — unconditional substrate** | harness and accounting §4.1 · branching primitive §4.2 · canonicalizer and delta compiler §4.3 · archive §4.4 · ACTION6 candidate system §4.5 · minimal hypothesis store §4.6 · executive I/O contract §4.7 · terminal-transition logging §4.8 · procedural suite, Alias and Delay §4.9 · public-game partition §13.5 |
 | **2 — required delegation layer** | cheap action evaluator §5 · two-stage gate and autonomy envelope §§6.1, 6.4 · adaptive threshold controller §6.2 · shadow-mode instrumentation §6.5 · paired-run and branching estimators §6.6 · control portfolio §7 · full belief ledger §4.6 |
-| **3 — gated enhancements** (internal order binding) | belief-model rungs 1–3 and R0 §§10.2, 11.2 → **verified partial programs §8** → rungs 4–5, each gated §11.2 · learned probe selection §7 · learned invocation gate §6.8 · goal families F4/F5, Fork G-F §9.6 · **G0 gate experiments §9** |
+| **3 — gated enhancements** (internal order binding) | belief-model rungs 1–3 and R0 §§10.2, 11.2 → **verified partial programs §8** → rungs 4–5, each gated §11.2 · learned probe selection §7 · learned invocation gate §6.8 · goal families Order/Count, Fork G-F §9.6 · **G0 gate experiments §9** |
 | **4 — speculative score multipliers** | goal-model **production integration** §9.7 · mechanism retrieval, rung 6 §11.2 · longer-horizon latent planning · hierarchical subgoals |
 
 Tier 4 items are never dependencies of the production agent. Within Tier 3, verified programs precede
@@ -129,7 +129,7 @@ tables: [`build-difficulty.md`](../notes/build-difficulty.md).
 | Minimal hypothesis store | 4.6 | 0.5 / **1** / 1.5 | Low | Low | Low |
 | Executive I/O contract | 4.7 | 1.5 / **2.5** / 4 | Low | Med | Low |
 | Terminal-transition logging | 4.8 | 0.25 / **0.5** / 1 | Low | Low | Low |
-| Procedural suite (F1, F3) | 4.9 | 3.5 / **6** / 10 | **High** | Med | n/a |
+| Procedural suite (Alias, Delay) | 4.9 | 3.5 / **6** / 10 | **High** | Med | n/a |
 | Public-game partition | 13.5 | 0.25 / **0.5** / 1 | Low | Low | **Blocked** |
 
 | Tier 2 — likely **28.5 d** | § | Days O/L/P | Impl | Verify | Data |
@@ -395,11 +395,11 @@ learned goal induction is gated by G0 (§9).
 
 ### 4.9 Procedural suite
 
-**Two families, generated rather than sampled.** **F1 — history-required aliasing:** visually
+**Two families, generated rather than sampled.** **Alias — history-required aliasing:** visually
 identical observations require different actions because of a hidden switch, counter or phase.
-**F3 — sparse delayed causal memory:** a one-cell change with no short-term effect that determines a
-later transition. F3 is not optional coverage. F1 alone sits in the short-horizon regime where a
-latent predictor looks good, so an objective comparison run on F1 without F3 is biased in favour of
+**Delay — sparse delayed causal memory:** a one-cell change with no short-term effect that determines a
+later transition. Delay is not optional coverage. Alias alone sits in the short-horizon regime where a
+latent predictor looks good, so an objective comparison run on Alias without Delay is biased in favour of
 the latent arm — the failure §10.2 and §11.3's controls exist to detect.
 
 **Why this is unconditional substrate and not an experiment fixture.** Every retention decision in §6
@@ -437,12 +437,12 @@ observation** · 6–10 levels per instance · action availability fixed per ins
 requirement is load-bearing three times over:** 71% of real observations are a single grid but the
 mean is 2.86 and the maximum 404, so a single-grid generator emits a distribution the real
 environment never produces; any encoder must consume 1–N frames or silently discard most of the
-observation at exactly the steps where something changed; and F1's timestep must be defined against
+observation at exactly the steps where something changed; and Alias's timestep must be defined against
 this, because part of the history the aliasing test concerns lives *inside* one observation.
 
 **Validity conditions.** A generator failing these produces uninterpretable results, not weak ones.
 
-- **F1 carries three ceilings, not one:** observation-only · complete observable history with an
+- **Alias carries three ceilings, not one:** observation-only · complete observable history with an
   oracle decoder · oracle hidden state. Required pattern: observation-only < history-oracle ≈
   hidden-state-oracle. If the history oracle sits far below the hidden-state oracle, the task is not
   learnably history-resolvable and model failure on it is expected rather than informative.
@@ -461,8 +461,8 @@ instance count** · **instance diversity per family** · **progress-event preval
 pre-registration are therefore one piece of work, both landing in `gate_manifest.yaml` before S2 runs.
 Two are **structural**, and pass only on a stated condition:
 
-- **Generator correctness** — F1's required three-ceiling pattern holds (observation-only <
-  history-oracle ≈ hidden-state-oracle) on the registered margins, and F3's delay is verified by
+- **Generator correctness** — Alias's required three-ceiling pattern holds (observation-only <
+  history-oracle ≈ hidden-state-oracle) on the registered margins, and Delay's causal delay is verified by
   construction rather than inferred from a trained model's behaviour;
 - **Observation fidelity** — emitted observations match the measured convention table above on every
   row, including the frame-sequence length distribution. Any mismatch is a failure and is reported;
@@ -556,7 +556,7 @@ valid replay transitions** and 12,475 logged agent transitions already exist). T
 applied. **The partition is drawn under §13.5's multi-criterion balance constraint**
 `[amended 2026-07-28 — PARTITION-2026-07-28]` — balancing terminal count alone leaves this
 component's other heads unprotected.
-Procedural F1/F3 is the only source whose progress prevalence and counterfactual labels are design
+Procedural Alias/Delay is the only source whose progress prevalence and counterfactual labels are design
 parameters, which makes the S2 generators primary supervision for this component and not only an
 instrument for objective screening. Sizing: [`notes/evaluator-training-data.md`](../notes/evaluator-training-data.md).
 
@@ -861,9 +861,9 @@ bound of the paired improvement > −5pp.
 
 ### 9.6 Fork G-F — goal families
 
-Two sprint families (F1, F3) make hold-one-out train on n=1 — noise. Decided Aug 22:
-**Branch A** (≥ 5 build-days slack): build **F4 ordered-event-program** and **F5
-cumulative-counter** families (2–3 days each, generator + verifier + ground-truth parameters);
+Two sprint families (Alias, Delay) make hold-one-out train on n=1 — noise. Decided Aug 22:
+**Branch A** (≥ 5 build-days slack): build the **Order** (ordered-event-program) and **Count** (cumulative-counter)
+families (2–3 days each, generator + verifier + ground-truth parameters);
 family transfer = train 3, hold out 1, rotate. **Branch B:** family transfer declared untestable and
 reported as such; criterion weakens to held-out parameters within family; no cross-family claim
 anywhere.
@@ -1090,7 +1090,7 @@ descriptively. Rare catastrophic events additionally reported per episode and pe
 
 Margin \(\max(10\text{pp}, \min(20\text{pp}, 2\sigma))\), \(\sigma\) from ≥ 4 baseline seeds (else
 10pp floor); 1-completion non-inferiority: ≤ 3pp regression, one-sided 90% LCB > −5pp; online rule
-≥ 5% actions-to-first-completion improvement or non-inferior with ≥ 20% lower executive cost; F4/F5
+≥ 5% actions-to-first-completion improvement or non-inferior with ≥ 20% lower executive cost; Order/Count
 priced 2–3 days each; Branch A requires ≥ 5 slack days at Aug 22.
 
 ### 13.5 Public-game partition and leakage policy `[frozen at step 1]`

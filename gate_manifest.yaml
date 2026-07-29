@@ -1899,7 +1899,7 @@ verification:
 # Later stages — stubs. Freeze each before its step, per §10.
 # =====================================================================================
 # =====================================================================================
-# S2 — procedural suite (F1 + F3). Written 2026-07-28 (schedule day A1), BEFORE the generator
+# S2 — procedural suite (Alias + Delay). Written 2026-07-28 (schedule day A1), BEFORE the generator
 # work it governs, which starts A2 (Wed Jul 29). This is the pre-registration the spec calls for
 # at §4.9: "All four go into gate_manifest.yaml before the work that consumes them, per the
 # pre-registration rule — not backfilled from whatever the generator turns out to produce."
@@ -2022,7 +2022,7 @@ s2:
                   a positive result that means nothing, while too many costs only generation time,
                   which criterion 1 already requires be cheap."
       why_proposed: "the source calls its own range a planning judgment, not a threshold."
-      on_fail: "an F1 positive is uninterpretable — indistinguishable from memorisation of a small
+      on_fail: "an Alias positive is uninterpretable — indistinguishable from memorisation of a small
                 mechanic set. This is the single most dangerous unmet criterion in the block, because
                 unlike the others it fails by producing a RESULT rather than an error."
 
@@ -2050,7 +2050,7 @@ s2:
     # ------------------------------------------------- 5. generator correctness (structural)
     generator_correctness:
       status: PROPOSED                 # the PATTERN is fixed by SPEC §4.9; the MARGINS are not
-      f1_three_ceilings:
+      alias_three_ceilings:
         required_pattern: "observation-only < history-oracle ~= hidden-state-oracle"
         pattern_source: "SPEC §4.9 validity conditions — binding, not proposed"
         margins:
@@ -2070,7 +2070,7 @@ s2:
         on_fail: "if history-oracle sits far below hidden-state-oracle the task is NOT learnably
                   history-resolvable, and model failure on it is EXPECTED rather than informative.
                   SPEC §4.9: without this ceiling that would be misread as a model result."
-      f3_delay_verified_by_construction:
+      delay_verified_by_construction:
         rule: "the delay is verified BY CONSTRUCTION — the generator asserts that the causal bit is
                written at step t, has no observable effect through step t+delay-1, and determines the
                transition at t+delay. It is NEVER inferred from a trained model's behaviour."
@@ -2081,7 +2081,7 @@ s2:
           max: 24
           sampled: "uniformly per instance over [min, max]"
           rationale: "the delay must exceed the longest horizon the objective is TRAINED on, or the
-                      latent arm has gradient pressure to keep the bit and F3 tests nothing.
+                      latent arm has gradient pressure to keep the bit and Delay tests nothing.
                       SPEC §11.1 trains direct multi-horizon heads at 1, 2 and 4 steps and names an
                       8-step rollout; the S3 compute benchmark uses a K=16 transition window.
                       min 12 clears the 8-step rollout with margin; max 24 puts the consequence
@@ -2093,13 +2093,13 @@ s2:
           status: PROPOSED
           causal_cells_per_instance: 1
           fraction_of_grid: "1 / 4096 (one cell of 64x64)"
-          rationale: "SPEC §4.9 and §7 both define F3 as 'a ONE-CELL change with no short-term
+          rationale: "SPEC §4.9 and §7 both define Delay as 'a ONE-CELL change with no short-term
                       effect'. One cell is the definition, not a tuning choice; it is registered
                       here so acceptance has a value to read."
           distractor_cells_changed_per_instance:
             status: PROPOSED
             value: 8
-            rationale: "without distractors the causal cell is the only thing that changes and F3
+            rationale: "without distractors the causal cell is the only thing that changes and Delay
                         degenerates into change-detection. 8 keeps the causal cell at ~11% of
                         changed cells — findable, not trivially so. Judgment; no source fixes it."
 
@@ -2160,16 +2160,16 @@ s2:
                            silently becomes supervised action ranking. It is exposed to evaluation
                            and ranking code only, and never appears in any arm's training target."
     per_family:
-      F1:
+      Alias:
         criterion: "exact shortest-path distance to the nearest goal-satisfying state, in actions,
                     computed by the generator from ground truth"
-        rationale: "F1's mechanic is a hidden switch/counter/phase over an otherwise fully known
+        rationale: "Alias's mechanic is a hidden switch/counter/phase over an otherwise fully known
                     state, so exhaustive shortest-path is computable by construction"
-      F3:
+      Delay:
         criterion: "same shortest-path distance, computed on the POST-COMMIT state — i.e. conditioned
                     on the value already written to the causal cell"
         rationale: "before the causal bit is set the true distance is not a function of the observed
-                    state at all, which is the whole point of F3. A single unconditioned number would
+                    state at all, which is the whole point of Delay. A single unconditioned number would
                     be wrong for exactly the transitions the family exists to test."
     goal_predicate_families_to_instantiate:
       status: PROPOSED
@@ -2184,8 +2184,8 @@ s2:
                   rarely use tests transfer to a distribution that does not exist."
       # ------------------------------------------------------------------------------
       # A FINDING THAT AFFECTS A LATER DECISION, recorded here because this is where the
-      # evidence landed. SPEC §9.6 Fork G-F Branch A proposes building F4 ordered-event-program
-      # and F5 cumulative-counter families, at 2-3 build-days each, to make family transfer
+      # evidence landed. SPEC §9.6 Fork G-F Branch A proposes building the Order
+      # (ordered-event-program) and Count (cumulative-counter) families, at 2-3 build-days each, to make family transfer
       # testable. The measured predicate distribution is awkward for exactly those two:
       #   * `ordered_event_programs` is the PRIMARY goal class in 1 of 25 public games;
       #   * `cumulative_counters` is in the codebook's `unused_classes` — it is the primary
@@ -2221,8 +2221,8 @@ s2:
   # =================================================================================
   open_before_A2:
     - "accept or replace every PROPOSED value above. They are: pre-generated-corpus threshold,
-       held-out instance count, instance diversity, progress prevalence, F1 margins, F3 delay range,
-       F3 bit sparsity and distractor count, frame cap, and the value criterion with its families"
+       held-out instance count, instance diversity, progress prevalence, Alias margins, Delay delay range,
+       Delay bit sparsity and distractor count, frame cap, and the value criterion with its families"
     - "the observation-fidelity test for the frame-length distribution — WHICH two-sample test and at
        what threshold. Registered as an obligation above but not as a number; a fidelity criterion
        whose comparison is chosen after seeing the output is not a criterion"

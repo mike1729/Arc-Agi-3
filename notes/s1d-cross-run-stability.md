@@ -136,7 +136,7 @@ first pass implied.
 - **`hidden_state_aliasing_or_memory` finally has direct evidence** — `g50t` v4, where hashing the maze at
   each chamber yields eight distinct values and the agent concludes the maze reconfigures as it moves;
   and `r11l` v3, where it tabulates transitions to find why an identical click stopped working. This is
-  the F1 mechanism, and until now the corpus barely evidenced it (S2's F1 family targets a category that
+  the Alias mechanism, and until now the corpus barely evidenced it (S2's Alias family targets a category that
   was 0% primary in v2).
 - **`reasoning_inconsistency` has its first evidence at all** (`re86` v4), at low confidence, and it is a
   correct self-retraction rather than an unresolved contradiction.

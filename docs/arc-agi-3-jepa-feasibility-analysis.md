@@ -315,7 +315,7 @@ My estimates, stated as a chain so that the failure point is visible:
 
 | Capability | Estimate | Notes |
 |---|---:|---|
-| Local within-game dynamics learned well (high changed-cell F1 on movement/collision/toggle mechanics) | ~90% | Grid dynamics are local and CA-like; this is the easy part for any arm |
+| Local within-game dynamics learned well (high changed-cell F1 score on movement/collision/toggle mechanics) | ~90% | Grid dynamics are local and CA-like; this is the easy part for any arm |
 | Sequence context recovers action→effect mapping in-context on synthetic resampled environments | ~85% | Strongest bet in the design; needs the boundary suite for training diversity |
 | Latent state supports above-chance counterfactual action discrimination *with* exact auxiliaries | ~80% | Auxiliaries are load-bearing here; without them I would say ~45% |
 | Usable 4-step latent rollout for candidate ranking (materially better than copy-last-state) | ~60% | Composition loss is the reason this is not lower |

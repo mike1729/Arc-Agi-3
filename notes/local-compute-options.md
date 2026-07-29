@@ -77,7 +77,7 @@ the form in which it has to be decided.
 MLX only, no torch/MPS comparison available; single process, so the figures assume no LLM server is
 resident.
 
-S2's F1/F3 generators are synthetic sequence producers, and S3 screens three objectives (A latent /
+S2's Alias/Delay generators are synthetic sequence producers, and S3 screens three objectives (A latent /
 B reconstructive / C exact-delta) over them. **None of that touches an LLM.** That part does not depend
 on the parameter budget at all — whatever size is chosen, no 27B model is in the loop.
 
@@ -153,7 +153,7 @@ way to run the reference's exact artifact (`vrfai/Qwen3.6-27B-FP8` on vLLM) unde
 
 ### 6. Local, no LLM at all — Track A training
 
-**Good for:** everything S2 and S3 require. ~20M parameters, synthetic F1/F3 sequence generators, three
+**Good for:** everything S2 and S3 require. ~20M parameters, synthetic Alias/Delay sequence generators, three
 objective arms, two seeds. This is ordinary small-model training on a 69 GB machine.
 
 **Verdict: this is where the actual research lives, and local is not a compromise for it.**
@@ -166,7 +166,7 @@ objective arms, two seeds. This is ordinary small-model training on a 69 GB mach
 |---|---|---|
 | S1 reference reproduction | yes, faithfully | **Kaggle** (free, exact stack) |
 | S1-d failure labelling | evidence only, no new runs | local analysis |
-| S2 — F1/F3 generators | **no** | **local** |
+| S2 — Alias/Delay generators | **no** | **local** |
 | S3 — objective screening A/B/C | **no** | **local** |
 | S4 — ARC advisor test | partly, if the advisor drives an LLM agent | local 8-bit, escalate to Kaggle for headline numbers |
 | Track B deployed agent | yes | Kaggle / competition |

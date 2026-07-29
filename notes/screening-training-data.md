@@ -13,7 +13,7 @@ anything that should bind belongs in `gate_manifest.yaml`, not here.
 
 | Trained component | Sprint | Data source | Verdict |
 |---|---|---|---|
-| F1/F3 three ceilings ×2 families | S2 | procedural | **fine** — data is generated, and prevalence is a design parameter |
+| Alias/Delay three ceilings ×2 families | S2 | procedural | **fine** — data is generated, and prevalence is a design parameter |
 | A / B / C encoders + predictors, ×rollout, ×2 seeds | S3 | procedural | **not data-limited, but throughput-limited and compute-underbudgeted** |
 | observation-only A · affordance/no-op control | S3 | procedural | fine |
 | degeneracy probes, ranking readouts | S3 | procedural held-out | fine — cheap |
@@ -34,9 +34,9 @@ which is a kind of data replays structurally cannot contain — **but which the 
 
 ## 1. What screening actually trains — 20+ artifacts, not three
 
-| Sprint | Trained | Count |
+| Sprint | Trained | N |
 |---|---|---|
-| **S2** | ceiling models per family: observation-only · history-oracle decoder · hidden-state oracle | **6** (3 × F1/F3) |
+| **S2** | ceiling models per family: observation-only · history-oracle decoder · hidden-state oracle | **6** (3 × Alias/Delay) |
 | **S3** | main runs: {A latent, B reconstructive, C exact-delta} × {rollout, no-rollout} × 2 seeds | **12** at ~21.2M params |
 | **S3** | cheap controls: observation-only variant of A · affordance/no-op classifier | **2+** |
 | **S3** | downstream ranking readout, matched fitting budget, one per configuration | **12** |
@@ -44,7 +44,7 @@ which is a kind of data replays structurally cannot contain — **but which the 
 | **S4** | the three objectives **retrained on ARC replay training games** | **3** (× replicates) |
 | **S4** | frozen advisor readouts: candidate pruning · no-op avoidance · changed-region | **3 heads** |
 
-The oracle-successor ranking ceiling (S3) and the F1 hidden-state oracle are not learned from data —
+The oracle-successor ranking ceiling (S3) and the Alias hidden-state oracle are not learned from data —
 they read the generator's ground truth.
 
 ---
@@ -69,12 +69,12 @@ pre-generate a fixed corpus — but a pre-generated corpus reintroduces the epoc
 escapes. **[judgment]** at ≤ 20 epochs for a 21.2M model that means ≥ **2.56M** distinct pre-generated
 transitions.
 
-**(b) Distinct *instances* decide the result, not distinct transitions.** F1 asks whether history
+**(b) Distinct *instances* decide the result, not distinct transitions.** Alias asks whether history
 resolves an aliased observation. Generate 51.2M transitions from 20 hidden-mechanic parameterizations
 and a 21M-parameter model memorizes the mapping, producing a clean, well-controlled, meaningless
 positive. The held-out set must be disjoint **at the instance level**, mirroring SPEC §9.4's ban on
 random transition splits. The instance count and the held-out instance count are both unregistered —
-`gate_manifest.yaml → s2` currently covers only the value criterion, the F1 ceiling margins, and F3's
+`gate_manifest.yaml → s2` currently covers only the value criterion, the Alias ceiling margins, and Delay's
 delay length and bit sparsity.
 
 ---
@@ -115,7 +115,7 @@ Exact labels for free — `board`, `board_changed`, `level_completed`, `reward` 
 cannot teach the 1–N convention; it is usable for the factual heads and OOD calibration, not for the
 observation-shape question.
 
-### Procedural F1/F3 — **does not exist yet**
+### Procedural Alias/Delay — **does not exist yet**
 
 Built A2–A5 (Jul 29 – Aug 3). Unbounded in principle; progress-event prevalence and counterfactual
 labels are design parameters rather than observations. **The whole of S3's training set is a thing that
@@ -130,7 +130,7 @@ discovering on A6.
 
 **Need:** enough matched data to separate observation-only from history-oracle from hidden-state-oracle
 by more than noise, and enough held-out *instances* that the separation is not memorization.
-**Have:** generated on demand. **Verdict: fine.** The risk here is not data volume — it is that the F1
+**Have:** generated on demand. **Verdict: fine.** The risk here is not data volume — it is that the Alias
 ceiling margins in `gate_manifest.yaml → s2` are unwritten, so "the required pattern was observed" has
 no threshold to be judged against.
 
@@ -246,8 +246,8 @@ per observation, honouring the convention multiplies the encoder's input volume 
 **The honest reading: S3 at 21.2M / 100k steps / uncapped frames does not fit in its 5 days.** A cap of
 8 frames covers 92.5% of observations and lands at ~97 h. That cap is a real modelling decision, not a
 convenience — the screening document's §7 point 3 notes that when an observation is itself a sequence,
-part of the history F1 is about lives *inside* a single observation, so truncation interacts with what
-F1 measures. Decide it deliberately on A2 and register it; do not discover it as an OOM on A6.
+part of the history Alias is about lives *inside* a single observation, so truncation interacts with what
+Alias measures. Decide it deliberately on A2 and register it; do not discover it as an OOM on A6.
 (Superlinear attention over a concatenated sequence would be worse than this table; the table assumes
 per-frame encoding with pooling.)
 
@@ -301,7 +301,7 @@ forks game state yields, on demand:
   labels replays cannot hold, at whatever volume is wanted;
 - **verified no-return-route search** — the reversibility head's missing negative class;
 - **progress events at a chosen prevalence** rather than the observed 0.90%;
-- **oracle hidden state on the real games**, which is F1's ceiling 3 measured on ARC rather than only
+- **oracle hidden state on the real games**, which is Alias's ceiling 3 measured on ARC rather than only
   on procedural families;
 - **per-state action availability** — currently recorded as "permitted by the interface but NOT
   evidenced", held fixed per game on an assumption that this settles directly.
@@ -324,7 +324,7 @@ forks game state yields, on demand:
 
 **Highest-value uses, in order.** *(a)* Build **S4's counterfactual evaluation benchmark** — the
 outcome-stratified ranking set S4 currently cannot construct, on dev games, evaluation-only, which
-sidesteps constraints 1 and 3 entirely. *(b)* Validate that S2's F1/F3 generators match real-game
+sidesteps constraints 1 and 3 entirely. *(b)* Validate that S2's Alias/Delay generators match real-game
 conventions before A5 freezes the interface. *(c)* Harvest demonstrated-irreversible labels for the
 W3 evaluator. *(d)* Settle the per-state action-availability question — descriptive, all 25 games
 permitted under §13.5.
@@ -367,7 +367,7 @@ Ordered by when it is needed. None of these numbers exist yet; none should be in
 
 | # | Number | Needed by | Currently |
 |---|---|---|---|
-| 1 | F1 three-ceiling margins; F3 delay length and bit sparsity | **A1, Jul 28** | named in `s2: NOT_STARTED` |
+| 1 | Alias three-ceiling margins; Delay delay length and bit sparsity | **A1, Jul 28** | named in `s2: NOT_STARTED` |
 | 2 | **Generator instance count and held-out instance count** per family | A2 | absent |
 | 3 | **Frame cap** for the encoder, and whether the generator's frame-length distribution matches the measured one | A2 | absent — §5(a) |
 | 4 | **Procedural progress-event prevalence** (observed is 0.9%; generating at 0.9% wastes the one degree of freedom procedural data offers) | A2 | absent |

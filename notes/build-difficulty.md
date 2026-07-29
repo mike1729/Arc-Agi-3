@@ -50,7 +50,7 @@ it is a placeholder to be replaced by actuals after step 1.
 | 6 | Minimal hypothesis store | 4.6 | 0.5 / **1** / 1.5 | Low | Low | Low |
 | 7 | Executive I/O contract | 4.7 | 1.5 / **2.5** / 4 | Low | Med | Low |
 | 8 | Terminal-transition logging | 4.8 | 0.25 / **0.5** / 1 | Low | Low | Low |
-| 9 | Procedural suite (F1, F3) | 4.9 | 3.5 / **6** / 10 | **High** | Med | n/a — it *is* the source |
+| 9 | Procedural suite (Alias, Delay) | 4.9 | 3.5 / **6** / 10 | **High** | Med | n/a — it *is* the source |
 | 10 | Public-game partition | 13.5 | 0.25 / **0.5** / 1 | Low | Low | **Blocked** |
 
 *§13.5's `Blocked` is a dependency flag, not a difficulty: the code is half a day and cannot run
@@ -78,7 +78,7 @@ folded into an effort estimate.*
 | 20 | Rungs 4–5, each gated | 11.2 | 3 / **5** / 9 | Med | Med | Med |
 | 21 | Learned probe selection | 7 | 1.5 / **3** / 5 | Low | Med | **High** |
 | 22 | Learned invocation gate | 6.8 | 3 / **5** / 8 | Med | Med | **High** |
-| 23 | Goal families F4/F5 — **Branch A** | 9.6 | 4 / **6** / 9 | Med | Med | n/a |
+| 23 | Goal families Order/Count — **Branch A** | 9.6 | 4 / **6** / 9 | Med | Med | n/a |
 | | — **Branch B** | 9.6 | **N/A — not built** | — | — | — |
 | 24 | G0 experiments (G0-R, G0-A) | 9 | 4 / **7** / 12 | Med | Med | Med |
 
@@ -278,12 +278,12 @@ source of G0's training data and the progress head's real positives, and **the d
 recovered retroactively** — an episode run without it is an episode whose terminals are gone. Ship it
 in the first commit of step 1, before anything that could justify deferring it.
 
-## 9. Procedural suite, F1 and F3 — §4.9
+## 9. Procedural suite, Alias and Delay — §4.9
 
 **Needs:** two generator families meeting the seven-item §4.9 interface (exact successors for every
 legal action, evaluation-only ranking criterion, hidden mechanic state, colour-permuted variants,
 ground-truth state IDs, seed and random-stream control, on-demand generation) · observations matching
-the measured conventions including **variable-length frame sequences** · F1's three ceilings.
+the measured conventions including **variable-length frame sequences** · Alias's three ceilings.
 
 **Why the likely estimate is 6 days against a 3.5-day S2 budget:**
 
@@ -291,12 +291,12 @@ the measured conventions including **variable-length frame sequences** · F1's t
   [`screening-training-data.md`](screening-training-data.md) keeps S3 compute-bound rather than
   data-bound; it is unregistered, and a naive pure-Python generator will miss it by an order of
   magnitude. Discovering that during S3 costs S3's schedule, not S2's.
-- **F3 is definitionally delicate.** A bit whose consequence lies *outside* the training horizon —
-  set the delay too short and F3 collapses into F1, which destroys the only contrast that makes the
+- **Delay is definitionally delicate.** A bit whose consequence lies *outside* the training horizon —
+  set the delay too short and Delay collapses into Alias, which destroys the only contrast that makes the
   objective screening unbiased.
 - **Variable-length frame sequences are not a detail.** 71% of real observations are one grid, the
   mean is 2.86 and the max 404. A single-grid generator emits a distribution the environment never
-  produces, and F1's timestep stops being well-defined because part of the relevant history lives
+  produces, and Alias's timestep stops being well-defined because part of the relevant history lives
   inside one observation.
 - **Four quantities are unregistered** — throughput, held-out instance count, progress prevalence,
   instance diversity — and all four must land in `gate_manifest.yaml` before the work consuming them.
@@ -467,7 +467,7 @@ baseline.
   Both must be demonstrated; a model that satisfies one trivially fails the other.
 - **The load-bearing R0 criterion needs the project's scarcest data.** "Beats the non-dynamics
   controls on held-out counterfactual ranking" is counterfactual evidence, capped by branch yield.
-- **F3 is unresolved by construction.** Whether a reconstruction-free objective preserves a bit whose
+- **Delay is unresolved by construction.** Whether a reconstruction-free objective preserves a bit whose
   consequence lies outside the training horizon is the question S3 exists to answer — so this
   component is being built against a risk that is still open at build time.
 
@@ -540,10 +540,10 @@ projects under 800 valid states, the causal tier is declared unfundable, the dec
 the gate falls back to uncalibrated ordering over the deterministic escalation queue — or nothing.
 Build it expecting that branch.
 
-## 23. Goal families F4/F5, Fork G-F — §9.6
+## 23. Goal families Order/Count, Fork G-F — §9.6
 
-**Needs, under Branch A:** two further generator families — F4 ordered-event-program and F5
-cumulative-counter — each with generator, verifier and ground-truth parameters, priced 2–3 days
+**Needs, under Branch A:** two further generator families — **Order** (ordered-event-program) and **Count**
+(cumulative-counter) — each with generator, verifier and ground-truth parameters, priced 2–3 days
 apiece in §13.4. Family transfer then runs train-3-hold-out-1, rotating.
 
 **Under Branch B it costs nothing:** family transfer is declared untestable and reported as such, the

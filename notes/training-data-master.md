@@ -73,7 +73,7 @@ archive, hypothesis store, I/O contract, terminal logging. **One learned artifac
 | 9.1 | G0-A — source: verified program | program predictions | free once §8 ships | **2** | W6 |
 | 9.1 | **G0-A — source: exact branch** | forked successor for the candidate | **0** | **7** | branching rounds, or a local game fork |
 | 9.2 | Terminal-action recall decomposition | proposal / conditional-ranking / end-to-end split | needs the candidate set logged per state | **1** | instrument it in W2, free thereafter |
-| 9.6 | **Fork G-F — F4, F5 families** | two new generators, 2–3 days each | none | **6** | gated on **≥ 5 build-days slack at Aug 22** — a calendar decision, not a data problem |
+| 9.6 | **Fork G-F — Order, Count families** | two new generators, 2–3 days each | none | **6** | gated on **≥ 5 build-days slack at Aug 22** — a calendar decision, not a data problem |
 
 ### Belief model (§11), R0 at W5
 

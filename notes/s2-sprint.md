@@ -31,10 +31,10 @@ Two of them bind work that happens **today and tomorrow**, so they are not defer
 
 | Needed by | Value | Why it cannot wait |
 |---|---|---|
-| **A2 — today** | `instance_diversity_per_family: 2000` | The F1 generator's parameterisation space is built today. Building it for 200 and discovering 2,000 was registered means rebuilding the mechanic, not tuning a constant |
+| **A2 — today** | `instance_diversity_per_family: 2000` | The Alias generator's parameterisation space is built today. Building it for 200 and discovering 2,000 was registered means rebuilding the mechanic, not tuning a constant |
 | **A2 — today** | `frame_cap.encoder_frames_max: 8` | Decides whether S3 fits its 120 h budget (~97 h capped vs ~132 h uncapped). `notes/screening-training-data.md` says decide it on A2 rather than discover it as an OOM on A6 |
-| **A3 — tomorrow** | F1 three-ceiling margins | A3's entire deliverable is "required pattern observed" — against margins that do not yet exist |
-| **A4** | F3 `delay_length_steps` 12–24, `bit_sparsity`, distractors | The F3 mechanic is built to these |
+| **A3 — tomorrow** | Alias three-ceiling margins | A3's entire deliverable is "required pattern observed" — against margins that do not yet exist |
+| **A4** | Delay `delay_length_steps` 12–24, `bit_sparsity`, distractors | The Delay mechanic is built to these |
 
 The rest (held-out instance count, progress prevalence, pre-generated-corpus threshold, value
 criterion + families, the fidelity two-sample test) are needed by A5-G.
@@ -51,7 +51,7 @@ after seeing the generator.
 
 ## 1. What S2 is, in one paragraph
 
-S2 builds **two procedural environment generators** — F1 and F3 — plus the interface, verification and
+S2 builds **two procedural environment generators** — Alias and Delay — plus the interface, verification and
 acceptance harness around them. It runs no experiment and decides no component. It is the only Tier 1
 substrate delivered before the build phase (**SPEC §12.1 step 0**), and it is *inherited*, never
 rebuilt. Everything else the screening sprint leaves behind is measurement scaffolding around the
@@ -87,7 +87,7 @@ why procedural evidence *retains* while public validation only *vetoes*.
 
 ## 2. The two families
 
-### F1 — history-required aliasing
+### Alias — history-required aliasing
 
 **Visually identical observations require different actions**, because of a hidden switch, counter or
 phase. The observation alone is insufficient; the history disambiguates it.
@@ -102,11 +102,11 @@ What the generator must control:
   *and* unrecoverable, which makes the family untestable rather than hard.
 
 > **The timestep subtlety.** Observations are frame *sequences* (mean 2.86, max 404). Part of the
-> "history" the aliasing test concerns therefore lives **inside a single observation**. F1's timestep
+> "history" the aliasing test concerns therefore lives **inside a single observation**. Alias's timestep
 > must be defined against this explicitly, or its ceilings measure something other than what they
 > claim. — SPEC §4.9
 
-### F3 — sparse delayed causal memory
+### Delay — sparse delayed causal memory
 
 **A one-cell change with no short-term effect that determines a later transition.**
 
@@ -114,16 +114,16 @@ This is the **central risk for reconstruction-free prediction** and the reason a
 latent objective has almost no gradient pressure to preserve a bit whose consequence lies outside the
 training horizon, while an exact target retains it structurally.
 
-**F1 alone sits in the short-horizon regime where a latent predictor looks good, so without F3 any
-positive result is biased in favour of the latent arm.** F3 is not optional coverage.
+**Alias alone sits in the short-horizon regime where a latent predictor looks good, so without Delay any
+positive result is biased in favour of the latent arm.** Delay is not optional coverage.
 
 Registered mechanic parameters (all `PROPOSED`, see §5):
 
 | Parameter | Value | Set against |
 |---|---|---|
-| Delay length | 12–24 steps, uniform per instance | §11.1 trains heads at 1/2/4 steps, names an 8-step rollout, K=16 window. 12 clears the rollout; 24 clears the window |
+| Causal-delay length | 12–24 steps, uniform per instance | §11.1 trains heads at 1/2/4 steps, names an 8-step rollout, K=16 window. 12 clears the rollout; 24 clears the window |
 | Causal cells | **1** cell of 64×64 | This is §4.9's definition, not a tuning choice |
-| Distractor cells changed | 8 | Without distractors F3 degenerates into change-detection |
+| Distractor cells changed | 8 | Without distractors Delay degenerates into change-detection |
 
 **The delay is verified BY CONSTRUCTION** — the generator asserts the bit is written at *t*, has no
 observable effect through *t+delay−1*, and determines the transition at *t+delay*. It is **never**
@@ -151,19 +151,19 @@ Everything else emits through it. Every row here is **measured**, not chosen —
 
 > 🔴 **The frame-sequence requirement is load-bearing three times over.** A single-grid generator emits
 > a distribution the real environment never produces · any encoder must consume 1–N frames or silently
-> discard most of the observation at exactly the steps where something changed · F1's timestep is
+> discard most of the observation at exactly the steps where something changed · Alias's timestep is
 > defined against it.
 
 **Cap asymmetry, and it is easy to get backwards:** the **generator emits the full uncapped
 distribution**; the **encoder** truncates at 8 frames. Capping the generator would violate observation
 fidelity by construction. The cap is an S3-side cost decision, not a suite property.
 
-### C2 · F1 generator
+### C2 · Alias generator
 
 The aliasing mechanic (§2), its parameterisation space, and the guarantee that aliased pairs exist and
 are history-resolvable.
 
-### C3 · F3 generator
+### C3 · Delay generator
 
 The sparse delayed causal mechanic (§2), with by-construction delay verification.
 
@@ -190,9 +190,9 @@ Per instance, the generator exposes:
 
 *(Items 7–9 are the three added 2026-07-28 that the 3.5-day budget predates.)*
 
-### C5 · Three-ceiling verification harness *(F1 correctness)*
+### C5 · Three-ceiling verification harness *(Alias correctness)*
 
-Runs F1 three ways and checks the required pattern:
+Runs Alias three ways and checks the required pattern:
 
 ```
 observation-only  <  history-oracle  ≈  hidden-state-oracle
@@ -210,7 +210,7 @@ expected rather than informative** — and without this ceiling that would be mi
 ### C6 · Value / distance-to-goal criterion
 
 Exact shortest-path distance to the nearest goal-satisfying state, in actions, computed from ground
-truth. For **F3**, computed on the **post-commit** state — conditioned on the value already written to
+truth. For **Delay**, computed on the **post-commit** state — conditioned on the value already written to
 the causal cell, because before the bit is set the true distance is not a function of the observed
 state at all, which is the entire point of the family.
 
@@ -230,9 +230,9 @@ project convention, this is **generated from logs by a script**, never hand-asse
 
 | Day | Date | Build | Done means |
 |---|---|---|---|
-| **A2** | Wed Jul 29 | **C1** observation layer · **C2** F1 generator: aliasing mechanic, parameterisation space, variable-length frame emission | **F1 emits, and the conventions are asserted in a test** — not inspected by eye. Every row of C1's table is a test case |
-| **A3** | Thu Jul 30 | **C5** three-ceiling harness; run it on F1 | **Required pattern observed on the registered margins** — or F1 is declared not history-resolvable and the mechanic is redesigned. This is a real branch, not a formality |
-| **A4** | Fri Jul 31 | **C3** F3 generator at the registered delay and bit sparsity | **F3 emits; delay verified by construction** — the assertion runs in the generator, not in an analysis afterwards |
+| **A2** | Wed Jul 29 | **C1** observation layer · **C2** Alias generator: aliasing mechanic, parameterisation space, variable-length frame emission | **Alias emits, and the conventions are asserted in a test** — not inspected by eye. Every row of C1's table is a test case |
+| **A3** | Thu Jul 30 | **C5** three-ceiling harness; run it on Alias | **Required pattern observed on the registered margins** — or Alias is declared not history-resolvable and the mechanic is redesigned. This is a real branch, not a formality |
+| **A4** | Fri Jul 31 | **C3** Delay generator at the registered delay and bit sparsity | **Delay emits; delay verified by construction** — the assertion runs in the generator, not in an analysis afterwards |
 | **A5** | Mon Aug 3 | **C4** interface completed to all nine §4.9 items · **C6** value criterion · methods prose | **Every §4.9 item present, so S4 needs no re-engineering.** The three late-added items are where this day will actually go |
 | **A5-G** | Mon Aug 3 | **C7** acceptance harness; run it | **SPEC §12.1 step 0: pass recorded, or unmet criteria named** |
 
@@ -262,7 +262,7 @@ condition). Status as of 2026-07-29:
 | 2 | **Held-out instance count** | 200/family, 400 total; disjoint **at instance level**, never a random transition split | ⚠️ PROPOSED |
 | 3 | **Instance diversity** | 2,000 distinct hidden-mechanic **parameterisations** per family (not seeds) | ⚠️ PROPOSED |
 | 4 | **Progress prevalence** | 0.05 ± 0.01, per family, reported | ⚠️ PROPOSED — measured anchor is **0.0090** |
-| 5 | **Generator correctness** | F1's three-ceiling pattern on registered margins; F3's delay verified by construction | ⚠️ pattern is binding; **margins** PROPOSED |
+| 5 | **Generator correctness** | Alias's three-ceiling pattern on registered margins; Delay's causal delay verified by construction | ⚠️ pattern is binding; **margins** PROPOSED |
 | 6 | **Observation fidelity** | every row of C1's table, including the frame-length distribution | ✅ **ACCEPTED** — all measured. Test statistic still unregistered |
 
 ### The three that will actually bite
@@ -331,9 +331,9 @@ Measured primary class across the 25 public games:
 
 C6 proposes instantiating the top two — 15 of 25 games between them.
 
-> **⚠ This bears on the Aug 22 Fork G-F decision.** SPEC §9.6 Branch A proposes building **F4
-> ordered-event-program** and **F5 cumulative-counter** families at ≥ 5 build-days. Those are the two
-> the public set exercises *least*: F4 is the primary goal class in **1 of 25**, F5 in **0 of 25** —
+> **⚠ This bears on the Aug 22 Fork G-F decision.** SPEC §9.6 Branch A proposes building the **Order**
+> (ordered-event-program) and **Count** (cumulative-counter) families at ≥ 5 build-days. Those are the two
+> the public set exercises *least*: Order is the primary goal class in **1 of 25**, Count in **0 of 25** —
 > it is in the codebook's `unused_classes`. It does not settle the decision (the hidden set is not the
 > public set, and testability has value independent of frequency), but the evidence did not exist when
 > §9.6 was written.
@@ -346,7 +346,7 @@ C6 proposes instantiating the top two — 15 of 25 games between them.
 |---|---|---|
 | **Throughput miss** | A single-process Python gridworld typically misses 3,700/s. If it lands an order low, S3's 46.2 h estimate is wrong by that order | S3 overruns the sprint's only decision-bearing block |
 | **Insufficient diversity** | Fails by producing a clean positive, not an error | The whole screening result is void, and nothing signals it |
-| **F1 not history-resolvable** | A mechanic can be hidden *and* unrecoverable | A3 branch — redesign, mid-sprint, with no float allocated |
+| **Alias not history-resolvable** | A mechanic can be hidden *and* unrecoverable | A3 branch — redesign, mid-sprint, with no float allocated |
 | **Frame cost** | Uncapped ≈ 132 h against a 120 h budget. It does not fit | Decide the cap today, not as an OOM on A6 |
 | **Budget predates the interface** | 3.5 days priced before three §4.9 items were added | A5 is where it shows |
 | **Building on PROPOSED values** | Inverts the pre-registration | A5-G's acceptance becomes meaningless |
@@ -360,9 +360,9 @@ generators run.
 
 - [ ] `gate_manifest.yaml → s2` is `frozen`, every PROPOSED value accepted or replaced ← **today**
 - [ ] C1 observation layer, every convention row asserted in a test
-- [ ] C2 F1 emits
+- [ ] C2 Alias emits
 - [ ] C5 three ceilings run; required pattern observed on registered margins
-- [ ] C3 F3 emits; delay verified by construction
+- [ ] C3 Delay emits; delay verified by construction
 - [ ] C4 all nine §4.9 interface items present
 - [ ] C6 value criterion, evaluation-only, in no training target
 - [ ] C7 acceptance harness written; verdict artifact on disk

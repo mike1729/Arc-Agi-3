@@ -4,6 +4,15 @@ Moved here 2026-07-28. **Nothing in this directory is authoritative.** It is kep
 documents were the pre-registration context for decisions that are still live, not because their
 content is still true. Do not cite them; do not resolve a disagreement in their favour.
 
+> **⚠ These files predate the 2026-07-29 family rename and were deliberately not edited** — the
+> standing rule is that frozen documents are superseded, not corrected in place. Read `F1` → **Alias**
+> (history-required aliasing) and `F3` → **Delay** (sparse delayed causal memory) throughout.
+>
+> **Except where `F1` is the classification metric.** These documents use `F1` for *both* — see
+> `arc-agi-3-execution-plan.md` "changed-cell precision, recall, and F1", which is the harmonic mean
+> and has nothing to do with the family. **That collision is exactly why the numbering was retired.**
+> Live documents now write `F1 score` for the metric and never use `F1` for a family.
+
 | File | Why it is here |
 |---|---|
 | `arc-agi-3-execution-plan.md` | Frozen 2026-07-23 under the **old utility ordering**. Contains the 48-model confirmatory matrix that does not run as specified, the 33-day decision protocol that the 18.5-day screening sprint replaced, and "5 submissions/day" — which is factually wrong (the quota is 1/day + 2 final). Superseded by [`arc-agi-3-screening-experiments-and-results.md`](../arc-agi-3-screening-experiments-and-results.md) and [`arc-agi-3-implementation-spec.md`](../arc-agi-3-implementation-spec.md) |
