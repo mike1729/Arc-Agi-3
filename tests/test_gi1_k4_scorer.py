@@ -302,7 +302,7 @@ def test_score_serializes_to_plain_measurement_data():
 def _gold_artifact(records=None) -> dict:
     return {
         "format_version": 1,
-        "status": "dev_unfrozen",
+        "status": "frozen",
         "scope": "iteration",
         "draw_file": "logs/gi1_game_draw.json",
         "labels_file": "logs/s2_goal_predicates_labelled.json",
@@ -387,7 +387,7 @@ def test_gold_index_rejects_schema_drift(tmp_path):
     ("field", "value", "fragment"),
     [
         ("format_version", 2, "format version"),
-        ("status", "frozen", "status"),
+        ("status", "dev_unfrozen", "status"),
         ("scope", "one_shot", "scope"),
     ],
 )
@@ -401,7 +401,7 @@ def test_gold_index_rejects_artifact_contract_drift(tmp_path, field, value, frag
 def test_scorer_and_validator_share_the_current_status_and_scope_contract(tmp_path):
     artifact = _gold_artifact()
     artifact["scope"] = "one_shot"
-    artifact["status"] = "frozen"
+    artifact["status"] = "dev_unfrozen"
     with pytest.raises(ValueError, match="status"):
         _load_synthetic(tmp_path, artifact)
 

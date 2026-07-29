@@ -50,8 +50,7 @@ _ENGINE_TO_MODEL = {"ACTION1": "UP", "ACTION2": "DOWN", "ACTION3": "LEFT",
 # parameter nobody can see in the pre-registration. They are named here for the same reason
 # gi1_retrieval keeps its features and k in SPEC rather than inline.
 #
-# ⚠ DEV-UNFROZEN: freeze with the digest itself, before the 27B-8bit iteration pass; until then
-# they may move on iteration-slice evidence only.
+# FROZEN FOR GI-1 ITERATION: these bounds froze before the measured 27B-8bit pass.
 MAX_LARGEST_OBJECTS = 5      # biggest components listed per settled grid
 MAX_COLOR_TRANSITIONS = 8    # most frequent colour transitions kept per delta
 MAX_RECENT_DELTAS = 6        # most recent within-level deltas shown for the current level

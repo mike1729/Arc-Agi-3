@@ -241,8 +241,8 @@ The normalized gold layer describes the actual terminal predicate and its bindin
 The iteration layer is implemented in `logs/gi1_predicate_gold_iteration.json`: six typed
 predicate templates, each pinned to the packet-verified S2 annotation, the sole
 `self.next_level()` line, and the SHA-256 of that game's source. Validate it with
-`agent/harness/gi1_predicate_gold.py --verify`. Its status remains `dev_unfrozen` until the
-declared implementation freeze; it contains no reserved or one-shot game. Full provenance
+`agent/harness/gi1_predicate_gold.py --verify`. Its status is `frozen` under the declared
+implementation freeze; it contains no reserved or one-shot game. Full provenance
 verification requires the ignored competition source bundle and
 `logs/s2_goal_predicates_labelled.json`; a checkout missing either now receives an explicit
 problem list instead of a traceback. The publishable gold intentionally excludes `guard_tests`:
@@ -573,6 +573,22 @@ Annotation is budgeted separately from model measurement:
 
 Before the iteration pass, run a 20-call pilot at achievable concurrency. The local grid must
 fit within three overnights; otherwise move the one-shot pass to the Kaggle FP8 notebook.
+
+### 7.5 Runner and implementation freeze
+
+`agent/harness/gi1_experiment_runner.py` owns deterministic checkpoint scheduling, execution of
+conditions (b)–(f), append-only raw JSONL logging, resume by stable row ID, and exclusion of
+invalid or completion-ablation-contaminated rows before prompt rendering. `moe-debug` accepts
+only the 35B-A3B development artifact and iteration games; `measured-iteration` accepts only
+the 27B-8bit artifact, fixes conditions to (b)–(f), and requires the freeze manifest.
+
+The replay-derived retrieval index is cached in `logs/gi1_retrieval_index.json` so a resume does
+not rescan the corpus. Its library membership, selected sessions, full retrieval `SPEC`, record
+shape, and SHA-256 are verified. `logs/gi1_implementation_freeze.json` pins that cache plus the
+prompt, digest, retrieval, shared predicate schema, strict parser, scorer, sampling map, and
+model artifact basenames. `agent/harness/gi1_freeze.py --verify` must pass before every measured
+run. Raw API requests and responses remain in ignored JSONL logs; every scored output is derived
+from those logs without re-querying.
 
 ---
 

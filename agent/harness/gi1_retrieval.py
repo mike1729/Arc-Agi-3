@@ -22,9 +22,8 @@ QUERY TYPES (review issue: a single query shape mixed fields from different leve
     level length, no fabricated transition size.
   - one or more completions — TERMINAL queries as above, compared on the full vector.
 
-⚠ DEV-UNFROZEN (SPEC below): features, distance, k, tie-breaking and the query aggregation
-must be frozen before the one-shot set is opened; until then they may change on
-iteration-slice evidence only.
+FROZEN FOR GI-1 ITERATION (SPEC below): features, distance, k, tie-breaking and query
+aggregation froze after MoE-only development and before the measured 27B-8bit pass.
 """
 
 from __future__ import annotations
@@ -36,6 +35,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).parent))
+INDEX_CACHE = REPO / "logs/gi1_retrieval_index.json"
+INDEX_FORMAT_VERSION = 1
 
 from gi1_digest import ARC_COLOR_CHARS, segment_layer, terminal_abstract  # noqa: E402
 from gi1_packets import (Packet, checkpoints, extract, load_timeline,  # noqa: E402
@@ -43,7 +44,7 @@ from gi1_packets import (Packet, checkpoints, extract, load_timeline,  # noqa: E
 
 STATE_DIMS = 32   # 16 color-pixel fractions + 16 log1p object counts
 
-SPEC = {  # DEV-UNFROZEN — freeze before the one-shot read
+SPEC = {  # GI-1 iteration freeze
     "state_features": "16 color-pixel fractions + 16 color-object counts (log1p)",
     "terminal_features": "state features of the pre-terminal grid + 8 action one-hot"
                          " + log1p(level length) + log1p(final-transition changed cells)",
@@ -52,7 +53,7 @@ SPEC = {  # DEV-UNFROZEN — freeze before the one-shot read
     "k": 3,
     "per_source_game": 1,   # see query(): at most one neighbour per source game
     "tie_break": "(distance, env, guid, step) ascending",
-    "version": "dev3-2026-07-29",
+    "version": "gi1-iteration-frozen-2026-07-29",
 }
 
 
@@ -155,6 +156,121 @@ def build_index(games: list[str]) -> list[dict]:
                                 "level": c.level, "vector": vec,
                                 "abstract": terminal_abstract(p, c)})
     return records
+
+
+def _index_contract(games: list[str]) -> dict:
+    """Cheap identity for the expensive replay-derived index build."""
+    ordered = sorted(games)
+    _refuse_reserved(ordered, "index cache contract")
+    return {
+        "format_version": INDEX_FORMAT_VERSION,
+        "library_games": ordered,
+        "retrieval_spec": SPEC,
+        "session_selection": {
+            env: [
+                {
+                    "guid": row["guid"],
+                    "levels_completed": row["levels_completed"],
+                    "total_actions": row["total_actions"],
+                    "tier": row["tier"],
+                    "rank": row["rank"],
+                }
+                for row in select_sessions(env)
+            ]
+            for env in ordered
+        },
+    }
+
+
+def validate_index_artifact(value, games: list[str]) -> list[str]:
+    """Validate a cached index without rescanning the multi-gigabyte replay files."""
+    expected = _index_contract(games)
+    if not isinstance(value, dict):
+        return ["retrieval index artifact must be an object"]
+    problems = []
+    if set(value) != set(expected) | {"records"}:
+        problems.append("retrieval index artifact keys do not match the contract")
+    for name, wanted in expected.items():
+        if value.get(name) != wanted:
+            problems.append(f"retrieval index contract drift: {name}")
+    records = value.get("records")
+    if not isinstance(records, list):
+        return problems + ["retrieval index records must be a list"]
+    allowed = set(expected["library_games"])
+    selected = {
+        env: {row["guid"] for row in rows}
+        for env, rows in expected["session_selection"].items()
+    }
+    seen = set()
+    expected_record_keys = {"env", "guid", "step", "level", "vector", "abstract"}
+    for offset, record in enumerate(records):
+        where = f"retrieval index record {offset}"
+        if not isinstance(record, dict) or set(record) != expected_record_keys:
+            problems.append(f"{where}: malformed record")
+            continue
+        env, guid = record.get("env"), record.get("guid")
+        if env not in allowed:
+            problems.append(f"{where}: game {env!r} outside library")
+        elif guid not in selected.get(env, set()):
+            problems.append(f"{where}: session {guid!r} outside frozen selection")
+        identity = (env, guid, record.get("step"))
+        if identity in seen:
+            problems.append(f"{where}: duplicate completion identity {identity!r}")
+        seen.add(identity)
+        for name in ("step", "level"):
+            number = record.get(name)
+            if isinstance(number, bool) or not isinstance(number, int) or number < 1:
+                problems.append(f"{where}: {name} must be a positive integer")
+        vector = record.get("vector")
+        if (
+            not isinstance(vector, list)
+            or len(vector) != STATE_DIMS + 10
+            or any(
+                isinstance(number, bool)
+                or not isinstance(number, (int, float))
+                or not math.isfinite(number)
+                for number in vector
+            )
+        ):
+            problems.append(f"{where}: malformed {STATE_DIMS + 10}-dimensional vector")
+        if not isinstance(record.get("abstract"), dict):
+            problems.append(f"{where}: abstract must be an object")
+    if not records:
+        problems.append("retrieval index has no records")
+    return problems
+
+
+def load_or_build_index(
+    games: list[str],
+    path: Path = INDEX_CACHE,
+    *,
+    rebuild: bool = False,
+) -> list[dict]:
+    """Load the replay-derived index, building it once when absent.
+
+    A present but drifting cache is refused, never silently rebuilt.  Before measurement the
+    operator may pass ``rebuild=True`` explicitly; after freeze its SHA-256 is part of the
+    implementation manifest.
+    """
+    if path.exists() and not rebuild:
+        try:
+            artifact = json.loads(path.read_text())
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise ValueError(f"cannot read retrieval index cache {path}: {exc}") from exc
+        problems = validate_index_artifact(artifact, games)
+        if problems:
+            raise ValueError("retrieval index cache is invalid: " + "; ".join(problems))
+        return artifact["records"]
+    contract = _index_contract(games)
+    artifact = {**contract, "records": build_index(contract["library_games"])}
+    problems = validate_index_artifact(artifact, games)
+    if problems:
+        raise ValueError("fresh retrieval index is invalid: " + "; ".join(problems))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(artifact, separators=(",", ":")) + "\n")
+    temporary.replace(path)
+    return artifact["records"]
 
 
 def query(index: list[dict], packet: Packet, k: int | None = None,

@@ -14,7 +14,7 @@ source of truth for three consumers that never run together: the (b)-(d) prompt 
 the parameter-gold annotation is built on it, and the K4 scorer compares against it
 field-wise. A value the prompt advertises but the validator rejects does not crash — it
 silently costs K4 credit on every hypothesis that takes the prompt at its word. And the
-header marks the whole table DEV-UNFROZEN until the parameter-gold layer freezes, which
+header marks the whole table frozen with the parameter-gold layer, which
 means the names and enums are still moving while all three consumers read them.
 
 Two groups, split by what they need:
@@ -587,7 +587,7 @@ def test_the_guide_describes_an_ordered_program_as_a_sequence_not_a_single_entit
     """`events_in_order` is the only entity_list field in the codebook and it is what carries
     the Order goal family. Described like a plain entity, the model emits one string where the
     validator demands a list, and the hypothesis is refused for a fault of the prompt. The
-    assertion is on the distinction, not the wording, which is still DEV-UNFROZEN."""
+    assertion is on the distinction, not the now-frozen wording."""
     listish = _guide_line("ordered_event_programs")
     entityish = _guide_line("event_occurrence")
     assert "list" in listish

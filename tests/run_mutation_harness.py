@@ -71,7 +71,7 @@ ALLOWLIST = TESTS_DIR / "mutation_allowlist.txt"
 # buries the survivors that mean "this guard is untested". The uncovered modules are reported as a
 # single honest line instead, and `--target` runs them when someone is ready to write those tests.
 #
-# The eight gi1_* modules joined on 2026-07-29 with a test file each. They are the first targets
+# The ten gi1_* modules joined on 2026-07-29 with a test file each. They are the first targets
 # carrying in-module `selftest()` functions, which is why
 # `selftest` joined `main` in the default --skip-functions: mutating assertions inside a selftest
 # reports only that pytest does not call it, and for gi1_packets alone that buried 28 real sites
@@ -80,7 +80,8 @@ DEFAULT_TARGETS = ["s1d_blind_rerate.py", "s1d_build_corpus.py",
                    "s2_blind_rerate.py", "s2_apply_labels.py",
                    "gi1_packets.py", "gi1_predicate_schema.py", "gi1_digest.py",
                    "gi1_retrieval.py", "gi1_render.py", "gi1_predicate_gold.py",
-                   "gi1_output_parser.py", "gi1_k4_scorer.py"]
+                   "gi1_output_parser.py", "gi1_k4_scorer.py", "gi1_freeze.py",
+                   "gi1_experiment_runner.py"]
 
 # Vendored reference files staged into every sandbox. Two reasons, both load-bearing:
 #

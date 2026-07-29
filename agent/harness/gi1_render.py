@@ -34,8 +34,8 @@ level was completed".
 Layer containment holds by construction and is asserted: prompt(c) = prompt(b) + digest;
 prompt(d) = prompt(c) + exemplars.
 
-⚠ DEV-UNFROZEN: the TASK BLOCKS (instruction wording, JSON schema text) are development
-defaults — tunable on the iteration slice ONLY, frozen before the 27B-8bit iteration pass.
+FROZEN FOR GI-1 ITERATION: the TASK BLOCKS (instruction wording, JSON schema text) froze
+after MoE-only iteration-slice development and before the measured 27B-8bit iteration pass.
 The structured predicate fields come from gi1_predicate_schema (one source of truth with the
 gold layer and the K4 scorer).
 """
@@ -112,7 +112,7 @@ OFFLINE_CONTEXT_NOTE = (
     "- The attached image shows the current frame, exactly as in live play.\n"
 )
 
-# ---------------------------------------------------------------- task blocks (DEV-UNFROZEN)
+# ---------------------------------------------------------------- task blocks (GI-1 iteration frozen)
 
 TASK_A_FREEFORM = (
     "\n\nTask:\n"
@@ -152,7 +152,11 @@ TASK_BCD_HYPOTHESES = (
     "Produce your TOP-3 hypotheses for this game's goal — the condition that completes a "
     "level. Do not commit to one: maintain alternatives until evidence separates them.\n\n"
     "{codebook}\n\n{field_guide}\n\n"
-    "Reply with STRICT JSON only, no prose outside it, in this shape:\n"
+    "For every enum field, copy one allowed value exactly as printed above; do not paraphrase "
+    "it (for example write `adjacent`, never `adjacent to`).\n\n"
+    "Reply with STRICT JSON only, no prose outside it. Your first output character must be "
+    "`{{` and your final output character must be `}}`. Do not use Markdown code fences "
+    "(``` or ```json). Use this shape:\n"
     "{{\n"
     '  "hypotheses": [\n'
     "    {{\n"
@@ -168,7 +172,9 @@ TASK_BCD_HYPOTHESES = (
     "  ],\n"
     '  "discriminating_probe": "<the cheapest single action expected to distinguish the '
     'rank-1 and rank-2 hypotheses, and what each predicts it would do>"\n'
-    "}}\n"
+    "}}\n\n"
+    "Final format check: output the JSON object itself. Do not add ```json, ```, commentary, "
+    "or any character before the opening `{{` or after the closing `}}`.\n"
 )
 
 

@@ -17,8 +17,8 @@ Mechanical comparison, by field type:
     near-misses go ONLY to the frozen enumerated-equivalence list, every invocation logged
     (notes/design-pivot.md §4.3).
 
-⚠ DEV-UNFROZEN: field names and enums freeze together with the parameter-gold layer, before
-the 27B-8bit iteration pass. Until then they may change on iteration-slice evidence only.
+FROZEN FOR GI-1 ITERATION: field names and enums froze with the parameter-gold layer before
+the measured 27B-8bit iteration pass.
 """
 
 from __future__ import annotations

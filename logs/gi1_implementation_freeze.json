@@ -1,0 +1,42 @@
+{
+  "format_version": 1,
+  "status": "frozen",
+  "scope": "gi1_iteration_pre_measurement",
+  "contract": {
+    "files": {
+      "agent/harness/gi1_render.py": "07e3fa44b935d62c2a1c12b80ad2a2b305aba5ed854619a5e2bde1ef59a93307",
+      "agent/harness/gi1_digest.py": "c0b527ef987f5ad0804ea27f493bb0079cc8f53a70874dfb676854869ecd48ca",
+      "agent/harness/gi1_retrieval.py": "cedfd4275a2780d98f4d213f842c343e9ecfad1d38655aafdb82aa40a3b9a7d9",
+      "agent/harness/gi1_predicate_schema.py": "db479ee6d6c6371e12b156c91779b460575c46ce6281c891ef2a9b732a6e0840",
+      "agent/harness/gi1_output_parser.py": "7ef801bc4d85413a9f3fe4e163efbc1f5d94b0af531a8170276daf0d8b0ebf34",
+      "agent/harness/gi1_k4_scorer.py": "2f23a478e03a270c6ea12b76e433ceb38f43e52443b3c98f68ded29c0c929681"
+    },
+    "retrieval_index": {
+      "path": "logs/gi1_retrieval_index.json",
+      "sha256": "425f8d37b9ebaabd99e91cc6625b1df3fa84c44db10c5f9e78e02a4b5f29848e"
+    },
+    "schema_fingerprint": "dd37592ab5f1aad79cfd4e9e15e914797bae157a92d8ff141c0ec81860bc160b",
+    "retrieval_spec": {
+      "state_features": "16 color-pixel fractions + 16 color-object counts (log1p)",
+      "terminal_features": "state features of the pre-terminal grid + 8 action one-hot + log1p(level length) + log1p(final-transition changed cells)",
+      "distance": "cosine; state queries on the state subvector, terminal queries full-vector",
+      "aggregation": "record distance = min over the packet's terminal queries",
+      "k": 3,
+      "per_source_game": 1,
+      "tie_break": "(distance, env, guid, step) ascending",
+      "version": "gi1-iteration-frozen-2026-07-29"
+    },
+    "measured_generation": {
+      "temperature": 0,
+      "top_p": 1,
+      "seed": 20260729,
+      "max_tokens": 2048,
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      }
+    },
+    "measurement_model_basename": "Qwen3.6-27B-8bit",
+    "development_model_basename": "Qwen3.6-35B-A3B-4bit"
+  },
+  "contract_fingerprint": "1443c58cfcd90067c5afd1281ef8e0ae1c3dc0088253f0a3842274fdfc93ddb3"
+}

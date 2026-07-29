@@ -14,8 +14,8 @@ Scope is a gate, not documentation:
 * the class, source path, advance line, packet digest, and source digest must reproduce the
   existing S2 annotation.
 
-The artifact remains ``dev_unfrozen`` until the later GI-1 freeze step.  Building gold now
-does not prematurely freeze the prompt, schema, parser, or scorer.
+The artifact is ``frozen`` together with the prompt, schema, parser, scorer, digest, and
+retrieval specification before the measured 27B iteration pass.
 
 Run:
   .venv/bin/python agent/harness/gi1_predicate_gold.py --verify
@@ -47,7 +47,7 @@ DRAW = ROOT / "logs" / "gi1_game_draw.json"
 LABELS = ROOT / "logs" / "s2_goal_predicates_labelled.json"
 
 FORMAT_VERSION = 1
-CURRENT_STATUS = "dev_unfrozen"
+CURRENT_STATUS = "frozen"
 TOP_LEVEL_KEYS = {
     "format_version",
     "status",
@@ -160,7 +160,7 @@ def validate_gold(
         )
     if gold.get("status") != CURRENT_STATUS:
         problems.append(
-            f"gold.status: must remain {CURRENT_STATUS!r} until freeze semantics are implemented"
+            f"gold.status: expected frozen measurement status {CURRENT_STATUS!r}"
         )
     if gold.get("scope") != "iteration":
         problems.append("gold.scope: must be 'iteration'")

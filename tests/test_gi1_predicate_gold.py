@@ -120,7 +120,7 @@ def _fixture(tmp_path: Path) -> tuple[dict, dict, dict]:
     }
     gold = {
         "format_version": G.FORMAT_VERSION,
-        "status": "dev_unfrozen",
+        "status": "frozen",
         "scope": "iteration",
         "draw_file": "logs/gi1_game_draw.json",
         "labels_file": "logs/s2_goal_predicates_labelled.json",
@@ -274,7 +274,7 @@ def test_non_text_game_id_is_rejected_without_raising(tmp_path, junk):
     [
         ("format_version", 2, "format_version"),
         ("status", "draft-ish", "gold.status"),
-        ("status", "frozen", "until freeze semantics are implemented"),
+        ("status", "dev_unfrozen", "expected frozen measurement status"),
         ("scope", "all_games", "gold.scope"),
         ("draw_file", "other.json", "gold.draw_file"),
         ("labels_file", "other.json", "gold.labels_file"),

@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "status": "dev_unfrozen",
+  "status": "frozen",
   "scope": "iteration",
   "draw_file": "logs/gi1_game_draw.json",
   "labels_file": "logs/s2_goal_predicates_labelled.json",

@@ -875,3 +875,93 @@ def test_level_one_keeps_the_short_chain_because_it_has_no_predecessor():
     pkt = _packet("aa11", grids)
     vec = R._completion_terminal_features(pkt, _completion(2, 1, 1, grids[0], 1))
     assert vec[-1] == math.log1p(0)
+
+
+# ---------------------------------------------------------------------- index cache contract
+
+def _cache_selection(env):
+    return [{"guid": f"{env}-s", "levels_completed": 3, "total_actions": 10,
+             "tier": 3, "rank": 0}]
+
+
+def _cache_artifact(monkeypatch, games=("aa11",)):
+    monkeypatch.setattr(R, "select_sessions", _cache_selection)
+    contract = R._index_contract(list(games))
+    return {
+        **contract,
+        "records": [_record(
+            games[0], [0.0] * TERMINAL_DIMS, guid=f"{games[0]}-s"
+        )],
+    }
+
+
+def test_index_cache_contract_pins_library_spec_and_session_selection(monkeypatch):
+    artifact = _cache_artifact(monkeypatch)
+    assert artifact["format_version"] == R.INDEX_FORMAT_VERSION
+    assert artifact["library_games"] == ["aa11"]
+    assert artifact["retrieval_spec"] == R.SPEC
+    assert artifact["session_selection"]["aa11"][0]["guid"] == "aa11-s"
+    assert R.validate_index_artifact(artifact, ["aa11"]) == []
+
+
+@pytest.mark.parametrize(
+    ("mutate", "needle"),
+    [
+        (lambda a: a.update(library_games=["bb22"]), "library_games"),
+        (lambda a: a.update(retrieval_spec={"k": 99}), "retrieval_spec"),
+        (
+            lambda a: a["session_selection"]["aa11"][0].update(guid="wrong"),
+            "session_selection",
+        ),
+        (lambda a: a["records"][0].update(env="bb22"), "outside library"),
+        (lambda a: a["records"][0].update(vector=[0.0]), "42-dimensional"),
+        (lambda a: a["records"][0].update(step=0), "positive integer"),
+    ],
+)
+def test_index_cache_validator_refuses_contract_or_record_drift(
+    monkeypatch, mutate, needle
+):
+    artifact = _cache_artifact(monkeypatch)
+    mutate(artifact)
+    assert any(
+        needle in problem
+        for problem in R.validate_index_artifact(artifact, ["aa11"])
+    )
+
+
+def test_load_or_build_index_reuses_a_valid_cache_without_rescanning(
+    tmp_path, monkeypatch
+):
+    artifact = _cache_artifact(monkeypatch)
+    path = tmp_path / "index.json"
+    path.write_text(json.dumps(artifact))
+    monkeypatch.setattr(
+        R,
+        "build_index",
+        lambda games: (_ for _ in ()).throw(AssertionError("replay rescan")),
+    )
+    assert R.load_or_build_index(["aa11"], path) == artifact["records"]
+
+
+def test_load_or_build_index_builds_validates_and_atomically_publishes(
+    tmp_path, monkeypatch
+):
+    artifact = _cache_artifact(monkeypatch)
+    path = tmp_path / "index.json"
+    monkeypatch.setattr(R, "build_index", lambda games: artifact["records"])
+    assert R.load_or_build_index(["aa11"], path) == artifact["records"]
+    assert json.loads(path.read_text()) == artifact
+    assert not path.with_suffix(".json.tmp").exists()
+
+
+def test_present_invalid_cache_is_refused_not_silently_rebuilt(tmp_path, monkeypatch):
+    _cache_artifact(monkeypatch)
+    path = tmp_path / "index.json"
+    path.write_text('{"records":[]}')
+    monkeypatch.setattr(
+        R,
+        "build_index",
+        lambda games: (_ for _ in ()).throw(AssertionError("silent rebuild")),
+    )
+    with pytest.raises(ValueError, match="cache is invalid"):
+        R.load_or_build_index(["aa11"], path)

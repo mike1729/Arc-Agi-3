@@ -261,9 +261,8 @@ def load_gold_index(
 ) -> dict[str, dict[str, Any]]:
     """Load a publishable scoring layer; source provenance is verified separately.
 
-    This loader intentionally accepts exactly the state that ``validate_gold`` accepts now:
-    ``dev_unfrozen`` iteration gold.  The freeze change must widen both together.  Draw
-    membership is checked here even though source provenance is checked elsewhere, so a
+    This loader accepts exactly the frozen iteration state that ``validate_gold`` accepts.
+    Draw membership is checked here even though source provenance is checked elsewhere, so a
     scoring caller cannot accidentally admit a reserved or one-shot game.
     """
     try:
