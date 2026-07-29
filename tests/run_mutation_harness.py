@@ -53,6 +53,7 @@ import argparse
 import ast
 import concurrent.futures
 import copy
+import re
 import shutil
 import subprocess
 import sys
@@ -65,12 +66,46 @@ HARNESS_DIR = REPO / "agent" / "harness"
 TESTS_DIR = REPO / "tests"
 ALLOWLIST = TESTS_DIR / "mutation_allowlist.txt"
 
-# The modules `test_s1d_gates.py` actually imports. Mutating a module with NO tests produces a wall of
-# survivors that says one thing — "this module is untested" — a hundred times over, which buries the
-# survivors that mean "this guard is untested". The uncovered modules are reported as a single honest
-# line instead, and `--target` runs them when someone is ready to write those tests.
+# The modules a test file actually imports and exercises. Mutating a module with NO tests produces a
+# wall of survivors that says one thing — "this module is untested" — a hundred times over, which
+# buries the survivors that mean "this guard is untested". The uncovered modules are reported as a
+# single honest line instead, and `--target` runs them when someone is ready to write those tests.
+#
+# The five gi1_* modules joined on 2026-07-29 with a test file each. They are the first targets
+# carrying in-module `selftest()` functions, which is why
+# `selftest` joined `main` in the default --skip-functions: mutating assertions inside a selftest
+# reports only that pytest does not call it, and for gi1_packets alone that buried 28 real sites
+# under 17 of exactly the noise this file exists to avoid.
 DEFAULT_TARGETS = ["s1d_blind_rerate.py", "s1d_build_corpus.py",
-                   "s2_blind_rerate.py", "s2_apply_labels.py"]
+                   "s2_blind_rerate.py", "s2_apply_labels.py",
+                   "gi1_packets.py", "gi1_predicate_schema.py", "gi1_digest.py",
+                   "gi1_retrieval.py", "gi1_render.py"]
+
+# Vendored reference files staged into every sandbox. Two reasons, both load-bearing:
+#
+#   1. gi1_render loads inference/agent/prompts.py BY ABSOLUTE PATH at import time, so without
+#      these the module cannot be imported in the sandbox at all — its test file would skip
+#      wholesale and every mutation in it would be untestable while still reporting green.
+#   2. gi1_digest and gi1_retrieval do `sys.path.insert(0, _VENDOR)` and then import `inference`.
+#      With nothing staged that resolved to whatever the venv had installed (the build under
+#      agent/work), making a mutation verdict depend on a tree the sandbox never pinned. Staging
+#      from agent/reference — the pristine, unmodified vendor — puts the copy first on sys.path
+#      and makes the verdict reproducible.
+#
+# The set is small and its dependencies are stdlib plus Pillow (which the venv carries), so the
+# image path is staged too rather than left to skip: image_part and _vision_context have their own
+# mutation sites, and a skipped test cannot kill any of them. inference/agent/__init__.py is
+# deliberately absent — it re-exports ToolAgent and needs `requests`, which is the same reason
+# gi1_render stubs that package rather than importing it.
+VENDOR_REL = Path("agent/reference/taaf/src/ARC3-Inference")
+VENDOR_SRC = REPO / VENDOR_REL
+VENDOR_FILES = ["inference/__init__.py",
+                "inference/utils/__init__.py",
+                "inference/utils/grid_utils.py",
+                "inference/utils/segmentation.py",
+                "inference/agent/prompts.py",
+                "inference/agent/runtime_state.py",
+                "inference/agent/vision_context.py"]
 
 # `ast.walk` is deterministic, so a node's index in it is a stable handle into a fresh parse of the
 # same source. That is how a site found during collection is re-located when the mutant is built.
@@ -82,6 +117,71 @@ COMPARE_SWAP = {
     ast.Eq: ast.NotEq, ast.NotEq: ast.Eq,
     ast.Is: ast.IsNot, ast.IsNot: ast.Is,
 }
+
+
+def stage_sandbox(root: Path) -> Path:
+    """Build the temp tree every pytest run happens in: harness + tests + minimal vendor.
+
+    One function so the baseline, the coverage probe and each mutant see byte-identical
+    environments. They diverged once before — the baseline ran at REPO while mutants ran in a
+    copy — and the resulting score described the difference rather than the code."""
+    (root / "agent").mkdir(parents=True, exist_ok=True)
+    shutil.copytree(HARNESS_DIR, root / "agent" / "harness",
+                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    shutil.copytree(TESTS_DIR, root / "tests",
+                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    for rel in VENDOR_FILES:
+        src = VENDOR_SRC / rel
+        if not src.exists():
+            continue
+        dst = root / VENDOR_REL / rel
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dst)
+    return root
+
+
+def tests_importing(module_stem: str) -> list[Path]:
+    """Test files that import `module_stem`, found by parsing imports rather than grepping —
+    a module named in a comment or a docstring is not coverage."""
+    hits = []
+    for path in sorted(TESTS_DIR.glob("test_*.py")):
+        try:
+            tree = ast.parse(path.read_text())
+        except (SyntaxError, UnicodeDecodeError):
+            continue
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import) and any(a.name == module_stem for a in node.names):
+                hits.append(path)
+                break
+            if isinstance(node, ast.ImportFrom) and node.module == module_stem:
+                hits.append(path)
+                break
+    return hits
+
+
+def coverage_probe(target: Path, pytest_args: list[str]) -> tuple[int, int, list[str]]:
+    """(passed, skipped, files) for the tests that import `target`, measured IN THE SANDBOX.
+
+    A test that runs on the developer's machine but skips in the sandbox cannot kill anything,
+    so counting it would be counting a test that never executes where the verdict is decided.
+    This is what makes a module-level skip fail loudly instead of scoring a silent 0/0 green."""
+    files = tests_importing(target.stem)
+    narrowed = [a for a in pytest_args if not a.startswith("-")]
+    if narrowed:
+        keep = {Path(a).name for a in narrowed}
+        files = [f for f in files if f.name in keep]
+    if not files:
+        return 0, 0, []
+    flags = [a for a in pytest_args if a.startswith("-")]
+    with tempfile.TemporaryDirectory(prefix="mut-probe-") as tmp:
+        proc = subprocess.run(
+            [sys.executable, "-m", "pytest", *[f"tests/{f.name}" for f in files],
+             "-q", "--no-header", "-p", "no:cacheprovider", *flags],
+            cwd=stage_sandbox(Path(tmp)), capture_output=True, text=True)
+    def count(word: str) -> int:
+        m = re.search(rf"(\d+) {word}", proc.stdout)
+        return int(m.group(1)) if m else 0
+    return count("passed"), count("skipped"), [f.name for f in files]
 
 
 @dataclass
@@ -190,13 +290,8 @@ def run_mutant(site: Site, pytest_args: list[str]) -> tuple[Site, bool, str]:
     to sit beside unmutated siblings.
     """
     with tempfile.TemporaryDirectory(prefix="mut-") as tmp:
-        root = Path(tmp)
+        root = stage_sandbox(Path(tmp))
         dst_harness = root / "agent" / "harness"
-        dst_harness.parent.mkdir(parents=True)
-        shutil.copytree(HARNESS_DIR, dst_harness,
-                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
-        shutil.copytree(TESTS_DIR, root / "tests",
-                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
         try:
             (dst_harness / site.path.name).write_text(apply_mutation(site.path, site))
         except Exception as exc:                            # pragma: no cover - unparse failure
@@ -239,8 +334,9 @@ def main() -> int:
                     choices=["guard-off", "compare", "return-ok"])
     ap.add_argument("--jobs", type=int, default=8)
     ap.add_argument("--list", action="store_true", help="enumerate sites and exit")
-    ap.add_argument("--skip-functions", nargs="*", default=["main"],
-                    help="functions to leave alone (default: main — CLI plumbing, not gate logic)")
+    ap.add_argument("--skip-functions", nargs="*", default=["main", "selftest"],
+                    help="functions to leave alone (default: main, selftest — CLI plumbing and "
+                         "in-module test code, neither of which is gate logic)")
     ap.add_argument("--pytest-args", nargs="*", default=[])
     args = ap.parse_args()
 
@@ -252,12 +348,24 @@ def main() -> int:
         return 2
 
     if not args.target:
-        uncovered = sorted(p.name for p in HARNESS_DIR.glob("s[12]*.py")
-                           if p.name not in DEFAULT_TARGETS)
+        # Membership in DEFAULT_TARGETS used to stand in for "has tests". Once a module has a test
+        # file but has not been promoted to a target, that proxy reports it as untested and the line
+        # is simply wrong — so ask the test files directly.
+        candidates = [p for pattern in ("s[12]*.py", "gi1_*.py")
+                      for p in HARNESS_DIR.glob(pattern)]
+        uncovered = sorted(p.name for p in candidates
+                           if p.name not in DEFAULT_TARGETS and not tests_importing(p.stem))
+        testable = sorted(p.name for p in candidates
+                          if p.name not in DEFAULT_TARGETS and tests_importing(p.stem))
         if uncovered:
             print(f"NOT under mutation — no direct tests import them: {', '.join(uncovered)}")
             print(f"  Mutating them would report every line as untested, which is true and not "
-                  f"useful here. Run with --target <module> once they have tests.\n")
+                  f"useful here. Run with --target <module> once they have tests.")
+        if testable:
+            print(f"Has tests but is NOT a default target: {', '.join(testable)}")
+            print(f"  Run with --target <module>, or add it to DEFAULT_TARGETS.")
+        if uncovered or testable:
+            print()
 
     skip = set(args.skip_functions)
     sites = [s for t in targets for s in collect_sites(t, skip)]
@@ -273,6 +381,26 @@ def main() -> int:
         print(f"\n{len(sites)} site(s).")
         return 0
 
+    # A target whose tests do not RUN in the sandbox scores a silent, meaningless green: every mutant
+    # survives (nothing exercises it) or every mutant dies (something unrelated errors), and either
+    # number reads as a verdict about the module. A module-level skip — the natural response to an
+    # import that needs a file the sandbox lacks — produces exactly this. So each target must show at
+    # least one PASSING test that imports it, measured where the mutants run.
+    print("coverage probe: confirming each target is actually exercised in the sandbox ...",
+          flush=True)
+    for t in targets:
+        passed, skipped, files = coverage_probe(t, args.pytest_args)
+        if passed == 0:
+            print(f"REFUSED — no test that imports {t.name} RUNS in the sandbox "
+                  f"({passed} passed, {skipped} skipped"
+                  f"{', in ' + ', '.join(files) if files else '; no test file imports it'}).")
+            print("  Every mutant would be scored against a suite that never touches the module,")
+            print("  so the result would describe the sandbox and not the code. Fix the import that")
+            print("  forces the skip, stage what it needs, or drop the target.")
+            return 2
+        note = f", {skipped} skipped" if skipped else ""
+        print(f"  {t.name}: {passed} passed{note} in {', '.join(files)}")
+
     # A mutant that "fails" because the suite was already red proves nothing. Establish the baseline
     # first and refuse to interpret anything against a broken tree.
     #
@@ -283,12 +411,7 @@ def main() -> int:
     # false green is worse than a red, so the baseline is measured where the verdicts are.
     print("baseline: running the suite unmutated, in the sandbox ...", flush=True)
     with tempfile.TemporaryDirectory(prefix="mut-base-") as tmp:
-        root = Path(tmp)
-        (root / "agent").mkdir(parents=True)
-        shutil.copytree(HARNESS_DIR, root / "agent" / "harness",
-                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
-        shutil.copytree(TESTS_DIR, root / "tests",
-                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+        root = stage_sandbox(Path(tmp))
         base = subprocess.run(
             [sys.executable, "-m", "pytest", "tests/", "-q", "--no-header",
              "-p", "no:cacheprovider", *args.pytest_args],

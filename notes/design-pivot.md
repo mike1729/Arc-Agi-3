@@ -192,8 +192,15 @@ The planned contrasts are:
 
 Conditions (b)–(d) return a **top-three hypothesis set**. Each hypothesis contains:
 
-- goal class;
-- parameter sketch;
+- goal class, from the closed ten-class codebook;
+- a **typed `predicate` object**, whose fields are fixed per class by
+  `agent/harness/gi1_predicate_schema.py::PREDICATE_FIELDS` — enum, integer, entity and
+  entity-list fields, with conditional fields declared in `CONDITIONAL_FIELDS`. **Not a free-text
+  parameter sketch**, which this document specified until 2026-07-29: prose cannot be compared
+  field-wise, so it would put open-ended rating back into K4, the primary verdict. The schema is
+  the single contract shared by the prompt's field guide, the gold annotation, the output parser
+  and the K4 scorer — all four are generated from or checked against that one table, and it is
+  what freezes with the digest before the iteration pass;
 - evidence for and against;
 - the cheapest action expected to distinguish the top two hypotheses.
 

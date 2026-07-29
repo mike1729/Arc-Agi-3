@@ -17,6 +17,7 @@
 
 # --- equivalent ---------------------------------------------------------------------------------
 s1d_blind_rerate.py::_score::compare::x == cat  # equivalent: one-vs-rest kappa is symmetric under swapping the Y/N assignment, so == and != give an identical statistic
+gi1_render.py::ablation_contamination::compare::len(packet.steps) >= 2  # equivalent: the two branches differ only at EXACTLY two steps, where previous_frame and initial_frame are the same index and the same grid, so they disagree about that slot's label and nothing else. The only non-degenerate completion a two-step packet can hold is at step 2, which puts index 1 in `preterm` and withholds it, so that slot never reaches the leaks list and the label is unobservable. At one step both branches skip it; at three or more both take it
 
 # --- message-only -------------------------------------------------------------------------------
 s1d_blind_rerate.py::_score::compare::k >= floor  # message-only: the "<- below floor" annotation in the any-label table. The verdict uses `kp >= floor and ks >= floor`, which IS pinned by test_a_category_exactly_at_the_agreement_floor_passes
