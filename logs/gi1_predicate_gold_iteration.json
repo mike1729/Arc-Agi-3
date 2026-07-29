@@ -1,0 +1,140 @@
+{
+  "format_version": 1,
+  "status": "dev_unfrozen",
+  "scope": "iteration",
+  "draw_file": "logs/gi1_game_draw.json",
+  "labels_file": "logs/s2_goal_predicates_labelled.json",
+  "schema": {
+    "module": "agent/harness/gi1_predicate_schema.py",
+    "fingerprint": "dd37592ab5f1aad79cfd4e9e15e914797bae157a92d8ff141c0ec81860bc160b"
+  },
+  "equivalence_cases": [],
+  "records": [
+    {
+      "env": "dc22",
+      "hypothesis": {
+        "class": "state_relations",
+        "predicate": {
+          "subject": "player",
+          "relation": "overlapping",
+          "object": "goal tile"
+        }
+      },
+      "summary": "Advance occurs when the player and goal sprites have identical x and y coordinates. Bridge and support mechanics make that state reachable but are not part of the terminal predicate.",
+      "provenance": {
+        "source": "data/environment_files/dc22/fdcac232/dc22.py",
+        "source_sha256": "fdcac2320f6d4cfeaaddfbed5c12e533962817b99f700a2936edd2c296f3d169",
+        "advance_line": 10860,
+        "enclosing_function": "step",
+        "primary_label": "state_relations",
+        "packet_digest": "b6283e081703f3fe",
+        "packet_verified": true
+      }
+    },
+    {
+      "env": "ft09",
+      "hypothesis": {
+        "class": "symmetry_and_template_match",
+        "predicate": {
+          "scope": "eight neighboring cells around every clue",
+          "pattern": "clue 3x3 same-color and different-color template"
+        }
+      },
+      "summary": "For every clue, each neighboring board cell must have the clue color where the corresponding clue pixel is zero and a different color where it is nonzero.",
+      "provenance": {
+        "source": "data/environment_files/ft09/0d8bbf25/ft09.py",
+        "source_sha256": "0d8bbf2573e8f9837c649a1ffda2e7bde3734d26c3cb0fc4bbfd772d7f87a6bf",
+        "advance_line": 2405,
+        "enclosing_function": "step",
+        "primary_label": "symmetry_and_template_match",
+        "packet_digest": "b8e043340eba141f",
+        "packet_verified": true
+      }
+    },
+    {
+      "env": "ls20",
+      "hypothesis": {
+        "class": "state_relations",
+        "predicate": {
+          "subject": "avatar with each goal's required shape color and rotation",
+          "relation": "overlapping",
+          "object": "every goal tile"
+        }
+      },
+      "summary": "Each goal latches only when the avatar overlaps it with that goal's required shape, color, and rotation; the level advances after every goal is latched.",
+      "provenance": {
+        "source": "data/environment_files/ls20/9607627b/ls20.py",
+        "source_sha256": "9607627b3d85bdb21ff28b40fefaa6a873691175981c6351b7e5a6637416f9d5",
+        "advance_line": 1957,
+        "enclosing_function": "step",
+        "primary_label": "state_relations",
+        "packet_digest": "6538e5cd3fc63d05",
+        "packet_verified": true
+      }
+    },
+    {
+      "env": "m0r0",
+      "hypothesis": {
+        "class": "all_instances_transformed",
+        "predicate": {
+          "subject": "all mirror-linked mover sprites",
+          "transformation": "paired with another mover and merged at a shared cell"
+        }
+      },
+      "summary": "Movers are removed from the active set in pairs when they meet or swap through one another; advance occurs when no active mover remains.",
+      "provenance": {
+        "source": "data/environment_files/m0r0/492f87ba/m0r0.py",
+        "source_sha256": "492f87bab9b8cb3a9414becb7e9cd5a35be2de4b176596dbdec12aa88ed8ab51",
+        "advance_line": 849,
+        "enclosing_function": "step",
+        "primary_label": "all_instances_transformed",
+        "packet_digest": "fe93f5d484ebd45e",
+        "packet_verified": true
+      }
+    },
+    {
+      "env": "tu93",
+      "hypothesis": {
+        "class": "quantified_object_conditions",
+        "predicate": {
+          "subject": "nonempty set of surviving mover sprites",
+          "quantifier": "all",
+          "n": null,
+          "condition": "overlapping an exit sprite"
+        }
+      },
+      "summary": "After movement settles, the surviving mover set must be nonempty and every mover must share exact x and y coordinates with some exit.",
+      "provenance": {
+        "source": "data/environment_files/tu93/0768757b/tu93.py",
+        "source_sha256": "0768757bb4b39e5a6f8142e32e0f6546a619cee02707f1f52f806b7007f07e57",
+        "advance_line": 1242,
+        "enclosing_function": "step",
+        "primary_label": "quantified_object_conditions",
+        "packet_digest": "a81c6f8880f0ac69",
+        "packet_verified": true
+      }
+    },
+    {
+      "env": "vc33",
+      "hypothesis": {
+        "class": "quantified_object_conditions",
+        "predicate": {
+          "subject": "falling item sprites",
+          "quantifier": "all",
+          "n": null,
+          "condition": "matched to a same-color receptacle at the item's lateral coordinate beside its supporting platform"
+        }
+      },
+      "summary": "Every falling item must match a receptacle by contained color and lateral coordinate, and that receptacle's wall must flank the platform supporting the item.",
+      "provenance": {
+        "source": "data/environment_files/vc33/5430563c/vc33.py",
+        "source_sha256": "5430563c386ca51ff4c9a84b032579245a0613cb98c477c6eaeaa1086c80a2d5",
+        "advance_line": 2104,
+        "enclosing_function": "step",
+        "primary_label": "quantified_object_conditions",
+        "packet_digest": "53fa7bcabd612e07",
+        "packet_verified": true
+      }
+    }
+  ]
+}

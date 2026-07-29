@@ -238,6 +238,17 @@ The normalized gold layer describes the actual terminal predicate and its bindin
 - Use raters otherwise only for a frozen, enumerated list of semantic-equivalence cases that
   the mechanical scorer cannot resolve. Log every invocation.
 
+The iteration layer is implemented in `logs/gi1_predicate_gold_iteration.json`: six typed
+predicate templates, each pinned to the packet-verified S2 annotation, the sole
+`self.next_level()` line, and the SHA-256 of that game's source. Validate it with
+`agent/harness/gi1_predicate_gold.py --verify`. Its status remains `dev_unfrozen` until the
+declared implementation freeze; it contains no reserved or one-shot game. Full provenance
+verification requires the ignored competition source bundle and
+`logs/s2_goal_predicates_labelled.json`; a checkout missing either now receives an explicit
+problem list instead of a traceback. The publishable gold intentionally excludes `guard_tests`:
+those strings copied competition source verbatim, while source path, function, transition line,
+and SHA-256 already pin the evidence without redistributing it.
+
 The primary offline verdict therefore does not depend on open-ended S1-E10-style rating.
 
 ### 4.4 Shared discipline
