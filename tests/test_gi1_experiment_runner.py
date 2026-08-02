@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import sys
 import threading
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -684,6 +685,233 @@ def test_run_is_fail_fast_on_a_model_error_by_default(tmp_path, monkeypatch):
     assert record["error_type"] == "RuntimeError"
 
 
+def test_fail_fast_still_logs_paid_for_inflight_successes(tmp_path, monkeypatch):
+    rows = [
+        _run_row("b", "offset:10", 10),
+        _run_row("b", "offset:30", 30),
+    ]
+    both_started = threading.Barrier(2)
+
+    def execute(row, **kwargs):
+        both_started.wait(timeout=2)
+        if row.checkpoint == "offset:10":
+            raise RuntimeError("endpoint down")
+        time.sleep(0.02)
+        return {
+            "row_id": row.row_id,
+            "mode": row.mode,
+            "condition": row.condition,
+            "model": kwargs["model"],
+            "freeze_fingerprint": None,
+            "status": "complete",
+        }
+
+    _patch_run_dependencies(monkeypatch, rows, execute)
+    with pytest.raises(RuntimeError, match="endpoint down"):
+        R.run(**_run_args(tmp_path, concurrency=2))
+    records = R.JsonlLog(tmp_path / "run.jsonl").records()
+    assert {record["status"] for record in records} == {"error", "complete"}
+    assert len(records) == 2
+
+
+def test_fail_fast_ignores_futures_cancelled_before_they_start(tmp_path, monkeypatch):
+    rows = [
+        _run_row("b", f"completion:{index}", index)
+        for index in range(1, 11)
+    ]
+
+    def execute(row, **kwargs):
+        if row.checkpoint == "completion:1":
+            raise RuntimeError("first call failed")
+        time.sleep(0.2)
+        return {
+            "row_id": row.row_id,
+            "mode": row.mode,
+            "condition": row.condition,
+            "model": kwargs["model"],
+            "freeze_fingerprint": None,
+            "status": "complete",
+        }
+
+    _patch_run_dependencies(monkeypatch, rows, execute)
+    with pytest.raises(RuntimeError, match="first call failed"):
+        R.run(**_run_args(tmp_path, concurrency=1))
+    records = R.JsonlLog(tmp_path / "run.jsonl").records()
+    assert records[0]["status"] == "error"
+    assert len(records) < len(rows)
+
+
+def test_completion_ablation_has_a_separate_default_log():
+    assert (
+        R._resolve_log_path(
+            mode="measured-iteration",
+            ablate_completions=True,
+            explicit=None,
+        )
+        == R.DEFAULT_ABLATION_LOG
+    )
+    assert R.DEFAULT_ABLATION_LOG != R.DEFAULT_MEASURED_LOG
+
+
+def test_completion_ablation_refuses_the_normal_measured_log():
+    with pytest.raises(ValueError, match="cannot write the normal measured log"):
+        R._resolve_log_path(
+            mode="measured-iteration",
+            ablate_completions=True,
+            explicit=R.DEFAULT_MEASURED_LOG,
+        )
+
+
+def _recorded_plan_fixture():
+    rows = []
+    for env in ("aa11", "bb22"):
+        for rank in range(3):
+            guid = f"{env}-s{rank}"
+            for checkpoint_index, checkpoint in enumerate(R.NORMAL_CHECKPOINTS):
+                step = 10 * (checkpoint_index + 1)
+                excluded = checkpoint == "offset:10" and rank == 0
+                for condition in R.MEASURED_CONDITIONS:
+                    row = R.PlanRow(
+                        mode="measured-iteration",
+                        condition=condition,
+                        env=env,
+                        guid=guid,
+                        session_rank=rank,
+                        selection_tier=3,
+                        checkpoint=checkpoint,
+                        checkpoint_step=None if excluded else step,
+                        ablate_completions=False,
+                        exclusion_reason="invalid_checkpoint" if excluded else None,
+                    )
+                    record = {
+                        **row.__dict__,
+                        "row_id": row.row_id,
+                        "status": "excluded" if excluded else "complete",
+                    }
+                    if excluded:
+                        record["exclusion_reason"] = "invalid_checkpoint"
+                    rows.append(record)
+    return rows
+
+
+def test_recorded_plan_is_authoritative_and_requires_matched_arms():
+    rows = _recorded_plan_fixture()
+    draw = _draw(iteration=("aa11", "bb22"))
+    latest = R._recorded_iteration_plan(rows, draw)
+    assert len(latest) == 2 * 3 * 5 * 5
+    rows.pop()
+    with pytest.raises(ValueError, match="has conditions"):
+        R._recorded_iteration_plan(rows, draw)
+
+
+def test_recorded_plan_rejects_ablation_rows_before_selection():
+    rows = _recorded_plan_fixture()
+    rows[0]["ablate_completions"] = True
+    with pytest.raises(ValueError, match="completion-ablation"):
+        R._recorded_iteration_plan(rows, _draw(iteration=("aa11", "bb22")))
+
+
+def test_recorded_plan_rejects_duplicate_terminal_row_ids():
+    rows = _recorded_plan_fixture()
+    rows[1]["row_id"] = rows[0]["row_id"]
+    with pytest.raises(ValueError, match="duplicate terminal row IDs"):
+        R._recorded_iteration_plan(rows, _draw(iteration=("aa11", "bb22")))
+
+
+@pytest.mark.parametrize("iteration", ["aa11", ["aa11", "aa11"], ["aa11", 7]])
+def test_recorded_plan_rejects_invalid_frozen_iteration_membership(iteration):
+    draw = _draw()
+    draw["iteration"] = iteration
+    with pytest.raises(ValueError, match="invalid iteration membership"):
+        R._recorded_iteration_plan(_recorded_plan_fixture(), draw)
+
+
+def test_recorded_plan_rejects_unknown_condition_and_checkpoint():
+    rows = _recorded_plan_fixture()
+    rows[0]["condition"] = "z"
+    with pytest.raises(ValueError, match="unknown condition"):
+        R._recorded_iteration_plan(rows, _draw(iteration=("aa11", "bb22")))
+    rows = _recorded_plan_fixture()
+    rows[0]["checkpoint"] = "completion:99"
+    with pytest.raises(ValueError, match="unknown checkpoint"):
+        R._recorded_iteration_plan(rows, _draw(iteration=("aa11", "bb22")))
+
+
+def test_recorded_plan_rejects_a_repeated_condition_inside_one_slot():
+    rows = _recorded_plan_fixture()
+    rows[1]["condition"] = rows[0]["condition"]
+    rows[1]["row_id"] = "unique-for-this-test"
+    with pytest.raises(ValueError, match="repeats condition"):
+        R._recorded_iteration_plan(rows, _draw(iteration=("aa11", "bb22")))
+
+
+def test_recorded_plan_rejects_bad_exclusion_reason_and_noninteger_step():
+    rows = _recorded_plan_fixture()
+    slot = [
+        row
+        for row in rows
+        if row["env"] == "aa11"
+        and row["guid"] == "aa11-s0"
+        and row["checkpoint"] == "offset:10"
+    ]
+    for row in slot:
+        row["exclusion_reason"] = "other"
+    with pytest.raises(ValueError, match="invalid exclusion"):
+        R._recorded_iteration_plan(rows, _draw(iteration=("aa11", "bb22")))
+
+    rows = _recorded_plan_fixture()
+    slot = [
+        row
+        for row in rows
+        if row["env"] == "aa11"
+        and row["guid"] == "aa11-s1"
+        and row["checkpoint"] == "offset:30"
+    ]
+    for row in slot:
+        row["checkpoint_step"] = True
+    with pytest.raises(ValueError, match="no integer checkpoint step"):
+        R._recorded_iteration_plan(rows, _draw(iteration=("aa11", "bb22")))
+
+
+def test_recorded_plan_names_the_game_with_the_wrong_session_count():
+    rows = [
+        row
+        for row in _recorded_plan_fixture()
+        if not (row["env"] == "aa11" and row["guid"] == "aa11-s2")
+    ]
+    with pytest.raises(ValueError, match="game aa11 has 2 sessions"):
+        R._recorded_iteration_plan(rows, _draw(iteration=("aa11", "bb22")))
+
+
+def test_recorded_plan_rejects_a_missing_checkpoint_even_when_slot_count_matches():
+    rows = _recorded_plan_fixture()
+    changed = [
+        row
+        for row in rows
+        if row["env"] == "aa11"
+        and row["guid"] == "aa11-s0"
+        and row["checkpoint"] == "completion:3"
+    ]
+    for index, row in enumerate(changed):
+        row["checkpoint"] = "completion:2"
+        row["checkpoint_step"] = 999
+        row["row_id"] = f"replacement-{index}"
+    with pytest.raises(ValueError, match="has checkpoints"):
+        R._recorded_iteration_plan(rows, _draw(iteration=("aa11", "bb22")))
+
+
+def test_recorded_plan_does_not_reopen_replay_data(monkeypatch):
+    rows = _recorded_plan_fixture()
+    monkeypatch.setattr(
+        R,
+        "plan_rows",
+        lambda **kwargs: (_ for _ in ()).throw(AssertionError("reopened replay")),
+    )
+    assert R._recorded_iteration_plan(
+        rows, _draw(iteration=("aa11", "bb22"))
+    )
+
+
 def test_champion_selection_is_game_balanced_and_freezes_the_winner(
     tmp_path, monkeypatch
 ):
@@ -717,7 +945,11 @@ def test_champion_selection_is_game_balanced_and_freezes_the_winner(
             "primary_class": {},
         },
     )
-    monkeypatch.setattr(R, "plan_rows", lambda **kwargs: rows)
+    monkeypatch.setattr(
+        R,
+        "_recorded_iteration_plan",
+        lambda records, draw: {record["row_id"]: record for record in records},
+    )
     monkeypatch.setattr(R, "ROOT", tmp_path)
 
     # c wins on the primary metric. b wins exact predicate and d wins class, proving the
@@ -732,6 +964,7 @@ def test_champion_selection_is_game_balanced_and_freezes_the_winner(
     for row in rows:
         record = {
             "row_id": row.row_id,
+            "env": row.env,
             "mode": "measured-iteration",
             "condition": row.condition,
             "model": (
@@ -759,6 +992,68 @@ def test_champion_selection_is_game_balanced_and_freezes_the_winner(
     assert json.loads(output.read_text()) == artifact
 
 
+def test_champion_selection_omits_recorded_exclusions_from_metrics(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setattr(
+        R, "require_frozen", lambda path: {"contract_fingerprint": "freeze"}
+    )
+    monkeypatch.setattr(
+        R,
+        "_draw",
+        lambda path=R.DRAW: {
+            "iteration": ["aa11"],
+            "one_shot": [],
+            "reserved": [],
+            "primary_class": {},
+        },
+    )
+    records = []
+    for condition in R.MODEL_CONDITIONS:
+        records.append(
+            {
+                "row_id": f"{condition}-excluded",
+                "env": "aa11",
+                "mode": "measured-iteration",
+                "condition": condition,
+                "model": "/models/Qwen3.6-27B-8bit",
+                "freeze_fingerprint": "freeze",
+                "status": "excluded",
+            }
+        )
+        records.append(
+            {
+                "row_id": f"{condition}-complete",
+                "env": "aa11",
+                "mode": "measured-iteration",
+                "condition": condition,
+                "model": "/models/Qwen3.6-27B-8bit",
+                "freeze_fingerprint": "freeze",
+                "status": "complete",
+                "score": {
+                    "top1_field_accuracy": 0.5,
+                    "top1_predicate_correct": False,
+                    "top3_class_correct": True,
+                },
+            }
+        )
+    monkeypatch.setattr(
+        R,
+        "_recorded_iteration_plan",
+        lambda logged, draw: {record["row_id"]: record for record in logged},
+    )
+    monkeypatch.setattr(R, "ROOT", tmp_path)
+    log = R.JsonlLog(tmp_path / "raw.jsonl")
+    for record in records:
+        log.append(record)
+    artifact = R.select_champion(
+        log.path,
+        output_path=tmp_path / "champion.json",
+        freeze_path=tmp_path,
+    )
+    assert artifact["metrics"]["b"]["n_complete_rows"] == 1.0
+
+
 def test_champion_selection_refuses_an_incomplete_pass(tmp_path, monkeypatch):
     row = R.PlanRow(
         mode="measured-iteration",
@@ -778,7 +1073,7 @@ def test_champion_selection_refuses_an_incomplete_pass(tmp_path, monkeypatch):
     monkeypatch.setattr(R, "plan_rows", lambda **kwargs: [row])
     empty = tmp_path / "empty.jsonl"
     empty.write_text("")
-    with pytest.raises(ValueError, match="pass incomplete"):
+    with pytest.raises(ValueError, match="no terminal rows"):
         R.select_champion(empty, output_path=tmp_path / "champion.json")
 
 
@@ -878,63 +1173,23 @@ def test_champion_refuses_unexpected_terminal_rows(tmp_path, monkeypatch):
             "status": "complete",
         }
     )
-    with pytest.raises(ValueError, match="unexpected terminal"):
+    with pytest.raises(ValueError, match="game membership"):
         R.select_champion(log.path, output_path=tmp_path / "champion.json")
 
 
 def test_champion_refuses_a_valid_row_recorded_as_excluded(tmp_path, monkeypatch):
-    rows = [
-        R.PlanRow(
-            mode="measured-iteration",
-            condition=condition,
-            env="aa11",
-            guid="s",
-            session_rank=0,
-            selection_tier=3,
-            checkpoint="completion:1",
-            checkpoint_step=10,
-            ablate_completions=False,
-        )
-        for condition in R.MEASURED_CONDITIONS
-    ]
-    monkeypatch.setattr(
-        R, "require_frozen", lambda path: {"contract_fingerprint": "freeze"}
+    rows = _recorded_plan_fixture()
+    target = next(
+        record
+        for record in rows
+        if record["condition"] == "b"
+        and record["env"] == "aa11"
+        and record["checkpoint"] == "completion:1"
     )
-    monkeypatch.setattr(
-        R,
-        "_draw",
-        lambda path=R.DRAW: {
-            "iteration": ["aa11"],
-            "one_shot": [],
-            "reserved": [],
-            "primary_class": {},
-        },
-    )
-    monkeypatch.setattr(R, "plan_rows", lambda **kwargs: rows)
-    log = R.JsonlLog(tmp_path / "raw.jsonl")
-    for row in rows:
-        model = (
-            "/models/Qwen3.6-27B-8bit"
-            if row.condition in R.MODEL_CONDITIONS
-            else None
-        )
-        record = {
-            "row_id": row.row_id,
-            "mode": row.mode,
-            "condition": row.condition,
-            "model": model,
-            "freeze_fingerprint": "freeze",
-            "status": "excluded" if row.condition == "b" else "complete",
-        }
-        if row.condition in {"c", "d"}:
-            record["score"] = {
-                "top1_field_accuracy": 0,
-                "top1_predicate_correct": False,
-                "top3_class_correct": False,
-            }
-        log.append(record)
-    with pytest.raises(ValueError, match="valid champion row.*not complete"):
-        R.select_champion(log.path, output_path=tmp_path / "champion.json")
+    target["status"] = "excluded"
+    target["exclusion_reason"] = "invalid_checkpoint"
+    with pytest.raises(ValueError, match="disagrees on inclusion"):
+        R._recorded_iteration_plan(rows, _draw(iteration=("aa11", "bb22")))
 
 
 def test_champion_refuses_an_iteration_game_with_no_scored_rows(tmp_path, monkeypatch):
@@ -966,10 +1221,16 @@ def test_champion_refuses_an_iteration_game_with_no_scored_rows(tmp_path, monkey
         },
     )
     monkeypatch.setattr(R, "plan_rows", lambda **kwargs: rows)
+    monkeypatch.setattr(
+        R,
+        "_recorded_iteration_plan",
+        lambda records, draw: {record["row_id"]: record for record in records},
+    )
     log = R.JsonlLog(tmp_path / "raw.jsonl")
     for row in rows:
         record = {
             "row_id": row.row_id,
+            "env": row.env,
             "mode": row.mode,
             "condition": row.condition,
             "model": (

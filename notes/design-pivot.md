@@ -1,8 +1,14 @@
 # Design pivot: GI-1 goal-inference viability sprint
 
+> **Iteration verdict — 2026-07-30:** The 450-row six-game pass completed, but no Qwen condition
+> produced an exact actionable predicate and all three had 0/440 correct top-one entity fields.
+> No champion was selected; one-shot games and E4 remain unopened. GI-1 is paused and returns to
+> design. See [gi1-iteration-audit.md](gi1-iteration-audit.md) for the integrity audit, repaired
+> controls, full metrics, and viability decision.
+
 **Date:** 2026-07-29
 
-**Status:** Experiment design resolved; implementation inputs frozen
+**Status:** Iteration viability test failed; paused before one-shot exposure
 
 **Purpose:** Decide whether structured goal inference is viable before resuming the long-run
 roadmap.

@@ -2,11 +2,9 @@
 """Create and verify the GI-1 implementation freeze.
 
 The measured 27B pass is allowed to run only when this manifest exactly matches the
-implementation on disk.  The freeze covers the prompt renderer, digest, retrieval contract,
-shared predicate schema, strict output parser, and mechanical scorer.  The experiment runner
-is deliberately outside the scientific treatment freeze: it may receive operational fixes,
-but it cannot change any model-facing or scoring behavior without changing one of the frozen
-dependencies below.
+implementation and reviewed data on disk.  The freeze covers the packet extractor, experiment
+runner, prompt renderer, digest, retrieval contract, shared predicate schema, strict output
+parser, mechanical scorer, game draw, and exact predicate answer key.
 
 Creation is an explicit operator action performed after MoE-only development:
 
@@ -23,16 +21,18 @@ import json
 from pathlib import Path
 from typing import Any
 
-from gi1_predicate_gold import CURRENT_STATUS, schema_fingerprint
+from gi1_predicate_gold import CURRENT_STATUS, GOLD, schema_fingerprint
 from gi1_retrieval import INDEX_CACHE, SPEC, validate_index_artifact
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "logs/gi1_implementation_freeze.json"
-FORMAT_VERSION = 1
+FORMAT_VERSION = 2
 FROZEN_STATUS = "frozen"
 FROZEN_GOLD_STATUS = "frozen"
 
 FROZEN_FILES = (
+    "agent/harness/gi1_packets.py",
+    "agent/harness/gi1_experiment_runner.py",
     "agent/harness/gi1_render.py",
     "agent/harness/gi1_digest.py",
     "agent/harness/gi1_retrieval.py",
@@ -40,6 +40,7 @@ FROZEN_FILES = (
     "agent/harness/gi1_output_parser.py",
     "agent/harness/gi1_k4_scorer.py",
 )
+DRAW = ROOT / "logs/gi1_game_draw.json"
 
 # These are part of the measured treatment.  The runner sends exactly this mapping and refuses
 # caller overrides in measured mode.
@@ -89,7 +90,8 @@ def build_manifest(root: Path = ROOT) -> dict[str, Any]:
         )
     try:
         index_artifact = json.loads(INDEX_CACHE.read_text())
-        draw = json.loads((root / "logs/gi1_game_draw.json").read_text())
+        draw_path = root / "logs/gi1_game_draw.json"
+        draw = json.loads(draw_path.read_text())
         library_games = sorted(draw["iteration"] + draw["one_shot"])
     except (OSError, UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError) as exc:
         raise ValueError(f"cannot validate retrieval index for freeze: {exc}") from exc
@@ -98,8 +100,28 @@ def build_manifest(root: Path = ROOT) -> dict[str, Any]:
         raise ValueError(
             "retrieval index is not frozen-compatible: " + "; ".join(index_problems)
         )
+    gold_path = GOLD if root == ROOT else root / "logs/gi1_predicate_gold_iteration.json"
+    if not gold_path.is_file():
+        raise ValueError("frozen input missing: logs/gi1_predicate_gold_iteration.json")
+    try:
+        gold_artifact = json.loads(gold_path.read_text())
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"cannot read predicate gold for freeze: {exc}") from exc
+    if (
+        not isinstance(gold_artifact, dict)
+        or gold_artifact.get("status") != FROZEN_GOLD_STATUS
+    ):
+        raise ValueError("predicate gold artifact is not in frozen status")
     contract = {
         "files": files,
+        "game_draw": {
+            "path": "logs/gi1_game_draw.json",
+            "sha256": _sha256(draw_path),
+        },
+        "predicate_gold": {
+            "path": "logs/gi1_predicate_gold_iteration.json",
+            "sha256": _sha256(gold_path),
+        },
         "retrieval_index": {
             "path": index_relative,
             "sha256": _sha256(INDEX_CACHE),
@@ -113,7 +135,7 @@ def build_manifest(root: Path = ROOT) -> dict[str, Any]:
     return {
         "format_version": FORMAT_VERSION,
         "status": FROZEN_STATUS,
-        "scope": "gi1_iteration_pre_measurement",
+        "scope": "gi1_iteration_measurement_contract",
         "contract": contract,
         "contract_fingerprint": hashlib.sha256(_canonical(contract)).hexdigest(),
     }
@@ -158,6 +180,8 @@ def verify_manifest(
             if actual_files.get(relative) != expected_contract["files"].get(relative):
                 problems.append(f"frozen file drift: {relative}")
     for key in (
+        "game_draw",
+        "predicate_gold",
         "retrieval_index",
         "schema_fingerprint",
         "retrieval_spec",

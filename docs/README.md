@@ -191,15 +191,16 @@ effective_spec_sections: []          # none — deliberately not a spec change
 approved_at: 2026-07-28
 status_precision: >
   PRE-SPECIFIED CLOSED CODEBOOK, not a pre-registered instrument. It was fixed before any
-  S2 labelling and is unchanged since — but it was never entered in gate_manifest.yaml, and
-  `s2` there is still NOT_STARTED (open item 2: pre-registration must precede the sprint it
-  governs). Calling it "pre-registered" would credit it with authority the pre-registration
-  mechanism has not yet conferred. An earlier draft of this entry did exactly that.
+  S2 labelling and is unchanged since. `gate_manifest.yaml -> s2` is now DRAFT, but explicitly
+  lists the goal-predicate extraction as prior work not governed by that block and does not adopt
+  this taxonomy. Calling the codebook "pre-registered" would therefore still credit it with
+  authority the pre-registration mechanism has not conferred. An earlier draft of this entry did
+  exactly that.
 deviation_recorded: >
-  S2 frequencies computed against this codebook inherit the OPEN S2 pre-registration as a
-  stated limitation, and must say so wherever they are reported. The codebook becomes a
-  frozen instrument — with the "adding a class needs a dated erratum" rule in force — only
-  when gate_manifest.yaml -> s2 is written and adopts it.
+  S2 frequencies computed against this codebook inherit the DRAFT S2 pre-registration as a stated
+  limitation, and must say so wherever they are reported. The codebook becomes a frozen instrument
+  — with the "adding a class needs a dated erratum" rule in force — only if a frozen manifest block
+  adopts it.
 ```
 
 ```yaml

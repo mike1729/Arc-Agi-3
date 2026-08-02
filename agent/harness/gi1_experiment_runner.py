@@ -16,7 +16,9 @@ Model-role separation is enforced:
   manifest to verify, fixes conditions to (b)-(f), and uses the frozen generation mapping.
 
 Raw JSONL is resumable.  Completed and excluded row IDs are skipped; error attempts are retained
-and retried.  An interrupted request has no terminal record and is therefore retried.
+and retried.  An interrupted request has no terminal record and is therefore retried.  The
+completion-ablation pass has a distinct default log, and champion selection reads the recorded
+row plan rather than reconstructing exclusions from mutable replay data.
 """
 
 from __future__ import annotations
@@ -57,6 +59,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DRAW = ROOT / "logs/gi1_game_draw.json"
 DEFAULT_DEBUG_LOG = ROOT / "logs/gi1_moe_debug.jsonl"
 DEFAULT_MEASURED_LOG = ROOT / "logs/gi1_iteration_27b_raw.jsonl"
+DEFAULT_ABLATION_LOG = ROOT / "logs/gi1_iteration_e3_ablation_raw.jsonl"
 CHAMPION_OUT = ROOT / "logs/gi1_champion.json"
 
 MODEL_CONDITIONS = ("b", "c", "d")
@@ -85,6 +88,31 @@ def _sha256_file(path: Path) -> str:
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _resolve_log_path(
+    *,
+    mode: str,
+    ablate_completions: bool,
+    explicit: Path | None,
+) -> Path:
+    if explicit is not None:
+        log_path = explicit
+    elif mode == "moe-debug":
+        log_path = DEFAULT_DEBUG_LOG
+    elif ablate_completions:
+        log_path = DEFAULT_ABLATION_LOG
+    else:
+        log_path = DEFAULT_MEASURED_LOG
+    if (
+        ablate_completions
+        and log_path.resolve() == DEFAULT_MEASURED_LOG.resolve()
+    ):
+        raise ValueError(
+            "completion ablation cannot write the normal measured log; "
+            f"use {DEFAULT_ABLATION_LOG.relative_to(ROOT)} or another explicit path"
+        )
+    return log_path
 
 
 @dataclass(frozen=True)
@@ -608,19 +636,31 @@ def run(
         else:
             model_rows.append(row)
 
+    fatal: tuple[PlanRow, dict[str, Any]] | None = None
     with ThreadPoolExecutor(max_workers=concurrency) as pool:
         futures = {pool.submit(one, row): row for row in model_rows}
         for future in as_completed(futures):
+            if future.cancelled():
+                continue
             row, result = future.result()
             logger.append(result)
             summary[result["status"]] += 1
-            if result["status"] == "error" and not continue_on_error:
+            if (
+                result["status"] == "error"
+                and not continue_on_error
+                and fatal is None
+            ):
+                fatal = (row, result)
                 for other in futures:
                     other.cancel()
-                raise RuntimeError(
-                    f"{row.row_id} {row.env}/{row.guid} {row.checkpoint} "
-                    f"condition {row.condition}: {result['error']}"
-                )
+                # Keep draining already-running futures.  Their paid-for responses must be
+                # appended before the fail-fast error reaches the caller.
+    if fatal is not None:
+        row, result = fatal
+        raise RuntimeError(
+            f"{row.row_id} {row.env}/{row.guid} {row.checkpoint} "
+            f"condition {row.condition}: {result['error']}"
+        )
     return summary
 
 
@@ -632,6 +672,101 @@ def _latest_terminal(records: list[dict[str, Any]]) -> dict[str, dict[str, Any]]
     return latest
 
 
+def _recorded_iteration_plan(
+    records: list[dict[str, Any]],
+    draw: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    """Validate and return the terminal plan recorded by the measured run.
+
+    Selection must not reopen replay data to decide which rows count.  The append log already
+    records every valid and excluded checkpoint, so it is the authoritative measured plan.
+    """
+    terminal_records = [
+        record
+        for record in records
+        if record.get("status") in {"complete", "excluded"}
+    ]
+    terminal_ids = [record.get("row_id") for record in terminal_records]
+    if len(terminal_ids) != len(set(terminal_ids)):
+        raise ValueError("measured log contains duplicate terminal row IDs")
+    latest = _latest_terminal(terminal_records)
+    if not latest:
+        raise ValueError("measured log contains no terminal rows")
+
+    iteration = draw.get("iteration")
+    if (
+        not isinstance(iteration, list)
+        or any(not isinstance(env, str) for env in iteration)
+        or len(iteration) != len(set(iteration))
+    ):
+        raise ValueError("frozen draw has invalid iteration membership")
+    expected_games = set(iteration)
+    actual_games = {record.get("env") for record in terminal_records}
+    if actual_games != expected_games:
+        raise ValueError(
+            "recorded plan game membership differs from frozen draw: "
+            f"missing={sorted(expected_games - actual_games)}, "
+            f"extra={sorted(actual_games - expected_games)}"
+        )
+    if any(record.get("ablate_completions") is not False for record in terminal_records):
+        raise ValueError("normal measured log contains completion-ablation rows")
+
+    slots: dict[tuple[Any, ...], dict[str, dict[str, Any]]] = {}
+    for record in terminal_records:
+        condition = record.get("condition")
+        if condition not in MEASURED_CONDITIONS:
+            raise ValueError(f"recorded plan contains unknown condition {condition!r}")
+        checkpoint = record.get("checkpoint")
+        if checkpoint not in NORMAL_CHECKPOINTS:
+            raise ValueError(f"recorded plan contains unknown checkpoint {checkpoint!r}")
+        slot = (
+            record.get("env"),
+            record.get("guid"),
+            record.get("session_rank"),
+            record.get("selection_tier"),
+            checkpoint,
+            record.get("checkpoint_step"),
+        )
+        arms = slots.setdefault(slot, {})
+        if condition in arms:
+            raise ValueError(f"recorded plan repeats condition {condition} in a row slot")
+        arms[condition] = record
+
+    expected_conditions = set(MEASURED_CONDITIONS)
+    for slot, arms in slots.items():
+        if set(arms) != expected_conditions:
+            raise ValueError(
+                f"recorded plan slot {slot!r} has conditions {sorted(arms)}, "
+                f"expected {sorted(expected_conditions)}"
+            )
+        statuses = {record["status"] for record in arms.values()}
+        if len(statuses) != 1:
+            raise ValueError(f"recorded plan slot {slot!r} disagrees on inclusion")
+        status = next(iter(statuses))
+        if status == "excluded":
+            reasons = {record.get("exclusion_reason") for record in arms.values()}
+            if reasons != {"invalid_checkpoint"} or slot[-1] is not None:
+                raise ValueError(f"recorded plan slot {slot!r} has invalid exclusion")
+        elif isinstance(slot[-1], bool) or not isinstance(slot[-1], int):
+            raise ValueError(f"recorded plan slot {slot!r} has no integer checkpoint step")
+
+    for env in iteration:
+        env_slots = [slot for slot in slots if slot[0] == env]
+        sessions = {(slot[1], slot[2], slot[3]) for slot in env_slots}
+        if len(sessions) != 3:
+            raise ValueError(f"recorded plan game {env} has {len(sessions)} sessions, expected 3")
+        for session in sessions:
+            checkpoints_seen = {
+                slot[4] for slot in env_slots if slot[1:4] == session
+            }
+            if checkpoints_seen != set(NORMAL_CHECKPOINTS):
+                raise ValueError(
+                    f"recorded plan game {env} session {session[0]} has checkpoints "
+                    f"{sorted(checkpoints_seen)}"
+                )
+    return latest
+
+
 def select_champion(
     log_path: Path = DEFAULT_MEASURED_LOG,
     *,
@@ -640,11 +775,6 @@ def select_champion(
 ) -> dict[str, Any]:
     freeze = require_frozen(freeze_path)
     draw = _draw()
-    expected = plan_rows(
-        mode="measured-iteration",
-        conditions=MEASURED_CONDITIONS,
-        draw=draw,
-    )
     records = JsonlLog(log_path).records()
     for offset, record in enumerate(records, start=1):
         if record.get("mode") != "measured-iteration":
@@ -656,24 +786,17 @@ def select_champion(
                 raise ValueError("measured log contains a non-measurement model")
         elif record.get("model") is not None:
             raise ValueError("programmatic floor row unexpectedly names a model")
-    latest = _latest_terminal(records)
-    missing = [row.row_id for row in expected if row.row_id not in latest]
-    if missing:
-        raise ValueError(f"measured iteration pass incomplete: {len(missing)} rows missing")
-    unexpected = set(latest) - {row.row_id for row in expected}
-    if unexpected:
-        raise ValueError(f"measured log contains {len(unexpected)} unexpected terminal rows")
+    latest = _recorded_iteration_plan(records, draw)
 
     metrics: dict[str, dict[str, float]] = {}
     for condition in MODEL_CONDITIONS:
         by_game: dict[str, list[dict[str, Any]]] = {env: [] for env in draw["iteration"]}
-        for row in expected:
-            if row.condition != condition or row.exclusion_reason is not None:
+        for record in latest.values():
+            if record.get("condition") != condition:
                 continue
-            record = latest[row.row_id]
-            if record.get("status") != "complete":
-                raise ValueError(f"valid champion row {row.row_id} is not complete")
-            by_game[row.env].append(record["score"])
+            if record.get("status") == "excluded":
+                continue
+            by_game[record["env"]].append(record["score"])
         if any(not scores for scores in by_game.values()):
             raise ValueError(f"condition {condition} has an empty game in champion scoring")
 
@@ -756,9 +879,14 @@ def main() -> int:
         MODEL_CONDITIONS if args.mode == "moe-debug" else MEASURED_CONDITIONS
     )
     conditions = tuple(args.conditions or default_conditions)
-    log_path = args.log or (
-        DEFAULT_DEBUG_LOG if args.mode == "moe-debug" else DEFAULT_MEASURED_LOG
-    )
+    try:
+        log_path = _resolve_log_path(
+            mode=args.mode,
+            ablate_completions=args.ablate_completions,
+            explicit=args.log,
+        )
+    except ValueError as exc:
+        parser.error(str(exc))
     if args.dry_run:
         freeze_fingerprint = _assert_mode(
             mode=args.mode,

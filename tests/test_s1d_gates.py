@@ -1909,9 +1909,9 @@ def test_repeated_invalidation_preserves_the_original_verdict(drawn, tmp_path, m
     assert original[0]["categories_driving_build_order"] == verdict
     assert chain[-1]["sha256"] == score_sha, "chain must be oldest-last"
 def test_s1_status_is_stated_consistently():
-    """S1 was simultaneously "complete, DEGRADED" and "reopened, gate not applied".
+    """S1's promoted re-rate closed the previously open gate.
 
-    One state everywhere: measurement complete, gate open pending the blind re-rate.
+    One state everywhere: complete on the DEGRADED branch, with no hidden score.
     """
     repo = Path(RR.__file__).resolve().parents[2]
     manifest = repo / "gate_manifest.yaml"
@@ -1920,8 +1920,9 @@ def test_s1_status_is_stated_consistently():
         pytest.skip("repository docs not present (mutation sandbox)")
     header = "\n".join(manifest.read_text().splitlines()[:12])
     assert "S0 and S1 both complete" not in header
-    assert "GATE OPEN" in header
-    assert "**Both complete**" not in archive_readme.read_text()
+    assert "blind re-rate is scored and promoted" in header
+    assert "S1 closed on the DEGRADED branch" in archive_readme.read_text()
+    assert "gate is open" not in archive_readme.read_text()
 
 
 def test_promotion_preserves_the_prior_canonical_lineage(drawn, tmp_path, monkeypatch):
@@ -2088,7 +2089,7 @@ def test_s2_taxonomy_document_and_code_agree_exactly():
 
 
 def test_the_s2_codebook_is_not_called_pre_registered():
-    """S2 is `NOT_STARTED` in the manifest and the codebook was never entered there.
+    """S2 is DRAFT, but its block explicitly excludes the earlier codebook work.
 
     It is pre-SPECIFIED — fixed before any labelling and unchanged since — which is a real property,
     but it is not the authority the pre-registration mechanism confers, and the difference decides
@@ -2101,12 +2102,16 @@ def test_the_s2_codebook_is_not_called_pre_registered():
     if not all(p.exists() for p in (doc, register, manifest)):
         pytest.skip("repository docs not present (mutation sandbox)")
     import yaml
-    assert yaml.safe_load(manifest.read_text())["s2"]["status"] == "NOT_STARTED", (
-        "if s2 is now registered, the codebook may be called pre-registered — update this test")
+    s2 = yaml.safe_load(manifest.read_text())["s2"]
+    assert s2["status"] == "DRAFT"
+    prior = s2["prior_work_not_governed_by_this_block"]
+    assert any("goal-predicate extraction" in row["what"] for row in prior)
 
     block = doc.read_text().split("**goal-predicate class taxonomy**")[1]
     assert "PRE-SPECIFIED CLOSED CODEBOOK" in block
-    assert "NOT_STARTED" in block, "the open S2 pre-registration must be stated at the definition site"
+    assert "`DRAFT`" in block
+    assert "outside that block" in block
     reg = register.read_text()
     assert "PRE-SPECIFIED CLOSED CODEBOOK, not a pre-registered instrument" in reg
+    assert "prior work not governed by that block" in reg
     assert "deviation_recorded" in reg

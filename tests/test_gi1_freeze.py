@@ -26,6 +26,9 @@ def _frozen_root(tmp_path: Path, monkeypatch) -> Path:
     (root / "logs/gi1_game_draw.json").write_text(
         '{"iteration":["aa11"],"one_shot":[]}\n'
     )
+    (root / "logs/gi1_predicate_gold_iteration.json").write_text(
+        '{"status":"frozen","records":[]}\n'
+    )
     monkeypatch.setattr(F, "FROZEN_FILES", ("agent/harness/frozen.py",))
     monkeypatch.setattr(F, "INDEX_CACHE", index)
     monkeypatch.setattr(F, "CURRENT_STATUS", F.FROZEN_GOLD_STATUS)
@@ -55,6 +58,26 @@ def test_build_refuses_a_missing_retrieval_index(tmp_path, monkeypatch):
         F.build_manifest(root)
 
 
+def test_build_refuses_a_missing_predicate_gold(tmp_path, monkeypatch):
+    root = _frozen_root(tmp_path, monkeypatch)
+    (root / "logs/gi1_predicate_gold_iteration.json").unlink()
+    with pytest.raises(ValueError) as raised:
+        F.build_manifest(root)
+    assert str(raised.value) == (
+        "frozen input missing: logs/gi1_predicate_gold_iteration.json"
+    )
+
+
+@pytest.mark.parametrize("content", ["[]", '{"status":"dev_unfrozen"}'])
+def test_build_refuses_predicate_gold_that_is_not_a_frozen_object(
+    tmp_path, monkeypatch, content
+):
+    root = _frozen_root(tmp_path, monkeypatch)
+    (root / "logs/gi1_predicate_gold_iteration.json").write_text(content)
+    with pytest.raises(ValueError, match="artifact is not in frozen status"):
+        F.build_manifest(root)
+
+
 def test_build_refuses_a_semantically_invalid_retrieval_index(tmp_path, monkeypatch):
     root = _frozen_root(tmp_path, monkeypatch)
     monkeypatch.setattr(
@@ -70,6 +93,8 @@ def test_manifest_covers_files_schema_retrieval_generation_and_models(tmp_path, 
     contract = manifest["contract"]
     assert set(contract) == {
         "files",
+        "game_draw",
+        "predicate_gold",
         "retrieval_index",
         "schema_fingerprint",
         "retrieval_spec",
@@ -81,6 +106,8 @@ def test_manifest_covers_files_schema_retrieval_generation_and_models(tmp_path, 
     assert contract["retrieval_spec"] == {"k": 3}
     assert contract["measured_generation"]["temperature"] == 0
     assert contract["measurement_model_basename"] == "Qwen3.6-27B-8bit"
+    assert len(contract["game_draw"]["sha256"]) == 64
+    assert len(contract["predicate_gold"]["sha256"]) == 64
     assert len(contract["files"]["agent/harness/frozen.py"]) == 64
     assert len(manifest["contract_fingerprint"]) == 64
 
@@ -99,6 +126,27 @@ def test_verify_reports_file_drift(tmp_path, monkeypatch):
     (root / "agent/harness/frozen.py").write_text("VALUE = 2\n")
     problems = F.verify_manifest(output, root=root)
     assert "frozen file drift: agent/harness/frozen.py" in problems
+
+
+def test_verify_reports_answer_key_drift(tmp_path, monkeypatch):
+    root = _frozen_root(tmp_path, monkeypatch)
+    output = tmp_path / "freeze.json"
+    output.write_text(json.dumps(F.build_manifest(root)))
+    gold = root / "logs/gi1_predicate_gold_iteration.json"
+    gold.write_text('{"status":"frozen","records":[{"object":"any wall tile"}]}\n')
+    problems = F.verify_manifest(output, root=root)
+    assert "contract drift: predicate_gold" in problems
+
+
+def test_verify_reports_game_draw_drift(tmp_path, monkeypatch):
+    root = _frozen_root(tmp_path, monkeypatch)
+    output = tmp_path / "freeze.json"
+    output.write_text(json.dumps(F.build_manifest(root)))
+    (root / "logs/gi1_game_draw.json").write_text(
+        '{"iteration":["aa11"],"one_shot":["bb22"]}\n'
+    )
+    problems = F.verify_manifest(output, root=root)
+    assert "contract drift: game_draw" in problems
 
 
 def test_verify_reports_contract_drift_even_if_file_table_is_unchanged(

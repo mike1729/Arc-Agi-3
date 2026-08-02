@@ -90,7 +90,18 @@ deliberately rather than copying by default.
 ### Safe — our own measurements
 
 `concurrency_sweep*.json`, `replay_determinism.json`, `reset_accounting*.json`, `s1_run_summary.json`, `s1e_*_state.json`,
-`s2_arc_conventions.json` — harness state and our own instrumentation output.
+`s2_arc_conventions.json`, `gi1_iteration_audit.json`, `gi2_frame_validation.json`,
+`gi2_replay_environment_freeze.json`, `gi2_gidsl_v1_spec.json`, and
+`gi2_gidsl_gold_iteration.json`, `gi2_replay_fidelity.json`,
+`gi2_observation_catalogue.json`, `gi2_fork_table.json`,
+`gi2_grounding_annotations_iteration.json`, and `gi2_sprint_a_results.json` — harness state
+and our own instrumentation or authored
+development gold. The GI-1 audit contains only hashes, counts, aggregate scores, and mismatch
+lists; the GI-2 frame and replay artifacts contain hashes and structural metadata rather than
+raw competition source. `gi2_fork_table.json` contains losslessly compressed 64×64 branch
+grids, and the grounding artifact contains source-authored answer-key mappings. They carry no
+model output, but—like the GIDSL gold—must remain excluded from any clean competition
+submission.
 
 ## Not tracked, deliberately
 

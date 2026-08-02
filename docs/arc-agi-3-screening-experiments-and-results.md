@@ -627,13 +627,14 @@ before the induction machinery is built.
 
 **It is a PRE-SPECIFIED CLOSED CODEBOOK, not a pre-registered instrument.** The distinction is not
 pedantry: it was written down before any S2 labelling and has not changed since, which is what
-pre-*specified* means — but it was never entered in `gate_manifest.yaml`, and `s2` there is still
-`NOT_STARTED` (open item 2 on the status board: pre-registration must precede the sprint it governs).
-So it carries the authority of a codebook fixed in advance, and none of the authority of the
-pre-registration mechanism. Treating it as frozen is premature until `gate_manifest.yaml -> s2`
-exists and adopts it; that adoption is the moment the "adding a class needs a dated erratum" rule
-starts to bite. Until then, changes to it are ordinary evidentiary edits and the S2 frequencies
-derived from it inherit the open pre-registration as a stated limitation.
+pre-*specified* means. `gate_manifest.yaml -> s2` is now `DRAFT`, but its
+`prior_work_not_governed_by_this_block` section explicitly places the goal-predicate extraction
+outside that block and does not adopt this taxonomy. So the codebook carries the authority of a
+codebook fixed in advance, and none of the authority of the pre-registration mechanism. Treating it
+as frozen is premature unless a frozen manifest block adopts it; that adoption would be the moment
+the "adding a class needs a dated erratum" rule starts to bite. Until then, changes to it are
+ordinary evidentiary edits and the S2 frequencies derived from it inherit the draft
+pre-registration as a stated limitation.
 
 The learnable object is the **terminal transition** `(o_t, a_t, Δ_{t+1}, level advanced)`, not a
 positive goal state — a completing action typically returns the *next* level's frame, so a satisfying
