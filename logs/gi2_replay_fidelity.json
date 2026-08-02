@@ -1,0 +1,447 @@
+{
+  "format_version": 1,
+  "status": "a1_measured",
+  "scope": "iteration",
+  "inputs": {
+    "replay_freeze": "logs/gi2_replay_environment_freeze.json",
+    "replay_freeze_sha256": "4acb266e5e4ccc89077bae9bc3012a1a7f6a0bea1d59c7693b2397062430354d",
+    "draw_sha256": "751982074e7da3cc0f6330a7f54f65974a8b38bba938615453350e2c0bd76f9a",
+    "sessions_sha256": "ae820e7cfd82c3acb0cd0b764dc4616f4ea3184ec76a087b973c49cceb70aaa0"
+  },
+  "totals": {
+    "games": 6,
+    "sessions": 18,
+    "frame_fidelity_games": 5,
+    "frame_fidelity_sessions": 15,
+    "action_rows": 9913
+  },
+  "games": [
+    {
+      "env": "dc22",
+      "frame_fidelity": true,
+      "sessions": [
+        {
+          "guid": "ab11e695-b9d2-42f4-871c-8f90aa8c3a85",
+          "levels_completed": 6,
+          "total_actions": 598,
+          "action_lines": 599,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 0,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/dc22/ab11e695-b9d2-42f4-871c-8f90aa8c3a85.recording.jsonl",
+          "recording_sha256": "0d52aa00bd893e673ddc74bbb2f58670824559519aeeb49fb97b26388b36c06f",
+          "action_rows": 599,
+          "frame_fidelity": true,
+          "first_frame_divergence": null,
+          "recorded_frame_sequence_sha256": "fec5279e2881c141bd435df962eb2406ae0a83f9b0ed0a0d7082fad737915fcd",
+          "replayed_frame_sequence_sha256": "fec5279e2881c141bd435df962eb2406ae0a83f9b0ed0a0d7082fad737915fcd",
+          "metadata_mismatches": {
+            "full_reset": 1
+          }
+        },
+        {
+          "guid": "1b9a2041-bc99-4b7b-8d99-041f0503956f",
+          "levels_completed": 6,
+          "total_actions": 1192,
+          "action_lines": 1193,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 1,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/dc22/1b9a2041-bc99-4b7b-8d99-041f0503956f.recording.jsonl",
+          "recording_sha256": "cca61fa8d578d963af39dcb7871b56cb59724cb67fd9818be6a7b3adec77fd49",
+          "action_rows": 1193,
+          "frame_fidelity": true,
+          "first_frame_divergence": null,
+          "recorded_frame_sequence_sha256": "07fcaf6cb24b78c183321aa2aebc14d2b65a4bdfa9a15b439ec20c04df0b215f",
+          "replayed_frame_sequence_sha256": "07fcaf6cb24b78c183321aa2aebc14d2b65a4bdfa9a15b439ec20c04df0b215f",
+          "metadata_mismatches": {
+            "full_reset": 1
+          }
+        },
+        {
+          "guid": "e8f76fe2-d90a-44ec-97cd-d09ec9b9cbcd",
+          "levels_completed": 6,
+          "total_actions": 1213,
+          "action_lines": 1214,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 2,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/dc22/e8f76fe2-d90a-44ec-97cd-d09ec9b9cbcd.recording.jsonl",
+          "recording_sha256": "2ca3908774dfd4b005b00ba97819beb590f82c57b1592f3638593690310cef42",
+          "action_rows": 1214,
+          "frame_fidelity": true,
+          "first_frame_divergence": null,
+          "recorded_frame_sequence_sha256": "7ace9e26c59d51fde8962c9557f3c59ff1999c967f60cfb29a065f414329dcb9",
+          "replayed_frame_sequence_sha256": "7ace9e26c59d51fde8962c9557f3c59ff1999c967f60cfb29a065f414329dcb9",
+          "metadata_mismatches": {
+            "full_reset": 1
+          }
+        }
+      ],
+      "metadata_mismatches": {
+        "full_reset": 3
+      }
+    },
+    {
+      "env": "ft09",
+      "frame_fidelity": true,
+      "sessions": [
+        {
+          "guid": "3b1ce31a-0af9-41f3-858f-4ead42360d15",
+          "levels_completed": 6,
+          "total_actions": 149,
+          "action_lines": 150,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 0,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/ft09/3b1ce31a-0af9-41f3-858f-4ead42360d15.recording.jsonl",
+          "recording_sha256": "ab7b2a7779c1ef28d0ee9f912ad0d7fd67ec193e1a6686d842efb20c74a268f1",
+          "action_rows": 150,
+          "frame_fidelity": true,
+          "first_frame_divergence": null,
+          "recorded_frame_sequence_sha256": "b10fa9e8a7fff79e7ec1dd092d39206013dd13da7d4ffcff81f7308d131203a8",
+          "replayed_frame_sequence_sha256": "b10fa9e8a7fff79e7ec1dd092d39206013dd13da7d4ffcff81f7308d131203a8",
+          "metadata_mismatches": {
+            "available_actions": 150,
+            "full_reset": 1
+          }
+        },
+        {
+          "guid": "f58b7fe2-aafd-414a-a1fb-74d4b3e717e0",
+          "levels_completed": 6,
+          "total_actions": 163,
+          "action_lines": 164,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 1,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/ft09/f58b7fe2-aafd-414a-a1fb-74d4b3e717e0.recording.jsonl",
+          "recording_sha256": "b2af3a34ff00d03504af7b63d9a97830e1635191e287f42a923685d4732a7f5a",
+          "action_rows": 164,
+          "frame_fidelity": true,
+          "first_frame_divergence": null,
+          "recorded_frame_sequence_sha256": "2c6d02a89f097e212106651aa75a25b71e7bcdaacb321da0728db9836e4dbd72",
+          "replayed_frame_sequence_sha256": "2c6d02a89f097e212106651aa75a25b71e7bcdaacb321da0728db9836e4dbd72",
+          "metadata_mismatches": {
+            "available_actions": 164,
+            "full_reset": 1
+          }
+        },
+        {
+          "guid": "01f76fc7-c612-4006-8d08-c13ed0cb91de",
+          "levels_completed": 6,
+          "total_actions": 222,
+          "action_lines": 223,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 2,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/ft09/01f76fc7-c612-4006-8d08-c13ed0cb91de.recording.jsonl",
+          "recording_sha256": "a5801fb3b98f76fcea76fe359a957a6197cf5e88a02098c4df5a020c2c43bd29",
+          "action_rows": 223,
+          "frame_fidelity": true,
+          "first_frame_divergence": null,
+          "recorded_frame_sequence_sha256": "9fa17dcefdb1655cc89f53b53bc94c8a697243e4f7887e2b2de0e8c3ba3a642e",
+          "replayed_frame_sequence_sha256": "9fa17dcefdb1655cc89f53b53bc94c8a697243e4f7887e2b2de0e8c3ba3a642e",
+          "metadata_mismatches": {
+            "available_actions": 223,
+            "full_reset": 1
+          }
+        }
+      ],
+      "metadata_mismatches": {
+        "available_actions": 537,
+        "full_reset": 3
+      }
+    },
+    {
+      "env": "ls20",
+      "frame_fidelity": true,
+      "sessions": [
+        {
+          "guid": "57630d5e-4a01-42b6-bda1-43ced11c5bd7",
+          "levels_completed": 7,
+          "total_actions": 472,
+          "action_lines": 473,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 0,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/ls20/57630d5e-4a01-42b6-bda1-43ced11c5bd7.recording.jsonl",
+          "recording_sha256": "2097b641334841715b4b8679307874d74cee30ecca133237cded150547fd40f8",
+          "action_rows": 473,
+          "frame_fidelity": true,
+          "first_frame_divergence": null,
+          "recorded_frame_sequence_sha256": "f05aea6b0d4e02fc4d89de2e5450aa5f7cad651b8618092d59f2f459fa96325b",
+          "replayed_frame_sequence_sha256": "f05aea6b0d4e02fc4d89de2e5450aa5f7cad651b8618092d59f2f459fa96325b",
+          "metadata_mismatches": {
+            "full_reset": 1
+          }
+        },
+        {
+          "guid": "8aed7120-f7a9-45a1-837a-68bc7dc37a4f",
+          "levels_completed": 7,
+          "total_actions": 546,
+          "action_lines": 547,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 1,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/ls20/8aed7120-f7a9-45a1-837a-68bc7dc37a4f.recording.jsonl",
+          "recording_sha256": "f94c3bc0b3d19d55b7f35e46f44f798d8666717bba9af3d8f2738f200e3398c5",
+          "action_rows": 547,
+          "frame_fidelity": true,
+          "first_frame_divergence": null,
+          "recorded_frame_sequence_sha256": "63797d454924c43557573ff882adf08efca0e212104b1a9ac48e2ab4e22b96c2",
+          "replayed_frame_sequence_sha256": "63797d454924c43557573ff882adf08efca0e212104b1a9ac48e2ab4e22b96c2",
+          "metadata_mismatches": {
+            "full_reset": 1
+          }
+        },
+        {
+          "guid": "8f03134f-a5f6-4b76-95b6-fd70fcb81ee1",
+          "levels_completed": 7,
+          "total_actions": 593,
+          "action_lines": 594,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 2,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/ls20/8f03134f-a5f6-4b76-95b6-fd70fcb81ee1.recording.jsonl",
+          "recording_sha256": "71a8e8d712c86eead2991c17987bc2d86135fd839fcb4bacb1ede1be0f5d3e94",
+          "action_rows": 594,
+          "frame_fidelity": true,
+          "first_frame_divergence": null,
+          "recorded_frame_sequence_sha256": "222fba13daa1b59f2593f42b434e5e5e0121dccda725b73f02ea1aacad65bbfa",
+          "replayed_frame_sequence_sha256": "222fba13daa1b59f2593f42b434e5e5e0121dccda725b73f02ea1aacad65bbfa",
+          "metadata_mismatches": {
+            "full_reset": 1
+          }
+        }
+      ],
+      "metadata_mismatches": {
+        "full_reset": 3
+      }
+    },
+    {
+      "env": "m0r0",
+      "frame_fidelity": true,
+      "sessions": [
+        {
+          "guid": "0e1adaaf-fe7e-47f3-923f-97791151e11e",
+          "levels_completed": 6,
+          "total_actions": 410,
+          "action_lines": 411,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 0,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/m0r0/0e1adaaf-fe7e-47f3-923f-97791151e11e.recording.jsonl",
+          "recording_sha256": "f570f9da51ab3eed2d15fce928b4f257fde382849e39205a100008ea03806f6f",
+          "action_rows": 411,
+          "frame_fidelity": true,
+          "first_frame_divergence": null,
+          "recorded_frame_sequence_sha256": "66185021397dd073954b8d8f31745d7d0447d52ff8be131f6f770291c99bcc1d",
+          "replayed_frame_sequence_sha256": "66185021397dd073954b8d8f31745d7d0447d52ff8be131f6f770291c99bcc1d",
+          "metadata_mismatches": {
+            "full_reset": 1
+          }
+        },
+        {
+          "guid": "a98ab7b3-64fe-41ab-a357-c65519897691",
+          "levels_completed": 6,
+          "total_actions": 970,
+          "action_lines": 971,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 1,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/m0r0/a98ab7b3-64fe-41ab-a357-c65519897691.recording.jsonl",
+          "recording_sha256": "0f490a8ae572cd116821c1c16bdd796ac9caa3e7d5945764c9eac12a1c0bdb20",
+          "action_rows": 971,
+          "frame_fidelity": true,
+          "first_frame_divergence": null,
+          "recorded_frame_sequence_sha256": "aebbda136da784d28d97465dd1fe044040981a76039734f5d95ed89837314261",
+          "replayed_frame_sequence_sha256": "aebbda136da784d28d97465dd1fe044040981a76039734f5d95ed89837314261",
+          "metadata_mismatches": {
+            "full_reset": 1
+          }
+        },
+        {
+          "guid": "f03a5fda-7dc2-44ee-a0ce-0b9ad50074e1",
+          "levels_completed": 6,
+          "total_actions": 1103,
+          "action_lines": 1104,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 2,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/m0r0/f03a5fda-7dc2-44ee-a0ce-0b9ad50074e1.recording.jsonl",
+          "recording_sha256": "8b3c83013a42e2f9c07345783777d1719ac6bef32d6ea7b1424ca8db23e22c6b",
+          "action_rows": 1104,
+          "frame_fidelity": true,
+          "first_frame_divergence": null,
+          "recorded_frame_sequence_sha256": "a6dc9756eaed6235afe39a850cff5a5a9203515a973032ec3f8674a8a958c21a",
+          "replayed_frame_sequence_sha256": "a6dc9756eaed6235afe39a850cff5a5a9203515a973032ec3f8674a8a958c21a",
+          "metadata_mismatches": {
+            "full_reset": 1
+          }
+        }
+      ],
+      "metadata_mismatches": {
+        "full_reset": 3
+      }
+    },
+    {
+      "env": "tu93",
+      "frame_fidelity": true,
+      "sessions": [
+        {
+          "guid": "4efce135-0cd8-4a9c-97e7-8d670e3d343b",
+          "levels_completed": 9,
+          "total_actions": 278,
+          "action_lines": 279,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 0,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/tu93/4efce135-0cd8-4a9c-97e7-8d670e3d343b.recording.jsonl",
+          "recording_sha256": "a6f46b70a298e130ec43aba8a6875ce37488b99dd4737a6352a457f8b576de8d",
+          "action_rows": 279,
+          "frame_fidelity": true,
+          "first_frame_divergence": null,
+          "recorded_frame_sequence_sha256": "b35723f4506a6c850eeaa769ad5febc374472098e447160760398e168d42af1a",
+          "replayed_frame_sequence_sha256": "b35723f4506a6c850eeaa769ad5febc374472098e447160760398e168d42af1a",
+          "metadata_mismatches": {
+            "full_reset": 1
+          }
+        },
+        {
+          "guid": "74d1dff4-3de7-4911-9574-21c93fd257ae",
+          "levels_completed": 9,
+          "total_actions": 378,
+          "action_lines": 379,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 1,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/tu93/74d1dff4-3de7-4911-9574-21c93fd257ae.recording.jsonl",
+          "recording_sha256": "f9cb49f6ef3049c202a52fd4458e758f008f4d2c8fa532dc6cb9d9e24bd6260d",
+          "action_rows": 379,
+          "frame_fidelity": true,
+          "first_frame_divergence": null,
+          "recorded_frame_sequence_sha256": "b6381e62bf2ca06c5c3244b82c44a92ec6876c468bc2c56c3e0b78303bbd468b",
+          "replayed_frame_sequence_sha256": "b6381e62bf2ca06c5c3244b82c44a92ec6876c468bc2c56c3e0b78303bbd468b",
+          "metadata_mismatches": {
+            "full_reset": 1
+          }
+        },
+        {
+          "guid": "e5b51453-dcff-40d8-a068-4da064db741f",
+          "levels_completed": 9,
+          "total_actions": 409,
+          "action_lines": 410,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 2,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/tu93/e5b51453-dcff-40d8-a068-4da064db741f.recording.jsonl",
+          "recording_sha256": "7924300b302f9b17777df0d105be9efc452e534e12443ae51bd20cac9d14391a",
+          "action_rows": 410,
+          "frame_fidelity": true,
+          "first_frame_divergence": null,
+          "recorded_frame_sequence_sha256": "68f2a8213b5fbec6da02d6ec9e56bbc2620df50721d8185127cb8d5f2891d19e",
+          "replayed_frame_sequence_sha256": "68f2a8213b5fbec6da02d6ec9e56bbc2620df50721d8185127cb8d5f2891d19e",
+          "metadata_mismatches": {
+            "full_reset": 1
+          }
+        }
+      ],
+      "metadata_mismatches": {
+        "full_reset": 3
+      }
+    },
+    {
+      "env": "vc33",
+      "frame_fidelity": false,
+      "sessions": [
+        {
+          "guid": "837812ad-2c5c-4943-8632-b6f8cd4b5b4d",
+          "levels_completed": 7,
+          "total_actions": 338,
+          "action_lines": 339,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 0,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/vc33/837812ad-2c5c-4943-8632-b6f8cd4b5b4d.recording.jsonl",
+          "recording_sha256": "f81f624de3306f3f458f202a08a0d7e9797c3fd5d4bcb1d23e8679e10f005e9d",
+          "action_rows": 339,
+          "frame_fidelity": false,
+          "first_frame_divergence": {
+            "step": 138,
+            "action_id": 6,
+            "detail": {
+              "frame_index": 26,
+              "changed_cells": 2,
+              "replayed_sha256": "dbf2856855c6c06192c29392c2fe0a26ad6ab05555011454d335d0a7452c1e7a",
+              "recorded_sha256": "90a4862f31156c1bc8b3ee5dca7f2d419cbd56a2fba246ba17df386599548160"
+            }
+          },
+          "recorded_frame_sequence_sha256": "d25d68c45aac9575ec426fdf3f7d6fa94b5e28c66f7e2ae173f1c4d22b05b07e",
+          "replayed_frame_sequence_sha256": "37ba349384290a53e640926e3fb17470a778fb8b33e098bd3d6db2e225c3b273",
+          "metadata_mismatches": {
+            "full_reset": 1
+          }
+        },
+        {
+          "guid": "e60e880e-aed6-4d38-af81-3ef95be929e1",
+          "levels_completed": 7,
+          "total_actions": 412,
+          "action_lines": 413,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 1,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/vc33/e60e880e-aed6-4d38-af81-3ef95be929e1.recording.jsonl",
+          "recording_sha256": "29e3d5613ec5abd2f8178cc9db535c6c0c285201e428d65c7ed24da6ad5a3cce",
+          "action_rows": 413,
+          "frame_fidelity": false,
+          "first_frame_divergence": {
+            "step": 185,
+            "action_id": 6,
+            "detail": {
+              "frame_index": 24,
+              "changed_cells": 2,
+              "replayed_sha256": "f052b9810dd7f9846243713153b5148962b0ffa3fa4dc61a9c2a143bdf83f2a6",
+              "recorded_sha256": "707010c821f0953f8f20385104b79ab62ee19e8875e40a70f95dd70792c967fe"
+            }
+          },
+          "recorded_frame_sequence_sha256": "7640fdfba3a59d082f51e4a802ea2026c64e9b258434abb3a6233bcd886a40c6",
+          "replayed_frame_sequence_sha256": "39c4cea8dbf2f8bfc8fff7a4286a78a9ed1cbe764cf1bcb6b3e79550a5adfb6e",
+          "metadata_mismatches": {
+            "full_reset": 1
+          }
+        },
+        {
+          "guid": "4cffe392-c5a8-47f7-a2db-86a97a4606ca",
+          "levels_completed": 7,
+          "total_actions": 449,
+          "action_lines": 450,
+          "line_delta": 1,
+          "tier": 3,
+          "rank": 2,
+          "recording": "data/human_replays/kaggle_mirror/public_games-dataset/vc33/4cffe392-c5a8-47f7-a2db-86a97a4606ca.recording.jsonl",
+          "recording_sha256": "770706bd37b1f6564a6d562154a041eb77f02e5cdefd0c1039106635c87e5750",
+          "action_rows": 450,
+          "frame_fidelity": false,
+          "first_frame_divergence": {
+            "step": 166,
+            "action_id": 6,
+            "detail": {
+              "frame_index": 24,
+              "changed_cells": 2,
+              "replayed_sha256": "4a35fb308b17f128ef691d33815a7b4c1735bbc4b429f53c357a4116c371ee1d",
+              "recorded_sha256": "4ba99f0f7c8b3adc9525e65b259384aaf2ed6870bb37e012fec0053200321a4f"
+            }
+          },
+          "recorded_frame_sequence_sha256": "bd2f55130348a59a2345ec28bec42c79477b0212a65267dfc5b563a41f615f43",
+          "replayed_frame_sequence_sha256": "b546d2c70d1edb1a52fe9b194e6d77cd3c44a29f769770d9d2bbaa8673d3b40a",
+          "metadata_mismatches": {
+            "full_reset": 1
+          }
+        }
+      ],
+      "metadata_mismatches": {
+        "full_reset": 3
+      }
+    }
+  ]
+}

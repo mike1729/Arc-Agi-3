@@ -1,0 +1,282 @@
+{
+  "format_version": 1,
+  "status": "a0_frozen",
+  "gidsl_version": "1.0",
+  "representation": "strict JSON AST",
+  "finite_grammar": true,
+  "canonicalizations": [
+    "alpha_rename_bound_variables",
+    "flatten_and_sort_associative_and_or",
+    "order_arguments_of_symmetric_relations",
+    "compare_sets_extensionally_by_member_handle"
+  ],
+  "operators": {
+    "quantifiers": [
+      "all",
+      "exists"
+    ],
+    "boolean": [
+      "and",
+      "or"
+    ],
+    "comparators": [
+      "eq",
+      "ge",
+      "gt",
+      "le",
+      "lt",
+      "ne"
+    ],
+    "relations": {
+      "overlapping": {
+        "arity": 2,
+        "symmetric": true
+      },
+      "adjacent": {
+        "arity": 2,
+        "symmetric": true
+      },
+      "inside": {
+        "arity": 2,
+        "symmetric": false
+      },
+      "same_color": {
+        "arity": 2,
+        "symmetric": true
+      },
+      "same_lateral_coordinate": {
+        "arity": 2,
+        "symmetric": true
+      },
+      "matches_required_attributes": {
+        "arity": 2,
+        "symmetric": false
+      },
+      "flanks": {
+        "arity": 2,
+        "symmetric": false
+      }
+    },
+    "events": {
+      "transformed": {
+        "arity": 1
+      },
+      "occurred": {
+        "arity": 1
+      }
+    },
+    "terminals": [
+      "set",
+      "var"
+    ],
+    "special": [
+      "empty",
+      "nonempty",
+      "support_of",
+      "ever",
+      "local_template_match",
+      "count_compare",
+      "ordered_events",
+      "action_and_condition",
+      "accumulated_compare"
+    ]
+  },
+  "classes": {
+    "state_relations": {
+      "skeletons": [
+        "exists_exists_relation",
+        "all_ever_exists_conjunction"
+      ],
+      "max_ast_depth": 7,
+      "max_quantifier_depth": 2,
+      "max_boolean_arity": 2,
+      "max_relation_arity": 2,
+      "max_sequence_arity": 0
+    },
+    "quantified_object_conditions": {
+      "skeletons": [
+        "nonempty_and_all_exists_relation",
+        "all_exists_conjunction"
+      ],
+      "max_ast_depth": 6,
+      "max_quantifier_depth": 2,
+      "max_boolean_arity": 3,
+      "max_relation_arity": 2,
+      "max_sequence_arity": 0
+    },
+    "counts": {
+      "skeletons": [
+        "count_compare"
+      ],
+      "max_ast_depth": 2,
+      "max_quantifier_depth": 0,
+      "max_boolean_arity": 1,
+      "max_relation_arity": 0,
+      "max_sequence_arity": 0
+    },
+    "region_membership": {
+      "skeletons": [
+        "all_exists_relation",
+        "exists_exists_relation"
+      ],
+      "max_ast_depth": 5,
+      "max_quantifier_depth": 2,
+      "max_boolean_arity": 1,
+      "max_relation_arity": 2,
+      "max_sequence_arity": 0
+    },
+    "symmetry_and_template_match": {
+      "skeletons": [
+        "all_local_template"
+      ],
+      "max_ast_depth": 3,
+      "max_quantifier_depth": 1,
+      "max_boolean_arity": 1,
+      "max_relation_arity": 0,
+      "max_sequence_arity": 0
+    },
+    "all_instances_transformed": {
+      "skeletons": [
+        "empty_set",
+        "all_event"
+      ],
+      "max_ast_depth": 3,
+      "max_quantifier_depth": 1,
+      "max_boolean_arity": 1,
+      "max_relation_arity": 0,
+      "max_sequence_arity": 0
+    },
+    "event_occurrence": {
+      "skeletons": [
+        "event"
+      ],
+      "max_ast_depth": 2,
+      "max_quantifier_depth": 0,
+      "max_boolean_arity": 1,
+      "max_relation_arity": 0,
+      "max_sequence_arity": 0
+    },
+    "ordered_event_programs": {
+      "skeletons": [
+        "ordered_events"
+      ],
+      "max_ast_depth": 2,
+      "max_quantifier_depth": 0,
+      "max_boolean_arity": 1,
+      "max_relation_arity": 0,
+      "max_sequence_arity": 4
+    },
+    "action_conditioned_terminal_triggers": {
+      "skeletons": [
+        "action_and_condition"
+      ],
+      "max_ast_depth": 6,
+      "max_quantifier_depth": 2,
+      "max_boolean_arity": 2,
+      "max_relation_arity": 2,
+      "max_sequence_arity": 0
+    },
+    "cumulative_counters": {
+      "skeletons": [
+        "accumulated_compare"
+      ],
+      "max_ast_depth": 2,
+      "max_quantifier_depth": 0,
+      "max_boolean_arity": 1,
+      "max_relation_arity": 0,
+      "max_sequence_arity": 0
+    }
+  },
+  "iteration_caps": [
+    {
+      "env": "dc22",
+      "class": "state_relations",
+      "gold_skeleton": "exists_exists_relation",
+      "gold_ast": {
+        "nodes": 7,
+        "max_ast_depth": 4,
+        "max_quantifier_depth": 2,
+        "max_boolean_arity": 0,
+        "max_relation_arity": 2,
+        "max_sequence_arity": 0
+      },
+      "structural_candidate_count": 2,
+      "count_basis": "declared authoring vocabulary; realized A3 count pending"
+    },
+    {
+      "env": "ft09",
+      "class": "symmetry_and_template_match",
+      "gold_skeleton": "all_local_template",
+      "gold_ast": {
+        "nodes": 4,
+        "max_ast_depth": 3,
+        "max_quantifier_depth": 1,
+        "max_boolean_arity": 0,
+        "max_relation_arity": 0,
+        "max_sequence_arity": 0
+      },
+      "structural_candidate_count": 1,
+      "count_basis": "declared authoring vocabulary; realized A3 count pending"
+    },
+    {
+      "env": "ls20",
+      "class": "state_relations",
+      "gold_skeleton": "all_ever_exists_conjunction",
+      "gold_ast": {
+        "nodes": 12,
+        "max_ast_depth": 6,
+        "max_quantifier_depth": 2,
+        "max_boolean_arity": 2,
+        "max_relation_arity": 2,
+        "max_sequence_arity": 0
+      },
+      "structural_candidate_count": 6,
+      "count_basis": "declared authoring vocabulary; realized A3 count pending"
+    },
+    {
+      "env": "m0r0",
+      "class": "all_instances_transformed",
+      "gold_skeleton": "empty_set",
+      "gold_ast": {
+        "nodes": 2,
+        "max_ast_depth": 2,
+        "max_quantifier_depth": 0,
+        "max_boolean_arity": 0,
+        "max_relation_arity": 0,
+        "max_sequence_arity": 0
+      },
+      "structural_candidate_count": 2,
+      "count_basis": "declared authoring vocabulary; realized A3 count pending"
+    },
+    {
+      "env": "tu93",
+      "class": "quantified_object_conditions",
+      "gold_skeleton": "nonempty_and_all_exists_relation",
+      "gold_ast": {
+        "nodes": 10,
+        "max_ast_depth": 5,
+        "max_quantifier_depth": 2,
+        "max_boolean_arity": 2,
+        "max_relation_arity": 2,
+        "max_sequence_arity": 0
+      },
+      "structural_candidate_count": 2,
+      "count_basis": "declared authoring vocabulary; realized A3 count pending"
+    },
+    {
+      "env": "vc33",
+      "class": "quantified_object_conditions",
+      "gold_skeleton": "all_exists_conjunction",
+      "gold_ast": {
+        "nodes": 15,
+        "max_ast_depth": 6,
+        "max_quantifier_depth": 2,
+        "max_boolean_arity": 3,
+        "max_relation_arity": 2,
+        "max_sequence_arity": 0
+      },
+      "structural_candidate_count": 14,
+      "count_basis": "declared authoring vocabulary; realized A3 count pending"
+    }
+  ]
+}

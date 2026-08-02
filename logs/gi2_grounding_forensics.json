@@ -1,0 +1,490 @@
+{
+  "format_version": 1,
+  "status": "exploratory_forensics",
+  "scope": "iteration",
+  "commissioned": "operator, 2026-07-30, after the representability stop",
+  "inputs": {
+    "grounding_sha256": "191b675ef70cfad121a6671303835eeede519f253a2dc017535ab0d7e9d35709",
+    "fidelity_sha256": "8120a7760b29a3fffee1dbfc56c96360c7a1461b0417173632cee7fd0937cf95"
+  },
+  "unmapped_entity_forensics": {
+    "ft09": {
+      "set": "clues",
+      "entities": [
+        {
+          "entity": "2524469d7b22bee0",
+          "level_index": 4,
+          "projected_pixels": 36,
+          "visible_pixels": 36,
+          "background_color": 4,
+          "intersecting_components": [
+            {
+              "color": 0,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 0,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 0,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 2,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 2,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 2,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 2,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 3,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 14,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            }
+          ],
+          "pure_components_partition_sprite": true,
+          "connected_nonbackground_region_pixels": 36,
+          "region_equals_sprite": true,
+          "region_colors": {
+            "0": 12,
+            "2": 16,
+            "3": 4,
+            "14": 4
+          }
+        },
+        {
+          "entity": "4c6e13c12d0abba1",
+          "level_index": 4,
+          "projected_pixels": 36,
+          "visible_pixels": 36,
+          "background_color": 4,
+          "intersecting_components": [
+            {
+              "color": 0,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 0,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 0,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 0,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 2,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 2,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 2,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 3,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 14,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            }
+          ],
+          "pure_components_partition_sprite": true,
+          "connected_nonbackground_region_pixels": 36,
+          "region_equals_sprite": true,
+          "region_colors": {
+            "0": 16,
+            "2": 12,
+            "3": 4,
+            "14": 4
+          }
+        },
+        {
+          "entity": "e4d8738c74e9cb09",
+          "level_index": 4,
+          "projected_pixels": 36,
+          "visible_pixels": 36,
+          "background_color": 4,
+          "intersecting_components": [
+            {
+              "color": 0,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 0,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 0,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 0,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 2,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 2,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 2,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 2,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            },
+            {
+              "color": 14,
+              "component_pixels": 4,
+              "overlap": 4,
+              "purity": 1.0
+            }
+          ],
+          "pure_components_partition_sprite": true,
+          "connected_nonbackground_region_pixels": 36,
+          "region_equals_sprite": true,
+          "region_colors": {
+            "0": 16,
+            "2": 16,
+            "14": 4
+          }
+        }
+      ]
+    },
+    "ls20": {
+      "set": "goal_tiles",
+      "entities": [
+        {
+          "entity": "d2f8faa2c1c2edf2",
+          "level_index": 5,
+          "projected_pixels": 25,
+          "visible_pixels": 19,
+          "background_color": 4,
+          "intersecting_components": [
+            {
+              "color": 5,
+              "component_pixels": 43,
+              "overlap": 19,
+              "purity": 0.44186
+            }
+          ],
+          "pure_components_partition_sprite": false,
+          "connected_nonbackground_region_pixels": 1817,
+          "region_equals_sprite": false,
+          "region_colors": {
+            "0": 8,
+            "1": 12,
+            "3": 1642,
+            "5": 86,
+            "8": 8,
+            "9": 23,
+            "11": 24,
+            "12": 12,
+            "14": 2
+          }
+        }
+      ]
+    }
+  },
+  "vc33_divergence": [
+    {
+      "guid": "837812ad-2c5c-4943-8632-b6f8cd4b5b4d",
+      "divergent_rows": [
+        {
+          "step": 138,
+          "action_id": 6,
+          "completion_increment_to": 4,
+          "n_frames": 65,
+          "divergent_frames": [
+            {
+              "frame_index": 26,
+              "changed_cells": 2
+            },
+            {
+              "frame_index": 27,
+              "changed_cells": 4
+            },
+            {
+              "frame_index": 28,
+              "changed_cells": 6
+            },
+            {
+              "frame_index": 29,
+              "changed_cells": 8
+            },
+            {
+              "frame_index": 30,
+              "changed_cells": 10
+            },
+            {
+              "frame_index": 31,
+              "changed_cells": 12
+            },
+            {
+              "frame_index": 32,
+              "changed_cells": 12
+            },
+            {
+              "frame_index": 33,
+              "changed_cells": 10
+            },
+            {
+              "frame_index": 34,
+              "changed_cells": 8
+            },
+            {
+              "frame_index": 35,
+              "changed_cells": 6
+            },
+            {
+              "frame_index": 36,
+              "changed_cells": 4
+            },
+            {
+              "frame_index": 37,
+              "changed_cells": 2
+            }
+          ],
+          "colour_substitutions": {
+            "11->14": 84
+          },
+          "non_intermediate_roles_divergent": []
+        }
+      ],
+      "n_divergent_rows": 1,
+      "all_divergence_intermediate_only": true
+    },
+    {
+      "guid": "e60e880e-aed6-4d38-af81-3ef95be929e1",
+      "divergent_rows": [
+        {
+          "step": 185,
+          "action_id": 6,
+          "completion_increment_to": 4,
+          "n_frames": 61,
+          "divergent_frames": [
+            {
+              "frame_index": 24,
+              "changed_cells": 2
+            },
+            {
+              "frame_index": 25,
+              "changed_cells": 4
+            },
+            {
+              "frame_index": 26,
+              "changed_cells": 6
+            },
+            {
+              "frame_index": 27,
+              "changed_cells": 8
+            },
+            {
+              "frame_index": 28,
+              "changed_cells": 10
+            },
+            {
+              "frame_index": 29,
+              "changed_cells": 12
+            },
+            {
+              "frame_index": 30,
+              "changed_cells": 12
+            },
+            {
+              "frame_index": 31,
+              "changed_cells": 10
+            },
+            {
+              "frame_index": 32,
+              "changed_cells": 8
+            },
+            {
+              "frame_index": 33,
+              "changed_cells": 6
+            },
+            {
+              "frame_index": 34,
+              "changed_cells": 4
+            },
+            {
+              "frame_index": 35,
+              "changed_cells": 2
+            }
+          ],
+          "colour_substitutions": {
+            "11->14": 84
+          },
+          "non_intermediate_roles_divergent": []
+        }
+      ],
+      "n_divergent_rows": 1,
+      "all_divergence_intermediate_only": true
+    },
+    {
+      "guid": "4cffe392-c5a8-47f7-a2db-86a97a4606ca",
+      "divergent_rows": [
+        {
+          "step": 166,
+          "action_id": 6,
+          "completion_increment_to": 4,
+          "n_frames": 62,
+          "divergent_frames": [
+            {
+              "frame_index": 24,
+              "changed_cells": 2
+            },
+            {
+              "frame_index": 25,
+              "changed_cells": 4
+            },
+            {
+              "frame_index": 26,
+              "changed_cells": 6
+            },
+            {
+              "frame_index": 27,
+              "changed_cells": 8
+            },
+            {
+              "frame_index": 28,
+              "changed_cells": 10
+            },
+            {
+              "frame_index": 29,
+              "changed_cells": 12
+            },
+            {
+              "frame_index": 30,
+              "changed_cells": 12
+            },
+            {
+              "frame_index": 31,
+              "changed_cells": 10
+            },
+            {
+              "frame_index": 32,
+              "changed_cells": 8
+            },
+            {
+              "frame_index": 33,
+              "changed_cells": 6
+            },
+            {
+              "frame_index": 34,
+              "changed_cells": 4
+            },
+            {
+              "frame_index": 35,
+              "changed_cells": 2
+            }
+          ],
+          "colour_substitutions": {
+            "11->14": 84
+          },
+          "non_intermediate_roles_divergent": []
+        }
+      ],
+      "n_divergent_rows": 1,
+      "all_divergence_intermediate_only": true
+    }
+  ],
+  "metadata_mismatches": {
+    "dc22": {
+      "full_reset": 3
+    },
+    "ft09": {
+      "available_actions": 537,
+      "full_reset": 3
+    },
+    "ls20": {
+      "full_reset": 3
+    },
+    "m0r0": {
+      "full_reset": 3
+    },
+    "tu93": {
+      "full_reset": 3
+    },
+    "vc33": {
+      "full_reset": 3
+    }
+  }
+}

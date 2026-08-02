@@ -1,0 +1,334 @@
+{
+  "format_version": 1,
+  "status": "exploratory_diagnostic",
+  "non_funding_note": "Commissioned by the operator after the Sprint A representability stop. The 5/6 gate verdict is unchanged; no one-shot game is touched; no model calls are made.",
+  "scope": "iteration, grounded games only",
+  "inputs": {
+    "grounding_sha256": "191b675ef70cfad121a6671303835eeede519f253a2dc017535ab0d7e9d35709",
+    "gold_sha256": "552d347c2998de63e97eaaab7bbf16b3e5d5d6a1bc0af4fe33c4391259dda37b",
+    "forks_sha256": "4c3443d1868b5130fc33fb6e03b9c31cee992dfec8d9ab80eb4378c60bd2577c",
+    "sprint_sha256": "f0026d84b6ebdb006e20918216bd28e6bdcee874cfb2bcd9116658de33e372ef"
+  },
+  "declared_limits": [
+    "cross-set version space unmeasured (A3 proper after remediation)",
+    "role excluded from verification descriptors",
+    "event/ever/ordered/accumulated/action-conditioned skeletons and flanks/support facts are outside the observable subset; they evaluate as false and cannot survive",
+    "trajectory sampled at deterministic stride, cap 40/session",
+    "vc33 positive-only; gold weakened by dropping flanks",
+    "group vocabulary is adjacency composites at two granularities \u2014 adjacent pairs and maximal clusters \u2014 validated against artifact gold ids at attach time; not the halted plan's dense local compaction",
+    "groups constructed only where gold extensions are group-shaped (tu93, vc33)"
+  ],
+  "games": [
+    {
+      "env": "dc22",
+      "gold_class": "state_relations",
+      "planned_descriptor_curve": [
+        {
+          "completions": 1,
+          "per_session_grounding_assignments": [
+            8,
+            8,
+            8
+          ],
+          "median": 8
+        },
+        {
+          "completions": 2,
+          "per_session_grounding_assignments": [
+            4,
+            4,
+            8
+          ],
+          "median": 4
+        },
+        {
+          "completions": 3,
+          "per_session_grounding_assignments": [
+            4,
+            4,
+            8
+          ],
+          "median": 4
+        }
+      ],
+      "gold_descriptors": {
+        "players": {
+          "terms": [
+            {
+              "feature": "shapes",
+              "value": [
+                "04afcf64ef705eae"
+              ]
+            }
+          ],
+          "complexity": 1,
+          "n_matching_descriptors": 1
+        },
+        "goal_tiles": null
+      },
+      "state_counts": {
+        "completion_pre_states": 18,
+        "annotated_pre_states": 18,
+        "solved": 18,
+        "trajectory_sampled": 119,
+        "fork_negatives": 1605,
+        "fork_alternative_positives": 0,
+        "fork_skipped_null_grids": 0
+      },
+      "gold_candidate": null,
+      "reason": "gold set has no verification-feature descriptor"
+    },
+    {
+      "env": "m0r0",
+      "gold_class": "all_instances_transformed",
+      "planned_descriptor_curve": [
+        {
+          "completions": 1,
+          "per_session_grounding_assignments": [
+            0,
+            0,
+            0
+          ],
+          "median": 0
+        },
+        {
+          "completions": 2,
+          "per_session_grounding_assignments": [
+            0,
+            0,
+            0
+          ],
+          "median": 0
+        },
+        {
+          "completions": 3,
+          "per_session_grounding_assignments": [
+            0,
+            0,
+            0
+          ],
+          "median": 0
+        }
+      ],
+      "gold_descriptors": {
+        "active_movers": null
+      },
+      "state_counts": {
+        "completion_pre_states": 18,
+        "annotated_pre_states": 18,
+        "solved": 18,
+        "trajectory_sampled": 116,
+        "fork_negatives": 5334,
+        "fork_alternative_positives": 0,
+        "fork_skipped_null_grids": 0
+      },
+      "gold_candidate": null,
+      "reason": "gold set has no verification-feature descriptor"
+    },
+    {
+      "env": "tu93",
+      "gold_class": "quantified_object_conditions",
+      "planned_descriptor_curve": [
+        {
+          "completions": 1,
+          "per_session_grounding_assignments": [
+            4,
+            4,
+            4
+          ],
+          "median": 4
+        },
+        {
+          "completions": 2,
+          "per_session_grounding_assignments": [
+            4,
+            4,
+            4
+          ],
+          "median": 4
+        },
+        {
+          "completions": 3,
+          "per_session_grounding_assignments": [
+            3,
+            3,
+            3
+          ],
+          "median": 3
+        }
+      ],
+      "gold_descriptors": {
+        "movers": {
+          "terms": [
+            {
+              "feature": "colors",
+              "value": [
+                4,
+                9
+              ]
+            }
+          ],
+          "complexity": 1,
+          "n_matching_descriptors": 1
+        },
+        "exits": {
+          "terms": [
+            {
+              "feature": "colors",
+              "value": [
+                14
+              ]
+            }
+          ],
+          "complexity": 1,
+          "n_matching_descriptors": 1
+        }
+      },
+      "state_counts": {
+        "completion_pre_states": 27,
+        "annotated_pre_states": 27,
+        "solved": 27,
+        "trajectory_sampled": 113,
+        "fork_negatives": 81,
+        "fork_alternative_positives": 0,
+        "fork_skipped_null_grids": 0
+      },
+      "gold_candidate": {
+        "weakened_for_evaluability": false,
+        "found_in_candidate_space": true,
+        "solved_all_true": false,
+        "trajectory_rate": 0.0,
+        "fork_negatives_true": 0,
+        "fork_negatives_total": 81,
+        "fork_alternative_positives_true": 0,
+        "fork_alternative_positives_total": 0
+      },
+      "candidates_evaluated": 340,
+      "candidates_true_at_all_solved": 130,
+      "arms": {
+        "trajectory_only": {
+          "survivors": 128,
+          "gold_survives": false,
+          "gold_rank": null,
+          "top": [
+            {
+              "class": "all_instances_transformed",
+              "skeleton": "empty_set",
+              "trajectory_rate": 0.12389380530973451,
+              "is_gold": false
+            },
+            {
+              "class": "counts",
+              "skeleton": "count_compare",
+              "trajectory_rate": 0.12389380530973451,
+              "is_gold": false
+            },
+            {
+              "class": "counts",
+              "skeleton": "count_compare",
+              "trajectory_rate": 0.12389380530973451,
+              "is_gold": false
+            },
+            {
+              "class": "all_instances_transformed",
+              "skeleton": "all_event",
+              "trajectory_rate": 0.12389380530973451,
+              "is_gold": false
+            },
+            {
+              "class": "all_instances_transformed",
+              "skeleton": "all_event",
+              "trajectory_rate": 0.12389380530973451,
+              "is_gold": false
+            }
+          ]
+        },
+        "trajectory_plus_forks": {
+          "survivors": 125,
+          "gold_survives": false,
+          "gold_rank": null,
+          "top": [
+            {
+              "class": "all_instances_transformed",
+              "skeleton": "empty_set",
+              "trajectory_rate": 0.12389380530973451,
+              "is_gold": false
+            },
+            {
+              "class": "counts",
+              "skeleton": "count_compare",
+              "trajectory_rate": 0.12389380530973451,
+              "is_gold": false
+            },
+            {
+              "class": "counts",
+              "skeleton": "count_compare",
+              "trajectory_rate": 0.12389380530973451,
+              "is_gold": false
+            },
+            {
+              "class": "all_instances_transformed",
+              "skeleton": "all_event",
+              "trajectory_rate": 0.12389380530973451,
+              "is_gold": false
+            },
+            {
+              "class": "all_instances_transformed",
+              "skeleton": "all_event",
+              "trajectory_rate": 0.12389380530973451,
+              "is_gold": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "env": "vc33",
+      "gold_class": "quantified_object_conditions",
+      "planned_descriptor_curve": [
+        {
+          "completions": 1,
+          "per_session_grounding_assignments": [
+            12,
+            12,
+            20
+          ],
+          "median": 12
+        },
+        {
+          "completions": 2,
+          "per_session_grounding_assignments": [
+            2,
+            2,
+            4
+          ],
+          "median": 2
+        },
+        {
+          "completions": 3,
+          "per_session_grounding_assignments": [
+            0,
+            0,
+            0
+          ],
+          "median": 0
+        }
+      ],
+      "gold_descriptors": {
+        "falling_items": null,
+        "receptacles": null
+      },
+      "state_counts": {
+        "completion_pre_states": 21,
+        "annotated_pre_states": 12,
+        "solved": 21,
+        "trajectory_sampled": 111,
+        "fork_negatives": 0,
+        "fork_alternative_positives": 0,
+        "fork_skipped_null_grids": 0
+      },
+      "gold_candidate": null,
+      "reason": "gold set has no verification-feature descriptor"
+    }
+  ]
+}
