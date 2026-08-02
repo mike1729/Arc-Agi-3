@@ -1,0 +1,1179 @@
+{
+ "format_version": 3,
+ "games": [
+  {
+   "env": "dc22",
+   "sessions": [
+    {
+     "actions": 599,
+     "available_actions": {
+      "max": 5,
+      "n": 599,
+      "p25": 5,
+      "p50": 5,
+      "p75": 5
+     },
+     "change_magnitude": {
+      "max": 168,
+      "n": 563,
+      "p25": 8,
+      "p50": 8,
+      "p75": 17
+     },
+     "clicks_effective": 178,
+     "clicks_noop": 18,
+     "colors_per_board": {
+      "max": 16,
+      "n": 599,
+      "p25": 12,
+      "p50": 15,
+      "p75": 15
+     },
+     "completion_pairs": 6,
+     "completions": 6,
+     "delta_regions": {
+      "max": 37,
+      "n": 563,
+      "p25": 1,
+      "p50": 1,
+      "p75": 2
+     },
+     "delta_regions_hist": {
+      "1": 336,
+      "2": 119,
+      "3": 26,
+      "4-8": 56,
+      "9-12": 0,
+      ">12": 26
+     },
+     "distinct_click_cells_effective": 79,
+     "distinct_click_cells_noop_only": 10,
+     "guid": "ab11e695-b9d2-42f4-871c-8f90aa8c3a85",
+     "max_levels": 6,
+     "pairs_changed": 563,
+     "pairs_noop": 29,
+     "pairs_region_eligible": 537,
+     "pairs_region_excluded": 26,
+     "resets": 1,
+     "settled_boards": 599,
+     "tiny_region_share": 0.5536
+    },
+    {
+     "actions": 1193,
+     "available_actions": {
+      "max": 5,
+      "n": 1193,
+      "p25": 5,
+      "p50": 5,
+      "p75": 5
+     },
+     "change_magnitude": {
+      "max": 168,
+      "n": 1042,
+      "p25": 8,
+      "p50": 8,
+      "p75": 17
+     },
+     "clicks_effective": 324,
+     "clicks_noop": 94,
+     "colors_per_board": {
+      "max": 16,
+      "n": 1193,
+      "p25": 13,
+      "p50": 15,
+      "p75": 15
+     },
+     "completion_pairs": 6,
+     "completions": 6,
+     "delta_regions": {
+      "max": 37,
+      "n": 1042,
+      "p25": 1,
+      "p50": 1,
+      "p75": 2
+     },
+     "delta_regions_hist": {
+      "1": 636,
+      "2": 225,
+      "3": 47,
+      "4-8": 80,
+      "9-12": 0,
+      ">12": 54
+     },
+     "distinct_click_cells_effective": 142,
+     "distinct_click_cells_noop_only": 29,
+     "guid": "1b9a2041-bc99-4b7b-8d99-041f0503956f",
+     "max_levels": 6,
+     "pairs_changed": 1042,
+     "pairs_noop": 140,
+     "pairs_region_eligible": 988,
+     "pairs_region_excluded": 54,
+     "resets": 5,
+     "settled_boards": 1193,
+     "tiny_region_share": 0.5335
+    },
+    {
+     "actions": 1214,
+     "available_actions": {
+      "max": 5,
+      "n": 1214,
+      "p25": 5,
+      "p50": 5,
+      "p75": 5
+     },
+     "change_magnitude": {
+      "max": 169,
+      "n": 990,
+      "p25": 8,
+      "p50": 8,
+      "p75": 23
+     },
+     "clicks_effective": 372,
+     "clicks_noop": 171,
+     "colors_per_board": {
+      "max": 16,
+      "n": 1214,
+      "p25": 13,
+      "p50": 15,
+      "p75": 15
+     },
+     "completion_pairs": 6,
+     "completions": 6,
+     "delta_regions": {
+      "max": 37,
+      "n": 990,
+      "p25": 1,
+      "p50": 1,
+      "p75": 2
+     },
+     "delta_regions_hist": {
+      "1": 504,
+      "2": 248,
+      "3": 57,
+      "4-8": 131,
+      "9-12": 0,
+      ">12": 50
+     },
+     "distinct_click_cells_effective": 149,
+     "distinct_click_cells_noop_only": 88,
+     "guid": "e8f76fe2-d90a-44ec-97cd-d09ec9b9cbcd",
+     "max_levels": 6,
+     "pairs_changed": 990,
+     "pairs_noop": 217,
+     "pairs_region_eligible": 940,
+     "pairs_region_excluded": 50,
+     "resets": 1,
+     "settled_boards": 1214,
+     "tiny_region_share": 0.5463
+    }
+   ],
+   "totals": {
+    "actions": 3006,
+    "clicks_effective": 874,
+    "clicks_noop": 283,
+    "completion_pairs": 18,
+    "completions": 18,
+    "delta_regions_hist": {
+     "1": 1476,
+     "2": 592,
+     "3": 130,
+     "4-8": 267,
+     "9-12": 0,
+     ">12": 130
+    },
+    "pairs_changed": 2595,
+    "pairs_noop": 386,
+    "pairs_region_eligible": 2465,
+    "pairs_region_excluded": 130,
+    "resets": 7,
+    "settled_boards": 3006,
+    "transfer_cases": 15
+   }
+  },
+  {
+   "env": "ft09",
+   "sessions": [
+    {
+     "actions": 150,
+     "available_actions": {
+      "max": 6,
+      "n": 150,
+      "p25": 6,
+      "p50": 6,
+      "p75": 6
+     },
+     "change_magnitude": {
+      "max": 165,
+      "n": 122,
+      "p25": 36,
+      "p50": 37,
+      "p75": 38
+     },
+     "clicks_effective": 119,
+     "clicks_noop": 21,
+     "colors_per_board": {
+      "max": 9,
+      "n": 150,
+      "p25": 7,
+      "p50": 8,
+      "p75": 8
+     },
+     "completion_pairs": 6,
+     "completions": 6,
+     "delta_regions": {
+      "max": 10,
+      "n": 122,
+      "p25": 1,
+      "p50": 2,
+      "p75": 2
+     },
+     "delta_regions_hist": {
+      "1": 39,
+      "2": 75,
+      "3": 3,
+      "4-8": 1,
+      "9-12": 4,
+      ">12": 0
+     },
+     "distinct_click_cells_effective": 103,
+     "distinct_click_cells_noop_only": 18,
+     "guid": "3b1ce31a-0af9-41f3-858f-4ead42360d15",
+     "max_levels": 6,
+     "pairs_changed": 122,
+     "pairs_noop": 21,
+     "pairs_region_eligible": 122,
+     "pairs_region_excluded": 0,
+     "resets": 1,
+     "settled_boards": 150,
+     "tiny_region_share": 0.4531
+    },
+    {
+     "actions": 164,
+     "available_actions": {
+      "max": 6,
+      "n": 164,
+      "p25": 6,
+      "p50": 6,
+      "p75": 6
+     },
+     "change_magnitude": {
+      "max": 165,
+      "n": 144,
+      "p25": 36,
+      "p50": 37,
+      "p75": 38
+     },
+     "clicks_effective": 141,
+     "clicks_noop": 11,
+     "colors_per_board": {
+      "max": 9,
+      "n": 164,
+      "p25": 7,
+      "p50": 8,
+      "p75": 9
+     },
+     "completion_pairs": 6,
+     "completions": 6,
+     "delta_regions": {
+      "max": 10,
+      "n": 144,
+      "p25": 1,
+      "p50": 2,
+      "p75": 2
+     },
+     "delta_regions_hist": {
+      "1": 44,
+      "2": 78,
+      "3": 7,
+      "4-8": 2,
+      "9-12": 13,
+      ">12": 0
+     },
+     "distinct_click_cells_effective": 122,
+     "distinct_click_cells_noop_only": 11,
+     "guid": "f58b7fe2-aafd-414a-a1fb-74d4b3e717e0",
+     "max_levels": 6,
+     "pairs_changed": 144,
+     "pairs_noop": 11,
+     "pairs_region_eligible": 144,
+     "pairs_region_excluded": 0,
+     "resets": 3,
+     "settled_boards": 164,
+     "tiny_region_share": 0.4708
+    },
+    {
+     "actions": 223,
+     "available_actions": {
+      "max": 6,
+      "n": 223,
+      "p25": 6,
+      "p50": 6,
+      "p75": 6
+     },
+     "change_magnitude": {
+      "max": 165,
+      "n": 193,
+      "p25": 2,
+      "p50": 36,
+      "p75": 38
+     },
+     "clicks_effective": 134,
+     "clicks_noop": 13,
+     "colors_per_board": {
+      "max": 9,
+      "n": 223,
+      "p25": 7,
+      "p50": 8,
+      "p75": 8
+     },
+     "completion_pairs": 6,
+     "completions": 6,
+     "delta_regions": {
+      "max": 10,
+      "n": 193,
+      "p25": 1,
+      "p50": 2,
+      "p75": 2
+     },
+     "delta_regions_hist": {
+      "1": 90,
+      "2": 87,
+      "3": 11,
+      "4-8": 0,
+      "9-12": 5,
+      ">12": 0
+     },
+     "distinct_click_cells_effective": 124,
+     "distinct_click_cells_noop_only": 13,
+     "guid": "01f76fc7-c612-4006-8d08-c13ed0cb91de",
+     "max_levels": 6,
+     "pairs_changed": 193,
+     "pairs_noop": 17,
+     "pairs_region_eligible": 193,
+     "pairs_region_excluded": 0,
+     "resets": 7,
+     "settled_boards": 223,
+     "tiny_region_share": 0.5131
+    }
+   ],
+   "totals": {
+    "actions": 537,
+    "clicks_effective": 394,
+    "clicks_noop": 45,
+    "completion_pairs": 18,
+    "completions": 18,
+    "delta_regions_hist": {
+     "1": 173,
+     "2": 240,
+     "3": 21,
+     "4-8": 3,
+     "9-12": 22,
+     ">12": 0
+    },
+    "pairs_changed": 459,
+    "pairs_noop": 49,
+    "pairs_region_eligible": 459,
+    "pairs_region_excluded": 0,
+    "resets": 11,
+    "settled_boards": 537,
+    "transfer_cases": 15
+   }
+  },
+  {
+   "env": "ls20",
+   "sessions": [
+    {
+     "actions": 473,
+     "available_actions": {
+      "max": 4,
+      "n": 473,
+      "p25": 4,
+      "p50": 4,
+      "p75": 4
+     },
+     "change_magnitude": {
+      "max": 1955,
+      "n": 462,
+      "p25": 54,
+      "p50": 64,
+      "p75": 106
+     },
+     "clicks_effective": 0,
+     "clicks_noop": 0,
+     "colors_per_board": {
+      "max": 10,
+      "n": 473,
+      "p25": 9,
+      "p50": 10,
+      "p75": 10
+     },
+     "completion_pairs": 7,
+     "completions": 7,
+     "delta_regions": {
+      "max": 11,
+      "n": 462,
+      "p25": 2,
+      "p50": 4,
+      "p75": 8
+     },
+     "delta_regions_hist": {
+      "1": 7,
+      "2": 171,
+      "3": 16,
+      "4-8": 169,
+      "9-12": 99,
+      ">12": 0
+     },
+     "distinct_click_cells_effective": 0,
+     "distinct_click_cells_noop_only": 0,
+     "guid": "57630d5e-4a01-42b6-bda1-43ced11c5bd7",
+     "max_levels": 7,
+     "pairs_changed": 462,
+     "pairs_noop": 3,
+     "pairs_region_eligible": 462,
+     "pairs_region_excluded": 0,
+     "resets": 1,
+     "settled_boards": 473,
+     "tiny_region_share": 0.4052
+    },
+    {
+     "actions": 547,
+     "available_actions": {
+      "max": 4,
+      "n": 547,
+      "p25": 4,
+      "p50": 4,
+      "p75": 4
+     },
+     "change_magnitude": {
+      "max": 1604,
+      "n": 537,
+      "p25": 54,
+      "p50": 64,
+      "p75": 96
+     },
+     "clicks_effective": 0,
+     "clicks_noop": 0,
+     "colors_per_board": {
+      "max": 10,
+      "n": 547,
+      "p25": 9,
+      "p50": 10,
+      "p75": 10
+     },
+     "completion_pairs": 7,
+     "completions": 7,
+     "delta_regions": {
+      "max": 11,
+      "n": 537,
+      "p25": 2,
+      "p50": 4,
+      "p75": 6
+     },
+     "delta_regions_hist": {
+      "1": 1,
+      "2": 231,
+      "3": 24,
+      "4-8": 168,
+      "9-12": 113,
+      ">12": 0
+     },
+     "distinct_click_cells_effective": 0,
+     "distinct_click_cells_noop_only": 0,
+     "guid": "8aed7120-f7a9-45a1-837a-68bc7dc37a4f",
+     "max_levels": 7,
+     "pairs_changed": 537,
+     "pairs_noop": 2,
+     "pairs_region_eligible": 537,
+     "pairs_region_excluded": 0,
+     "resets": 1,
+     "settled_boards": 547,
+     "tiny_region_share": 0.4174
+    },
+    {
+     "actions": 594,
+     "available_actions": {
+      "max": 4,
+      "n": 594,
+      "p25": 4,
+      "p50": 4,
+      "p75": 4
+     },
+     "change_magnitude": {
+      "max": 2224,
+      "n": 574,
+      "p25": 54,
+      "p50": 64,
+      "p75": 91
+     },
+     "clicks_effective": 0,
+     "clicks_noop": 0,
+     "colors_per_board": {
+      "max": 10,
+      "n": 594,
+      "p25": 9,
+      "p50": 10,
+      "p75": 10
+     },
+     "completion_pairs": 7,
+     "completions": 7,
+     "delta_regions": {
+      "max": 12,
+      "n": 574,
+      "p25": 2,
+      "p50": 4,
+      "p75": 6
+     },
+     "delta_regions_hist": {
+      "1": 1,
+      "2": 250,
+      "3": 22,
+      "4-8": 200,
+      "9-12": 101,
+      ">12": 0
+     },
+     "distinct_click_cells_effective": 0,
+     "distinct_click_cells_noop_only": 0,
+     "guid": "8f03134f-a5f6-4b76-95b6-fd70fcb81ee1",
+     "max_levels": 7,
+     "pairs_changed": 574,
+     "pairs_noop": 7,
+     "pairs_region_eligible": 574,
+     "pairs_region_excluded": 0,
+     "resets": 6,
+     "settled_boards": 594,
+     "tiny_region_share": 0.4099
+    }
+   ],
+   "totals": {
+    "actions": 1614,
+    "clicks_effective": 0,
+    "clicks_noop": 0,
+    "completion_pairs": 21,
+    "completions": 21,
+    "delta_regions_hist": {
+     "1": 9,
+     "2": 652,
+     "3": 62,
+     "4-8": 537,
+     "9-12": 313,
+     ">12": 0
+    },
+    "pairs_changed": 1573,
+    "pairs_noop": 12,
+    "pairs_region_eligible": 1573,
+    "pairs_region_excluded": 0,
+    "resets": 8,
+    "settled_boards": 1614,
+    "transfer_cases": 18
+   }
+  },
+  {
+   "env": "m0r0",
+   "sessions": [
+    {
+     "actions": 411,
+     "available_actions": {
+      "max": 6,
+      "n": 411,
+      "p25": 6,
+      "p50": 6,
+      "p75": 6
+     },
+     "change_magnitude": {
+      "max": 162,
+      "n": 389,
+      "p25": 32,
+      "p50": 34,
+      "p75": 66
+     },
+     "clicks_effective": 19,
+     "clicks_noop": 4,
+     "colors_per_board": {
+      "max": 9,
+      "n": 411,
+      "p25": 6,
+      "p50": 7,
+      "p75": 8
+     },
+     "completion_pairs": 6,
+     "completions": 6,
+     "delta_regions": {
+      "max": 6,
+      "n": 389,
+      "p25": 2,
+      "p50": 2,
+      "p75": 4
+     },
+     "delta_regions_hist": {
+      "1": 65,
+      "2": 138,
+      "3": 69,
+      "4-8": 117,
+      "9-12": 0,
+      ">12": 0
+     },
+     "distinct_click_cells_effective": 18,
+     "distinct_click_cells_noop_only": 4,
+     "guid": "0e1adaaf-fe7e-47f3-923f-97791151e11e",
+     "max_levels": 6,
+     "pairs_changed": 389,
+     "pairs_noop": 14,
+     "pairs_region_eligible": 389,
+     "pairs_region_excluded": 0,
+     "resets": 2,
+     "settled_boards": 411,
+     "tiny_region_share": 0.5019
+    },
+    {
+     "actions": 971,
+     "available_actions": {
+      "max": 6,
+      "n": 971,
+      "p25": 6,
+      "p50": 6,
+      "p75": 6
+     },
+     "change_magnitude": {
+      "max": 162,
+      "n": 905,
+      "p25": 32,
+      "p50": 64,
+      "p75": 66
+     },
+     "clicks_effective": 42,
+     "clicks_noop": 14,
+     "colors_per_board": {
+      "max": 9,
+      "n": 971,
+      "p25": 6,
+      "p50": 7,
+      "p75": 8
+     },
+     "completion_pairs": 6,
+     "completions": 6,
+     "delta_regions": {
+      "max": 8,
+      "n": 905,
+      "p25": 2,
+      "p50": 2,
+      "p75": 4
+     },
+     "delta_regions_hist": {
+      "1": 185,
+      "2": 295,
+      "3": 179,
+      "4-8": 246,
+      "9-12": 0,
+      ">12": 0
+     },
+     "distinct_click_cells_effective": 40,
+     "distinct_click_cells_noop_only": 12,
+     "guid": "a98ab7b3-64fe-41ab-a357-c65519897691",
+     "max_levels": 6,
+     "pairs_changed": 905,
+     "pairs_noop": 54,
+     "pairs_region_eligible": 905,
+     "pairs_region_excluded": 0,
+     "resets": 6,
+     "settled_boards": 971,
+     "tiny_region_share": 0.3996
+    },
+    {
+     "actions": 1104,
+     "available_actions": {
+      "max": 6,
+      "n": 1104,
+      "p25": 6,
+      "p50": 6,
+      "p75": 6
+     },
+     "change_magnitude": {
+      "max": 162,
+      "n": 1036,
+      "p25": 32,
+      "p50": 52,
+      "p75": 66
+     },
+     "clicks_effective": 54,
+     "clicks_noop": 8,
+     "colors_per_board": {
+      "max": 9,
+      "n": 1104,
+      "p25": 7,
+      "p50": 8,
+      "p75": 8
+     },
+     "completion_pairs": 6,
+     "completions": 6,
+     "delta_regions": {
+      "max": 8,
+      "n": 1036,
+      "p25": 2,
+      "p50": 2,
+      "p75": 4
+     },
+     "delta_regions_hist": {
+      "1": 167,
+      "2": 358,
+      "3": 161,
+      "4-8": 350,
+      "9-12": 0,
+      ">12": 0
+     },
+     "distinct_click_cells_effective": 39,
+     "distinct_click_cells_noop_only": 6,
+     "guid": "f03a5fda-7dc2-44ee-a0ce-0b9ad50074e1",
+     "max_levels": 6,
+     "pairs_changed": 1036,
+     "pairs_noop": 56,
+     "pairs_region_eligible": 1036,
+     "pairs_region_excluded": 0,
+     "resets": 6,
+     "settled_boards": 1104,
+     "tiny_region_share": 0.4478
+    }
+   ],
+   "totals": {
+    "actions": 2486,
+    "clicks_effective": 115,
+    "clicks_noop": 26,
+    "completion_pairs": 18,
+    "completions": 18,
+    "delta_regions_hist": {
+     "1": 417,
+     "2": 791,
+     "3": 409,
+     "4-8": 713,
+     "9-12": 0,
+     ">12": 0
+    },
+    "pairs_changed": 2330,
+    "pairs_noop": 124,
+    "pairs_region_eligible": 2330,
+    "pairs_region_excluded": 0,
+    "resets": 14,
+    "settled_boards": 2486,
+    "transfer_cases": 15
+   }
+  },
+  {
+   "env": "tu93",
+   "sessions": [
+    {
+     "actions": 279,
+     "available_actions": {
+      "max": 4,
+      "n": 279,
+      "p25": 4,
+      "p50": 4,
+      "p75": 4
+     },
+     "change_magnitude": {
+      "max": 92,
+      "n": 261,
+      "p25": 20,
+      "p50": 46,
+      "p75": 55
+     },
+     "clicks_effective": 0,
+     "clicks_noop": 0,
+     "colors_per_board": {
+      "max": 12,
+      "n": 279,
+      "p25": 9,
+      "p50": 9,
+      "p75": 10
+     },
+     "completion_pairs": 9,
+     "completions": 9,
+     "delta_regions": {
+      "max": 11,
+      "n": 261,
+      "p25": 3,
+      "p50": 6,
+      "p75": 7
+     },
+     "delta_regions_hist": {
+      "1": 2,
+      "2": 0,
+      "3": 71,
+      "4-8": 136,
+      "9-12": 52,
+      ">12": 0
+     },
+     "distinct_click_cells_effective": 0,
+     "distinct_click_cells_noop_only": 0,
+     "guid": "4efce135-0cd8-4a9c-97e7-8d670e3d343b",
+     "max_levels": 9,
+     "pairs_changed": 261,
+     "pairs_noop": 0,
+     "pairs_region_eligible": 261,
+     "pairs_region_excluded": 0,
+     "resets": 9,
+     "settled_boards": 279,
+     "tiny_region_share": 0.183
+    },
+    {
+     "actions": 379,
+     "available_actions": {
+      "max": 4,
+      "n": 379,
+      "p25": 4,
+      "p50": 4,
+      "p75": 4
+     },
+     "change_magnitude": {
+      "max": 92,
+      "n": 354,
+      "p25": 37,
+      "p50": 46,
+      "p75": 67
+     },
+     "clicks_effective": 0,
+     "clicks_noop": 0,
+     "colors_per_board": {
+      "max": 12,
+      "n": 379,
+      "p25": 9,
+      "p50": 10,
+      "p75": 10
+     },
+     "completion_pairs": 9,
+     "completions": 9,
+     "delta_regions": {
+      "max": 11,
+      "n": 354,
+      "p25": 5,
+      "p50": 6,
+      "p75": 9
+     },
+     "delta_regions_hist": {
+      "1": 8,
+      "2": 0,
+      "3": 68,
+      "4-8": 188,
+      "9-12": 90,
+      ">12": 0
+     },
+     "distinct_click_cells_effective": 0,
+     "distinct_click_cells_noop_only": 0,
+     "guid": "74d1dff4-3de7-4911-9574-21c93fd257ae",
+     "max_levels": 9,
+     "pairs_changed": 354,
+     "pairs_noop": 0,
+     "pairs_region_eligible": 354,
+     "pairs_region_excluded": 0,
+     "resets": 16,
+     "settled_boards": 379,
+     "tiny_region_share": 0.169
+    },
+    {
+     "actions": 410,
+     "available_actions": {
+      "max": 4,
+      "n": 410,
+      "p25": 4,
+      "p50": 4,
+      "p75": 4
+     },
+     "change_magnitude": {
+      "max": 92,
+      "n": 387,
+      "p25": 39,
+      "p50": 73,
+      "p75": 82
+     },
+     "clicks_effective": 0,
+     "clicks_noop": 0,
+     "colors_per_board": {
+      "max": 12,
+      "n": 410,
+      "p25": 9,
+      "p50": 9,
+      "p75": 10
+     },
+     "completion_pairs": 9,
+     "completions": 9,
+     "delta_regions": {
+      "max": 11,
+      "n": 387,
+      "p25": 5,
+      "p50": 9,
+      "p75": 11
+     },
+     "delta_regions_hist": {
+      "1": 2,
+      "2": 0,
+      "3": 55,
+      "4-8": 126,
+      "9-12": 204,
+      ">12": 0
+     },
+     "distinct_click_cells_effective": 0,
+     "distinct_click_cells_noop_only": 0,
+     "guid": "e5b51453-dcff-40d8-a068-4da064db741f",
+     "max_levels": 9,
+     "pairs_changed": 387,
+     "pairs_noop": 0,
+     "pairs_region_eligible": 387,
+     "pairs_region_excluded": 0,
+     "resets": 14,
+     "settled_boards": 410,
+     "tiny_region_share": 0.149
+    }
+   ],
+   "totals": {
+    "actions": 1068,
+    "clicks_effective": 0,
+    "clicks_noop": 0,
+    "completion_pairs": 27,
+    "completions": 27,
+    "delta_regions_hist": {
+     "1": 12,
+     "2": 0,
+     "3": 194,
+     "4-8": 450,
+     "9-12": 346,
+     ">12": 0
+    },
+    "pairs_changed": 1002,
+    "pairs_noop": 0,
+    "pairs_region_eligible": 1002,
+    "pairs_region_excluded": 0,
+    "resets": 39,
+    "settled_boards": 1068,
+    "transfer_cases": 24
+   }
+  },
+  {
+   "env": "vc33",
+   "sessions": [
+    {
+     "actions": 339,
+     "available_actions": {
+      "max": 1,
+      "n": 339,
+      "p25": 1,
+      "p50": 1,
+      "p75": 1
+     },
+     "change_magnitude": {
+      "max": 266,
+      "n": 319,
+      "p25": 60,
+      "p50": 87,
+      "p75": 114
+     },
+     "clicks_effective": 326,
+     "clicks_noop": 12,
+     "colors_per_board": {
+      "max": 11,
+      "n": 339,
+      "p25": 8,
+      "p50": 9,
+      "p75": 10
+     },
+     "completion_pairs": 7,
+     "completions": 7,
+     "delta_regions": {
+      "max": 8,
+      "n": 319,
+      "p25": 2,
+      "p50": 3,
+      "p75": 3
+     },
+     "delta_regions_hist": {
+      "1": 21,
+      "2": 111,
+      "3": 153,
+      "4-8": 34,
+      "9-12": 0,
+      ">12": 0
+     },
+     "distinct_click_cells_effective": 111,
+     "distinct_click_cells_noop_only": 6,
+     "guid": "837812ad-2c5c-4943-8632-b6f8cd4b5b4d",
+     "max_levels": 7,
+     "pairs_changed": 319,
+     "pairs_noop": 12,
+     "pairs_region_eligible": 319,
+     "pairs_region_excluded": 0,
+     "resets": 1,
+     "settled_boards": 339,
+     "tiny_region_share": 0.2317
+    },
+    {
+     "actions": 413,
+     "available_actions": {
+      "max": 1,
+      "n": 413,
+      "p25": 1,
+      "p50": 1,
+      "p75": 1
+     },
+     "change_magnitude": {
+      "max": 266,
+      "n": 370,
+      "p25": 59,
+      "p50": 74,
+      "p75": 113
+     },
+     "clicks_effective": 377,
+     "clicks_noop": 33,
+     "colors_per_board": {
+      "max": 11,
+      "n": 413,
+      "p25": 9,
+      "p50": 9,
+      "p75": 10
+     },
+     "completion_pairs": 7,
+     "completions": 7,
+     "delta_regions": {
+      "max": 7,
+      "n": 370,
+      "p25": 2,
+      "p50": 3,
+      "p75": 3
+     },
+     "delta_regions_hist": {
+      "1": 41,
+      "2": 141,
+      "3": 150,
+      "4-8": 38,
+      "9-12": 0,
+      ">12": 0
+     },
+     "distinct_click_cells_effective": 112,
+     "distinct_click_cells_noop_only": 16,
+     "guid": "e60e880e-aed6-4d38-af81-3ef95be929e1",
+     "max_levels": 7,
+     "pairs_changed": 370,
+     "pairs_noop": 33,
+     "pairs_region_eligible": 370,
+     "pairs_region_excluded": 0,
+     "resets": 3,
+     "settled_boards": 413,
+     "tiny_region_share": 0.2258
+    },
+    {
+     "actions": 450,
+     "available_actions": {
+      "max": 1,
+      "n": 450,
+      "p25": 1,
+      "p50": 1,
+      "p75": 1
+     },
+     "change_magnitude": {
+      "max": 266,
+      "n": 423,
+      "p25": 60,
+      "p50": 69,
+      "p75": 109
+     },
+     "clicks_effective": 430,
+     "clicks_noop": 17,
+     "colors_per_board": {
+      "max": 11,
+      "n": 450,
+      "p25": 9,
+      "p50": 9,
+      "p75": 10
+     },
+     "completion_pairs": 7,
+     "completions": 7,
+     "delta_regions": {
+      "max": 8,
+      "n": 423,
+      "p25": 2,
+      "p50": 3,
+      "p75": 3
+     },
+     "delta_regions_hist": {
+      "1": 34,
+      "2": 163,
+      "3": 171,
+      "4-8": 55,
+      "9-12": 0,
+      ">12": 0
+     },
+     "distinct_click_cells_effective": 134,
+     "distinct_click_cells_noop_only": 6,
+     "guid": "4cffe392-c5a8-47f7-a2db-86a97a4606ca",
+     "max_levels": 7,
+     "pairs_changed": 423,
+     "pairs_noop": 17,
+     "pairs_region_eligible": 423,
+     "pairs_region_excluded": 0,
+     "resets": 3,
+     "settled_boards": 450,
+     "tiny_region_share": 0.2045
+    }
+   ],
+   "totals": {
+    "actions": 1202,
+    "clicks_effective": 1133,
+    "clicks_noop": 62,
+    "completion_pairs": 21,
+    "completions": 21,
+    "delta_regions_hist": {
+     "1": 96,
+     "2": 415,
+     "3": 474,
+     "4-8": 127,
+     "9-12": 0,
+     ">12": 0
+    },
+    "pairs_changed": 1112,
+    "pairs_noop": 62,
+    "pairs_region_eligible": 1112,
+    "pairs_region_excluded": 0,
+    "resets": 7,
+    "settled_boards": 1202,
+    "transfer_cases": 18
+   }
+  }
+ ],
+ "inputs": {
+  "draw": "logs/gi1_game_draw.json",
+  "draw_sha256": "751982074e7da3cc0f6330a7f54f65974a8b38bba938615453350e2c0bd76f9a",
+  "sessions": "logs/s2_replay_sessions.json",
+  "sessions_sha256": "ae820e7cfd82c3acb0cd0b764dc4616f4ea3184ec76a087b973c49cceb70aaa0"
+ },
+ "region_question": {
+  "connectivity": 4,
+  "eligible_histogram_bands": [
+   "1",
+   "2",
+   "3",
+   "4-8",
+   "9-12"
+  ],
+  "excluded_histogram_band": ">12",
+  "maximum_regions": 12
+ },
+ "totals": {
+  "actions": 9913,
+  "clicks_effective": 2516,
+  "clicks_noop": 416,
+  "completion_pairs": 123,
+  "completions": 123,
+  "delta_regions_hist": {
+   "1": 2183,
+   "2": 2690,
+   "3": 1290,
+   "4-8": 2097,
+   "9-12": 681,
+   ">12": 130
+  },
+  "pairs_changed": 9071,
+  "pairs_noop": 633,
+  "pairs_region_eligible": 8941,
+  "pairs_region_excluded": 130,
+  "resets": 86,
+  "settled_boards": 9913,
+  "transfer_cases": 105
+ }
+}
