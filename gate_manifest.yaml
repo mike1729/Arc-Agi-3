@@ -708,6 +708,48 @@ errata:
       and data/environment_files/ (25 games; 6 iteration + 15 one-shot + 4 reserved; the six are
       a subset of the 25).
 
+  - id: ES-E2
+    date: 2026-08-03
+    scope:
+      - "es — DOSE-3 selection (governing note SS3.3, 'two chronologically earliest matched
+         natural non-completions'); agent/harness/es_questions.py; logs/es_inventory.json"
+    problem: >
+      Review of the first committed inventory found the implementation inverted the frozen
+      clause's priority: it ranked candidates by complexity distance first and used chronology
+      only as a tie-break, presenting that as a free determinization. 'Chronologically earliest'
+      is explicit in the frozen text and was never implementation latitude. In the committed
+      artifact 103/105 cases differed from chronology-primary selection and 31 accepted nonzero
+      complexity deltas.
+    resolution: >
+      The frozen text underdetermines exactly one parameter — what 'matches ... pre-state
+      complexity' tolerates — and that resolution belongs here, not in code. Fixed rule: the
+      candidate pool is every strictly-earlier frame-bearing natural non-completion with an
+      observable pre-state and the same action class as the case's completing action. Let
+      DELTA* be the smallest complexity distance such that at least two pool members lie within
+      it of the query pre-state complexity. The matched pool is those members; DOSE-3 is its two
+      chronologically earliest members by step order (steps are unique, so no further tie-break
+      exists). Wherever two exact-complexity matches exist this reduces to exact matching; it
+      widens minimally otherwise, and DELTA* plus the realized per-pick deltas are published in
+      every case row.
+    rejected_readings: >
+      (a) exact complexity equality with unavailability otherwise — rejected because integer
+      equality on complex boards makes the dose's existence hinge on a coincidence unrelated to
+      the design intent of comparable evidence, not because of its cohort consequences; (b) the
+      shipped nearest-first ranking — rejected because it grants complexity a selection role the
+      frozen text assigns only to chronology.
+    outcome_awareness_disclosure: >
+      This choice is made after a reviewer reported that exact matching would drop several
+      cohorts below the >=3 passive-complete floor. The justification above is textual, but the
+      timing is post-hoc and is disclosed. Bounding fact: no survivor set, candidate universe,
+      or model call exists yet — the contamination surface is cohort composition only, and dose
+      selection remains blind to candidates and gold by construction.
+    consequence: >
+      logs/es_inventory.json is regenerated under the fixed rule. Availability and floors are
+      unchanged by construction — the availability condition (at least two same-class earlier
+      candidates) is identical; only which two are selected changes. The regenerated artifact
+      also re-pins gate_manifest.yaml among its input hashes, superseding the pre-ES-E1 pin the
+      first artifact recorded.
+
 # =====================================================================================
 # S0 — External execution-path proof.
 # =====================================================================================

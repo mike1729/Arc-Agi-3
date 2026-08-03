@@ -1,16 +1,24 @@
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "agent/harness"))
 
 from es_questions import (  # noqa: E402
+    FROZEN_GAMES,
     PERMUTATIONS,
+    _canonical,
+    _sha256_bytes,
     assign_roles,
     build_cases,
+    canonical_payload,
+    frozen_iteration,
     modal_color,
     partition_index,
     pre_state_complexity,
+    verify_against_disk,
 )
 
 
@@ -144,21 +152,47 @@ def test_dose2_requires_distinct_level():
     assert case_14["availability"]["dose2"] is False
 
 
-def test_dose3_matches_class_then_nearest_complexity_then_chronology():
+def test_dose3_selects_chronologically_earliest_within_minimal_matched_pool():
     cases = build_cases("dc22", "guid", "S", _synthetic_session())
     case_14 = cases[1]
     # Query at 14: action class 1, query pre-complexity 7. Class-1 pool before step 14:
-    # steps 2(5), 3(9), 6(4), 7(7), 10(6), 11(8), 12(3), 13(7). Nearest |delta|=0: steps
-    # 7 and 13 -> chronological order picks both, 7 first.
+    # steps 2(5), 3(9), 6(4), 7(7), 10(6), 11(8), 12(3), 13(7). Two exact matches exist
+    # (7, 13) -> DELTA*=0, pool = {7, 13}, chronological order 7 then 13.
     picks = case_14["doses"]["DOSE-3"]
     assert [row["step"] for row in picks] == [7, 13]
     assert [row["delta_complexity"] for row in picks] == [0, 0]
+    assert case_14["dose3_delta_star"] == 0
     assert case_14["availability"]["dose3"] is True
 
     # Query at 9: completing action class 1, query pre-complexity 8. Pool before 9 with
-    # class 1: steps 2(5), 3(9), 6(4), 7(7) -> deltas 3,1,4,1 -> picks 3 then 7.
+    # class 1: steps 2(5), 3(9), 6(4), 7(7) -> deltas 3,1,4,1 -> DELTA*=1, matched pool
+    # {3, 7}, chronological order 3 then 7.
     case_9 = cases[0]
     assert [row["step"] for row in case_9["doses"]["DOSE-3"]] == [3, 7]
+    assert case_9["dose3_delta_star"] == 1
+
+
+def test_dose3_chronology_beats_a_lone_exact_match():
+    # ES-E2's discriminating property: with only ONE exact match, DELTA* widens until two
+    # members fit, and selection inside the widened pool is purely chronological — the two
+    # early delta=1 rows win over the late exact match. The pre-ES-E2 nearest-first ranking
+    # would have picked the exact match at step 10 first.
+    rows = [
+        _row(1, action_class=0, has_pre=False, pre_state_row=None),
+        _row(2, pre_complexity=6),
+        _row(3, pre_complexity=8),
+        _row(4, is_completion=True, completed_level=1, solved=True, pre_complexity=5),
+        _row(10, pre_complexity=7),
+        _row(11, is_completion=True, completed_level=2, solved=True, pre_complexity=7),
+    ]
+    cases = build_cases("dc22", "guid", "S", rows)
+    case_11 = cases[0]
+    assert case_11["query"]["pre_complexity"] == 7
+    # Pool: 2(delta 1), 3(delta 1), 10(delta 0). DELTA*=1 -> pool {2, 3, 10} -> earliest
+    # two are 2 and 3; the exact match at 10 is not selected.
+    assert [row["step"] for row in case_11["doses"]["DOSE-3"]] == [2, 3]
+    assert [row["delta_complexity"] for row in case_11["doses"]["DOSE-3"]] == [1, 1]
+    assert case_11["dose3_delta_star"] == 1
 
 
 def test_dose3_excludes_completions_other_classes_and_future_steps():
@@ -211,3 +245,50 @@ def test_insufficient_dose3_pool_reports_unavailable():
     cases = build_cases("dc22", "guid", "S", rows[:3] + rows[4:])
     assert cases[0]["availability"]["dose3"] is False
     assert cases[0]["availability"]["passive_complete"] is False
+
+
+def _document(payload):
+    document = dict(payload)
+    document["fingerprint"] = _sha256_bytes(_canonical(canonical_payload(document)))
+    return document
+
+
+def test_verify_passes_on_identical_self_consistent_documents():
+    doc = _document({"cases": [1, 2], "summary": {"x": 1}})
+    assert verify_against_disk(doc, dict(doc)) == []
+
+
+def test_verify_detects_tampered_payload_with_stale_fingerprint():
+    # The original bug: edit the artifact's content, keep the fingerprint string, and a
+    # fingerprint-only comparison against the rebuild still reports OK.
+    rebuilt = _document({"cases": [1, 2], "summary": {"x": 1}})
+    tampered = dict(rebuilt)
+    tampered["cases"] = [1, 2, 3]          # content changed
+    # fingerprint deliberately left as the stale original
+    problems = verify_against_disk(rebuilt, tampered)
+    assert any("self-inconsistent" in p for p in problems)
+    assert any("differs from the deterministic rebuild" in p for p in problems)
+
+
+def test_verify_detects_self_consistent_but_divergent_disk():
+    rebuilt = _document({"cases": [1, 2]})
+    divergent = _document({"cases": [9]})  # self-consistent, different content
+    problems = verify_against_disk(rebuilt, divergent)
+    assert any("differs from the deterministic rebuild" in p for p in problems)
+    assert any("fingerprint mismatch" in p for p in problems)
+
+
+def test_frozen_iteration_accepts_exact_corpus_in_any_order():
+    shuffled = ["vc33", "dc22", "tu93", "ft09", "m0r0", "ls20"]
+    assert frozen_iteration({"iteration": shuffled}) == list(FROZEN_GAMES)
+
+
+def test_frozen_iteration_rejects_duplicates_wrong_games_and_wrong_counts():
+    with pytest.raises(ValueError, match="duplicates"):
+        frozen_iteration({"iteration": ["dc22", "dc22", "ft09", "ls20", "m0r0", "tu93"]})
+    with pytest.raises(ValueError, match="does not equal the frozen ES corpus"):
+        frozen_iteration({"iteration": ["dc22", "ft09", "ls20", "m0r0", "tu93", "wa30"]})
+    with pytest.raises(ValueError, match="does not equal the frozen ES corpus"):
+        frozen_iteration({"iteration": ["dc22", "ft09", "ls20", "m0r0", "tu93"]})
+    with pytest.raises(ValueError, match="missing its iteration list"):
+        frozen_iteration({})

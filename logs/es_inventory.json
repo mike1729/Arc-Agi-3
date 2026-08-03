@@ -9,6 +9,7 @@
     "query_pre_state": true
    },
    "case_id": "es:dc22:1b9a2041-bc99-4b7b-8d99-041f0503956f:1193",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -60,6 +61,7 @@
     "query_pre_state": true
    },
    "case_id": "es:dc22:1b9a2041-bc99-4b7b-8d99-041f0503956f:182",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -106,6 +108,7 @@
     "query_pre_state": true
    },
    "case_id": "es:dc22:1b9a2041-bc99-4b7b-8d99-041f0503956f:241",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -122,17 +125,17 @@
     "DOSE-3": [
      {
       "action_class": 2,
-      "delta_complexity": 0,
-      "pre_complexity": 52,
-      "pre_state_row": 239,
-      "step": 240
+      "delta_complexity": 1,
+      "pre_complexity": 51,
+      "pre_state_row": 79,
+      "step": 80
      },
      {
       "action_class": 2,
       "delta_complexity": 1,
       "pre_complexity": 51,
-      "pre_state_row": 79,
-      "step": 80
+      "pre_state_row": 82,
+      "step": 83
      }
     ]
    },
@@ -157,6 +160,7 @@
     "query_pre_state": true
    },
    "case_id": "es:dc22:1b9a2041-bc99-4b7b-8d99-041f0503956f:319",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -208,6 +212,7 @@
     "query_pre_state": true
    },
    "case_id": "es:dc22:1b9a2041-bc99-4b7b-8d99-041f0503956f:643",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -224,17 +229,17 @@
     "DOSE-3": [
      {
       "action_class": 1,
-      "delta_complexity": 0,
-      "pre_complexity": 80,
-      "pre_state_row": 635,
-      "step": 636
+      "delta_complexity": 1,
+      "pre_complexity": 81,
+      "pre_state_row": 538,
+      "step": 539
      },
      {
       "action_class": 1,
       "delta_complexity": 1,
       "pre_complexity": 81,
-      "pre_state_row": 538,
-      "step": 539
+      "pre_state_row": 539,
+      "step": 540
      }
     ]
    },
@@ -259,6 +264,7 @@
     "query_pre_state": true
    },
    "case_id": "es:dc22:ab11e695-b9d2-42f4-871c-8f90aa8c3a85:145",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 4,
@@ -275,17 +281,17 @@
     "DOSE-3": [
      {
       "action_class": 2,
-      "delta_complexity": 0,
-      "pre_complexity": 52,
-      "pre_state_row": 143,
-      "step": 144
+      "delta_complexity": 1,
+      "pre_complexity": 51,
+      "pre_state_row": 32,
+      "step": 33
      },
      {
       "action_class": 2,
       "delta_complexity": 1,
       "pre_complexity": 51,
-      "pre_state_row": 32,
-      "step": 33
+      "pre_state_row": 39,
+      "step": 40
      }
     ]
    },
@@ -310,6 +316,7 @@
     "query_pre_state": true
    },
    "case_id": "es:dc22:ab11e695-b9d2-42f4-871c-8f90aa8c3a85:224",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 4,
@@ -361,6 +368,7 @@
     "query_pre_state": true
    },
    "case_id": "es:dc22:ab11e695-b9d2-42f4-871c-8f90aa8c3a85:382",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 4,
@@ -377,17 +385,17 @@
     "DOSE-3": [
      {
       "action_class": 1,
-      "delta_complexity": 0,
-      "pre_complexity": 80,
-      "pre_state_row": 374,
-      "step": 375
+      "delta_complexity": 1,
+      "pre_complexity": 81,
+      "pre_state_row": 247,
+      "step": 248
      },
      {
       "action_class": 1,
       "delta_complexity": 1,
       "pre_complexity": 81,
-      "pre_state_row": 247,
-      "step": 248
+      "pre_state_row": 248,
+      "step": 249
      }
     ]
    },
@@ -412,6 +420,7 @@
     "query_pre_state": true
    },
    "case_id": "es:dc22:ab11e695-b9d2-42f4-871c-8f90aa8c3a85:599",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 4,
@@ -463,6 +472,7 @@
     "query_pre_state": true
    },
    "case_id": "es:dc22:ab11e695-b9d2-42f4-871c-8f90aa8c3a85:96",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 4,
@@ -509,6 +519,7 @@
     "query_pre_state": true
    },
    "case_id": "es:dc22:e8f76fe2-d90a-44ec-97cd-d09ec9b9cbcd:1214",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -560,6 +571,7 @@
     "query_pre_state": true
    },
    "case_id": "es:dc22:e8f76fe2-d90a-44ec-97cd-d09ec9b9cbcd:158",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -606,6 +618,7 @@
     "query_pre_state": true
    },
    "case_id": "es:dc22:e8f76fe2-d90a-44ec-97cd-d09ec9b9cbcd:237",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -657,6 +670,7 @@
     "query_pre_state": true
    },
    "case_id": "es:dc22:e8f76fe2-d90a-44ec-97cd-d09ec9b9cbcd:335",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -708,6 +722,7 @@
     "query_pre_state": true
    },
    "case_id": "es:dc22:e8f76fe2-d90a-44ec-97cd-d09ec9b9cbcd:636",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -759,6 +774,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ft09:01f76fc7-c612-4006-8d08-c13ed0cb91de:107",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -805,6 +821,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ft09:01f76fc7-c612-4006-8d08-c13ed0cb91de:139",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -856,6 +873,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ft09:01f76fc7-c612-4006-8d08-c13ed0cb91de:161",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -907,6 +925,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ft09:01f76fc7-c612-4006-8d08-c13ed0cb91de:186",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -958,6 +977,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ft09:01f76fc7-c612-4006-8d08-c13ed0cb91de:223",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -1009,6 +1029,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ft09:3b1ce31a-0af9-41f3-858f-4ead42360d15:108",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -1060,6 +1081,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ft09:3b1ce31a-0af9-41f3-858f-4ead42360d15:137",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -1111,6 +1133,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ft09:3b1ce31a-0af9-41f3-858f-4ead42360d15:150",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -1162,6 +1185,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ft09:3b1ce31a-0af9-41f3-858f-4ead42360d15:57",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -1208,6 +1232,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ft09:3b1ce31a-0af9-41f3-858f-4ead42360d15:80",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -1259,6 +1284,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ft09:f58b7fe2-aafd-414a-a1fb-74d4b3e717e0:138",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -1310,6 +1336,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ft09:f58b7fe2-aafd-414a-a1fb-74d4b3e717e0:164",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -1361,6 +1388,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ft09:f58b7fe2-aafd-414a-a1fb-74d4b3e717e0:37",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -1407,6 +1435,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ft09:f58b7fe2-aafd-414a-a1fb-74d4b3e717e0:52",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -1458,6 +1487,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ft09:f58b7fe2-aafd-414a-a1fb-74d4b3e717e0:73",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -1509,6 +1539,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:57630d5e-4a01-42b6-bda1-43ced11c5bd7:110",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -1555,6 +1586,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:57630d5e-4a01-42b6-bda1-43ced11c5bd7:153",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -1606,6 +1638,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:57630d5e-4a01-42b6-bda1-43ced11c5bd7:207",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -1657,6 +1690,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:57630d5e-4a01-42b6-bda1-43ced11c5bd7:263",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -1673,17 +1707,17 @@
     "DOSE-3": [
      {
       "action_class": 1,
-      "delta_complexity": 0,
-      "pre_complexity": 35,
-      "pre_state_row": 173,
-      "step": 174
-     },
-     {
-      "action_class": 1,
       "delta_complexity": 1,
       "pre_complexity": 34,
       "pre_state_row": 166,
       "step": 167
+     },
+     {
+      "action_class": 1,
+      "delta_complexity": 0,
+      "pre_complexity": 35,
+      "pre_state_row": 173,
+      "step": 174
      }
     ]
    },
@@ -1708,6 +1742,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:57630d5e-4a01-42b6-bda1-43ced11c5bd7:367",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -1759,6 +1794,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:57630d5e-4a01-42b6-bda1-43ced11c5bd7:473",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -1810,6 +1846,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:8aed7120-f7a9-45a1-837a-68bc7dc37a4f:145",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -1856,6 +1893,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:8aed7120-f7a9-45a1-837a-68bc7dc37a4f:184",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -1907,6 +1945,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:8aed7120-f7a9-45a1-837a-68bc7dc37a4f:276",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -1958,6 +1997,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:8aed7120-f7a9-45a1-837a-68bc7dc37a4f:330",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -2009,6 +2049,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:8aed7120-f7a9-45a1-837a-68bc7dc37a4f:438",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -2060,6 +2101,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:8aed7120-f7a9-45a1-837a-68bc7dc37a4f:547",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -2111,6 +2153,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:8f03134f-a5f6-4b76-95b6-fd70fcb81ee1:108",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -2157,6 +2200,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:8f03134f-a5f6-4b76-95b6-fd70fcb81ee1:246",
+   "dose3_delta_star": 2,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -2173,17 +2217,17 @@
     "DOSE-3": [
      {
       "action_class": 2,
-      "delta_complexity": 1,
-      "pre_complexity": 26,
-      "pre_state_row": 232,
-      "step": 233
+      "delta_complexity": 2,
+      "pre_complexity": 29,
+      "pre_state_row": 126,
+      "step": 127
      },
      {
       "action_class": 2,
       "delta_complexity": 2,
       "pre_complexity": 29,
-      "pre_state_row": 126,
-      "step": 127
+      "pre_state_row": 127,
+      "step": 128
      }
     ]
    },
@@ -2208,6 +2252,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:8f03134f-a5f6-4b76-95b6-fd70fcb81ee1:297",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -2259,6 +2304,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:8f03134f-a5f6-4b76-95b6-fd70fcb81ee1:388",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -2310,6 +2356,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:8f03134f-a5f6-4b76-95b6-fd70fcb81ee1:474",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -2361,6 +2408,7 @@
     "query_pre_state": true
    },
    "case_id": "es:ls20:8f03134f-a5f6-4b76-95b6-fd70fcb81ee1:594",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 1,
@@ -2412,6 +2460,7 @@
     "query_pre_state": true
    },
    "case_id": "es:m0r0:0e1adaaf-fe7e-47f3-923f-97791151e11e:173",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 4,
@@ -2463,6 +2512,7 @@
     "query_pre_state": true
    },
    "case_id": "es:m0r0:0e1adaaf-fe7e-47f3-923f-97791151e11e:186",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 4,
@@ -2514,6 +2564,7 @@
     "query_pre_state": true
    },
    "case_id": "es:m0r0:0e1adaaf-fe7e-47f3-923f-97791151e11e:325",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 4,
@@ -2530,17 +2581,17 @@
     "DOSE-3": [
      {
       "action_class": 3,
-      "delta_complexity": 0,
-      "pre_complexity": 14,
-      "pre_state_row": 155,
-      "step": 156
+      "delta_complexity": 1,
+      "pre_complexity": 13,
+      "pre_state_row": 142,
+      "step": 143
      },
      {
       "action_class": 3,
       "delta_complexity": 1,
       "pre_complexity": 13,
-      "pre_state_row": 142,
-      "step": 143
+      "pre_state_row": 153,
+      "step": 154
      }
     ]
    },
@@ -2565,6 +2616,7 @@
     "query_pre_state": true
    },
    "case_id": "es:m0r0:0e1adaaf-fe7e-47f3-923f-97791151e11e:411",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 4,
@@ -2616,6 +2668,7 @@
     "query_pre_state": true
    },
    "case_id": "es:m0r0:0e1adaaf-fe7e-47f3-923f-97791151e11e:85",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 4,
@@ -2662,6 +2715,7 @@
     "query_pre_state": true
    },
    "case_id": "es:m0r0:a98ab7b3-64fe-41ab-a357-c65519897691:240",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -2708,6 +2762,7 @@
     "query_pre_state": true
    },
    "case_id": "es:m0r0:a98ab7b3-64fe-41ab-a357-c65519897691:323",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -2759,6 +2814,7 @@
     "query_pre_state": true
    },
    "case_id": "es:m0r0:a98ab7b3-64fe-41ab-a357-c65519897691:409",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -2810,6 +2866,7 @@
     "query_pre_state": true
    },
    "case_id": "es:m0r0:a98ab7b3-64fe-41ab-a357-c65519897691:845",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -2861,6 +2918,7 @@
     "query_pre_state": true
    },
    "case_id": "es:m0r0:a98ab7b3-64fe-41ab-a357-c65519897691:971",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -2912,6 +2970,7 @@
     "query_pre_state": true
    },
    "case_id": "es:m0r0:f03a5fda-7dc2-44ee-a0ce-0b9ad50074e1:1104",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 3,
@@ -2963,6 +3022,7 @@
     "query_pre_state": true
    },
    "case_id": "es:m0r0:f03a5fda-7dc2-44ee-a0ce-0b9ad50074e1:123",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 3,
@@ -3009,6 +3069,7 @@
     "query_pre_state": true
    },
    "case_id": "es:m0r0:f03a5fda-7dc2-44ee-a0ce-0b9ad50074e1:231",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 3,
@@ -3060,6 +3121,7 @@
     "query_pre_state": true
    },
    "case_id": "es:m0r0:f03a5fda-7dc2-44ee-a0ce-0b9ad50074e1:249",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 3,
@@ -3111,6 +3173,7 @@
     "query_pre_state": true
    },
    "case_id": "es:m0r0:f03a5fda-7dc2-44ee-a0ce-0b9ad50074e1:749",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 3,
@@ -3127,17 +3190,17 @@
     "DOSE-3": [
      {
       "action_class": 3,
-      "delta_complexity": 0,
-      "pre_complexity": 14,
-      "pre_state_row": 219,
-      "step": 220
+      "delta_complexity": 1,
+      "pre_complexity": 13,
+      "pre_state_row": 182,
+      "step": 183
      },
      {
       "action_class": 3,
       "delta_complexity": 1,
       "pre_complexity": 13,
-      "pre_state_row": 182,
-      "step": 183
+      "pre_state_row": 201,
+      "step": 202
      }
     ]
    },
@@ -3162,6 +3225,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:102",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3213,6 +3277,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:131",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3264,6 +3329,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:212",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3280,17 +3346,17 @@
     "DOSE-3": [
      {
       "action_class": 3,
-      "delta_complexity": 0,
-      "pre_complexity": 72,
-      "pre_state_row": 207,
-      "step": 208
+      "delta_complexity": 1,
+      "pre_complexity": 71,
+      "pre_state_row": 106,
+      "step": 107
      },
      {
       "action_class": 3,
       "delta_complexity": 1,
       "pre_complexity": 71,
-      "pre_state_row": 106,
-      "step": 107
+      "pre_state_row": 107,
+      "step": 108
      }
     ]
    },
@@ -3315,6 +3381,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:226",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3331,17 +3398,17 @@
     "DOSE-3": [
      {
       "action_class": 2,
-      "delta_complexity": 0,
-      "pre_complexity": 50,
-      "pre_state_row": 224,
-      "step": 225
+      "delta_complexity": 1,
+      "pre_complexity": 51,
+      "pre_state_row": 215,
+      "step": 216
      },
      {
       "action_class": 2,
       "delta_complexity": 1,
       "pre_complexity": 51,
-      "pre_state_row": 215,
-      "step": 216
+      "pre_state_row": 216,
+      "step": 217
      }
     ]
    },
@@ -3366,6 +3433,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:249",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3417,6 +3485,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:279",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3468,6 +3537,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:48",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3514,6 +3584,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:76",
+   "dose3_delta_star": 2,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3530,17 +3601,17 @@
     "DOSE-3": [
      {
       "action_class": 4,
-      "delta_complexity": 0,
-      "pre_complexity": 54,
-      "pre_state_row": 73,
-      "step": 74
-     },
-     {
-      "action_class": 4,
       "delta_complexity": 2,
       "pre_complexity": 56,
       "pre_state_row": 67,
       "step": 68
+     },
+     {
+      "action_class": 4,
+      "delta_complexity": 0,
+      "pre_complexity": 54,
+      "pre_state_row": 73,
+      "step": 74
      }
     ]
    },
@@ -3565,6 +3636,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:111",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3616,6 +3688,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:187",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3667,6 +3740,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:278",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3683,17 +3757,17 @@
     "DOSE-3": [
      {
       "action_class": 3,
-      "delta_complexity": 0,
-      "pre_complexity": 72,
-      "pre_state_row": 273,
-      "step": 274
+      "delta_complexity": 1,
+      "pre_complexity": 71,
+      "pre_state_row": 115,
+      "step": 116
      },
      {
       "action_class": 3,
       "delta_complexity": 1,
       "pre_complexity": 71,
-      "pre_state_row": 115,
-      "step": 116
+      "pre_state_row": 116,
+      "step": 117
      }
     ]
    },
@@ -3718,6 +3792,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:325",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3734,17 +3809,17 @@
     "DOSE-3": [
      {
       "action_class": 2,
-      "delta_complexity": 0,
-      "pre_complexity": 50,
-      "pre_state_row": 323,
-      "step": 324
+      "delta_complexity": 1,
+      "pre_complexity": 51,
+      "pre_state_row": 282,
+      "step": 283
      },
      {
       "action_class": 2,
       "delta_complexity": 1,
       "pre_complexity": 51,
-      "pre_state_row": 282,
-      "step": 283
+      "pre_state_row": 283,
+      "step": 284
      }
     ]
    },
@@ -3769,6 +3844,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:348",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3820,6 +3896,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:35",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3866,6 +3943,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:379",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3917,6 +3995,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:69",
+   "dose3_delta_star": 2,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -3933,17 +4012,17 @@
     "DOSE-3": [
      {
       "action_class": 4,
-      "delta_complexity": 0,
-      "pre_complexity": 54,
-      "pre_state_row": 66,
-      "step": 67
-     },
-     {
-      "action_class": 4,
       "delta_complexity": 2,
       "pre_complexity": 56,
       "pre_state_row": 60,
       "step": 61
+     },
+     {
+      "action_class": 4,
+      "delta_complexity": 0,
+      "pre_complexity": 54,
+      "pre_state_row": 66,
+      "step": 67
      }
     ]
    },
@@ -3968,6 +4047,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:214",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -4019,6 +4099,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:280",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -4035,17 +4116,17 @@
     "DOSE-3": [
      {
       "action_class": 3,
-      "delta_complexity": 0,
-      "pre_complexity": 72,
-      "pre_state_row": 275,
-      "step": 276
+      "delta_complexity": 1,
+      "pre_complexity": 71,
+      "pre_state_row": 73,
+      "step": 74
      },
      {
       "action_class": 3,
       "delta_complexity": 1,
       "pre_complexity": 71,
-      "pre_state_row": 73,
-      "step": 74
+      "pre_state_row": 79,
+      "step": 80
      }
     ]
    },
@@ -4070,6 +4151,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:294",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -4086,17 +4168,17 @@
     "DOSE-3": [
      {
       "action_class": 2,
-      "delta_complexity": 0,
-      "pre_complexity": 50,
-      "pre_state_row": 292,
-      "step": 293
+      "delta_complexity": 1,
+      "pre_complexity": 51,
+      "pre_state_row": 283,
+      "step": 284
      },
      {
       "action_class": 2,
       "delta_complexity": 1,
       "pre_complexity": 51,
-      "pre_state_row": 283,
-      "step": 284
+      "pre_state_row": 284,
+      "step": 285
      }
     ]
    },
@@ -4121,6 +4203,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:317",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -4172,6 +4255,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:34",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -4218,6 +4302,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:410",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -4234,17 +4319,17 @@
     "DOSE-3": [
      {
       "action_class": 4,
-      "delta_complexity": 0,
-      "pre_complexity": 76,
-      "pre_state_row": 262,
-      "step": 263
+      "delta_complexity": 1,
+      "pre_complexity": 77,
+      "pre_state_row": 226,
+      "step": 227
      },
      {
       "action_class": 4,
       "delta_complexity": 1,
       "pre_complexity": 77,
-      "pre_state_row": 226,
-      "step": 227
+      "pre_state_row": 256,
+      "step": 257
      }
     ]
    },
@@ -4269,6 +4354,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:53",
+   "dose3_delta_star": 2,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -4285,17 +4371,17 @@
     "DOSE-3": [
      {
       "action_class": 4,
-      "delta_complexity": 0,
-      "pre_complexity": 54,
-      "pre_state_row": 50,
-      "step": 51
-     },
-     {
-      "action_class": 4,
       "delta_complexity": 2,
       "pre_complexity": 56,
       "pre_state_row": 44,
       "step": 45
+     },
+     {
+      "action_class": 4,
+      "delta_complexity": 0,
+      "pre_complexity": 54,
+      "pre_state_row": 50,
+      "step": 51
      }
     ]
    },
@@ -4320,6 +4406,7 @@
     "query_pre_state": true
    },
    "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:70",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 2,
@@ -4371,6 +4458,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:4cffe392-c5a8-47f7-a2db-86a97a4606ca:116",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -4422,6 +4510,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:4cffe392-c5a8-47f7-a2db-86a97a4606ca:203",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -4473,6 +4562,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:4cffe392-c5a8-47f7-a2db-86a97a4606ca:239",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -4524,6 +4614,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:4cffe392-c5a8-47f7-a2db-86a97a4606ca:28",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -4570,6 +4661,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:4cffe392-c5a8-47f7-a2db-86a97a4606ca:450",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -4621,6 +4713,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:4cffe392-c5a8-47f7-a2db-86a97a4606ca:66",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -4672,6 +4765,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:837812ad-2c5c-4943-8632-b6f8cd4b5b4d:186",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -4723,6 +4817,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:837812ad-2c5c-4943-8632-b6f8cd4b5b4d:23",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -4769,6 +4864,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:837812ad-2c5c-4943-8632-b6f8cd4b5b4d:230",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -4820,6 +4916,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:837812ad-2c5c-4943-8632-b6f8cd4b5b4d:339",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -4871,6 +4968,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:837812ad-2c5c-4943-8632-b6f8cd4b5b4d:59",
+   "dose3_delta_star": 1,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -4887,17 +4985,17 @@
     "DOSE-3": [
      {
       "action_class": 6,
-      "delta_complexity": 0,
-      "pre_complexity": 29,
-      "pre_state_row": 55,
-      "step": 56
+      "delta_complexity": 1,
+      "pre_complexity": 30,
+      "pre_state_row": 26,
+      "step": 27
      },
      {
       "action_class": 6,
       "delta_complexity": 1,
       "pre_complexity": 30,
-      "pre_state_row": 26,
-      "step": 27
+      "pre_state_row": 31,
+      "step": 32
      }
     ]
    },
@@ -4922,6 +5020,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:837812ad-2c5c-4943-8632-b6f8cd4b5b4d:98",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -4973,6 +5072,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:e60e880e-aed6-4d38-af81-3ef95be929e1:109",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -5024,6 +5124,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:e60e880e-aed6-4d38-af81-3ef95be929e1:238",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -5075,6 +5176,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:e60e880e-aed6-4d38-af81-3ef95be929e1:267",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -5126,6 +5228,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:e60e880e-aed6-4d38-af81-3ef95be929e1:37",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -5172,6 +5275,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:e60e880e-aed6-4d38-af81-3ef95be929e1:413",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -5223,6 +5327,7 @@
     "query_pre_state": true
    },
    "case_id": "es:vc33:e60e880e-aed6-4d38-af81-3ef95be929e1:65",
+   "dose3_delta_star": 0,
    "doses": {
     "DOSE-1": {
      "action_class": 6,
@@ -5267,16 +5372,16 @@
   }
  ],
  "contract": {
-  "dose3_rule": "same action class as the completing action; rank |pre-complexity - query pre-complexity|, then step, then sha256('es-dose3:{env}:{guid}:{step}'); take two; complexity = non-background 4-connected components, background = modal colour with ties to the smaller value",
+  "dose3_rule": "ES-E2 (gate_manifest.yaml -> errata): pool = strictly-earlier frame-bearing non-completions with observable pre-state and the completing action's class; DELTA* = smallest complexity distance admitting two pool members; DOSE-3 = the two chronologically earliest members within DELTA*, by step order; complexity = non-background 4-connected components, background = modal colour with ties to the smaller value",
   "governing_note": "notes/qwen-evidence-sufficiency-screen.md",
   "manifest_block": "gate_manifest.yaml -> es (FROZEN 2026-08-03)",
   "partition_rule": "sessions ordered by (recorded session start, guid); p = int(sha256(('es-partition:'+env).encode('ascii')).hexdigest()[:8], 16) mod 6 over [(S,C,R),(S,R,C),(C,S,R),(C,R,S),(R,S,C),(R,C,S)]"
  },
- "fingerprint": "a2013768ac67f064d8cd71e9a59c334957365aca6659eb9e38006040791c09f4",
+ "fingerprint": "5d0be16f0db09809bc180dfb084d2323fb7fa6f0565659850625081c2f1b5feb",
  "format_version": 1,
  "generated_by": "agent/harness/es_questions.py",
  "inputs": {
-  "gate_manifest.yaml": "c0637edb52e3514c4b4a28448b5cae836bc27b774a6b649e8346c533c36423c1",
+  "gate_manifest.yaml": "61e5057af604c003f023736eca67e63e38f89a51f5c0e0d2b7fe585b20c6c556",
   "logs/gi1_game_draw.json": "751982074e7da3cc0f6330a7f54f65974a8b38bba938615453350e2c0bd76f9a",
   "logs/s2_replay_sessions.json": "ae820e7cfd82c3acb0cd0b764dc4616f4ea3184ec76a087b973c49cceb70aaa0",
   "recording:dc22:1b9a2041-bc99-4b7b-8d99-041f0503956f": "cca61fa8d578d963af39dcb7871b56cb59724cb67fd9818be6a7b3adec77fd49",

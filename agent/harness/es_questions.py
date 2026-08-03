@@ -28,12 +28,14 @@ Determinizations recorded here (implementation level, published before any survi
     state). DOSE-2: the next earlier completion, in chronological order after DOSE-1,
     whose completed level differs from DOSE-1's completed level. Both must lie strictly
     before the query step.
-  * DOSE-3 matching. Pool = strictly-earlier frame-bearing non-completion transitions
-    with an observable pre-state, any recorded action including RESET. Matched = same
-    action class as the query's completing action; rank by |pre-state complexity - query
-    pre-state complexity|, then earlier step index, then
-    ``sha256("es-dose3:{env}:{guid}:{step}")``; take the top two distinct steps. The
-    realized complexity deltas are published per case so the match is auditable.
+  * DOSE-3 selection follows erratum ES-E2 (``gate_manifest.yaml -> errata``). Pool =
+    strictly-earlier frame-bearing non-completion transitions with an observable pre-state
+    and the same action class as the case's completing action, any recorded action
+    including RESET. DELTA* = the smallest complexity distance such that at least two pool
+    members lie within it of the query pre-state complexity; DOSE-3 = the two
+    chronologically earliest members of that matched pool (step order; steps are unique).
+    Reduces to exact complexity matching whenever two exact matches exist. DELTA* and the
+    realized per-pick deltas are published in every case row.
   * Pre-state complexity = number of non-background 4-connected components of the settled
     pre-state; background = modal colour of the frame, ties resolved to the smaller value
     (GI-2 R-1 convention).
@@ -72,9 +74,13 @@ OUTPUT = ROOT / "logs/es_inventory.json"
 MANIFEST = ROOT / "gate_manifest.yaml"
 
 FORMAT_VERSION = 1
-EXPECTED_GAMES = 6
 SESSIONS_PER_GAME = 3
 ROLES = ("S", "C", "R")
+
+# Mirror of gate_manifest.yaml -> es -> corpus.games (FROZEN 2026-08-03). The inventory fails
+# closed on any deviation from this exact set, including duplicates: the draw document is an
+# input, not an authority over the frozen corpus.
+FROZEN_GAMES = ("dc22", "ft09", "ls20", "m0r0", "tu93", "vc33")
 
 # Frozen in gate_manifest.yaml -> es -> corpus.partition_rule (2026-08-03). The list is the
 # frozen enumeration order; roles are assigned to sessions ordered chronologically by
@@ -149,10 +155,6 @@ def pre_state_complexity(grid: list) -> int:
     return sum(1 for component in componentize(grid) if component.color != background)
 
 
-def _dose3_tiebreak(env: str, guid: str, step: int) -> str:
-    return hashlib.sha256(f"es-dose3:{env}:{guid}:{step}".encode("ascii")).hexdigest()
-
-
 def extract_session(env: str, guid: str) -> list[dict[str, Any]]:
     """Stream one recording into the plain-dict step rows that dose construction reads."""
     path = CORPUS / env / f"{guid}.recording.jsonl"
@@ -203,6 +205,7 @@ def build_cases(env: str, guid: str, role: str, rows: list[dict[str, Any]]) -> l
                     break
         query_ok = bool(query["has_pre"])
         dose3_picks: list[dict[str, Any]] = []
+        dose3_delta_star: int | None = None
         if query_ok:
             matched = [
                 row
@@ -210,14 +213,23 @@ def build_cases(env: str, guid: str, role: str, rows: list[dict[str, Any]]) -> l
                 if row["step"] < query["step"]
                 and row["action_class"] == query["action_class"]
             ]
-            matched.sort(
-                key=lambda row: (
-                    abs(row["pre_complexity"] - query["pre_complexity"]),
-                    row["step"],
-                    _dose3_tiebreak(env, guid, row["step"]),
+            if len(matched) >= DOSE3_REQUIRED:
+                # ES-E2: DELTA* = smallest distance admitting two members; selection within
+                # the matched pool is purely chronological.
+                distances = sorted(
+                    abs(row["pre_complexity"] - query["pre_complexity"]) for row in matched
                 )
-            )
-            dose3_picks = matched[:DOSE3_REQUIRED]
+                dose3_delta_star = distances[DOSE3_REQUIRED - 1]
+                eligible = sorted(
+                    (
+                        row
+                        for row in matched
+                        if abs(row["pre_complexity"] - query["pre_complexity"])
+                        <= dose3_delta_star
+                    ),
+                    key=lambda row: row["step"],
+                )
+                dose3_picks = eligible[:DOSE3_REQUIRED]
 
         def _completion_ref(entry: dict[str, Any] | None) -> dict[str, Any] | None:
             if entry is None:
@@ -250,6 +262,7 @@ def build_cases(env: str, guid: str, role: str, rows: list[dict[str, Any]]) -> l
                     "completed_level": query["completed_level"],
                     "dose0_label": "non_complete",
                 },
+                "dose3_delta_star": dose3_delta_star,
                 "doses": {
                     "DOSE-1": _completion_ref(dose1),
                     "DOSE-2": _completion_ref(dose2),
@@ -282,12 +295,51 @@ def _evidence_steps(case: dict[str, Any]) -> list[int]:
     return steps
 
 
+def frozen_iteration(draw_doc: dict[str, Any]) -> list[str]:
+    """Fail closed unless the draw's iteration list is exactly the frozen ES corpus."""
+    iteration = draw_doc.get("iteration")
+    if not isinstance(iteration, list) or not iteration:
+        raise ValueError("draw is missing its iteration list")
+    if len(iteration) != len(set(iteration)):
+        raise ValueError(f"iteration list contains duplicates: {sorted(iteration)}")
+    if set(iteration) != set(FROZEN_GAMES):
+        raise ValueError(
+            f"iteration set {sorted(iteration)} does not equal the frozen ES corpus "
+            f"{sorted(FROZEN_GAMES)}"
+        )
+    return list(FROZEN_GAMES)
+
+
+def canonical_payload(document: dict[str, Any]) -> dict[str, Any]:
+    payload = dict(document)
+    payload.pop("fingerprint", None)
+    return payload
+
+
+def verify_against_disk(rebuilt: dict[str, Any], on_disk: dict[str, Any]) -> list[str]:
+    """Full-content verification: the stored fingerprint string alone proves nothing."""
+    problems = []
+    disk_payload = canonical_payload(on_disk)
+    stored = on_disk.get("fingerprint")
+    recomputed = _sha256_bytes(_canonical(disk_payload))
+    if recomputed != stored:
+        problems.append(
+            f"on-disk artifact is self-inconsistent: stored fingerprint {stored}, "
+            f"payload recomputes to {recomputed}"
+        )
+    if _canonical(disk_payload) != _canonical(canonical_payload(rebuilt)):
+        problems.append("on-disk payload differs from the deterministic rebuild")
+    if stored != rebuilt.get("fingerprint"):
+        problems.append(
+            f"fingerprint mismatch (disk {stored}, rebuild {rebuilt.get('fingerprint')})"
+        )
+    return problems
+
+
 def build_inventory() -> dict[str, Any]:
     sessions_doc = json.loads(SESSIONS.read_text())
     draw_doc = json.loads(DRAW.read_text())
-    iteration = sorted(draw_doc["iteration"])
-    if len(iteration) != EXPECTED_GAMES:
-        raise ValueError(f"expected {EXPECTED_GAMES} iteration games, got {iteration}")
+    iteration = frozen_iteration(draw_doc)
 
     partition: dict[str, Any] = {}
     all_cases: list[dict[str, Any]] = []
@@ -373,10 +425,12 @@ def build_inventory() -> dict[str, Any]:
                 "mod 6 over [(S,C,R),(S,R,C),(C,S,R),(C,R,S),(R,S,C),(R,C,S)]"
             ),
             "dose3_rule": (
-                "same action class as the completing action; rank |pre-complexity - "
-                "query pre-complexity|, then step, then sha256('es-dose3:{env}:{guid}:{step}'); "
-                "take two; complexity = non-background 4-connected components, background = "
-                "modal colour with ties to the smaller value"
+                "ES-E2 (gate_manifest.yaml -> errata): pool = strictly-earlier frame-bearing "
+                "non-completions with observable pre-state and the completing action's class; "
+                "DELTA* = smallest complexity distance admitting two pool members; DOSE-3 = the "
+                "two chronologically earliest members within DELTA*, by step order; complexity "
+                "= non-background 4-connected components, background = modal colour with ties "
+                "to the smaller value"
             ),
         },
         "inputs": dict(sorted(input_hashes.items())),
@@ -402,11 +456,10 @@ def main() -> int:
             print(f"FAIL: {OUTPUT} does not exist")
             return 1
         on_disk = json.loads(OUTPUT.read_text())
-        if on_disk.get("fingerprint") != document["fingerprint"]:
-            print(
-                "FAIL: fingerprint mismatch "
-                f"(disk {on_disk.get('fingerprint')}, rebuild {document['fingerprint']})"
-            )
+        problems = verify_against_disk(document, on_disk)
+        if problems:
+            for problem in problems:
+                print(f"FAIL: {problem}")
             return 1
         print(f"OK: {OUTPUT} verified, fingerprint {document['fingerprint'][:16]}...")
         return 0
