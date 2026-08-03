@@ -217,3 +217,68 @@ def test_read_jsonl_rejects_headerless_files(tmp_path):
     path.write_text(json.dumps({"record": "session"}) + "\n")
     with pytest.raises(ValueError, match="not a header"):
         read_jsonl(path)
+
+
+from es_sources.state_access import (  # noqa: E402
+    classify_fork_response,
+    enumerate_candidates,
+    grid_delta,
+    mechanical_relations,
+)
+
+
+class _FakeResponse:
+    def __init__(self, levels, state="NOT_FINISHED", full_reset=False):
+        self.levels_completed = levels
+        self.state = state
+        self.full_reset = full_reset
+
+
+def test_classify_fork_response_labels_and_continuation():
+    completed = classify_fork_response(_FakeResponse(3), previous_levels=2)
+    assert completed["label"] == "complete"
+    assert completed["sequential_continuable"] is False  # level change ends the branch
+
+    plain = classify_fork_response(_FakeResponse(2), previous_levels=2)
+    assert plain["label"] == "non_complete"
+    assert plain["sequential_continuable"] is True
+
+    terminal = classify_fork_response(_FakeResponse(2, state="GAME_OVER"), 2)
+    assert terminal["label"] == "non_complete"
+    assert terminal["terminal"] is True
+    assert terminal["sequential_continuable"] is False
+
+    reset = classify_fork_response(_FakeResponse(2, full_reset=True), 2)
+    assert reset["sequential_continuable"] is False
+
+
+def test_enumerate_candidates_excludes_reset_and_expands_mouse():
+    candidates = enumerate_candidates((0, 1, 6), [(2, 3), (5, 5)])
+    assert {"action_id": 1, "action_data": {}} in candidates
+    assert {"action_id": 6, "action_data": {"x": 3, "y": 2}} in candidates
+    assert {"action_id": 6, "action_data": {"x": 5, "y": 5}} in candidates
+    assert all(candidate["action_id"] != 0 for candidate in candidates)
+    assert len(candidates) == 3
+
+
+def test_grid_delta_is_row_major_and_exact():
+    before = [[0, 1], [2, 3]]
+    after = [[0, 9], [2, 8]]
+    assert grid_delta(before, after) == [(0, 1), (1, 1)]
+    assert grid_delta(before, before) == []
+
+
+def test_mechanical_relations_from_masks():
+    objects = [
+        {"identity": "a", "cells": [(0, 0), (0, 1), (1, 0), (1, 1)]},
+        {"identity": "b", "cells": [(0, 1)]},          # inside a
+        {"identity": "c", "cells": [(5, 0), (5, 1)]},  # col-aligned with a, disjoint rows
+    ]
+    relations = {(r["a"], r["b"]): r for r in mechanical_relations(objects)}
+
+    ab = relations[("a", "b")]
+    assert ab["mask_overlap"] and ab["a_contains_b"] and not ab["b_contains_a"]
+
+    ac = relations[("a", "c")]
+    assert not ac["mask_overlap"] and not ac["bbox_overlap"]
+    assert ac["col_aligned"] and not ac["row_aligned"]

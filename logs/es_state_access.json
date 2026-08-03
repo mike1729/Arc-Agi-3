@@ -1,0 +1,126 @@
+{
+ "all_ok": true,
+ "format_version": 1,
+ "generated_by": "agent/harness/es_sources/state_access.py",
+ "inputs": {
+  "logs/es_inventory.json": "5d0be16f0db09809bc180dfb084d2323fb7fa6f0565659850625081c2f1b5feb",
+  "logs/gi2_ar_vc33_forks.json": "0040a96900ebcc5fecd862e7949b07596d0df0b83259a04f8716dc5cdb52b7be",
+  "logs/gi2_fork_table.json": "4c3443d1868b5130fc33fb6e03b9c31cee992dfec8d9ab80eb4378c60bd2577c"
+ },
+ "per_game": {
+  "dc22": {
+   "cases": 15,
+   "completing_action_completes": 15,
+   "min_reachable_actions": 63,
+   "sample_forks_agreed": 8,
+   "sample_forks_checked": 8,
+   "source_sets": {
+    "goal_tiles": [
+     1,
+     1
+    ],
+    "players": [
+     1,
+     1
+    ]
+   },
+   "table_pre_state_verified": 15,
+   "table_rows": 15
+  },
+  "ft09": {
+   "cases": 15,
+   "completing_action_completes": 15,
+   "min_reachable_actions": 58,
+   "sample_forks_agreed": 8,
+   "sample_forks_checked": 8,
+   "source_sets": {
+    "clues": [
+     2,
+     8
+    ]
+   },
+   "table_pre_state_verified": 15,
+   "table_rows": 15
+  },
+  "ls20": {
+   "cases": 18,
+   "completing_action_completes": 18,
+   "min_reachable_actions": 4,
+   "sample_forks_agreed": 3,
+   "sample_forks_checked": 3,
+   "source_sets": {
+    "avatars": [
+     1,
+     1
+    ],
+    "goal_tiles": [
+     1,
+     2
+    ]
+   },
+   "table_pre_state_verified": 18,
+   "table_rows": 18
+  },
+  "m0r0": {
+   "cases": 15,
+   "completing_action_completes": 15,
+   "min_reachable_actions": 27,
+   "sample_forks_agreed": 8,
+   "sample_forks_checked": 8,
+   "source_sets": {
+    "active_movers": [
+     2,
+     2
+    ]
+   },
+   "table_pre_state_verified": 15,
+   "table_rows": 15
+  },
+  "tu93": {
+   "cases": 24,
+   "completing_action_completes": 24,
+   "min_reachable_actions": 4,
+   "sample_forks_agreed": 3,
+   "sample_forks_checked": 3,
+   "source_sets": {
+    "exits": [
+     1,
+     1
+    ],
+    "movers": [
+     1,
+     1
+    ]
+   },
+   "table_pre_state_verified": 24,
+   "table_rows": 24
+  },
+  "vc33": {
+   "cases": 18,
+   "completing_action_completes": 18,
+   "min_reachable_actions": 34,
+   "sample_forks_agreed": 8,
+   "sample_forks_checked": 8,
+   "source_sets": {
+    "falling_items": [
+     1,
+     3
+    ],
+    "receptacles": [
+     1,
+     3
+    ]
+   },
+   "table_pre_state_verified": 18,
+   "table_rows": 18
+  }
+ },
+ "totals": {
+  "cases": 105,
+  "completing_action_completes": 105,
+  "sample_forks_agreed": 38,
+  "sample_forks_checked": 38,
+  "table_pre_state_verified": 105,
+  "table_rows": 105
+ }
+}
