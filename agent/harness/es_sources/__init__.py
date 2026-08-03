@@ -10,21 +10,30 @@ Implements the frozen contract:
     role-separated immutable source-gold artifacts with source locations, input hashes, and
     independent replay assertions; fail-closed on completion reproduction and fidelity.
 
-Increment 1 exposes and asserts: the authored completion program (GI-2 A0 GIDSL gold, with
-source provenance re-verified), completion/non-completion truth per selected session (from
-``gi2_traces`` streaming, cross-checked three ways), replay fidelity under the accepted
-erratum semantics, the two-source authored level count L_g, and pinned digests of the
-reused GI-2 fork tables. Per-state masks/properties/relations/lineage accessors and fork
-wiring are increment 2 — they are not stubbed here.
+This increment exposes and asserts: the authored completion program (GI-2 A0 GIDSL gold,
+with source provenance re-verified); SOURCE-DERIVED completion and non-completion truth —
+every selected session is replayed through the executing game source
+(``es_sources.replay_check`` over ``gi2_replay.ReplayDriver``) and the engine's own level
+transitions are compared per step against the recording, so a consistently mislabeled
+recording fails closed; full role-aware fidelity — every frame compared, settled /
+solved-terminal / next-level frames byte-equal always, intermediate divergence tolerated
+only under the accepted vc33 erratum, recomputed fresh and cross-checked against the
+pinned GI-2 fidelity and forensics artifacts; recording-byte authentication (the file
+actually read is hashed and must equal every stored pin); the two-source authored level
+count L_g; and pinned digests of the reused GI-2 fork tables. Per-state
+masks/properties/relations/lineage accessors and fork wiring are the next increment —
+they are not stubbed here.
 
 Custody (SS2.2): S/C session records are written to ``logs/es_source_gold_sc.jsonl``
-(readable by the ordinary experiment process). R session records are written only to
-``logs/es_source_gold_r.sealed`` (mode 0600); the SC header carries that file's sha256 and
-never its contents. The builder in ``es_sources/build.py`` acts as the pre-freeze CUSTODIAN
-the note permits: it validates R rows but publishes only aggregate pass/fail and the sealed
-digest. Measurement-side modules (runtime generator, packet builder, model runner) must
-never import this package's build path or read the sealed file; the SS6.3 isolation tests
-enforce that when those modules exist.
+(readable by the ordinary experiment process). R session records are Fernet-ENCRYPTED into
+``logs/es_source_gold_r.sealed``; the key is surfaced exactly once for the operator and is
+never written to disk, so no same-UID process can read R gold without the logged SS5.2
+unseal event. The SC header pins sha256(key), the plaintext rows fingerprint (verification
+without decryption), and the ciphertext sha256 (tamper evidence). The builder in
+``es_sources/build.py`` acts as the pre-freeze CUSTODIAN the note permits: it validates R
+rows but publishes only aggregate pass/fail and digests. Measurement-side modules (runtime
+generator, packet builder, model runner) must never import this package's build path; the
+SS6.3 isolation tests enforce that when those modules exist.
 """
 
 from __future__ import annotations
@@ -43,7 +52,7 @@ HARNESS = ROOT / "agent/harness"
 if str(HARNESS) not in sys.path:
     sys.path.insert(0, str(HARNESS))
 
-from gi2_traces import CORPUS, SESSIONS, iter_trace  # noqa: E402
+from gi2_traces import CORPUS, SESSIONS  # noqa: E402
 
 FORMAT_VERSION = 1
 FROZEN_GAMES = ("dc22", "ft09", "ls20", "m0r0", "tu93", "vc33")
@@ -148,62 +157,82 @@ def authored_level_count(env: str, source_path: Path, metadata_path: Path) -> di
     }
 
 
+def authenticate_recording(
+    env: str, guid: str, path: Path, pins: dict[str, str]
+) -> str:
+    """Hash the recording that is actually about to be read and require equality with
+    every stored pin (fidelity artifact, es_inventory). A file that drifted from either
+    pin fails closed even if its completion structure happens to be preserved."""
+    current = _sha256_file(path)
+    for source, pinned in sorted(pins.items()):
+        if pinned != current:
+            raise ValueError(
+                f"{env}:{guid}: recording bytes ({current}) do not match the "
+                f"{source} pin ({pinned})"
+            )
+    return current
+
+
 def settled_frame_assertion(
     env: str,
-    session_fidelity: dict[str, Any],
+    guid: str,
+    replay_result: dict[str, Any],
     *,
     erratum: bool,
-    first_divergence_intermediate: bool | None,
 ) -> dict[str, Any]:
-    """Erratum semantics (gate_manifest -> es -> corpus.vc33_fidelity).
+    """Erratum semantics over the RECOMPUTED full-session comparison.
 
-    Byte-exact sessions pass outright. A divergent session passes only when the game
-    carries the accepted settled-frame erratum AND its recorded first divergence has been
-    re-verified to sit on an intermediate frame; the full all-divergences-intermediate
-    claim rests on the pinned GI-2 forensics and the dated erratum acceptance.
+    Inputs come from ``replay_check.replay_session``: engine-vs-recording labels per step
+    and every frame divergence with its role. Settled, solved-terminal, and next-level
+    frames must be byte-equal always; intermediate divergence is tolerated only under the
+    accepted vc33 settled-frame erratum. Nothing here trusts a first-divergence shortcut.
     """
-    frame_fidelity = bool(session_fidelity.get("frame_fidelity"))
-    divergence = session_fidelity.get("first_frame_divergence")
-    if frame_fidelity and divergence is None:
-        return {"settled_frame_ok": True, "basis": "byte_exact_all_frames"}
+    if replay_result["label_mismatches"]:
+        raise ValueError(
+            f"{env}:{guid}: engine-derived completion labels disagree with the recording "
+            f"at {len(replay_result['label_mismatches'])} step(s) — completion truth is "
+            "not source-reproduced"
+        )
+    if replay_result["engine_completions"] != replay_result["recorded_completions"]:
+        raise ValueError(
+            f"{env}:{guid}: engine completion events differ from recorded completion events"
+        )
+    if replay_result["structural"]:
+        raise ValueError(
+            f"{env}:{guid}: frame-count mismatch at "
+            f"{len(replay_result['structural'])} step(s) — structural divergence is never "
+            "covered by the erratum"
+        )
+    divergences = replay_result["divergences"]
+    if not divergences:
+        return {
+            "settled_frame_ok": True,
+            "basis": "byte_exact_all_frames_recomputed",
+            "engine_verified_non_completions": replay_result[
+                "engine_verified_non_completions"
+            ],
+        }
     if not erratum:
         raise ValueError(
-            f"{env}:{session_fidelity.get('guid')}: replay/recording divergence in a game "
-            "without the settled-frame erratum — fidelity fails closed"
+            f"{env}:{guid}: {len(divergences)} frame divergence(s) in a game without the "
+            "settled-frame erratum — fidelity fails closed"
         )
-    if first_divergence_intermediate is not True:
+    non_intermediate = [d for d in divergences if d["role"] != "intermediate"]
+    if non_intermediate:
         raise ValueError(
-            f"{env}:{session_fidelity.get('guid')}: recorded first divergence is not on an "
-            "intermediate frame — settled-frame erratum does not cover it"
+            f"{env}:{guid}: {len(non_intermediate)} divergence(s) on non-intermediate "
+            f"frames (first: {non_intermediate[0]}) — the settled-frame erratum does not "
+            "cover them"
         )
     return {
         "settled_frame_ok": True,
-        "basis": "accepted_2026-07-30_settled_frame_erratum",
-        "first_divergence": divergence,
-        "first_divergence_verified_intermediate": True,
-        "full_assertion": "GI-2 forensics + dated erratum acceptance, pinned by input digests",
+        "basis": "accepted_2026-07-30_settled_frame_erratum_recomputed_all_frames",
+        "divergence_count": len(divergences),
+        "divergent_steps": sorted({d["step"] for d in divergences}),
+        "max_changed_cells": max(d["changed_cells"] for d in divergences),
+        "all_divergences_intermediate": True,
+        "engine_verified_non_completions": replay_result["engine_verified_non_completions"],
     }
-
-
-def extract_completions(
-    env: str, guid: str, divergence: tuple[int, int] | None
-) -> tuple[list[dict[str, int]], bool | None]:
-    """Stream one recording: completion events plus, when a recorded (step, frame_index)
-    divergence is given, whether that frame is intermediate (never the settled, terminal,
-    or next-level frame)."""
-    path = CORPUS / env / f"{guid}.recording.jsonl"
-    completions: list[dict[str, int]] = []
-    divergence_intermediate: bool | None = None
-    for step in iter_trace(path):
-        if step.is_completion:
-            completions.append({"step": step.index, "completed_level": step.levels_completed})
-        if divergence is not None and step.index == divergence[0]:
-            frame_index = divergence[1]
-            divergence_intermediate = (
-                0 <= frame_index < len(step.frames)
-                and step.frames[frame_index].role == "intermediate"
-            )
-    return completions, divergence_intermediate
 
 
 def build_game_record(adapter: GameAdapter, gold_record: dict[str, Any]) -> dict[str, Any]:
@@ -238,42 +267,57 @@ def build_session_record(
     adapter: GameAdapter,
     guid: str,
     role: str,
+    replay_result: dict[str, Any],
+    recording_sha256: str,
     session_fidelity: dict[str, Any],
     sessions_doc_levels: int,
 ) -> dict[str, Any]:
-    divergence = session_fidelity.get("first_frame_divergence")
-    divergence_ref = None
-    if divergence is not None:
-        divergence_ref = (int(divergence["step"]), int(divergence["detail"]["frame_index"]))
-    completions, divergence_intermediate = extract_completions(
-        adapter.env, guid, divergence_ref
-    )
+    completions = replay_result["engine_completions"]
     fidelity_levels = int(session_fidelity.get("levels_completed", -1))
     reproduction = {
-        "trace_completions": len(completions),
+        "engine_completions": len(completions),
+        "recorded_completions": len(replay_result["recorded_completions"]),
+        "engine_verified_non_completions": replay_result["engine_verified_non_completions"],
         "sessions_doc_levels_completed": sessions_doc_levels,
         "fidelity_doc_levels_completed": fidelity_levels,
         "ok": len(completions) == sessions_doc_levels == fidelity_levels,
     }
     if not reproduction["ok"]:
         raise ValueError(
-            f"{adapter.env}:{guid}: completion reproduction failed — trace "
+            f"{adapter.env}:{guid}: completion cross-check failed — engine "
             f"{len(completions)}, sessions doc {sessions_doc_levels}, fidelity doc "
             f"{fidelity_levels}"
         )
     assertion = settled_frame_assertion(
         adapter.env,
-        session_fidelity,
+        guid,
+        replay_result,
         erratum=adapter.settled_frame_erratum,
-        first_divergence_intermediate=divergence_intermediate,
     )
+    recorded_first = session_fidelity.get("first_frame_divergence")
+    if recorded_first is not None:
+        expected = (int(recorded_first["step"]), int(recorded_first["detail"]["frame_index"]))
+        recomputed = [
+            (d["step"], d["frame_index"]) for d in replay_result["divergences"]
+        ]
+        if not recomputed or min(recomputed) != expected:
+            raise ValueError(
+                f"{adapter.env}:{guid}: recomputed first divergence "
+                f"{min(recomputed) if recomputed else None} does not match the fidelity "
+                f"artifact's {expected} — reused assertion drifted"
+            )
+    elif replay_result["divergences"]:
+        raise ValueError(
+            f"{adapter.env}:{guid}: recomputation found divergences where the fidelity "
+            "artifact recorded none — reused assertion drifted"
+        )
     return {
         "record": "session",
         "env": adapter.env,
         "guid": guid,
         "role": role,
         "recording": str((CORPUS / adapter.env / f"{guid}.recording.jsonl").relative_to(ROOT)),
-        "recording_sha256": session_fidelity["recording_sha256"],
+        "recording_sha256": recording_sha256,
         "completions": completions,
         "completion_reproduction": reproduction,
         "replay_assertion": assertion,
@@ -302,21 +346,29 @@ def write_gold(
     inputs: dict[str, str],
     sc_path: Path = SC_OUTPUT,
     sealed_path: Path = R_SEALED_OUTPUT,
-) -> dict[str, str]:
+    key: bytes | None = None,
+) -> dict[str, Any]:
+    """Write the SC artifact and the ENCRYPTED sealed R artifact.
+
+    Custody is enforced by knowledge, not file mode: R rows are Fernet-encrypted and the
+    key is returned to the caller exactly once for the OPERATOR to store — it is never
+    written to disk by this package, so no same-UID process can decrypt the sealed file
+    without the logged unseal event supplying the key. The SC header pins sha256(key) so
+    the unseal tool can verify the supplied key, the plaintext rows fingerprint so
+    ``--verify`` can compare a source rebuild without decrypting, and the ciphertext
+    sha256 so tampering is detectable.
+    """
+    from cryptography.fernet import Fernet
+
     sc_rows, r_rows = split_by_custody(records)
     if not r_rows:
         raise ValueError("no R rows — custody split would seal an empty artifact")
 
-    sealed_header = {
-        "record": "header",
-        "format_version": FORMAT_VERSION,
-        "generated_by": "agent/harness/es_sources/build.py",
-        "custody": "R — sealed until the SS5.2 unseal event; do not read from measurement code",
-        "rows_fingerprint": rows_fingerprint(r_rows),
-    }
-    sealed_lines = [json.dumps(sealed_header, sort_keys=True)]
-    sealed_lines += [json.dumps(row, sort_keys=True) for row in r_rows]
-    sealed_path.write_text("\n".join(sealed_lines) + "\n")
+    if key is None:
+        key = Fernet.generate_key()
+    plaintext = "\n".join(json.dumps(row, sort_keys=True) for row in r_rows) + "\n"
+    ciphertext = Fernet(key).encrypt(plaintext.encode())
+    sealed_path.write_bytes(ciphertext)
     sealed_path.chmod(0o600)
     sealed_sha256 = _sha256_file(sealed_path)
 
@@ -333,15 +385,20 @@ def write_gold(
             else sealed_path.name
         ),
         "r_sealed_sha256": sealed_sha256,
+        "r_plaintext_rows_fingerprint": rows_fingerprint(r_rows),
+        "r_key_sha256": _sha256_bytes(key),
         "r_row_count": len(r_rows),
+        "r_custody": "Fernet-encrypted; key held by the operator only, never on disk; "
+        "unseal is the SS5.2 logged event",
     }
     sc_lines = [json.dumps(sc_header, sort_keys=True)]
     sc_lines += [json.dumps(row, sort_keys=True) for row in sc_rows]
     sc_path.write_text("\n".join(sc_lines) + "\n")
     return {
         "sc_rows_fingerprint": sc_header["rows_fingerprint"],
-        "r_rows_fingerprint": sealed_header["rows_fingerprint"],
+        "r_plaintext_rows_fingerprint": sc_header["r_plaintext_rows_fingerprint"],
         "r_sealed_sha256": sealed_sha256,
+        "r_key": key,
     }
 
 
