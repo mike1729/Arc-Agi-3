@@ -1,0 +1,78 @@
+{
+ "contract": {
+  "arms": [
+   "I-4",
+   "I-8",
+   "I-16",
+   "I-A",
+   "I-H",
+   "I-C"
+  ],
+  "files": {
+   "agent/harness/vp_inventory.py": "9ac2963bad9f6adb0a783d7e62595940c5545e1639a8638b9187b608de02b531",
+   "agent/harness/vp_questions.py": "2b2ea9ae7123537781011548b1347e294ed53bd16b923e343809e17d2ccd821f",
+   "agent/harness/vp_regions.py": "a4f34038fb061bf4d837ed395c7f289220bf72c2aa8d476ecd113198d3cc382c",
+   "agent/harness/vp_screen.py": "22cd2cb2cddf17777b7123b86331ab27b983934ccc83442e54bafc9b8e405e1e",
+   "notes/vp-perception-screen.md": "ac5a36d3c88139c3bc2e133a57a1ea79bbe1827733a5b3537cab6c72354fca0d",
+   "tests/test_vp_questions.py": "9b2f5c1b7fc497b37df312ad60d66035be9fc031bf1643e2000370c317035a4b",
+   "tests/test_vp_regions.py": "30b4b21aca47b582f14b5de8b3653184ea4a5962a6a0c2a4545f9f3e78a4d956"
+  },
+  "games": [
+   "dc22",
+   "ft09",
+   "ls20",
+   "m0r0",
+   "tu93",
+   "vc33"
+  ],
+  "generation": {
+   "chat_template_kwargs": {
+    "enable_thinking": false
+   },
+   "seed": 20260802,
+   "temperature": 0,
+   "top_p": 1
+  },
+  "governing_commit": "b3836e5",
+  "model_basename": "Qwen3.6-27B-8bit",
+  "questions": {
+   "inputs": {
+    "draw": {
+     "path": "logs/gi1_game_draw.json",
+     "sha256": "751982074e7da3cc0f6330a7f54f65974a8b38bba938615453350e2c0bd76f9a"
+    },
+    "recordings": {
+     "data/human_replays/kaggle_mirror/public_games-dataset/dc22/1b9a2041-bc99-4b7b-8d99-041f0503956f.recording.jsonl": "cca61fa8d578d963af39dcb7871b56cb59724cb67fd9818be6a7b3adec77fd49",
+     "data/human_replays/kaggle_mirror/public_games-dataset/dc22/ab11e695-b9d2-42f4-871c-8f90aa8c3a85.recording.jsonl": "0d52aa00bd893e673ddc74bbb2f58670824559519aeeb49fb97b26388b36c06f",
+     "data/human_replays/kaggle_mirror/public_games-dataset/dc22/e8f76fe2-d90a-44ec-97cd-d09ec9b9cbcd.recording.jsonl": "2ca3908774dfd4b005b00ba97819beb590f82c57b1592f3638593690310cef42",
+     "data/human_replays/kaggle_mirror/public_games-dataset/ft09/01f76fc7-c612-4006-8d08-c13ed0cb91de.recording.jsonl": "a5801fb3b98f76fcea76fe359a957a6197cf5e88a02098c4df5a020c2c43bd29",
+     "data/human_replays/kaggle_mirror/public_games-dataset/ft09/3b1ce31a-0af9-41f3-858f-4ead42360d15.recording.jsonl": "ab7b2a7779c1ef28d0ee9f912ad0d7fd67ec193e1a6686d842efb20c74a268f1",
+     "data/human_replays/kaggle_mirror/public_games-dataset/ft09/f58b7fe2-aafd-414a-a1fb-74d4b3e717e0.recording.jsonl": "b2af3a34ff00d03504af7b63d9a97830e1635191e287f42a923685d4732a7f5a",
+     "data/human_replays/kaggle_mirror/public_games-dataset/ls20/57630d5e-4a01-42b6-bda1-43ced11c5bd7.recording.jsonl": "2097b641334841715b4b8679307874d74cee30ecca133237cded150547fd40f8",
+     "data/human_replays/kaggle_mirror/public_games-dataset/ls20/8aed7120-f7a9-45a1-837a-68bc7dc37a4f.recording.jsonl": "f94c3bc0b3d19d55b7f35e46f44f798d8666717bba9af3d8f2738f200e3398c5",
+     "data/human_replays/kaggle_mirror/public_games-dataset/ls20/8f03134f-a5f6-4b76-95b6-fd70fcb81ee1.recording.jsonl": "71a8e8d712c86eead2991c17987bc2d86135fd839fcb4bacb1ede1be0f5d3e94",
+     "data/human_replays/kaggle_mirror/public_games-dataset/m0r0/0e1adaaf-fe7e-47f3-923f-97791151e11e.recording.jsonl": "f570f9da51ab3eed2d15fce928b4f257fde382849e39205a100008ea03806f6f",
+     "data/human_replays/kaggle_mirror/public_games-dataset/m0r0/a98ab7b3-64fe-41ab-a357-c65519897691.recording.jsonl": "0f490a8ae572cd116821c1c16bdd796ac9caa3e7d5945764c9eac12a1c0bdb20",
+     "data/human_replays/kaggle_mirror/public_games-dataset/m0r0/f03a5fda-7dc2-44ee-a0ce-0b9ad50074e1.recording.jsonl": "8b3c83013a42e2f9c07345783777d1719ac6bef32d6ea7b1424ca8db23e22c6b",
+     "data/human_replays/kaggle_mirror/public_games-dataset/tu93/4efce135-0cd8-4a9c-97e7-8d670e3d343b.recording.jsonl": "a6f46b70a298e130ec43aba8a6875ce37488b99dd4737a6352a457f8b576de8d",
+     "data/human_replays/kaggle_mirror/public_games-dataset/tu93/74d1dff4-3de7-4911-9574-21c93fd257ae.recording.jsonl": "f9cb49f6ef3049c202a52fd4458e758f008f4d2c8fa532dc6cb9d9e24bd6260d",
+     "data/human_replays/kaggle_mirror/public_games-dataset/tu93/e5b51453-dcff-40d8-a068-4da064db741f.recording.jsonl": "7924300b302f9b17777df0d105be9efc452e534e12443ae51bd20cac9d14391a",
+     "data/human_replays/kaggle_mirror/public_games-dataset/vc33/4cffe392-c5a8-47f7-a2db-86a97a4606ca.recording.jsonl": "770706bd37b1f6564a6d562154a041eb77f02e5cdefd0c1039106635c87e5750",
+     "data/human_replays/kaggle_mirror/public_games-dataset/vc33/837812ad-2c5c-4943-8632-b6f8cd4b5b4d.recording.jsonl": "f81f624de3306f3f458f202a08a0d7e9797c3fd5d4bcb1d23e8679e10f005e9d",
+     "data/human_replays/kaggle_mirror/public_games-dataset/vc33/e60e880e-aed6-4d38-af81-3ef95be929e1.recording.jsonl": "29e3d5613ec5abd2f8178cc9db535c6c0c285201e428d65c7ed24da6ad5a3cce"
+    },
+    "sessions": {
+     "path": "logs/s2_replay_sessions.json",
+     "sha256": "ae820e7cfd82c3acb0cd0b764dc4616f4ea3184ec76a087b973c49cceb70aaa0"
+    }
+   },
+   "path": "logs/vp_questions.json",
+   "question_fingerprint": "836544fc50061c469a069469a1cfb69d0eb0407a0f2237537d735d46442624c8",
+   "sha256": "17a619ae3140f415bfd535cff845e6f0cbb5a786db654dac4b9581b6203a70a6"
+  }
+ },
+ "contract_fingerprint": "bf4543598bb385ec12ca378958348526160ce3358ab7db198ab46098db450868",
+ "format_version": 1,
+ "scope": "vp_freeze_1_measurement",
+ "status": "frozen"
+}

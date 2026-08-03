@@ -5,6 +5,28 @@ values, formats, sampling rules, gates, routing, and budgets are frozen. **Freez
 VP1–VP2 only**; VP3–VP4 stay design-stage, frozen separately and only if VP1–VP2 pass. Any
 change to Freeze-1 scope requires a dated erratum before measurement.
 
+**Pre-measurement operational erratum, 2026-08-02:** the first client launch made no model
+call because the workspace sandbox denied its localhost connection. Four connection-error
+records were archived outside the measurement log. The runner's cancellation loop was fixed
+to preserve the originating operational error instead of raising `CancelledError`, and the
+implementation manifest was refrozen before any model response. Questions, prompts, gold,
+sampling, gates, routing, generation settings, and budgets are unchanged.
+
+**Implementation-conformance erratum, 2026-08-02:** two VP1 bring-up responses were discarded
+after revealing that the rendered instruction had abbreviated the governing contract's
+requirements for legend color names, a nested 3×3 patch, and bare JSON. The rendered prompt
+now states those already-frozen requirements verbatim; the two responses and old manifest are
+excluded from measurement and preserved as bring-up evidence. No question, image, gold,
+selection, gate, arm, generation setting, or routing rule changed. The implementation was
+refrozen before restarting the measurement.
+
+**Concurrency bring-up erratum, 2026-08-02:** concurrent lazy import of the vendored image
+renderer failed before one row could make a request, while already-started bring-up requests
+drained. The runner now initializes rendering before opening its worker pool and bounds queued
+work to the concurrency setting, so interruption cannot leave a full experiment queued in
+background threads. The error row and unscored drained requests are excluded. Measurement
+content and scoring are unchanged; the implementation was refrozen before restart.
+
 Provenance: operator proposal (render frames for multimodal Qwen; ceiling matters even where
 deployment can't afford it) + external ChatGPT draft (four-level replay-grounded diagnostic) +
 two Sol review rounds (six repairs §3.1; three repairs + value resolutions §3.2) + final
