@@ -1,5 +1,6 @@
 {
  "depth_calibration": {
+  "clause_reading": "ES-E4: clause = top-level conjunct; nesting is depth-governed",
   "depth_metric": "ast_depth: one level per AST dict node, leaves count one",
   "expression_depth_bound": 6,
   "max_clauses_check": 2,
@@ -10,9 +11,25 @@
    "m0r0": 2,
    "tu93": 5,
    "vc33": 6
+  },
+  "per_gold_max_conjunction_arity": {
+   "dc22": 1,
+   "ft09": 1,
+   "ls20": 2,
+   "m0r0": 1,
+   "tu93": 2,
+   "vc33": 3
+  },
+  "per_gold_top_level_clauses": {
+   "dc22": 1,
+   "ft09": 1,
+   "ls20": 1,
+   "m0r0": 1,
+   "tu93": 2,
+   "vc33": 1
   }
  },
- "fingerprint": "6d3e9e2e8033dd8bf5f786df79745d567e95afc3eb11bb2ce30a5f0ade5035e2",
+ "fingerprint": "3cc10a4f8dc49eb302c963f53477642e6295ff1b282cacc0aba1d1cb9807f10d",
  "format_version": 1,
  "generated_by": "agent/harness/es_candidates.py --bring-up",
  "grammar_spec": {
@@ -65,7 +82,7 @@
  },
  "grammar_spec_hash": "49c0cc3e4abc74186edbc65665f65fd68e1faa7e9e3678d58ce53346cb0b2a6b",
  "inputs": {
-  "logs/es_inventory.json": "8273f0e7c1f15b52add5b21ea21dd209a76c7891a9a5ef09f2c11988586eab78"
+  "logs/es_inventory.json": "bc00824a3932ea73baf4eab38030c2f15cb93fb11e4915b82ba75b0573b0c082"
  },
  "per_game": {
   "dc22": {

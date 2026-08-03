@@ -126,6 +126,28 @@ def test_and_flattens_dedupes_and_sorts():
     assert serialize(single) == serialize(a)
 
 
+def test_clause_count_cannot_be_evaded_by_nesting():
+    from es_candidates import clause_count, max_conjunction_arity
+
+    a = {"op": "empty", "set": _colour(3)}
+    b = {"op": "nonempty", "set": _colour(5)}
+    c = {"op": "exactly_one", "set": _colour(7)}
+    binarized = {"op": "and", "args": [a, {"op": "and", "args": [b, c]}]}
+    assert clause_count(binarized) == 3  # flattened before counting
+    assert clause_count(a) == 1
+    # a conjunction nested under a quantifier is NOT a top-level clause (ES-E4)...
+    quantified = {
+        "op": "all",
+        "var": "x",
+        "in": _colour(3),
+        "satisfies": {"op": "and", "args": [b, c]},
+    }
+    assert clause_count(quantified) == 1
+    # ...but its arity is still visible to the calibration record
+    assert max_conjunction_arity(quantified) == 2
+    assert max_conjunction_arity(binarized) == 3
+
+
 # ------------------------------------------------------------ golds and calibration
 
 
@@ -140,7 +162,13 @@ def test_gidsl_golds_translate_and_calibrate_to_the_es_e3_fill():
         "vc33": 6,
     }
     assert calibration["expression_depth_bound"] == EXPRESSION_DEPTH_BOUND == 6
-    assert calibration["max_clauses_check"] <= MAX_CLAUSES
+    # ES-E4 reading: clause = top-level conjunct; tu93 is the two-clause exemplar
+    assert calibration["per_gold_top_level_clauses"]["tu93"] == 2
+    assert calibration["per_gold_top_level_clauses"]["vc33"] == 1
+    assert calibration["max_clauses_check"] == 2 <= MAX_CLAUSES
+    # vc33's inner three-way conjunction is reported and governed by the depth bound
+    assert calibration["per_gold_max_conjunction_arity"]["vc33"] == 3
+    assert calibration["per_gold_max_conjunction_arity"]["tu93"] == 2
 
 
 def test_gold_encodings_keep_source_semantic_terms():

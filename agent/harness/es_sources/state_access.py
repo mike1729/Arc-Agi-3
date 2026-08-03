@@ -135,13 +135,17 @@ def classify_fork_response(response: Any, previous_levels: int) -> dict[str, Any
     }
 
 
-def enumerate_candidates(
-    available: tuple[int, ...], representatives: list[tuple[int, int]]
-) -> list[dict[str, Any]]:
+GRID_SIZE = 64
+
+
+def enumerate_candidates(available: tuple[int, ...]) -> list[dict[str, Any]]:
     """Deterministic reachable-action enumeration in gi2_forks' candidate format.
 
-    RESET is excluded: executing it ends a DOSE-4 sequential branch by definition. The
-    ES-IDENT freeze governs whether further exclusions apply; this is the substrate."""
+    Implements SS3.3's "each reachable action" literally: every advertised action id,
+    with ACTION6 expanded over the FULL 64x64 coordinate domain in frozen (y, x) order
+    — a representative-only reduction was rejected on review because the maximin
+    selector must see the same action set the deployed environment accepts. RESET is
+    excluded: executing it ends a DOSE-4 sequential branch by definition."""
     candidates: list[dict[str, Any]] = []
     for action_id in sorted(set(available)):
         if action_id == 0:
@@ -149,7 +153,8 @@ def enumerate_candidates(
         if action_id == 6:
             candidates.extend(
                 {"action_id": 6, "action_data": {"x": col, "y": row}}
-                for row, col in representatives
+                for row in range(GRID_SIZE)
+                for col in range(GRID_SIZE)
             )
         else:
             candidates.append({"action_id": action_id, "action_data": {}})
@@ -208,7 +213,7 @@ class StateHandle:
         return mechanical_relations([o for o in objects if o["cells"]])
 
     def reachable_actions(self) -> list[dict[str, Any]]:
-        return enumerate_candidates(self.available_actions, self.mouse_representatives)
+        return enumerate_candidates(self.available_actions)
 
     def fork(self, action_id: int, action_data: dict[str, Any] | None = None):
         """Execute one alternative on a deep copy; return (outcome, branch handle)."""

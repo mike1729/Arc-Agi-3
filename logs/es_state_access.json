@@ -3,7 +3,7 @@
  "format_version": 1,
  "generated_by": "agent/harness/es_sources/state_access.py",
  "inputs": {
-  "logs/es_inventory.json": "8273f0e7c1f15b52add5b21ea21dd209a76c7891a9a5ef09f2c11988586eab78",
+  "logs/es_inventory.json": "bc00824a3932ea73baf4eab38030c2f15cb93fb11e4915b82ba75b0573b0c082",
   "logs/gi2_ar_vc33_forks.json": "0040a96900ebcc5fecd862e7949b07596d0df0b83259a04f8716dc5cdb52b7be",
   "logs/gi2_fork_table.json": "4c3443d1868b5130fc33fb6e03b9c31cee992dfec8d9ab80eb4378c60bd2577c"
  },
@@ -11,7 +11,7 @@
   "dc22": {
    "cases": 15,
    "completing_action_completes": 15,
-   "min_reachable_actions": 63,
+   "min_reachable_actions": 4100,
    "sample_forks_agreed": 8,
    "sample_forks_checked": 8,
    "source_sets": {
@@ -30,7 +30,7 @@
   "ft09": {
    "cases": 15,
    "completing_action_completes": 15,
-   "min_reachable_actions": 58,
+   "min_reachable_actions": 4101,
    "sample_forks_agreed": 8,
    "sample_forks_checked": 8,
    "source_sets": {
@@ -64,7 +64,7 @@
   "m0r0": {
    "cases": 15,
    "completing_action_completes": 15,
-   "min_reachable_actions": 27,
+   "min_reachable_actions": 4101,
    "sample_forks_agreed": 8,
    "sample_forks_checked": 8,
    "source_sets": {
@@ -98,7 +98,7 @@
   "vc33": {
    "cases": 18,
    "completing_action_completes": 18,
-   "min_reachable_actions": 34,
+   "min_reachable_actions": 4096,
    "sample_forks_agreed": 8,
    "sample_forks_checked": 8,
    "source_sets": {

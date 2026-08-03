@@ -778,6 +778,47 @@ errata:
       is a mechanical fill of a frozen rule, not a judgment; no other value is possible
       under the frozen metric and encodings.
 
+  - id: ES-E4
+    date: 2026-08-03
+    scope:
+      - "es — grammar.max_clauses reading ('at most two clauses', governing note SS3.1);
+         agent/harness/es_candidates.py clause_count/calibration; ES-E3's parenthetical"
+    problem: >
+      Review found the implementation counted only top-level conjuncts while the frozen
+      text never defines 'clause' — the vc33 gold contains an inner three-way conjunction
+      (same_color AND same_lateral_coordinate AND flanks under an existential), and under a
+      count-conjuncts-anywhere reading it would exceed max_clauses = 2, making ES-E3's
+      claim that every gold fits the bound false. The adopted reading was implementation
+      latitude exercised without a record; the resolution belongs here.
+    resolution: >
+      Fixed reading: a clause is a TOP-LEVEL conjunct of the completion condition; nested
+      conjunctions inside a quantifier body are governed by expression_depth_bound, not by
+      max_clauses. clause_count computes on the canonical (flattened) form so same-level
+      nesting cannot hide clauses, and the calibration record now publishes per-gold
+      top-level clause counts (max 2: tu93) alongside per-gold maximum conjunction arity
+      anywhere (vc33: 3, at depth 6 = the ES-E3 bound). ES-E3's parenthetical is true
+      under this reading and unchanged.
+    rejected_readings: >
+      (a) count conjuncts anywhere — rejected for incoherence, not convenience: SS3.1
+      simultaneously requires the schema to encode every authored gold before freeze, and
+      vc33's gold irreducibly contains a three-way conjunction, so this reading makes the
+      frozen system contradict itself; (b) bound the arity of each single 'and' node —
+      rejected as vacuous: any n-ary conjunction binarizes without semantic change, and
+      the frozen canonicalization deliberately flattens nested conjunctions, so a
+      per-node arity bound constrains nothing. The top-level reading is the only
+      substantive one on which the frozen text is coherent; tu93's
+      'nonempty AND all-exists' gold is its exemplar.
+    outcome_awareness_disclosure: >
+      The reading was implemented before this review but never recorded; the review, not
+      the implementation, surfaced the ambiguity. Bounding fact: no gate, survivor set,
+      or model measurement consumes clause counts today — the visual universe enumerates
+      no conjunctions at all — so the contamination surface is the gold encodings and the
+      future OC expressibility classification, which is exactly why the determination is
+      recorded now, before any OC gold is read.
+    consequence: >
+      es_candidates.clause_count/max_conjunction_arity implement the reading; the
+      calibration artifact carries both counts per gold. No frozen number changes.
+
 # =====================================================================================
 # S0 — External execution-path proof.
 # =====================================================================================

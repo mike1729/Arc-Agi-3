@@ -297,7 +297,34 @@ def ast_depth(node: dict[str, Any]) -> int:
 
 
 def clause_count(node: dict[str, Any]) -> int:
-    return len(node["args"]) if node["op"] == "and" else 1
+    """Top-level clause count under the ES-E4 recorded reading of ``max_clauses``.
+
+    A clause is a TOP-LEVEL conjunct of the completion condition (tu93's
+    ``nonempty AND all-exists`` shape is the two-clause exemplar). Conjunctions
+    nested inside a quantifier body are bounded by ``expression_depth_bound``, not by
+    ``max_clauses`` — the only reading on which the frozen system is coherent, since
+    SS3.1 simultaneously requires every gold to be schema-encodable and vc33's gold
+    irreducibly contains a three-way inner conjunction. Counted on the canonical form
+    so nested same-level ``and`` nodes cannot hide clauses from the flattener."""
+    canonical = canonicalize(node)
+    return len(canonical["args"]) if canonical["op"] == "and" else 1
+
+
+def max_conjunction_arity(node: dict[str, Any]) -> int:
+    """Largest ``and`` arity anywhere in the canonical form (reported, depth-governed)."""
+
+    def _walk(item: dict[str, Any]) -> int:
+        best = len(item["args"]) if item["op"] == "and" else 1
+        for value in item.values():
+            if isinstance(value, dict):
+                best = max(best, _walk(value))
+            elif isinstance(value, list):
+                for child in value:
+                    if isinstance(child, dict):
+                        best = max(best, _walk(child))
+        return best
+
+    return _walk(canonicalize(node))
 
 
 # ====================================================================================
@@ -355,6 +382,7 @@ def load_gold_encodings() -> dict[str, dict[str, Any]]:
             "canonical": canonicalize(ast),
             "depth": ast_depth(ast),
             "clauses": clause_count(ast),
+            "max_conjunction_arity": max_conjunction_arity(ast),
             "summary": record["summary"],
             "gidsl_source_sha256": record["provenance"]["source_sha256"],
         }
@@ -362,13 +390,24 @@ def load_gold_encodings() -> dict[str, dict[str, Any]]:
 
 
 def calibrate_depth_bound() -> dict[str, Any]:
-    """The ES-E3 rule: minimal uniform depth admitting every gold schema encoding."""
+    """The ES-E3 rule: minimal uniform depth admitting every gold schema encoding.
+
+    ``max_clauses_check`` verifies the frozen ``max_clauses`` bound under the ES-E4
+    recorded reading (top-level conjuncts); nested conjunction arity is reported
+    alongside for transparency and is governed by the depth bound."""
     golds = load_gold_encodings()
     depths = {env: gold["depth"] for env, gold in sorted(golds.items())}
     return {
         "per_gold_depth": depths,
         "expression_depth_bound": max(depths.values()),
+        "per_gold_top_level_clauses": {
+            env: gold["clauses"] for env, gold in sorted(golds.items())
+        },
         "max_clauses_check": max(gold["clauses"] for gold in golds.values()),
+        "per_gold_max_conjunction_arity": {
+            env: gold["max_conjunction_arity"] for env, gold in sorted(golds.items())
+        },
+        "clause_reading": "ES-E4: clause = top-level conjunct; nesting is depth-governed",
         "depth_metric": "ast_depth: one level per AST dict node, leaves count one",
     }
 

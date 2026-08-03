@@ -5377,11 +5377,11 @@
   "manifest_block": "gate_manifest.yaml -> es (FROZEN 2026-08-03)",
   "partition_rule": "sessions ordered by (recorded session start, guid); p = int(sha256(('es-partition:'+env).encode('ascii')).hexdigest()[:8], 16) mod 6 over [(S,C,R),(S,R,C),(C,S,R),(C,R,S),(R,S,C),(R,C,S)]"
  },
- "fingerprint": "8273f0e7c1f15b52add5b21ea21dd209a76c7891a9a5ef09f2c11988586eab78",
+ "fingerprint": "bc00824a3932ea73baf4eab38030c2f15cb93fb11e4915b82ba75b0573b0c082",
  "format_version": 1,
  "generated_by": "agent/harness/es_questions.py",
  "inputs": {
-  "gate_manifest.yaml": "e5b8f88e0b87c0e4f55c622e021ce52cd37c05995bc4bfa15d1bbe049c9438eb",
+  "gate_manifest.yaml": "7d19ce3b01690805710e95b78b6f2a830d4ca01c9f6657a925ea45d290f8b2ca",
   "logs/gi1_game_draw.json": "751982074e7da3cc0f6330a7f54f65974a8b38bba938615453350e2c0bd76f9a",
   "logs/s2_replay_sessions.json": "ae820e7cfd82c3acb0cd0b764dc4616f4ea3184ec76a087b973c49cceb70aaa0",
   "recording:dc22:1b9a2041-bc99-4b7b-8d99-041f0503956f": "cca61fa8d578d963af39dcb7871b56cb59724cb67fd9818be6a7b3adec77fd49",

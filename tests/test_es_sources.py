@@ -252,13 +252,19 @@ def test_classify_fork_response_labels_and_continuation():
     assert reset["sequential_continuable"] is False
 
 
-def test_enumerate_candidates_excludes_reset_and_expands_mouse():
-    candidates = enumerate_candidates((0, 1, 6), [(2, 3), (5, 5)])
+def test_enumerate_candidates_excludes_reset_and_expands_the_full_click_domain():
+    candidates = enumerate_candidates((0, 1, 6))
     assert {"action_id": 1, "action_data": {}} in candidates
-    assert {"action_id": 6, "action_data": {"x": 3, "y": 2}} in candidates
-    assert {"action_id": 6, "action_data": {"x": 5, "y": 5}} in candidates
+    # SS3.3 "each reachable action": ACTION6 covers the entire 64x64 coordinate domain
+    assert {"action_id": 6, "action_data": {"x": 0, "y": 0}} in candidates
+    assert {"action_id": 6, "action_data": {"x": 63, "y": 63}} in candidates
     assert all(candidate["action_id"] != 0 for candidate in candidates)
-    assert len(candidates) == 3
+    assert len(candidates) == 1 + 64 * 64
+    clicks = [c for c in candidates if c["action_id"] == 6]
+    assert clicks[0]["action_data"] == {"x": 0, "y": 0}
+    assert clicks[1]["action_data"] == {"x": 1, "y": 0}  # frozen (y, x) order
+    keyboard_only = enumerate_candidates((0, 1, 2, 3, 4))
+    assert len(keyboard_only) == 4
 
 
 def test_grid_delta_is_row_major_and_exact():
