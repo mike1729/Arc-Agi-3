@@ -233,6 +233,12 @@ CLAUDE.md
 !/logs/*.json
 /logs/*_state_PRE-D13_discarded.json
 
+# ES source-gold custody (2026-08-03): the SC side is a small derived attestation and is
+# committed; the sealed R side stays LOCAL BY DESIGN — its sha256 is pinned inside the
+# committed SC header, so tampering is detectable without putting R gold bytes in git
+# objects. Do not add an exception for the .sealed file.
+!/logs/es_source_gold_sc.jsonl
+
 # EXCEPTION TO THE EXCEPTION — S2 evidence packets embed COMPETITION SOURCE verbatim.
 # `!/logs/*.json` is scoped to small derived measurements. These four are not that: each carries
 # the extracted `evidence` field for all 25 public games (45,838 lines of environment source,
