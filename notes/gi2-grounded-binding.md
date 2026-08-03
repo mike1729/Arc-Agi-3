@@ -560,3 +560,21 @@ zero-completion games, selection blind to the held-out state's fork outcomes (§
 
 **No design decisions remain open.** A0 additionally turns the 18-session/123-completion
 frame check into a machine-readable validation artifact rather than prose evidence.
+
+---
+
+## 10. Dated addendum — 2026-08-03: prospective ES-only supersession of the §3.4 stop
+
+Appended cross-reference. Nothing above this line is modified; §3.4/§3.5 remain the accurate
+historical record and their frozen text is untouched.
+
+The operator decision of 2026-08-03, recorded in the header of
+`notes/qwen-evidence-sufficiency-screen.md` and registered as `ES-GOV-2026-08-03` in
+`docs/README.md`, prospectively supersedes the §3.4 permanent stop **for the ES protocol only**
+(`ES-IDENT`, `ES-USE`, conditionally earned `ES-VALUE`, under their own caps and freezes; numeric
+authority `gate_manifest.yaml → es`). Grounds: the stop's evidential basis was the frozen
+observation grammar's representability failure and unmeasured identifiability, and ES makes
+grammar coverage and replay identifiability measured, gated prerequisites before any model claim.
+This addendum reopens no other formulation, does not reinterpret the Sprint A / A-R results, and
+leaves the routing of the Sprint A budget to the action-semantics artifact unchanged. The reusable
+estate listed in §3.5 is consumed by ES as read-only, versioned dependencies (ES note §8).

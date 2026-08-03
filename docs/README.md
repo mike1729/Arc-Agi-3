@@ -417,6 +417,42 @@ effective_spec_sections: ["§4.9", "§12.1", "§12.2"]
 approved_at: 2026-07-28
 ```
 
+```yaml
+decision_id: ES-GOV-2026-08-03
+question: >
+  GI-2 §3.4 (frozen 2026-07-30) permanently stopped goal-inference-from-replay-evidence
+  after its second gate failure, and VP §2 made a VP4b pass the only route that prices
+  reopening. The completed VP1 measurement (288/288 rows; best pure-image marked-cell
+  game-macro 0.438 against the 0.90 gate, global counting failed in every tested channel)
+  forecloses the conditional VP3/VP4 stages and with them the VP4b pricing case. May the
+  ES protocol — closed-set candidate-goal discrimination plus a conditional advisor
+  trial, across Qwen 27B generations — run anyway?
+evidence:
+  - artifact: notes/gi2-grounded-binding.md          # §3.4/§3.5 — the stop and what forced it
+  - artifact: notes/vp-perception-screen.md          # §2 governance; Freeze 1 VP1 result
+  - artifact: notes/qwen-evidence-sufficiency-screen.md   # the ES protocol
+decision: prospective_es_only_supersession
+detail: >
+  Operator decision of 2026-08-03, recorded in the ES note's header: the §3.4 stop and
+  VP §2's VP4b-only route are prospectively superseded FOR ES ONLY. Grounds: both prior
+  failures were failures of a frozen observation grammar's coverage and of unmeasured
+  identifiability, and ES makes grammar coverage and replay identifiability measured,
+  gated prerequisites before any model claim. The decision does not reinterpret either
+  prior result, does not amend VP Freeze 1, opens no sealed game, and authorizes no
+  production integration. Numeric authority for ES is gate_manifest.yaml -> es (DRAFT;
+  acceptance precedes any ES-specific implementation). Dated cross-reference addenda
+  are appended to both prior records (gi2-grounded-binding.md §10,
+  vp-perception-screen.md §15) without rewriting their frozen text.
+prospective_mapping: >
+  ES evidence maps to SPEC §9.7 only as grounds for RECONSIDERING the scope of the
+  committed goal artifact — §9.7 currently reads "executable predicate induction
+  remains unscheduled Tier 4". An ES pass changes nothing by itself: adoption into
+  Track B requires a new entry in this register plus a dated amendment to §9.7, and
+  ES evidence does not satisfy or override G0-R/G0-A.
+effective_spec_sections: []   # none — deliberately not a spec change; the §9.7 mapping is prospective
+approved_at: 2026-08-03
+```
+
 ---
 
 ## Open items requiring a decision

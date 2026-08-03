@@ -523,3 +523,20 @@ Implementation bring-up may repair code to match this text but may not tune or r
 contract from model results. Before the first measurement call, `logs/vp_freeze.json` must pin
 this governing commit plus the generator, renderer/compositor, parser, scorer, corpus inputs,
 and emitted question set. Any contract change requires a dated erratum and a new freeze digest.
+
+---
+
+## 15. Dated addendum — 2026-08-03: ES cross-reference to the §2 reopening route
+
+Appended cross-reference. No frozen text, gate, result, or routing above this line is modified;
+Freeze 1 and its ongoing measurements remain governed by their original contract.
+
+§2 records that goal-inference formulations stay stopped per GI-2 §3.4 and that **only VP4b
+prices reopening**, via an explicit dated operator decision. The operator decision of 2026-08-03
+(header of `notes/qwen-evidence-sufficiency-screen.md`; register entry `ES-GOV-2026-08-03` in
+`docs/README.md`) takes that step **for the ES protocol only**, without a VP4b pricing case: the
+completed VP1 measurement (288/288 rows; best pure-image marked-cell game-macro 0.438 against the
+0.90 gate, global counting failed in every tested channel) means no pure-image arm can pass VP1,
+so the conditional VP3/VP4 stages — frozen only if VP1–VP2 pass — and with them the VP4b pricing
+case cannot arise from Freeze 1. ES does not amend Freeze 1, its results, or its routing; the VP1
+result is an input to ES §0. VP3/VP4 remain design-stage and are not activated by ES.

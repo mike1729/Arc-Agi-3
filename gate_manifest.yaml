@@ -2547,3 +2547,197 @@ s2:
 s3: {status: NOT_STARTED}   # primary metric + threshold per screening question; T_v, T_r; rescue coefficients; evaluator-doing-the-work criterion
 s4: {status: NOT_STARTED}   # JEPA retention threshold — what advisor improvement at what latency cost
 s5: {status: NOT_STARTED}   # B/M/U/C pattern mapping to each §11 branch
+
+es:
+  # FROZEN 2026-08-03. Numeric authority for the ES protocol — replay-evidence sufficiency across
+  # Qwen 27B generations (notes/qwen-evidence-sufficiency-screen.md, 2026-08-03 revision). The
+  # governing note declares THIS block the single numeric authority; logs/es_common_freeze.json
+  # will record this block's digest and is NOT a second authority. This block does not add to
+  # open item 1: ES has no SPEC §13 counterpart, so exactly one pre-registration claims the role.
+  # ACCEPTANCE RECORD: the operator accepted every PROPOSED value unchanged on 2026-08-03 and
+  # directed the freeze. Two derivation-bound values (grammar.expression_depth_bound, the
+  # es_value.trial L_g table) have their DERIVATION RULES frozen here; their numbers are
+  # mechanical fills recorded as dated errata when measured — results of frozen rules, not open
+  # judgments (the s1 precedent: results filled into a frozen block by dated entry).
+  # From this point every change to this block is a dated erratum, never an in-place edit.
+  status: frozen
+  drafted_on: 2026-08-03
+  frozen_on: 2026-08-03
+  accepted: "operator, 2026-08-03 — every PROPOSED value accepted unchanged; the five formerly
+             OPEN items resolved as recorded in resolved_at_freeze below"
+  governing_note: "notes/qwen-evidence-sufficiency-screen.md"
+  operator_decision: "2026-08-03 — prospective ES-only supersession of GI-2 §3.4 and VP §2's
+                      VP4b-only reopening route; recorded in the governing note's header and in
+                      docs/README.md -> ES-GOV-2026-08-03"
+  governs: "ES-IDENT / ES-USE / ES-VALUE only. Supersedes nothing outside ES; VP Freeze 1 and the
+            GI-2 record are untouched. ES evidence alone never changes the deployed architecture
+            (governing note §8; SPEC §9.7 route requires a register entry + dated amendment)"
+
+  corpus:                                      # measured inventory facts, not judgments
+    games: [dc22, ft09, ls20, m0r0, tu93, vc33]
+    sessions: 18                               # 3 per game; reserved + one-shot games stay sealed
+    roles: "S / C / R — one whole session per game per role; session-atomic (no recorded row or
+            derived artifact in two roles)"
+    partition_rule: "sessions of each game ordered chronologically by recorded session start
+                     (ties by GUID ascending); p = int(sha256(('es-partition:'+env)
+                     .encode('ascii')).hexdigest()[:8], 16) mod 6 indexes the lexicographic
+                     permutations [(S,C,R),(S,R,C),(C,S,R),(C,R,S),(R,S,C),(R,C,S)]; roles are
+                     assigned to the ordered sessions by that permutation. Fixed before any
+                     inventory is read; VP §5 hash-rotation precedent"
+    call_budget_ceiling_per_role: 35           # derived: transfer cases 5/5/6/5/8/6 by game;
+                                               # exact role-by-game inventory published at
+                                               # partition freeze, never assumed from this ceiling
+    vc33_fidelity: "accepted 2026-07-30 settled-frame erratum applies: equality required on
+                    settled / solved-terminal / next-level frames; intermediate animation
+                    divergence recorded, not a fidelity failure"
+    reuse: "adapters are thin versioned wrappers over the GI-2 estate incl. the regenerated
+            981-fork table; replacing a reused assertion/digest is a disclosed deviation"
+
+  grammar:
+    max_clauses: 2                             # PROPOSED
+    expression_depth_bound:                    # rule frozen; the number is a mechanical fill
+      rule: "the minimal AST depth d such that every one of the six authored golds, encoded in
+             the frozen grammar's clause/term forms with source-semantic terms permitted, fits
+             within d. Measured once during adapter bring-up, applied uniformly to every
+             candidate, recorded as a dated erratum BEFORE the enumerator freeze. GI-2 R-3
+             precedent ('the minimal U covering all six iteration golds') — a calibration rule
+             admitting exactly one answer, not a tunable number"
+      value: null                              # filled by dated erratum per the rule above
+    tractability_limit_candidates: 512         # PROPOSED; overflow = tractability failure, scores
+                                               # 0 at every dose, stays in its frozen cohort
+    logic: "strong three-valued; unknown never eliminates and never confirms; the gold evaluator
+            must be two-valued on every selected observation"
+
+  doses:
+    definitions: "DOSE-0..DOSE-4 per governing note §3.3; nested, chronological"
+    dose4_probes: 2                            # PROPOSED; greedy-sequential maximin worst-case
+                                               # reduction, gold-index-blind, no root restore
+  cohort_floors:                               # all PROPOSED; falling below a floor makes that
+                                               # phase infeasible/inconclusive, never resampled
+    passive_complete_per_game_S_and_C: 3
+    critical_panelable_per_game_S_and_C: 3
+    probe_complete_per_game_S_p3: 3
+    passive_complete_per_game_R: 3
+
+  es_ident_gate:                               # G_X(d), X in {S, C, R}; all PROPOSED
+    identification_game_macro_min: 0.75
+    games_at_least_0_60_min: 4
+    per_game_floor: 0.40
+    coverage_rule: "sufficiency additionally requires complete coverage and tractability on the
+                    frozen passive-complete cohort; any failure -> role reads coverage-blocked,
+                    never passed; no failure removes a game from the macro"
+    dose_star_rule: "smallest of DOSE-1..DOSE-3 with G_S(d) true; C tests only that dose"
+
+  es_use:
+    call_cap_per_generation: 900               # PROPOSED = 817 planned worst case + 83 reserve
+    combined_two_generation_cap: 1800          # no transfer of unused calls between generations
+    stack_qualification_calls: 12              # per generation; discarded; synthetic fixtures only
+    successor_canary_cap: 72                   # G38 only; separate; never pooled with ES-USE
+    output_headroom_tokens_min: 512            # PROPOSED; verified in the pre-freeze render audit
+    decoding: "temperature=0 guided JSON; fallback temperature=0.01, top_p=1 only on server
+               rejection of zero"
+    p3_diagnostic_at_dose_star:                # PROPOSED; diagnostic, not a futility gate
+      exact_set_game_macro_min: 0.80
+      gold_retention_min: 0.95
+      critical_elimination_recall_min: 0.80
+      critical_elimination_per_game_floor: 0.60
+      exact_set_per_game_floor: 0.60
+      deterministic_solver_required: 1.00
+    deployable_packet_floor:                   # PROPOSED; must hold on S and C independently
+      exact_set_game_macro_min: 0.70
+      gold_retention_min: 0.90
+      critical_elimination_recall_min: 0.70
+      positive_shrinkage_games_min: 4
+      exact_set_per_game_floor: 0.50
+    contrast_materiality:                      # PROPOSED
+      paired_game_macro_lift_min: 0.10
+      same_sign_games_min: 4
+      confirmation: "independently on C, predeclared first-minus-second direction, no S+C
+                     pooling; no case bootstrap or pseudo-population bound enters the gate"
+    primary_stack_comparison: "G38-G36 critical-elimination recall on the identical P0 S
+                               evidence-critical cohort; material at >=0.10 game-macro with the
+                               same sign in >=4 games"
+    arm_cost_order: "P0 < P1-live < P2-live — entailed, not chosen: each arm adds tables to the
+                     byte-identical base packet (strict payload inclusion), so input-token cost
+                     is strictly ordered and ties are impossible. The pre-freeze render audit
+                     records the realized token numbers; the §4.2 context-fit audit is the token
+                     limit (no request may be infeasible). Latency limits bind only at ES-VALUE
+                     via es_value.compatibility.operational_floors"
+
+  es_value:
+    runtime_generator_gate:                    # PROPOSED
+      gold_recall_game_macro_min: 0.90
+      gold_recall_per_game_floor: 0.75
+      tractability_limit_candidates: 512
+      single_request_fit: required             # multi-call panels may not hide online cost
+      source_independence_audit: "every row"
+    outcome_detector_gate: "1.00 agreement and zero unknown on every completion/non-completion
+                            transition used by a model packet; failure relabels live arms
+                            oracle-assisted and blocks ES-VALUE"
+    compatibility:
+      calls_per_generation: 45                 # PROPOSED: 35 primary + 10 predeclared retries
+      semantic_gate:                           # PROPOSED; full-universe, not panel-comparable
+        gold_retention_game_macro_min: 0.90
+        gold_retention_per_game_floor: 0.75
+        full_universe_set_f1_min: 0.70
+        set_f1_per_game_floor: 0.50
+        false_survivor_rate_max: 0.25
+      operational_floors:                      # copied from the established score-run budget —
+                                               # VP §8.1's exact-stack envelope — with one count
+                                               # adaptation: VP's 47/48 request-success floor
+                                               # reads "at most one failed request per run",
+                                               # scaled to this phase's 35 primary calls
+        request_success: "at least 34/35 per generation (at most one failed request)"
+        image_rejection_max: 0
+        unrecovered_context_overflow_max: 0
+        first_pass_schema_validity_min: 0.90
+        output_headroom_tokens_min: 512
+        latency_envelope: "8 x p95(advisor latency) <= 270 s — VP §8.1: reserves >=90% of a
+                           45-minute game for the playing agent at the 8-opportunity cadence"
+    trial:                                     # PROPOSED
+      blocks_per_game: 6                       # matched (seed, start_state) blocks
+      replacement_blocks_per_game: 2           # pre-sealed; common-infrastructure failures only
+      opportunities_cap_per_run: 8
+      cadence: "level entry OR three consecutive executed actions leaving the board unchanged
+                (inherited from VP §8.1)"
+      availability_gate: {game_macro_min: 0.80, per_game_floor: 0.60}
+      primary_endpoint: "normalized progress = distinct_levels_completed / L_g at the earlier of
+                         budget exhaustion or termination; L_g = authored level count read
+                         mechanically from the source adapter — derivation frozen here, the six
+                         numbers recorded by dated erratum at common freeze; a level counts once,
+                         at first completion; no partial-level credit"
+      value_gate:
+        absolute_progress_lift_min: 0.10
+        positive_games_min: 4
+        sensitivity_bound: "lower endpoint of the central 90% fixed-game paired bootstrap > 0"
+        bootstrap_draws: 10000                 # blocks resampled within game; games never resampled
+        efficiency_noninferiority: "efficiency_advisor >= 0.90 * efficiency_no_advisor;
+                                    efficiency = normalized progress / max(1, charged actions)"
+      advisor_call_caps:
+        g36_trial: 384                         # 288 planned + 96 replacement reserve
+        g38_three_arm_trial: 768               # 576 planned + 192 replacement reserve
+        g38_two_arm_trial: 384
+    g38_adoption_over_g36:                     # PROPOSED; fresh three-arm trial only
+      absolute_progress_lift_min: 0.05
+      positive_games_min: 4
+      sensitivity_bound: "same fixed-game rule, > 0"
+      efficiency_ratio_min: 0.90
+      tokens_per_decision_ratio_max: 1.10
+      p95_latency_ratio_max: 1.10
+
+  schedule_note: "governing note §8: 7-11 dev days + 3-5 conditional against meta.hard_stop
+                  2026-08-22; on conflict record a slip or stop after ES-IDENT — cohorts, gates,
+                  validation, reserves are never shrunk to fit. Every G38 phase is
+                  calendar-subordinate to Track B build work and scheduled submissions."
+
+  resolved_at_freeze:                          # how the five formerly-OPEN items closed, 2026-08-03
+    - "expression_depth_bound: calibration RULE frozen (GI-2 R-3 precedent); the value is a
+       mechanical fill by dated erratum before the enumerator freeze"
+    - "arm cost order: entailed by strict payload inclusion — no judgment; token limit = the
+       context-fit audit; latency binds only at ES-VALUE"
+    - "operational_floors: copied from VP §8.1's exact-stack envelope; sole adaptation is the
+       request-success count 47/48 -> 34/35 (same at-most-one-failure reading)"
+    - "L_g table: derivation frozen (authored level count from adapter); six numbers recorded by
+       dated erratum at common freeze"
+    - "partition: full hash rule frozen in corpus.partition_rule; the role-by-game inventory is
+       an implementation artifact published at partition freeze (logs/es_inventory.json)"
