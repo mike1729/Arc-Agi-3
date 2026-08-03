@@ -916,3 +916,27 @@ The final report must keep these conclusions distinct: observable candidate cove
 evidence identifiability, G36 panel discrimination, G38 panel discrimination, paired generation-
 stack effects, runtime generator viability, per-generation score-stack compatibility, agent value,
 and unseen-game generalization. Passing one never silently promotes the next.
+
+---
+
+## 10. Dated amendment — 2026-08-03: OC out-of-corpus expressibility probe
+
+Registered as `ES-E1` in `gate_manifest.yaml → errata`; that entry is binding and this section is
+its summary. After the ES-IDENT freeze — never before — the authored completion program of each of
+the **15 one-shot games** is encoded in the same source-schema forms as the six iteration golds and
+tested against the frozen grammar bounds. Zero model calls; source-reading only; the one-shot games
+remain model-sealed; the four reserved games are not opened at all. Per game one of three outcomes:
+`schema_inexpressible`, `bounds_overflow`, `expressible_within_bounds`
+(`logs/es_oc_expressibility.json`).
+
+Two binding rules: outside golds may not be traced before the grammar freeze (exposure, not only
+editing, consumes the measurement), and no grammar/bound/vocabulary/schema change may respond to
+an OC outcome — a miss is a result. OC is report-only for ES: it gates nothing and informs only
+the operator's §8 decisions and the final report's generalization claim boundary.
+
+Disclosed limits: S2's goal-predicate extraction already exposed all 25 games at the
+mechanical-evidence and class level, so OC measures **out-of-design-corpus expressibility under
+disclosed prior exposure**, not design-naive generalization — that resource was spent before ES
+existed. OC also measures expressibility only: descriptor groundability, enumeration within the
+512 limit, and identifiability stay unmeasured out-of-corpus, so §1's "coverage on a new game is
+unmeasured" narrows rather than closes once OC runs.

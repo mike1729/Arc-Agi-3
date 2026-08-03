@@ -648,6 +648,66 @@ errata:
              same audit found these. Precedent: `F1` had been serving as both a family name and the
              classification metric in the same document."
 
+  - id: ES-E1
+    date: 2026-08-03
+    scope:
+      - "es (frozen block) — ADDITIVE: registers the OC out-of-corpus expressibility probe"
+    addition: >
+      OC — out-of-corpus grammar-expressibility probe. After the ES grammar and its bounds are
+      frozen (ES-IDENT freeze), encode the authored completion program of each of the 15 ONE-SHOT
+      games in the same source-schema clause/term forms used for the six iteration golds, and test
+      whether it fits the frozen grammar bounds. Zero model calls, no doses, no packets, no replay
+      evidence, no rendering, no querying: source-reading only, so the one-shot games remain
+      model-sealed. Per game exactly one of three outcomes is recorded: schema_inexpressible (the
+      vocabulary cannot encode the rule), bounds_overflow (encodable but exceeds the frozen
+      clause/depth bounds), expressible_within_bounds. Artifact:
+      logs/es_oc_expressibility.json with per-game outcome, encoding, and source-line provenance.
+    ordering_constraint: >
+      BINDING: no outside game's authored rule may be read at the instance level (goal-condition
+      tracing, AST encoding) until the grammar and its bounds are frozen. Design exposure is
+      consumed by reading, not only by editing — an encoder who traces an outside gold before the
+      freeze contaminates the probe even if no edit follows. The probe runs strictly AFTER the
+      ES-IDENT freeze.
+    no_edit_precommitment: >
+      BINDING: no grammar, bound, vocabulary, or schema change may be made in response to any OC
+      outcome. A miss is a measured out-of-corpus coverage result, not a repair ticket. Any future
+      grammar revision that follows an OC read must treat all 15 probed games as design-corpus,
+      never as generalization evidence.
+    reserved_exclusion: >
+      The four RESERVED games (g50t, r11l, su15, tr87) are excluded entirely — their source is not
+      opened for this probe. Tier language after ES-E1: 6 design corpus / 15 probed one-shot
+      (model-sealed throughout) / 4 reserved from any further reading.
+    prior_exposure_disclosure: >
+      No public game is goal-naive. S2's goal-predicate extraction (2026-07-26..28,
+      logs/s2_goal_predicates_labelled.json) covered ALL 25 games at the mechanical-evidence and
+      class level (advance lines, guard tests, flag sites, ten-class labels), including the
+      reserved four; cd82's source was additionally opened 2026-07-28 for format verification. OC
+      therefore measures OUT-OF-DESIGN-CORPUS expressibility — the grammar bounds and vocabulary
+      were calibrated on the six iteration golds only — under disclosed class-level prior
+      exposure. It does not and cannot measure design-naive generalization; that resource was
+      spent before ES existed.
+    claim_boundary: >
+      OC measures EXPRESSIBILITY only. Runtime coverage — descriptor groundability at real
+      states, enumeration reachability within the 512-candidate limit, evidence identifiability —
+      remains unmeasured out-of-corpus. The governing note SS1's "coverage on a new game is
+      unmeasured" narrows, once OC runs, to: runtime coverage unmeasured; schema-level
+      expressibility measured on the 15 one-shot games under the disclosures above.
+    status_in_es: "report-only — never gates or modifies any ES phase, threshold, or routing;
+                   informs the operator's SS8 stop/continue decisions and the generalization
+                   claim boundary of the final report"
+    encoder_disclosure: >
+      The encoder is the same operator/agent who designed the grammar; post-freeze encoding can be
+      unconsciously generous. Mitigation, not elimination: each encoding follows the same style
+      rules as the six iteration golds, is published with source-line citations, and judgment
+      calls are flagged in the artifact.
+    reason: >
+      Operator-reviewed proposition, 2026-08-03: ES's expected value is dominated by its failure
+      modes because the grammar is gold-aware on the design corpus — a pass barely transfers. OC
+      converts out-of-design-corpus schema coverage from unmeasured to measured at near-zero cost
+      while preserving the model-facing seal. Arithmetic verified against logs/gi1_game_draw.json
+      and data/environment_files/ (25 games; 6 iteration + 15 one-shot + 4 reserved; the six are
+      a subset of the 25).
+
 # =====================================================================================
 # S0 — External execution-path proof.
 # =====================================================================================
