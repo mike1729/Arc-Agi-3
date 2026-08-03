@@ -750,6 +750,34 @@ errata:
       also re-pins gate_manifest.yaml among its input hashes, superseding the pre-ES-E1 pin the
       first artifact recorded.
 
+  - id: ES-E3
+    date: 2026-08-03
+    scope:
+      - "es — grammar.expression_depth_bound mechanical fill (rule frozen 2026-08-03);
+         agent/harness/es_candidates.py; logs/es_candidates_bringup.json"
+    rule_applied: >
+      The frozen calibration rule: the minimal AST depth d such that every one of the six
+      authored golds, encoded in the frozen grammar's clause/term forms with source-semantic
+      terms permitted, fits within d. Depth metric (frozen in es_candidates.ast_depth): every
+      AST dict node counts one level, leaves count one. Encoding is the mechanical GIDSL->ES
+      translation (es_candidates.translate_gidsl) of the six audited gold ASTs in
+      logs/gi2_gidsl_gold_iteration.json — no re-authoring.
+    measurement: >
+      Per-gold minimal schema-encoding depths: dc22 4, ft09 3, ls20 6, m0r0 2, tu93 5,
+      vc33 6. Bound = max = 6. Schema-capability check at the same measurement: every gold
+      encodes within the schema and no gold exceeds max_clauses = 2 (tu93's top-level
+      conjunction has exactly two clauses). Grammar spec hash at measurement:
+      49c0cc3e4abc74186edbc65665f65fd68e1faa7e9e3678d58ce53346cb0b2a6b
+      (es_candidates.GRAMMAR_SPEC_HASH; the ES-IDENT common freeze additionally pins the
+      module file hash).
+    consequence: >
+      grammar.expression_depth_bound.value is filled with 6 in the frozen es block (dated
+      fill of a null placeholder per the block's own rule; the s1 precedent). Applied
+      uniformly to every enumerated candidate; the enumerator fails closed on any candidate
+      exceeding the bound. Recorded BEFORE the enumerator freeze as the rule requires. This
+      is a mechanical fill of a frozen rule, not a judgment; no other value is possible
+      under the frozen metric and encodings.
+
 # =====================================================================================
 # S0 — External execution-path proof.
 # =====================================================================================
@@ -2704,7 +2732,8 @@ es:
              candidate, recorded as a dated erratum BEFORE the enumerator freeze. GI-2 R-3
              precedent ('the minimal U covering all six iteration golds') — a calibration rule
              admitting exactly one answer, not a tunable number"
-      value: null                              # filled by dated erratum per the rule above
+      value: 6                                 # ES-E3 (2026-08-03): mechanical fill; per-gold
+                                               # depths 4/3/6/2/5/6 under the frozen metric
     tractability_limit_candidates: 512         # PROPOSED; overflow = tractability failure, scores
                                                # 0 at every dose, stays in its frozen cohort
     logic: "strong three-valued; unknown never eliminates and never confirms; the gold evaluator

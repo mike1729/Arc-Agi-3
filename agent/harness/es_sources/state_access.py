@@ -225,6 +225,14 @@ class StateHandle:
             branch_settled = frames[-1]  # next-level initial board is the new current state
         else:
             branch_settled = frames[-1]
+        # Evaluation frame of the forked transition (es_candidates DOSE-4): the state
+        # the advance check saw — solved_terminal for a completion, settled otherwise.
+        if not frames:
+            outcome["eval_grid"] = self.settled_grid
+        elif outcome["completed"] and outcome["state"] != "WIN" and len(frames) >= 2:
+            outcome["eval_grid"] = frames[-2]
+        else:
+            outcome["eval_grid"] = frames[-1]
         branch_tracker = copy.deepcopy(self.tracker)
         observation = None
         if frames:
