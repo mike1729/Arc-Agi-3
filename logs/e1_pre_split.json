@@ -1,0 +1,226 @@
+{
+  "adopted": "96:largest",
+  "caps": [
+    32,
+    48,
+    64,
+    96,
+    128,
+    192
+  ],
+  "clicks": {
+    "A": 2180,
+    "B": 2132
+  },
+  "directions": {
+    "A": {
+      "adopted_held_out": 0.99906191369606,
+      "adopted_in_sample": 1.0,
+      "held_out": 0.99906191369606,
+      "in_sample": 1.0,
+      "selected": "96:largest"
+    },
+    "B": {
+      "adopted_held_out": 1.0,
+      "adopted_in_sample": 0.99906191369606,
+      "held_out": 1.0,
+      "in_sample": 1.0,
+      "selected": "192:largest"
+    }
+  },
+  "fills": [
+    "smallest",
+    "largest"
+  ],
+  "format_version": 1,
+  "grid": {
+    "128:largest": {
+      "A": 1.0,
+      "B": 0.9995309568480301,
+      "pooled": 0.9997680890538033
+    },
+    "128:smallest": {
+      "A": 0.9954128440366973,
+      "B": 0.9798311444652908,
+      "pooled": 0.987708719851577
+    },
+    "192:largest": {
+      "A": 1.0,
+      "B": 1.0,
+      "pooled": 1.0
+    },
+    "192:smallest": {
+      "A": 0.9963302752293578,
+      "B": 0.9845215759849906,
+      "pooled": 0.990491651205937
+    },
+    "32:largest": {
+      "A": 0.8853211009174312,
+      "B": 0.8794559099437148,
+      "pooled": 0.8824211502782932
+    },
+    "32:smallest": {
+      "A": 0.8871559633027523,
+      "B": 0.8686679174484052,
+      "pooled": 0.8780148423005566
+    },
+    "48:largest": {
+      "A": 0.9623853211009175,
+      "B": 0.9554409005628518,
+      "pooled": 0.9589517625231911
+    },
+    "48:smallest": {
+      "A": 0.9564220183486238,
+      "B": 0.9174484052532833,
+      "pooled": 0.937152133580705
+    },
+    "64:largest": {
+      "A": 0.9692660550458716,
+      "B": 0.9676360225140713,
+      "pooled": 0.9684601113172542
+    },
+    "64:smallest": {
+      "A": 0.9825688073394495,
+      "B": 0.9643527204502814,
+      "pooled": 0.9735621521335807
+    },
+    "96:largest": {
+      "A": 1.0,
+      "B": 0.99906191369606,
+      "pooled": 0.9995361781076066
+    },
+    "96:smallest": {
+      "A": 0.9954128440366973,
+      "B": 0.9788930581613509,
+      "pooled": 0.9872448979591837
+    }
+  },
+  "per_game": {
+    "ar25": {
+      "n_a": 13,
+      "n_b": 7,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    },
+    "bp35": {
+      "n_a": 15,
+      "n_b": 126,
+      "recall_a": 1.0,
+      "recall_b": 0.9841269841269841,
+      "recall_pooled": 0.9858156028368794
+    },
+    "cd82": {
+      "n_a": 76,
+      "n_b": 49,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    },
+    "cn04": {
+      "n_a": 47,
+      "n_b": 10,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    },
+    "dc22": {
+      "n_a": 120,
+      "n_b": 94,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    },
+    "ft09": {
+      "n_a": 69,
+      "n_b": 195,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    },
+    "ka59": {
+      "n_a": 71,
+      "n_b": 29,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    },
+    "lf52": {
+      "n_a": 154,
+      "n_b": 49,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    },
+    "lp85": {
+      "n_a": 609,
+      "n_b": 559,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    },
+    "m0r0": {
+      "n_a": 4,
+      "n_b": 2,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    },
+    "r11l": {
+      "n_a": 106,
+      "n_b": 65,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    },
+    "sb26": {
+      "n_a": 91,
+      "n_b": 286,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    },
+    "sc25": {
+      "n_a": 126,
+      "n_b": 82,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    },
+    "sk48": {
+      "n_a": 107,
+      "n_b": 18,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    },
+    "sp80": {
+      "n_a": 27,
+      "n_b": 0,
+      "recall_a": 1.0,
+      "recall_b": null,
+      "recall_pooled": 1.0
+    },
+    "su15": {
+      "n_a": 97,
+      "n_b": 238,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    },
+    "tn36": {
+      "n_a": 369,
+      "n_b": 265,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    },
+    "vc33": {
+      "n_a": 79,
+      "n_b": 58,
+      "recall_a": 1.0,
+      "recall_b": 1.0,
+      "recall_pooled": 1.0
+    }
+  }
+}

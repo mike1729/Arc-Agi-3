@@ -32,7 +32,10 @@ From `logs/e0_row_m_all.json` / `e0_row_c_all.json` (24 public games, human repl
 Skeleton = the ES closure engine (archive: `agent/harness/es_sources/domain_closure.py` — live
 arcengine expansion, exact hashing, budgets, ran to 242k states) with three substitutions:
 candidate-reduced actions, frontier *routing* instead of breadth-first exhaustion, and
-saturation detection.
+saturation detection. **Step zero of the build: audit the resurrected code for
+`copy.deepcopy` engine forking** — unfaithful on tn36 (E1-pre). The explorer itself is immune
+by construction (routing is RESET + prefix replay, never engine forking), but any inherited
+fork machinery is not.
 
 1. **State identity**: settled-frame exact hash, keyed with level (animation settling per the
    known multi-frame trap). Same (hash, action) → different settled outcome is an **alias
@@ -69,8 +72,10 @@ saturation detection.
    change. The lattice is **adopted for every game, not triggered per game** — r11l has 2 of 10
    L1 completions reachable only through it. Class admission order (ii) is untested and
    unreachable: distinct (colour, shape) classes never exceed 22 per state in the corpus, so the
-   cap only ever binds on duplicates. A blanket minimum-node-size filter was measured and
-   REJECTED (breaks six games whose humans click single pixels).
+   cap only ever binds on duplicates — the order stays as written purely as the determinism
+   guarantee for hidden games, which carry no measured class bound. A blanket
+   minimum-node-size filter was measured and REJECTED (breaks six games whose humans click
+   single pixels).
 3. **Frontier policy**: frontier = (state, untested candidate) pairs. Route to the *nearest*
    frontier state: shortest known-graph path over never-conflicted, non-suspect edges from the
    current state, else RESET + replay prefix (deterministic — REPLAY-DET). Tie-break
@@ -99,7 +104,9 @@ saturation detection.
    signal. The **routing-overhead ratio** (routing actions / test actions) is reported per
    game — it prices deploy-time probing and bounds explorer productivity as the graph deepens.
 5. **Budgets**: per game 3,000 (w) actions or 20 (w) min wall-clock, whichever first — budget
-   exhaustion is reported as saturated-by-budget, distinctly.
+   exhaustion is reported as saturated-by-budget, distinctly. Bring-up sets per-game working
+   budgets from E1-pre's **measured** branching factor (median 7–89 candidates/state + 64
+   lattice), not from the cap.
 6. **On completion**: record the completing transition + pre-state prominently (the one
    positive goal example), stop. L2 is out of scope for E1.
 
@@ -135,7 +142,7 @@ honest uncertainty). Background clicks are the expected failure class (placement
 contingent supplement — an 8×8 lattice (w) of background probes — and re-measure before any
 explorer run. No invented recall threshold: the measured number decides, game by game.
 
-**RUN 2026-08-04 — result in `notes/e1-pre-recall.md`; the gate passes.** 4,161 L1 clicks over
+**RUN 2026-08-04 — result in `notes/e1-pre-recall.md`; the gate passes.** 4,312 L1 clicks over
 18 games (six public games contain no L1 click at all). Node recall 1.000 on 17 of 18 at cap 96,
 bp35 0.986; every miss is cap-attributable, segmentation never loses a click. The cell/node gap
 was resolved rather than reported: forking the engine shows node-point clicking is outcome-
@@ -144,6 +151,12 @@ section predicted. That did not turn out to matter, because the bar the explorer
 is reachability, and **100 of 100 L1 completions are reachable** from the candidate set (r11l
 needs the lattice for 2). Caveat for anything built on fork machinery: `copy.deepcopy` of an
 ARCBaseGame is **not** faithful on tn36, so every fork carries a per-click control.
+
+**Split-half control** (`e1_split.py`, sessions by `sha256(guid)` parity): the fill order
+replicates — `largest` is selected in both directions — and the adopted pair's held-out recall
+is 0.9991 against 1.0000 in-sample. The **cap does not replicate**: selection on half B prefers
+192, and the choice is driven almost entirely by bp35. Read the cap as "≥96, 192 if bp35-like
+segmentation dust is common on hidden games", not as a measured optimum.
 
 ## Measurements (per game, L1, all public games — six iteration games first as bring-up)
 

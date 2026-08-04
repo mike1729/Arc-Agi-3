@@ -2,12 +2,12 @@
 
 **2026-08-04. Zero model calls.** Gate on the E1 explorer per `notes/e1-explorer.md` §2 and its
 E1-pre section. Scope: every human **L1 ACTION6** in the replay corpus, 24 public games (s5i5
-excluded by E0's fidelity rule RS-E5), 4,161 clicks over 18 games — six games
+excluded by E0's fidelity rule RS-E5), **4,312 clicks** over 18 games — six games
 (g50t, ls20, re86, tr87, tu93, wa30) contain **no L1 click at all** and are unmeasurable here.
 
-Code: `agent/harness/e1_candidates.py` · `e1_equiv.py` · `e1_reach.py`.
+Code: `agent/harness/e1_candidates.py` · `e1_equiv.py` · `e1_reach.py` · `e1_split.py`.
 Data: `logs/e1_pre_all.json` · `logs/e1_equiv_all.json` · `logs/e1_reach_all.json` ·
-`logs/e1_reach_tn36_exact.json`.
+`logs/e1_reach_tn36_exact.json` · `logs/e1_pre_split.json`.
 
 ## Verdict
 
@@ -94,6 +94,33 @@ reachability are different properties, and the explorer only needs the second.**
 Part 2 alone would have condemned r11l and su15; reporting Part 1 alone would have declared them
 fine. Neither is the answer.
 
+## Split-half control — is the parameter real, or fit to this corpus?
+
+Parts 1–3 swept (cap × fill) over all 4,312 clicks, adopted the best pair, and reported that
+pair's score on the same clicks. That is in-sample and can only be an upper estimate, so the
+control E0 carried and E1-pre initially did not: sessions split by `sha256(guid)` parity (the
+fixed `rs_transitions.split_half` convention — session-level, never per click), select pooled
+on one half, report on the other. `agent/harness/e1_split.py`.
+
+| direction | pair selected | in-sample | **held out** |
+|---|---|---:|---:|
+| select A → hold out B | **96:largest** | 1.0000 | **0.9991** |
+| select B → hold out A | 192:largest | 1.0000 | **1.0000** |
+
+Adopted 96:largest — half A 1.0000, half B 0.9991, pooled 0.9995.
+
+**The fill order is not fit to noise: `largest` wins in both directions.** The *cap* is not
+pinned — selection on half B prefers 192 — and the held-out penalty for the adopted pair is
+0.0009. So the in-sample number was barely optimistic, and the parameter that mattered (fill
+order, worth 0.376 on bp35) replicates while the one that didn't (96 vs 192, worth 0.0009)
+does not.
+
+Two split artifacts to keep in view: the cap choice is decided almost entirely by **bp35**,
+whose 141 clicks land 15/126 across the halves, and **sp80's sessions all fall in half A**, so
+it contributes no held-out clicks at all. With one game driving the cap and an uneven split,
+the cap should be read as "≥96, and 192 if bp35-like dust is common on hidden games" rather
+than as a measured optimum.
+
 ## What the cap is actually buying
 
 Distinct (colour, shape) classes per state **never exceed 22** anywhere in the corpus
@@ -125,6 +152,8 @@ Left as measured, not repaired further.
 - **11 of 18 games have no L1 click completion at all**, so Part 3's 100/100 rests on 7 games.
 - Human clicks are competent play, not a uniform sample of useful clicks. Recall against them
   bounds coverage of *good* clicks, not of the action space.
+- **Parts 2 and 3 have no split-half control** — only Part 1 does. The lattice adoption rests
+  on r11l's 2 unreachable completions, an n of 2.
 - The cap-96 median candidate count is 7–89 per state depending on game, and that is the
   explorer's branching factor — E1's budget arithmetic should use the measured per-game number,
   not the cap.
