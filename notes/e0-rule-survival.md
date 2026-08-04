@@ -9,6 +9,7 @@ Artifacts: `logs/e0_row_m_all.json`, `logs/e0_row_c_all.json`, `logs/e0_fidelity
 `logs/e0_fidelity_rest.json`. Six-game first pass retained at `logs/e0_row_m.json`,
 `logs/e0_row_c.json`.
 Harness: `agent/harness/rs_transitions.py`, `rs_e0.py`, `rs_completion.py`, `rs_fidelity.py`.
+Decision: `gate_manifest.yaml → register → RS-2026-08-04` — **retain_but_rescope**.
 
 ## What was asked
 

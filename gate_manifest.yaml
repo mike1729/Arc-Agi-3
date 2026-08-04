@@ -54,6 +54,65 @@ register:
     effective_spec_sections: []   # no specification is in force on this branch
     approved_at: 2026-08-04
 
+  - decision_id: RS-2026-08-04
+    question: >
+      does the L1 evidence budget survive its own first measurement — is a rule induced at
+      level 1 still true at level 2
+    evidence:
+      - experiment: E0     # notes/e0-rule-survival.md; logs/e0_row_m_all.json, logs/e0_row_c_all.json
+        rows: [M, C]
+        games: 24          # of 25; s5i5 excluded by engine truth (RS-E5)
+        model_calls: 0
+    decision: retain_but_rescope
+    detail: >
+      RETAINED. The L1 evidence budget is not refuted and the line continues. What E0 refutes
+      is a specific and load-bearing reading of it — that L1 buys a forward model worth
+      transporting to L2.
+
+      WHAT SURVIVES. Action liveness (does an action do anything) transfers with a median
+      within-L1 -> L1->L2 gap of +0.003 across all 24 games, 0.941 -> 0.932. Completion
+      conditions transfer at a pooled 0.930 (66 of 71 L1-consistent hypotheses, 10 games),
+      every game's within-L1 rate exactly 1.000 so the number carries no thin-evidence
+      component, and zero survivals are vacuous.
+
+      WHAT DOES NOT. Detailed dynamics lose a median 0.182 (0.327 -> 0.164), and the loss is
+      concentrated where there was something to lose: the nine games whose L1 supported a good
+      detailed model (within-L1 >= 0.6) lose a median 0.523, against 0.155 for the fifteen that
+      never had one. Seven of those nine lose >= 0.28. A flat row is not transfer; it is a game
+      whose L1 model was already poor. The memorizer floor is 0.000 everywhere, so the surviving
+      accuracy is generalization and the lost accuracy was real.
+
+      WHAT THIS CHANGES. The X phase as written in notes/l1-evidence-first.md plans offline by
+      BFS/A* over the mined forward model and executes the plan at L2. That step consumes
+      exactly the `full`-granularity dynamics this measurement finds do not transport, so it is
+      not supported as a CROSS-LEVEL operation and must not be built as one. Dynamics are
+      re-derived per level; what crosses the level boundary is the action inventory and the
+      goal hypothesis set. This is a re-scoping of the loop, not a redesign: E and M are
+      unaffected, and X remains sound WITHIN the level whose evidence built the model.
+
+      Repair policy is bounded but not set. Of mispredictions at full granularity, 25.4% admit a
+      mechanical guard repair and 25.0% admit none; the remaining 49.6% are separable only by
+      object census, which distinguishes without explaining and must not be built on (RS-E4).
+      Setting the repair-vs-invalidate split needs E1's measured guard-fixable rate on explorer
+      trajectories, not these human-replay numbers.
+
+      TWO STANDING CAUTIONS, both recorded as results rather than caveats. Row C's positive
+      finding is conditional on expressibility: 14 of 24 games have NO completion condition the
+      frozen ES visual grammar can express, reported UNDEFINED and never averaged as 0%.
+      Widening that language is a prerequisite for the finding to generalize, and nothing here
+      says a wider language keeps 0.930 — a richer grammar has more hypotheses available to be
+      falsified. And E0 measures only whether true-at-L1 rules stay true; it assumes a miner
+      with perfect L1 evidence throughout and says nothing about whether anything can FIND them.
+      That is E2's question and remains open.
+    supersedes_claims:
+      - >
+        "six iteration games only; one-shot and reserved stay sealed"
+        (notes/l1-evidence-first.md, experiments preamble) — no longer describes E0, whose
+        scope is all 25 games by operator decision. The un-peeked status of the nineteen is
+        spent; E1-E3 must not assume a holdout exists among them. See RS-E2.
+    effective_spec_sections: []   # no specification is in force on this branch
+    approved_at: 2026-08-04
+
 # ======================================================================================
 # RS — the offline L1 -> L2 rule-survival measurement
 # ======================================================================================
