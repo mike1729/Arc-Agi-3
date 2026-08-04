@@ -1,0 +1,793 @@
+{
+ "fingerprint": "4ab3ce3a588240bed6facfcccfa13b6b8ab04b8d181447b98b906505bb1b267c",
+ "format_version": 1,
+ "games": {
+  "dc22": {
+   "cases": [
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:dc22:1b9a2041-bc99-4b7b-8d99-041f0503956f:1193",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:dc22:1b9a2041-bc99-4b7b-8d99-041f0503956f:182",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:dc22:1b9a2041-bc99-4b7b-8d99-041f0503956f:241",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:dc22:1b9a2041-bc99-4b7b-8d99-041f0503956f:319",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:dc22:1b9a2041-bc99-4b7b-8d99-041f0503956f:643",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:dc22:ab11e695-b9d2-42f4-871c-8f90aa8c3a85:145",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:dc22:ab11e695-b9d2-42f4-871c-8f90aa8c3a85:224",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:dc22:ab11e695-b9d2-42f4-871c-8f90aa8c3a85:382",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:dc22:ab11e695-b9d2-42f4-871c-8f90aa8c3a85:599",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:dc22:ab11e695-b9d2-42f4-871c-8f90aa8c3a85:96",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:dc22:e8f76fe2-d90a-44ec-97cd-d09ec9b9cbcd:1214",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:dc22:e8f76fe2-d90a-44ec-97cd-d09ec9b9cbcd:158",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:dc22:e8f76fe2-d90a-44ec-97cd-d09ec9b9cbcd:237",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:dc22:e8f76fe2-d90a-44ec-97cd-d09ec9b9cbcd:335",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:dc22:e8f76fe2-d90a-44ec-97cd-d09ec9b9cbcd:636",
+     "covered_route2": false,
+     "role": "S"
+    }
+   ],
+   "closure_achieved": false,
+   "domain_digest": "9ec0eb9a9b9d3271ec1e8d5a3ab5c5e148c93a38415dabbe7bbd0e451643c91c",
+   "env": "dc22",
+   "note": "no route-2 proof exists without closure; equivalence not computed"
+  },
+  "ft09": {
+   "cases": [
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ft09:01f76fc7-c612-4006-8d08-c13ed0cb91de:107",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ft09:01f76fc7-c612-4006-8d08-c13ed0cb91de:139",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ft09:01f76fc7-c612-4006-8d08-c13ed0cb91de:161",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ft09:01f76fc7-c612-4006-8d08-c13ed0cb91de:186",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ft09:01f76fc7-c612-4006-8d08-c13ed0cb91de:223",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ft09:3b1ce31a-0af9-41f3-858f-4ead42360d15:108",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ft09:3b1ce31a-0af9-41f3-858f-4ead42360d15:137",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ft09:3b1ce31a-0af9-41f3-858f-4ead42360d15:150",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ft09:3b1ce31a-0af9-41f3-858f-4ead42360d15:57",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ft09:3b1ce31a-0af9-41f3-858f-4ead42360d15:80",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ft09:f58b7fe2-aafd-414a-a1fb-74d4b3e717e0:138",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ft09:f58b7fe2-aafd-414a-a1fb-74d4b3e717e0:164",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ft09:f58b7fe2-aafd-414a-a1fb-74d4b3e717e0:37",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ft09:f58b7fe2-aafd-414a-a1fb-74d4b3e717e0:52",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ft09:f58b7fe2-aafd-414a-a1fb-74d4b3e717e0:73",
+     "covered_route2": false,
+     "role": "S"
+    }
+   ],
+   "closure_achieved": false,
+   "domain_digest": "002b6a65b6c20b9ea3786514bcf39cc392efb918b95ce1187c91dee2ecebbe37",
+   "env": "ft09",
+   "note": "no route-2 proof exists without closure; equivalence not computed"
+  },
+  "ls20": {
+   "cases": [
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:57630d5e-4a01-42b6-bda1-43ced11c5bd7:110",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:57630d5e-4a01-42b6-bda1-43ced11c5bd7:153",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:57630d5e-4a01-42b6-bda1-43ced11c5bd7:207",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:57630d5e-4a01-42b6-bda1-43ced11c5bd7:263",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:57630d5e-4a01-42b6-bda1-43ced11c5bd7:367",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:57630d5e-4a01-42b6-bda1-43ced11c5bd7:473",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:8aed7120-f7a9-45a1-837a-68bc7dc37a4f:145",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:8aed7120-f7a9-45a1-837a-68bc7dc37a4f:184",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:8aed7120-f7a9-45a1-837a-68bc7dc37a4f:276",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:8aed7120-f7a9-45a1-837a-68bc7dc37a4f:330",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:8aed7120-f7a9-45a1-837a-68bc7dc37a4f:438",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:8aed7120-f7a9-45a1-837a-68bc7dc37a4f:547",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:8f03134f-a5f6-4b76-95b6-fd70fcb81ee1:108",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:8f03134f-a5f6-4b76-95b6-fd70fcb81ee1:246",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:8f03134f-a5f6-4b76-95b6-fd70fcb81ee1:297",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:8f03134f-a5f6-4b76-95b6-fd70fcb81ee1:388",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:8f03134f-a5f6-4b76-95b6-fd70fcb81ee1:474",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:ls20:8f03134f-a5f6-4b76-95b6-fd70fcb81ee1:594",
+     "covered_route2": false,
+     "role": "S"
+    }
+   ],
+   "closure_achieved": false,
+   "domain_digest": "a97134597eb89cc017aa610cf87eaa80e30a774811079adcd75679667323f05f",
+   "env": "ls20",
+   "note": "no route-2 proof exists without closure; equivalence not computed"
+  },
+  "m0r0": {
+   "cases": [
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:m0r0:0e1adaaf-fe7e-47f3-923f-97791151e11e:173",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:m0r0:0e1adaaf-fe7e-47f3-923f-97791151e11e:186",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:m0r0:0e1adaaf-fe7e-47f3-923f-97791151e11e:325",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:m0r0:0e1adaaf-fe7e-47f3-923f-97791151e11e:411",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:m0r0:0e1adaaf-fe7e-47f3-923f-97791151e11e:85",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:m0r0:a98ab7b3-64fe-41ab-a357-c65519897691:240",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:m0r0:a98ab7b3-64fe-41ab-a357-c65519897691:323",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:m0r0:a98ab7b3-64fe-41ab-a357-c65519897691:409",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:m0r0:a98ab7b3-64fe-41ab-a357-c65519897691:845",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:m0r0:a98ab7b3-64fe-41ab-a357-c65519897691:971",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:m0r0:f03a5fda-7dc2-44ee-a0ce-0b9ad50074e1:1104",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:m0r0:f03a5fda-7dc2-44ee-a0ce-0b9ad50074e1:123",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:m0r0:f03a5fda-7dc2-44ee-a0ce-0b9ad50074e1:231",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:m0r0:f03a5fda-7dc2-44ee-a0ce-0b9ad50074e1:249",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:m0r0:f03a5fda-7dc2-44ee-a0ce-0b9ad50074e1:749",
+     "covered_route2": false,
+     "role": "S"
+    }
+   ],
+   "closure_achieved": false,
+   "domain_digest": "0957c0b0cc2008aa8bf8b514f3b8110517d12ef01058cae82463f04d539153c4",
+   "env": "m0r0",
+   "note": "no route-2 proof exists without closure; equivalence not computed"
+  },
+  "tu93": {
+   "cases": [
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:102",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:131",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:212",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:226",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:249",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:279",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:48",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:4efce135-0cd8-4a9c-97e7-8d670e3d343b:76",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:111",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:187",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:278",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:325",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:348",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:35",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:379",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:74d1dff4-3de7-4911-9574-21c93fd257ae:69",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:214",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:280",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:294",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:317",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:34",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:410",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:53",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:tu93:e5b51453-dcff-40d8-a068-4da064db741f:70",
+     "covered_route2": false,
+     "role": "S"
+    }
+   ],
+   "closure_achieved": false,
+   "domain_digest": "465b2d2bb678d4fa34d260534d76871b012627ecc25b3874c573116290534c98",
+   "env": "tu93",
+   "note": "no route-2 proof exists without closure; equivalence not computed"
+  },
+  "vc33": {
+   "cases": [
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:4cffe392-c5a8-47f7-a2db-86a97a4606ca:116",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:4cffe392-c5a8-47f7-a2db-86a97a4606ca:203",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:4cffe392-c5a8-47f7-a2db-86a97a4606ca:239",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:4cffe392-c5a8-47f7-a2db-86a97a4606ca:28",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:4cffe392-c5a8-47f7-a2db-86a97a4606ca:450",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:4cffe392-c5a8-47f7-a2db-86a97a4606ca:66",
+     "covered_route2": false,
+     "role": "R"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:837812ad-2c5c-4943-8632-b6f8cd4b5b4d:186",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:837812ad-2c5c-4943-8632-b6f8cd4b5b4d:23",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:837812ad-2c5c-4943-8632-b6f8cd4b5b4d:230",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:837812ad-2c5c-4943-8632-b6f8cd4b5b4d:339",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:837812ad-2c5c-4943-8632-b6f8cd4b5b4d:59",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:837812ad-2c5c-4943-8632-b6f8cd4b5b4d:98",
+     "covered_route2": false,
+     "role": "S"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:e60e880e-aed6-4d38-af81-3ef95be929e1:109",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:e60e880e-aed6-4d38-af81-3ef95be929e1:238",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:e60e880e-aed6-4d38-af81-3ef95be929e1:267",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:e60e880e-aed6-4d38-af81-3ef95be929e1:37",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:e60e880e-aed6-4d38-af81-3ef95be929e1:413",
+     "covered_route2": false,
+     "role": "C"
+    },
+    {
+     "E_indices_route2": [],
+     "E_size_route2": 0,
+     "case_id": "es:vc33:e60e880e-aed6-4d38-af81-3ef95be929e1:65",
+     "covered_route2": false,
+     "role": "C"
+    }
+   ],
+   "closure_achieved": false,
+   "domain_digest": "58712b7debcebb202ee6fc4ee9fd0c75940e2adb6f0291ee3eb742895b2fba8e",
+   "env": "vc33",
+   "note": "no route-2 proof exists without closure; equivalence not computed"
+  }
+ },
+ "generated_by": "agent/harness/es_sources/domain_closure.py",
+ "inputs": {
+  "logs/es_inventory.json": "bc00824a3932ea73baf4eab38030c2f15cb93fb11e4915b82ba75b0573b0c082"
+ }
+}
