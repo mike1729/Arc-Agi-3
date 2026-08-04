@@ -9,6 +9,9 @@ ahead and gates the first survivor set. This is a separate scientific protocol. 
 retroactively amend `notes/vp-perception-screen.md`, its Freeze 1 contract, or its results; the
 prospective ES-only governance supersession is recorded below.
 
+**Status update — 2026-08-03, closeout: ES ends coverage-blocked before its common freeze; zero
+ES-USE calls spent. See §11.** The paragraph above is retained as the frozen historical text.
+
 Unless explicitly labelled as a measured inventory fact or prior frozen result, every numeric
 choice in this note was **PROPOSED** until manifest acceptance; all were accepted unchanged on
 2026-08-03.
@@ -940,3 +943,54 @@ disclosed prior exposure**, not design-naive generalization — that resource wa
 existed. OC also measures expressibility only: descriptor groundability, enumeration within the
 512 limit, and identifiability stay unmeasured out-of-corpus, so §1's "coverage on a new game is
 unmeasured" narrows rather than closes once OC runs.
+
+---
+
+## 11. Dated closeout — 2026-08-03: route-2 closure infeasible; ES ends coverage-blocked
+
+The §3.2 route-2 equivalence proof — "an exact proof over a declared exhaustive finite semantic
+domain" — was implemented as extensional equivalence over the game's fully closed reachable
+transition graph (`agent/harness/es_sources/domain_closure.py`; frozen budgets 1,200,000 edges,
+20,000 frontier), the only mechanical object with that status once bounded fork suites are ruled
+out. Measured result (`logs/es_domain_closure.json`; full graphs in the local
+`logs/es_domain_{env}.json.gz`, digests pinned):
+
+| game | budget hit | states found | expanded | frontier left | levels reached | completion edges |
+|---|---|---:|---:|---:|---:|---:|
+| tu93 | `max_edges` | 242,625 | 200,000 | 15,822 | 7 | 516 |
+| ls20 | `max_frontier` | 220,854 | 199,149 | 20,002 | 3 | 220 |
+| vc33 | `max_edges` | 955 | 293 | 662 | 1 | 192 |
+| ft09 | `max_edges` | 1,051 | 293 | 758 | 1 | 216 |
+| m0r0 | `max_edges` | 534 | 293 | 241 | 0 | 0 |
+| dc22 | `max_edges` | 645 | 293 | 352 | 0 | 0 |
+
+*(Table completed 2026-08-04 when the last three runs reported; the section was first written
+after tu93/m0r0/vc33. All six domain graphs and digests are in the summary artifact.)*
+
+Two independent blowup modes, one conclusion, now measured on all six games. The keyboard games
+explode in state count: tu93's space is still growing when the edge budget dies at 242k states,
+and ls20 — the only run to hit the frontier cap — is at 220k states with 20,002 live branches
+after three of seven levels. The click games exhaust the same budget after exactly 293 expanded
+states because their effective alphabets carry the full 64×64 click expansion (~4,100 edges per
+state); m0r0 and dc22 never reach a single completion at that depth, while vc33 and ft09 clear
+only level 1. Closure is not near-missed anywhere; raising the budget is not a repair. No
+route-2 proof therefore exists for any case of any game — all 105 cases read
+`covered_route2: false`, `E_size_route2: 0` — and coverage could only arrive via route-1
+canonical-AST identity, for which no measured coverage exists.
+
+Under the frozen coverage rule (`gate_manifest.yaml → es → es_ident_gate → coverage_rule`), the
+S role reads **coverage-blocked**: no `DOSE-*` is derivable, and `ES-USE`/`ES-VALUE` never open. Per
+§3.4, missing coverage is a scientific result and may not send the inventory back for a
+friendlier universe. **Operator decision (2026-08-03): ES ends here as a measured negative
+result** — the frozen bounded grammar with exact-identification obligations cannot cover the
+six-game corpus, and the proof obligation itself (closure) is what fails, before any model
+question can be asked. Zero ES-USE calls were spent; the G36/G38 program does not run; OC (§10)
+is moot for gating and remains unrun. The successor protocol is the MU
+mechanics-representation screen (`notes/mu-representation-screen.md`), which drops
+identifiability obligations and measures interface legibility and usability instead; the
+transition is pinned in `gate_manifest.yaml → mu → predecessor`. **Accepted 2026-08-04: the
+operator directed that this session's complete six-game record be folded into this section and
+committed — that direction, following the operator's 2026-08-03 election to record failure
+without a raised-budget rerun, is the closeout acceptance.** No `docs/README.md` register entry
+is required for the closeout itself: it proposes no spec change, and its schedule consequence is
+separately registered as `SCHED-2026-08-03`. Nothing above §10 is modified by this section.

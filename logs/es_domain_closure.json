@@ -1,8 +1,26 @@
 {
- "fingerprint": "4ab3ce3a588240bed6facfcccfa13b6b8ab04b8d181447b98b906505bb1b267c",
+ "fingerprint": "c070912f6367dcd4ca148d3045675e765a882d6e426f812c3f14fa7cddaf8141",
  "format_version": 1,
  "games": {
   "dc22": {
+   "alphabet": {
+    "action_count_key_mode": "zero_flag",
+    "actions_per_state": 4102,
+    "citation": "dc22.py:10543,10627-10641 \u2014 dispatch reads RESET, ACTION1-5, ACTION6",
+    "handled_keys": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "handles_click": true,
+    "pass_ids": []
+   },
+   "budgets": {
+    "max_edges": 1200000,
+    "max_frontier": 20000
+   },
    "cases": [
     {
      "E_indices_route2": [],
@@ -110,12 +128,43 @@
      "role": "S"
     }
    ],
+   "closure": {
+    "achieved": false,
+    "budget_hit": "max_edges",
+    "completion_edges": 0,
+    "edges": 1201886,
+    "expanded": 293,
+    "frontier_remaining": 352,
+    "levels_reached": 0,
+    "pass_uniformity_checks": 0,
+    "states": 645,
+    "terminal_states": 0,
+    "wall_seconds": 14784.4
+   },
    "closure_achieved": false,
    "domain_digest": "9ec0eb9a9b9d3271ec1e8d5a3ab5c5e148c93a38415dabbe7bbd0e451643c91c",
    "env": "dc22",
    "note": "no route-2 proof exists without closure; equivalence not computed"
   },
   "ft09": {
+   "alphabet": {
+    "action_count_key_mode": "zero_flag",
+    "actions_per_state": 4098,
+    "citation": "ft09.py:2329,2347 \u2014 dispatch reads only RESET and ACTION6",
+    "handled_keys": [],
+    "handles_click": true,
+    "pass_ids": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   },
+   "budgets": {
+    "max_edges": 1200000,
+    "max_frontier": 20000
+   },
    "cases": [
     {
      "E_indices_route2": [],
@@ -223,12 +272,45 @@
      "role": "S"
     }
    ],
+   "closure": {
+    "achieved": false,
+    "budget_hit": "max_edges",
+    "completion_edges": 216,
+    "edges": 1200714,
+    "expanded": 293,
+    "frontier_remaining": 758,
+    "levels_reached": 1,
+    "pass_uniformity_checks": 0,
+    "states": 1051,
+    "terminal_states": 0,
+    "wall_seconds": 12016.3
+   },
    "closure_achieved": false,
    "domain_digest": "002b6a65b6c20b9ea3786514bcf39cc392efb918b95ce1187c91dee2ecebbe37",
    "env": "ft09",
    "note": "no route-2 proof exists without closure; equivalence not computed"
   },
   "ls20": {
+   "alphabet": {
+    "action_count_key_mode": "zero_flag",
+    "actions_per_state": 6,
+    "citation": "ls20.py:1921-1930 \u2014 dispatch reads ACTION1-4; no action-data reads",
+    "handled_keys": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "handles_click": false,
+    "pass_ids": [
+     5,
+     6
+    ]
+   },
+   "budgets": {
+    "max_edges": 1200000,
+    "max_frontier": 20000
+   },
    "cases": [
     {
      "E_indices_route2": [],
@@ -357,12 +439,44 @@
      "role": "S"
     }
    ],
+   "closure": {
+    "achieved": false,
+    "budget_hit": "max_frontier",
+    "completion_edges": 220,
+    "edges": 1194894,
+    "expanded": 199149,
+    "frontier_remaining": 20002,
+    "levels_reached": 3,
+    "pass_uniformity_checks": 388,
+    "states": 220854,
+    "terminal_states": 1703,
+    "wall_seconds": 60208.8
+   },
    "closure_achieved": false,
    "domain_digest": "a97134597eb89cc017aa610cf87eaa80e30a774811079adcd75679667323f05f",
    "env": "ls20",
    "note": "no route-2 proof exists without closure; equivalence not computed"
   },
   "m0r0": {
+   "alphabet": {
+    "action_count_key_mode": "raw",
+    "actions_per_state": 4102,
+    "citation": "m0r0.py:714-716,756-765 \u2014 dispatch reads ACTION1-4 and ACTION6",
+    "handled_keys": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "handles_click": true,
+    "pass_ids": [
+     5
+    ]
+   },
+   "budgets": {
+    "max_edges": 1200000,
+    "max_frontier": 20000
+   },
    "cases": [
     {
      "E_indices_route2": [],
@@ -470,12 +584,45 @@
      "role": "S"
     }
    ],
+   "closure": {
+    "achieved": false,
+    "budget_hit": "max_edges",
+    "completion_edges": 0,
+    "edges": 1201886,
+    "expanded": 293,
+    "frontier_remaining": 241,
+    "levels_reached": 0,
+    "pass_uniformity_checks": 0,
+    "states": 534,
+    "terminal_states": 0,
+    "wall_seconds": 9853.2
+   },
    "closure_achieved": false,
    "domain_digest": "0957c0b0cc2008aa8bf8b514f3b8110517d12ef01058cae82463f04d539153c4",
    "env": "m0r0",
    "note": "no route-2 proof exists without closure; equivalence not computed"
   },
   "tu93": {
+   "alphabet": {
+    "action_count_key_mode": "zero_flag",
+    "actions_per_state": 6,
+    "citation": "tu93.py:1180-1216 \u2014 dispatch reads ACTION1-4; no action-data reads",
+    "handled_keys": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "handles_click": false,
+    "pass_ids": [
+     5,
+     6
+    ]
+   },
+   "budgets": {
+    "max_edges": 1200000,
+    "max_frontier": 20000
+   },
    "cases": [
     {
      "E_indices_route2": [],
@@ -646,12 +793,43 @@
      "role": "S"
     }
    ],
+   "closure": {
+    "achieved": false,
+    "budget_hit": "max_edges",
+    "completion_edges": 516,
+    "edges": 1200000,
+    "expanded": 200000,
+    "frontier_remaining": 15822,
+    "levels_reached": 7,
+    "pass_uniformity_checks": 390,
+    "states": 242625,
+    "terminal_states": 26803,
+    "wall_seconds": 2861.9
+   },
    "closure_achieved": false,
    "domain_digest": "465b2d2bb678d4fa34d260534d76871b012627ecc25b3874c573116290534c98",
    "env": "tu93",
    "note": "no route-2 proof exists without closure; equivalence not computed"
   },
   "vc33": {
+   "alphabet": {
+    "action_count_key_mode": "zero_flag",
+    "actions_per_state": 4098,
+    "citation": "vc33.py:2085-2088 \u2014 dispatch reads only ACTION6",
+    "handled_keys": [],
+    "handles_click": true,
+    "pass_ids": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   },
+   "budgets": {
+    "max_edges": 1200000,
+    "max_frontier": 20000
+   },
    "cases": [
     {
      "E_indices_route2": [],
@@ -780,6 +958,19 @@
      "role": "C"
     }
    ],
+   "closure": {
+    "achieved": false,
+    "budget_hit": "max_edges",
+    "completion_edges": 192,
+    "edges": 1200714,
+    "expanded": 293,
+    "frontier_remaining": 662,
+    "levels_reached": 1,
+    "pass_uniformity_checks": 0,
+    "states": 955,
+    "terminal_states": 0,
+    "wall_seconds": 4424.7
+   },
    "closure_achieved": false,
    "domain_digest": "58712b7debcebb202ee6fc4ee9fd0c75940e2adb6f0291ee3eb742895b2fba8e",
    "env": "vc33",

@@ -200,6 +200,19 @@ def test_toy_completion_edges_carry_the_solved_frame(monkeypatch):
         assert any(row[2] == 3 for row in solved)
 
 
+def test_unclosed_entry_preserves_the_budget_failure_evidence(monkeypatch):
+    monkeypatch.setattr(dc, "ReplayDriver", _ToyDriver)
+    document = close_domain("tu93", max_edges=3)  # starved: cannot close
+    assert document["closure"]["achieved"] is False
+    entry = dc.unclosed_entry("tu93", document, "deadbeef")
+    assert entry["closure_achieved"] is False
+    assert entry["closure"]["budget_hit"] == "max_edges"
+    assert entry["closure"]["states"] >= 1
+    assert entry["budgets"]["max_edges"] == 3
+    assert entry["alphabet"]["citation"]
+    assert all(row["covered_route2"] is False for row in entry["cases"])
+
+
 def test_alphabet_declarations_cover_the_frozen_corpus():
     assert sorted(ALPHABETS) == ["dc22", "ft09", "ls20", "m0r0", "tu93", "vc33"]
     for env, declaration in ALPHABETS.items():

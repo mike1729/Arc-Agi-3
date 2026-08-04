@@ -489,18 +489,26 @@ def candidate_verdict(
     return {"equivalent": True, "edges_checked": len(domain["edges"])}
 
 
+def unclosed_entry(env: str, domain: dict[str, Any], domain_digest: str) -> dict[str, Any]:
+    """Summary entry for a budget-failed closure: the counters ARE the evidence."""
+    return {
+        "env": env,
+        "domain_digest": domain_digest,
+        "closure_achieved": False,
+        "closure": domain["closure"],
+        "alphabet": domain["alphabet"],
+        "budgets": domain["budgets"],
+        "note": "no route-2 proof exists without closure; equivalence not computed",
+        "cases": _cases_without_proof(env),
+    }
+
+
 def equivalence_pass(env: str) -> dict[str, Any]:
     domain, domain_digest = read_domain(env)
     if domain["env"] != env:
         raise ValueError(f"domain artifact env {domain['env']} != {env}")
     if not domain["closure"]["achieved"]:
-        return {
-            "env": env,
-            "domain_digest": domain_digest,
-            "closure_achieved": False,
-            "note": "no route-2 proof exists without closure; equivalence not computed",
-            "cases": _cases_without_proof(env),
-        }
+        return unclosed_entry(env, domain, domain_digest)
 
     inventory = json.loads(INVENTORY.read_text())
     cases = [case for case in inventory["cases"] if case["env"] == env]
