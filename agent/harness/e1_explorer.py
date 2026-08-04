@@ -598,6 +598,10 @@ class Explorer:
         self.test_actions += 1
         if result["levels"] and result["levels"] > 0:
             self.completed_at = self.actions_used
+            if result["grid"] is not None:
+                # retain the completion frame: it is the store's one positive goal
+                # example, and a post hash without its grid corrupts goal mining (E2)
+                self.states.setdefault(_hash(self.level, result["grid"]), result["grid"])
             self.record(digest, action, result, pre_objects, completed=True)
             return True
 
