@@ -1,0 +1,985 @@
+{
+  "cap": 96,
+  "fork": "deep_copy",
+  "format_version": 1,
+  "lattice": 8,
+  "per_game": {
+    "ft09": {
+      "completing_clicks": 8,
+      "control_ok": 8,
+      "rate_candidates": 1.0,
+      "rate_with_lattice": 1.0,
+      "reachable_by_candidates": 8,
+      "reachable_with_lattice": 8,
+      "rows": [
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 66,
+          "control": true,
+          "guid": "01f76fc7-c612-4006-8d08-c13ed0cb91de",
+          "lattice": 62,
+          "step": 95
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 66,
+          "control": true,
+          "guid": "17938e15-217b-467c-91a3-a31aa638868a",
+          "lattice": 62,
+          "step": 93
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 66,
+          "control": true,
+          "guid": "193a1bf4-f858-4f5e-a5dc-8d8f4159b7fe",
+          "lattice": 62,
+          "step": 88
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 66,
+          "control": true,
+          "guid": "3b1ce31a-0af9-41f3-858f-4ead42360d15",
+          "lattice": 62,
+          "step": 44
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 66,
+          "control": true,
+          "guid": "62ee83b0-5850-4a88-90af-693e9476507f",
+          "lattice": 62,
+          "step": 36
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 66,
+          "control": true,
+          "guid": "84d4f82f-a33b-4744-8fc8-d5fb0ec43ebc",
+          "lattice": 62,
+          "step": 22
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 66,
+          "control": true,
+          "guid": "f28bd7b8-3832-4b99-9583-5c7d8fdf93c4",
+          "lattice": 62,
+          "step": 16
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 66,
+          "control": true,
+          "guid": "f58b7fe2-aafd-414a-a1fb-74d4b3e717e0",
+          "lattice": 62,
+          "step": 18
+        }
+      ],
+      "unreachable": 0
+    },
+    "lf52": {
+      "completing_clicks": 10,
+      "control_ok": 10,
+      "rate_candidates": 1.0,
+      "rate_with_lattice": 1.0,
+      "reachable_by_candidates": 10,
+      "reachable_with_lattice": 10,
+      "rows": [
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 53,
+          "control": true,
+          "guid": "09ed6d45-ac12-462f-aa01-49164a5f7ec7",
+          "lattice": 59,
+          "step": 81
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 53,
+          "control": true,
+          "guid": "2adcd0b8-5e21-42e6-8976-b163b0d96d4a",
+          "lattice": 59,
+          "step": 14
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 53,
+          "control": true,
+          "guid": "2b7ab5e3-7ba6-4e65-845e-fa50fa439f8a",
+          "lattice": 59,
+          "step": 20
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 53,
+          "control": true,
+          "guid": "401bf4ae-848b-4c07-8f95-9e3d85ee1ebf",
+          "lattice": 59,
+          "step": 47
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 53,
+          "control": true,
+          "guid": "40bd319e-4d3a-451e-87e2-c88b02c2b024",
+          "lattice": 59,
+          "step": 38
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 53,
+          "control": true,
+          "guid": "549e2635-b796-480c-b67f-f740c42bc086",
+          "lattice": 59,
+          "step": 33
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 53,
+          "control": true,
+          "guid": "be7ef956-16ed-4bbd-9ce9-b8e92e666f2c",
+          "lattice": 59,
+          "step": 17
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 53,
+          "control": true,
+          "guid": "c492c65f-dc07-4c5e-97ac-fce7a4366dbd",
+          "lattice": 59,
+          "step": 11
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 53,
+          "control": true,
+          "guid": "d55d768c-0ead-4e34-9c5e-288449092557",
+          "lattice": 59,
+          "step": 25
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 53,
+          "control": true,
+          "guid": "da243e77-1d54-4996-815b-8ec8d9611e5f",
+          "lattice": 59,
+          "step": 36
+        }
+      ],
+      "unreachable": 0
+    },
+    "lp85": {
+      "completing_clicks": 40,
+      "control_ok": 40,
+      "rate_candidates": 1.0,
+      "rate_with_lattice": 1.0,
+      "reachable_by_candidates": 40,
+      "reachable_with_lattice": 40,
+      "rows": [
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "02ec6bb4-1419-41e7-a888-b6a98b45abda",
+          "lattice": 60,
+          "step": 13
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "03f416d0-f5af-4822-8427-0b010ef928ed",
+          "lattice": 60,
+          "step": 26
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "05b0a343-1666-4286-8c81-c5d212f3cf72",
+          "lattice": 60,
+          "step": 15
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "072f2a2b-5624-48b5-a3f5-83edf1879de5",
+          "lattice": 60,
+          "step": 9
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "17f1dce5-db63-4b50-bf7f-38481c917e68",
+          "lattice": 60,
+          "step": 12
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "18aeec67-f441-4ea1-92c2-e19dd9802cf6",
+          "lattice": 60,
+          "step": 10
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "2bdef327-cfbe-4404-87e1-3816f7838334",
+          "lattice": 60,
+          "step": 7
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "2bfe836e-615b-4ebf-8b1c-6763557fbdb7",
+          "lattice": 60,
+          "step": 29
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "305c24c4-6bcf-4323-b511-13e083be1882",
+          "lattice": 60,
+          "step": 14
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "380aead7-3d4f-427b-8933-4b76d09b3a45",
+          "lattice": 60,
+          "step": 41
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "438fcfdf-ceed-474b-ad62-878c3fe3b69f",
+          "lattice": 60,
+          "step": 33
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "4a980020-408b-4cf2-9baa-0460c8d9f2ef",
+          "lattice": 60,
+          "step": 9
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "4bcb78d5-e9b5-4cd6-91ac-4234a7e7ba9e",
+          "lattice": 60,
+          "step": 63
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "543d2fc4-84f4-497d-a87a-47bd578d8410",
+          "lattice": 60,
+          "step": 34
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "662864be-cfe2-4d9c-b1a5-fc57a7464786",
+          "lattice": 60,
+          "step": 11
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "6b63d889-ccaf-434a-929e-f74076fb6c62",
+          "lattice": 60,
+          "step": 20
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "6d80a815-bcac-432f-a310-d0b6f3bcb665",
+          "lattice": 60,
+          "step": 12
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "6e91a6cf-9fdd-467c-b6fe-e17d6edd8358",
+          "lattice": 60,
+          "step": 39
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "72f71d14-f711-4964-bc44-cd10110dab84",
+          "lattice": 60,
+          "step": 6
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "75dd891e-a56e-4d03-b890-7d8a4ae01830",
+          "lattice": 60,
+          "step": 30
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "7cec8346-ff5e-4af8-92ec-69c983e35ff1",
+          "lattice": 60,
+          "step": 41
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "8070629d-1e1c-4343-abb5-4b5e9021ffb5",
+          "lattice": 60,
+          "step": 27
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "813ed237-7717-491d-8524-bab13aef81c9",
+          "lattice": 60,
+          "step": 19
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "8fafc2ba-fe99-47e2-a9ec-4369e51bfd6b",
+          "lattice": 60,
+          "step": 24
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "9cd4a0d0-3872-464c-930f-42cec2a79252",
+          "lattice": 60,
+          "step": 7
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "9fb719e2-d70e-48fc-a29e-b45a4228dc0e",
+          "lattice": 60,
+          "step": 159
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "a0504234-bec5-4879-9e76-f0df8be63cd0",
+          "lattice": 60,
+          "step": 10
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "a6c7591f-f185-42f6-afce-a9d05e744dd0",
+          "lattice": 60,
+          "step": 38
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "ab38af90-db82-4d68-9b72-0ccdbe274099",
+          "lattice": 60,
+          "step": 33
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "aec841b6-4faf-4236-bbff-557cf77db467",
+          "lattice": 60,
+          "step": 22
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "c43754a4-4f55-42ac-a8a6-299758cb17cf",
+          "lattice": 60,
+          "step": 8
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "c49e1411-c863-42c0-a14d-1875a5b2db0f",
+          "lattice": 60,
+          "step": 10
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "d9260832-f236-463a-98e8-0cd8e4b427b2",
+          "lattice": 60,
+          "step": 19
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "dc1c2fbc-c14b-4b6e-b44b-4311dabba550",
+          "lattice": 60,
+          "step": 12
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "df57c5db-5678-41c4-8f4b-ff4b4e2d9c5e",
+          "lattice": 60,
+          "step": 6
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "ea54afd5-a445-4946-bb02-df015265caa9",
+          "lattice": 60,
+          "step": 7
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "eab6d9f0-b851-4446-a9f2-b076a257c597",
+          "lattice": 60,
+          "step": 21
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "eec9c692-6e11-4e7d-a01e-69d2f6ea939a",
+          "lattice": 60,
+          "step": 18
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "ef1c5813-724c-4910-b23c-215815c6a336",
+          "lattice": 60,
+          "step": 24
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 41,
+          "control": true,
+          "guid": "f570ae55-c6d3-43d0-bf7b-614c080d330f",
+          "lattice": 60,
+          "step": 23
+        }
+      ],
+      "unreachable": 0
+    },
+    "r11l": {
+      "completing_clicks": 10,
+      "control_ok": 10,
+      "rate_candidates": 0.8,
+      "rate_with_lattice": 1.0,
+      "reachable_by_candidates": 8,
+      "reachable_with_lattice": 10,
+      "rows": [
+        {
+          "by_candidates": false,
+          "by_lattice": true,
+          "candidates": 29,
+          "control": true,
+          "guid": "0218265f-d04d-4f5e-8119-37d3aa7a481f",
+          "lattice": 63,
+          "step": 30
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 36,
+          "control": true,
+          "guid": "1c820c2e-0bb7-4f54-bffe-e4d9a1385f89",
+          "lattice": 63,
+          "step": 14
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 48,
+          "control": true,
+          "guid": "448ad63a-64a7-436e-8956-f2fe9163cd93",
+          "lattice": 63,
+          "step": 23
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 27,
+          "control": true,
+          "guid": "669c3a6f-669a-42c4-b718-e5c3976310ad",
+          "lattice": 63,
+          "step": 12
+        },
+        {
+          "by_candidates": false,
+          "by_lattice": true,
+          "candidates": 32,
+          "control": true,
+          "guid": "7bda9483-2c94-4d34-9657-e6fae7aa82ef",
+          "lattice": 62,
+          "step": 8
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 23,
+          "control": true,
+          "guid": "9a66bffc-2f6e-46f1-8243-eab372227374",
+          "lattice": 63,
+          "step": 28
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 38,
+          "control": true,
+          "guid": "bb1c0808-4214-4bb7-a3b0-ebd42d37a985",
+          "lattice": 62,
+          "step": 11
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 31,
+          "control": true,
+          "guid": "c12f8e45-8cbf-461d-a1be-e3e001eb9ba0",
+          "lattice": 63,
+          "step": 23
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 46,
+          "control": true,
+          "guid": "ceb779a0-75fa-47f3-a7e0-4347310fe8e5",
+          "lattice": 63,
+          "step": 12
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 25,
+          "control": true,
+          "guid": "ffb9b53d-d7a0-4d0b-866e-c49839ee57c5",
+          "lattice": 63,
+          "step": 24
+        }
+      ],
+      "unreachable": 0
+    },
+    "su15": {
+      "completing_clicks": 13,
+      "control_ok": 13,
+      "rate_candidates": 1.0,
+      "rate_with_lattice": 1.0,
+      "reachable_by_candidates": 13,
+      "reachable_with_lattice": 13,
+      "rows": [
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 27,
+          "control": true,
+          "guid": "20f8d100-ff47-420b-bf1d-3d239a255a77",
+          "lattice": 64,
+          "step": 19
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 27,
+          "control": true,
+          "guid": "274da438-5f61-4688-b290-5d927e6fbd77",
+          "lattice": 63,
+          "step": 38
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 27,
+          "control": true,
+          "guid": "3a47010c-3f84-454b-b3cd-3464b8f4992f",
+          "lattice": 64,
+          "step": 24
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 27,
+          "control": true,
+          "guid": "3d4cbfde-01a1-44c1-8e1a-3e93e7971ad0",
+          "lattice": 64,
+          "step": 13
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 27,
+          "control": true,
+          "guid": "4be2291c-367e-4927-8b3f-f53aa17b9395",
+          "lattice": 64,
+          "step": 13
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 27,
+          "control": true,
+          "guid": "606d9b04-7bac-4892-b2e1-3072dea7062a",
+          "lattice": 64,
+          "step": 20
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 27,
+          "control": true,
+          "guid": "645988a9-6eef-4eb9-867d-e44ec93a6926",
+          "lattice": 64,
+          "step": 83
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 27,
+          "control": true,
+          "guid": "823b42ee-9e93-4658-92ae-00f0619f7c6c",
+          "lattice": 64,
+          "step": 30
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 27,
+          "control": true,
+          "guid": "93195a31-64bf-4dfc-aa44-2a1fb3569701",
+          "lattice": 64,
+          "step": 24
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 29,
+          "control": true,
+          "guid": "b25b9a41-aba6-4df4-b731-f77c9f1ffdcd",
+          "lattice": 64,
+          "step": 23
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 27,
+          "control": true,
+          "guid": "c2bf26cf-eaed-4492-a715-73007e936022",
+          "lattice": 64,
+          "step": 17
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 26,
+          "control": true,
+          "guid": "cd48292b-a674-42cf-94d2-a19bd33065aa",
+          "lattice": 64,
+          "step": 16
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 27,
+          "control": true,
+          "guid": "fdeab422-e1e4-43de-a2c0-6441b16ae748",
+          "lattice": 64,
+          "step": 39
+        }
+      ],
+      "unreachable": 0
+    },
+    "tn36": {
+      "completing_clicks": 10,
+      "control_ok": 0,
+      "rate_candidates": null,
+      "rate_with_lattice": null,
+      "reachable_by_candidates": 0,
+      "reachable_with_lattice": 0,
+      "rows": [
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": false,
+          "guid": "0268d6a8-2294-473c-8ed0-f1fefbf4005b",
+          "lattice": 64,
+          "step": 73
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": false,
+          "guid": "28c6b31e-993d-483f-9584-c88bd15d423d",
+          "lattice": 64,
+          "step": 36
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": false,
+          "guid": "47d0e2b1-25ee-442c-84ae-01d781f5e257",
+          "lattice": 64,
+          "step": 237
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": false,
+          "guid": "84115ab3-7401-4d00-b9ef-8ce102480e13",
+          "lattice": 64,
+          "step": 33
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": false,
+          "guid": "85db062c-c74d-43fe-b6a9-8bd09b1c254b",
+          "lattice": 64,
+          "step": 13
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": false,
+          "guid": "90f13b17-9916-4d8a-81ad-dabf059bd943",
+          "lattice": 64,
+          "step": 24
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": false,
+          "guid": "98d37f25-6357-4543-9eda-48136a48a3b4",
+          "lattice": 64,
+          "step": 29
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": false,
+          "guid": "a343d0c8-ebbc-48a6-b0cf-24e831314ed0",
+          "lattice": 64,
+          "step": 26
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": false,
+          "guid": "b7e8173a-76be-4a71-ae4b-b28561e86c9d",
+          "lattice": 64,
+          "step": 27
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": false,
+          "guid": "eeb9ae5a-2abe-4f3a-8e49-af6b10f6c989",
+          "lattice": 64,
+          "step": 49
+        }
+      ],
+      "unreachable": 0
+    },
+    "vc33": {
+      "completing_clicks": 9,
+      "control_ok": 9,
+      "rate_candidates": 1.0,
+      "rate_with_lattice": 1.0,
+      "reachable_by_candidates": 9,
+      "reachable_with_lattice": 9,
+      "rows": [
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 12,
+          "control": true,
+          "guid": "1469cb95-ccf9-4a93-8356-f44443d20dce",
+          "lattice": 64,
+          "step": 28
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 12,
+          "control": true,
+          "guid": "374887fc-b52f-4ab9-bcaa-9b3ad5fdd9d2",
+          "lattice": 64,
+          "step": 14
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 12,
+          "control": true,
+          "guid": "4cffe392-c5a8-47f7-a2db-86a97a4606ca",
+          "lattice": 64,
+          "step": 10
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 12,
+          "control": true,
+          "guid": "74e0c891-bfa0-4b39-be15-db1f8dce4366",
+          "lattice": 64,
+          "step": 21
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 12,
+          "control": true,
+          "guid": "837812ad-2c5c-4943-8632-b6f8cd4b5b4d",
+          "lattice": 64,
+          "step": 8
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 12,
+          "control": true,
+          "guid": "918430fb-d0ad-4d3a-9551-1a806e6ddd48",
+          "lattice": 64,
+          "step": 13
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 12,
+          "control": true,
+          "guid": "e31a16d6-345f-464f-abd4-077c20e51f77",
+          "lattice": 64,
+          "step": 17
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 12,
+          "control": true,
+          "guid": "e60e880e-aed6-4d38-af81-3ef95be929e1",
+          "lattice": 64,
+          "step": 8
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": false,
+          "candidates": 12,
+          "control": true,
+          "guid": "f1addbb7-4708-48e4-8d47-095d049ad5d4",
+          "lattice": 64,
+          "step": 19
+        }
+      ],
+      "unreachable": 0
+    }
+  }
+}

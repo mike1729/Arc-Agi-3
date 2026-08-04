@@ -61,6 +61,16 @@ saturation detection.
    per-tier caps keep object-level candidates intact and the frontier bounded. Full 64×64
    click alphabet is what blew up ES closure; never enumerate it. **Gate: E1-pre runs before
    the explorer does.**
+
+   **MEASURED 2026-08-04 — `notes/e1-pre-recall.md`. Three of this paragraph's values change.**
+   Segmentation tier **64 → 96** (64 loses completion-path clicks on ft09). Duplicate fill
+   **smallest-first → largest-first**: smallest-first spends the whole leftover budget on
+   single-cell dust and costs bp35 0.610 vs 0.986 node recall; nothing is made worse by the
+   change. The lattice is **adopted for every game, not triggered per game** — r11l has 2 of 10
+   L1 completions reachable only through it. Class admission order (ii) is untested and
+   unreachable: distinct (colour, shape) classes never exceed 22 per state in the corpus, so the
+   cap only ever binds on duplicates. A blanket minimum-node-size filter was measured and
+   REJECTED (breaks six games whose humans click single pixels).
 3. **Frontier policy**: frontier = (state, untested candidate) pairs. Route to the *nearest*
    frontier state: shortest known-graph path over never-conflicted, non-suspect edges from the
    current state, else RESET + replay prefix (deterministic — REPLAY-DET). Tie-break
@@ -124,6 +134,16 @@ honest uncertainty). Background clicks are the expected failure class (placement
 *locations*, not objects). If recall is materially below 1.0 on completion-path clicks, add the
 contingent supplement — an 8×8 lattice (w) of background probes — and re-measure before any
 explorer run. No invented recall threshold: the measured number decides, game by game.
+
+**RUN 2026-08-04 — result in `notes/e1-pre-recall.md`; the gate passes.** 4,161 L1 clicks over
+18 games (six public games contain no L1 click at all). Node recall 1.000 on 17 of 18 at cap 96,
+bp35 0.986; every miss is cap-attributable, segmentation never loses a click. The cell/node gap
+was resolved rather than reported: forking the engine shows node-point clicking is outcome-
+equivalent on 14 games but **not** on r11l (0.218) or su15 (0.466) — the placement games this
+section predicted. That did not turn out to matter, because the bar the explorer actually needs
+is reachability, and **100 of 100 L1 completions are reachable** from the candidate set (r11l
+needs the lattice for 2). Caveat for anything built on fork machinery: `copy.deepcopy` of an
+ARCBaseGame is **not** faithful on tn36, so every fork carries a per-click control.
 
 ## Measurements (per game, L1, all public games — six iteration games first as bring-up)
 

@@ -1,0 +1,109 @@
+{
+  "cap": 96,
+  "fork": "prefix_replay",
+  "format_version": 1,
+  "lattice": 8,
+  "per_game": {
+    "tn36": {
+      "completing_clicks": 10,
+      "control_ok": 10,
+      "rate_candidates": 1.0,
+      "rate_with_lattice": 1.0,
+      "reachable_by_candidates": 10,
+      "reachable_with_lattice": 10,
+      "rows": [
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": true,
+          "guid": "0268d6a8-2294-473c-8ed0-f1fefbf4005b",
+          "lattice": 64,
+          "step": 73
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": true,
+          "guid": "28c6b31e-993d-483f-9584-c88bd15d423d",
+          "lattice": 64,
+          "step": 36
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": true,
+          "guid": "47d0e2b1-25ee-442c-84ae-01d781f5e257",
+          "lattice": 64,
+          "step": 237
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": true,
+          "guid": "84115ab3-7401-4d00-b9ef-8ce102480e13",
+          "lattice": 64,
+          "step": 33
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": true,
+          "guid": "85db062c-c74d-43fe-b6a9-8bd09b1c254b",
+          "lattice": 64,
+          "step": 13
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": true,
+          "guid": "90f13b17-9916-4d8a-81ad-dabf059bd943",
+          "lattice": 64,
+          "step": 24
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": true,
+          "guid": "98d37f25-6357-4543-9eda-48136a48a3b4",
+          "lattice": 64,
+          "step": 29
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": true,
+          "guid": "a343d0c8-ebbc-48a6-b0cf-24e831314ed0",
+          "lattice": 64,
+          "step": 26
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": true,
+          "guid": "b7e8173a-76be-4a71-ae4b-b28561e86c9d",
+          "lattice": 64,
+          "step": 27
+        },
+        {
+          "by_candidates": true,
+          "by_lattice": true,
+          "candidates": 89,
+          "control": true,
+          "guid": "eeb9ae5a-2abe-4f3a-8e49-af6b10f6c989",
+          "lattice": 64,
+          "step": 49
+        }
+      ],
+      "unreachable": 0
+    }
+  }
+}
