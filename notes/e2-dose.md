@@ -47,16 +47,30 @@ survivors).
 ## Thinking bring-up — the instrument gate (PASSED)
 
 `e2_probe.py`, direct `mlx_lm` (NO server layer — the July mlx_vlm server is the voided
-lineage and is not used), Qwen3.6-27B-4bit (`~/models/mlx/`), template rendered with
-`enable_thinking=True`. Mechanical pass criteria, raw trace in
-`logs/e2_thinking_probe.json`: no pre-filled empty think block · template opens `<think>` ·
-think body 6,075 chars · block closed · answer present. **All pass.** Speeds: prefill ~153
-tok/s (warm), generation ~16.6 tok/s, load 2–8 s.
+lineage and is not used), template rendered with `enable_thinking=True`. Mechanical pass
+criteria: no pre-filled empty think block · template opens `<think>` · substantive think
+body · block closed · answer present.
 
-Feasibility arithmetic (w): a 12k-token evidence prompt ≈ 80 s prefill; thinking 2–5k
-tokens ≈ 2–5 min/call. A 24-game × 4-dose × 1-call slice ≈ 3–8 h wall. Options if too
-slow: Qwen3.6-35B-A3B-4bit (MoE, on disk — must pass the same probe first), fewer doses,
-smaller digests.
+**The slice model is Qwen3.6-27B-8bit** (`~/models/mlx/Qwen3.6-27B-8bit`) — **PASSED**,
+raw trace `logs/e2_thinking_probe_8bit.json`: think body 16,228 chars, closed, answer
+present. Pinned for fidelity, not preference: the deploy reference stack is FP8 (8-bit
+class) and S1's standing measurements — the `goal_unknown` bottleneck E2 attacks — were
+made on it; 4-bit was also what the voided July server loaded. The 4-bit probe
+(`logs/e2_thinking_probe.json`, also passed) stays as comparison: on the identical prompt
+8bit thought **2.7× longer** (16,228 vs 6,075 chars) — quantization changes reasoning
+behaviour, not just marginal accuracy, which is exactly why the slice must not mix them.
+The A3B-4bit speed fallback is withdrawn (different model *and* lower precision).
+
+Measured speeds, 27B-8bit: generation **9.3 tok/s**, prefill 28–35 tok/s (cold; 4-bit
+warmed to ~153, no warm 8-bit number yet), load ~5 s. The toy probe consumed ~5.7k output
+tokens before closing — **per-call output budget ≥16k tokens (w)**; a 5k budget produced
+an unclosed think block and no extractable answer.
+
+Feasibility arithmetic (w, measured rates): a 12k-token digest ≈ 6–7 min prefill + ~6k
+thinking tokens ≈ 11 min → **~15–20 min/call**. The full 24-game × 4-dose grid ≈ 96 calls
+≈ 24–32 h — do not start there. **First slice: the six iteration games × 2 doses (125 +
+full store) = 12 calls ≈ 3–4 h**, the flat median dose curve is what licenses collapsing
+the dose axis to its endpoints.
 
 ## The Qwen slice (the actual E2 — next)
 
@@ -68,8 +82,9 @@ grammar predicates where expressible, else executable predicates over catalogue 
 (c) when saturated-without-completion: exploration directives over handles. Scoring: rule
 proposals on the same held-out human targets as the miner (the zero-model curve above is
 the floor at every dose); goal candidates against game source. Instrument rules baked in:
-two-phase decode (free thinking, then extraction), per-call trace logged, per-call
-mechanical thinking check identical to the probe.
+Qwen3.6-27B-8bit only (see the gate above) · two-phase decode (free thinking, then
+extraction) · output budget ≥16k tokens (w) · per-call trace logged · per-call mechanical
+thinking check identical to the probe, an unclosed think block voids the call.
 
 ## Limits
 
