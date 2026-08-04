@@ -1,0 +1,121 @@
+{
+  "format_version": 1,
+  "games": [
+    {
+      "expressible": true,
+      "game": "dc22",
+      "l1_completions": 10,
+      "l1_survivors": 13,
+      "l1_to_l2": {
+        "falsified": 1,
+        "scored": 13,
+        "survival_rate": 0.9231,
+        "survived": 12,
+        "vacuous": 0
+      },
+      "l1_transitions": 641,
+      "l2_completions": 10,
+      "l2_transitions": 1014,
+      "split_a_survivors": 13,
+      "universe_hash": "8cfad147e7dcdefdc008953d784f1fd79174432e67a750f01604ae1865d92945",
+      "universe_size": 177,
+      "universe_tractable": true,
+      "within_l1": {
+        "falsified": 0,
+        "scored": 13,
+        "survival_rate": 1.0,
+        "survived": 13,
+        "vacuous": 0
+      }
+    },
+    {
+      "expressible": false,
+      "game": "ft09",
+      "l1_completions": 8,
+      "l1_survivors": 0,
+      "l1_to_l2": null,
+      "l1_transitions": 464,
+      "l2_completions": 7,
+      "l2_transitions": 113,
+      "note": "no candidate survives this game's own L1 evidence: the visual grammar cannot express its completion condition. L1 -> L2 is 0/0 and reported UNDEFINED.",
+      "universe_hash": "9947a9534dfce40e146bd09a4418bf87e4ce21fd413d81cf0a05cb609c13ad7b",
+      "universe_size": 70,
+      "universe_tractable": true,
+      "within_l1": null
+    },
+    {
+      "expressible": false,
+      "game": "ls20",
+      "l1_completions": 11,
+      "l1_survivors": 0,
+      "l1_to_l2": null,
+      "l1_transitions": 480,
+      "l2_completions": 9,
+      "l2_transitions": 1962,
+      "note": "no candidate survives this game's own L1 evidence: the visual grammar cannot express its completion condition. L1 -> L2 is 0/0 and reported UNDEFINED.",
+      "universe_hash": "ead81924bc2c0fbdaaaf721974f46f9caea027dac01efca8b4f6e1053904a9b0",
+      "universe_size": 168,
+      "universe_tractable": true,
+      "within_l1": null
+    },
+    {
+      "expressible": false,
+      "game": "m0r0",
+      "l1_completions": 11,
+      "l1_survivors": 0,
+      "l1_to_l2": null,
+      "l1_transitions": 343,
+      "l2_completions": 9,
+      "l2_transitions": 1730,
+      "note": "no candidate survives this game's own L1 evidence: the visual grammar cannot express its completion condition. L1 -> L2 is 0/0 and reported UNDEFINED.",
+      "universe_hash": "e43763d2b04cec0cd67e6c20130a5ca21890759133f20eb5c7a95278c96f1461",
+      "universe_size": 43,
+      "universe_tractable": true,
+      "within_l1": null
+    },
+    {
+      "expressible": true,
+      "game": "tu93",
+      "l1_completions": 13,
+      "l1_survivors": 12,
+      "l1_to_l2": {
+        "falsified": 0,
+        "scored": 12,
+        "survival_rate": 1.0,
+        "survived": 12,
+        "vacuous": 0
+      },
+      "l1_transitions": 270,
+      "l2_completions": 13,
+      "l2_transitions": 267,
+      "split_a_survivors": 12,
+      "universe_hash": "e10fbe36bf4ccb55eace70ef4e081f722050e612aafdd9df1e826676b6e1ae70",
+      "universe_size": 150,
+      "universe_tractable": true,
+      "within_l1": {
+        "falsified": 0,
+        "scored": 12,
+        "survival_rate": 1.0,
+        "survived": 12,
+        "vacuous": 0
+      }
+    },
+    {
+      "expressible": false,
+      "game": "vc33",
+      "l1_completions": 9,
+      "l1_survivors": 0,
+      "l1_to_l2": null,
+      "l1_transitions": 137,
+      "l2_completions": 9,
+      "l2_transitions": 207,
+      "note": "no candidate survives this game's own L1 evidence: the visual grammar cannot express its completion condition. L1 -> L2 is 0/0 and reported UNDEFINED.",
+      "universe_hash": "061f738820467aab30f72250d2cad1402942cfc7cf44b82aaa6c322a0bb70b0d",
+      "universe_size": 70,
+      "universe_tractable": true,
+      "within_l1": null
+    }
+  ],
+  "grammar_spec_hash": "49c0cc3e4abc74186edbc65665f65fd68e1faa7e9e3678d58ce53346cb0b2a6b",
+  "row": "C"
+}

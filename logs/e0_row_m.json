@@ -1,0 +1,1702 @@
+{
+  "extraction_anomalies": {
+    "m0r0/921c2033-c93a-4349-9793-377cd6071b87": [
+      {
+        "kind": "reset_level_restore",
+        "step": 197
+      }
+    ]
+  },
+  "format_version": 1,
+  "games": [
+    {
+      "by_effect_mode": {
+        "changed": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.8905,
+            "accuracy_over_covered": 0.9566,
+            "correct": 903,
+            "coverage": 0.931,
+            "covered": 944,
+            "failure_split": {
+              "guard_fixable": 41,
+              "separable_by_census": 0,
+              "unpredicted": 0
+            },
+            "rule_survival_rate": 0.3333,
+            "rules_fired": 12,
+            "rules_never_fired": 2,
+            "rules_survived": 4,
+            "separating_guard_family": {
+              "adj": 41
+            },
+            "test_transitions": 1014
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.0286,
+            "correct": 9,
+            "coverage": 0.0317,
+            "covered": 10
+          },
+          "rule_tiers": {
+            "majority": 13,
+            "tier0": 1
+          },
+          "rules_mined_l1": 14,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 2,
+              "key": "('A', 1)",
+              "majority_share": 0.8883,
+              "transitions": 179
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A', 2)",
+              "majority_share": 0.925,
+              "transitions": 40
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A', 3)",
+              "majority_share": 0.931,
+              "transitions": 58
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A', 4)",
+              "majority_share": 0.8926,
+              "transitions": 149
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 0)",
+              "majority_share": 0.75,
+              "transitions": 4
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 11)",
+              "majority_share": 0.5,
+              "transitions": 24
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 13)",
+              "majority_share": 0.6364,
+              "transitions": 11
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 14)",
+              "majority_share": 0.6667,
+              "transitions": 9
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 2)",
+              "majority_share": 0.625,
+              "transitions": 24
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 4)",
+              "majority_share": 0.5333,
+              "transitions": 15
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 5)",
+              "majority_share": 0.7,
+              "transitions": 10
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 8)",
+              "majority_share": 0.8333,
+              "transitions": 54
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 9)",
+              "majority_share": 0.8571,
+              "transitions": 63
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.8317,
+            "accuracy_over_covered": 0.8344,
+            "correct": 262,
+            "coverage": 0.9968,
+            "covered": 314,
+            "failure_split": {
+              "guard_fixable": 6,
+              "separable_by_census": 0,
+              "unpredicted": 46
+            },
+            "rule_survival_rate": 0.2353,
+            "rules_fired": 17,
+            "rules_never_fired": 3,
+            "rules_survived": 4,
+            "separating_guard_family": {
+              "adj": 6
+            },
+            "test_transitions": 315
+          }
+        },
+        "full": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.0592,
+            "accuracy_over_covered": 0.0636,
+            "correct": 60,
+            "coverage": 0.931,
+            "covered": 944,
+            "failure_split": {
+              "guard_fixable": 884,
+              "separable_by_census": 0,
+              "unpredicted": 0
+            },
+            "rule_survival_rate": 0.1667,
+            "rules_fired": 12,
+            "rules_never_fired": 2,
+            "rules_survived": 2,
+            "separating_guard_family": {
+              "adj": 884
+            },
+            "test_transitions": 1014
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.0222,
+            "correct": 7,
+            "coverage": 0.0317,
+            "covered": 10
+          },
+          "rule_tiers": {
+            "majority": 13,
+            "tier0": 1
+          },
+          "rules_mined_l1": 14,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 20,
+              "key": "('A', 1)",
+              "majority_share": 0.1117,
+              "transitions": 179
+            },
+            {
+              "distinct_effects": 10,
+              "key": "('A', 2)",
+              "majority_share": 0.325,
+              "transitions": 40
+            },
+            {
+              "distinct_effects": 11,
+              "key": "('A', 3)",
+              "majority_share": 0.4138,
+              "transitions": 58
+            },
+            {
+              "distinct_effects": 18,
+              "key": "('A', 4)",
+              "majority_share": 0.1544,
+              "transitions": 149
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 0)",
+              "majority_share": 0.75,
+              "transitions": 4
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 11)",
+              "majority_share": 0.5,
+              "transitions": 24
+            },
+            {
+              "distinct_effects": 3,
+              "key": "('A6', 13)",
+              "majority_share": 0.5455,
+              "transitions": 11
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 14)",
+              "majority_share": 0.6667,
+              "transitions": 9
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 2)",
+              "majority_share": 0.625,
+              "transitions": 24
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 4)",
+              "majority_share": 0.5333,
+              "transitions": 15
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 5)",
+              "majority_share": 0.7,
+              "transitions": 10
+            },
+            {
+              "distinct_effects": 7,
+              "key": "('A6', 8)",
+              "majority_share": 0.3148,
+              "transitions": 54
+            },
+            {
+              "distinct_effects": 8,
+              "key": "('A6', 9)",
+              "majority_share": 0.2222,
+              "transitions": 63
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.2032,
+            "accuracy_over_covered": 0.2032,
+            "correct": 64,
+            "coverage": 1.0,
+            "covered": 315,
+            "failure_split": {
+              "guard_fixable": 58,
+              "separable_by_census": 6,
+              "unpredicted": 187
+            },
+            "rule_survival_rate": 0.0769,
+            "rules_fired": 13,
+            "rules_never_fired": 1,
+            "rules_survived": 1,
+            "separating_guard_family": {
+              "adj": 58,
+              "count": 6
+            },
+            "test_transitions": 315
+          }
+        },
+        "moveset": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.0592,
+            "accuracy_over_covered": 0.0636,
+            "correct": 60,
+            "coverage": 0.931,
+            "covered": 944,
+            "failure_split": {
+              "guard_fixable": 884,
+              "separable_by_census": 0,
+              "unpredicted": 0
+            },
+            "rule_survival_rate": 0.1667,
+            "rules_fired": 12,
+            "rules_never_fired": 2,
+            "rules_survived": 2,
+            "separating_guard_family": {
+              "adj": 884
+            },
+            "test_transitions": 1014
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.0222,
+            "correct": 7,
+            "coverage": 0.0317,
+            "covered": 10
+          },
+          "rule_tiers": {
+            "majority": 13,
+            "tier0": 1
+          },
+          "rules_mined_l1": 14,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 20,
+              "key": "('A', 1)",
+              "majority_share": 0.1117,
+              "transitions": 179
+            },
+            {
+              "distinct_effects": 10,
+              "key": "('A', 2)",
+              "majority_share": 0.325,
+              "transitions": 40
+            },
+            {
+              "distinct_effects": 11,
+              "key": "('A', 3)",
+              "majority_share": 0.4138,
+              "transitions": 58
+            },
+            {
+              "distinct_effects": 18,
+              "key": "('A', 4)",
+              "majority_share": 0.1544,
+              "transitions": 149
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 0)",
+              "majority_share": 0.75,
+              "transitions": 4
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 11)",
+              "majority_share": 0.5,
+              "transitions": 24
+            },
+            {
+              "distinct_effects": 3,
+              "key": "('A6', 13)",
+              "majority_share": 0.5455,
+              "transitions": 11
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 14)",
+              "majority_share": 0.6667,
+              "transitions": 9
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 2)",
+              "majority_share": 0.625,
+              "transitions": 24
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 4)",
+              "majority_share": 0.5333,
+              "transitions": 15
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 5)",
+              "majority_share": 0.7,
+              "transitions": 10
+            },
+            {
+              "distinct_effects": 6,
+              "key": "('A6', 8)",
+              "majority_share": 0.4259,
+              "transitions": 54
+            },
+            {
+              "distinct_effects": 5,
+              "key": "('A6', 9)",
+              "majority_share": 0.5079,
+              "transitions": 63
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.2222,
+            "accuracy_over_covered": 0.2222,
+            "correct": 70,
+            "coverage": 1.0,
+            "covered": 315,
+            "failure_split": {
+              "guard_fixable": 56,
+              "separable_by_census": 0,
+              "unpredicted": 189
+            },
+            "rule_survival_rate": 0.0769,
+            "rules_fired": 13,
+            "rules_never_fired": 1,
+            "rules_survived": 1,
+            "separating_guard_family": {
+              "adj": 56
+            },
+            "test_transitions": 315
+          }
+        }
+      },
+      "distinct_effects": {
+        "l1": 35,
+        "l2": 39
+      },
+      "game": "dc22",
+      "l1_transitions": 641,
+      "l2_transitions": 1014,
+      "split_half_sizes": [
+        326,
+        315
+      ]
+    },
+    {
+      "by_effect_mode": {
+        "changed": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.8673,
+            "accuracy_over_covered": 1.0,
+            "correct": 98,
+            "coverage": 0.8673,
+            "covered": 98,
+            "failure_split": {
+              "guard_fixable": 0,
+              "separable_by_census": 0,
+              "unpredicted": 0
+            },
+            "rule_survival_rate": 1.0,
+            "rules_fired": 9,
+            "rules_never_fired": 3,
+            "rules_survived": 9,
+            "separating_guard_family": {},
+            "test_transitions": 113
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.0673,
+            "correct": 23,
+            "coverage": 0.0673,
+            "covered": 23
+          },
+          "rule_tiers": {
+            "majority": 3,
+            "tier0": 9
+          },
+          "rules_mined_l1": 12,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 2,
+              "key": "('A', 0)",
+              "majority_share": 0.9333,
+              "transitions": 15
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 8)",
+              "majority_share": 0.6429,
+              "transitions": 70
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 9)",
+              "majority_share": 0.8777,
+              "transitions": 139
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.9035,
+            "accuracy_over_covered": 0.9035,
+            "correct": 309,
+            "coverage": 1.0,
+            "covered": 342,
+            "failure_split": {
+              "guard_fixable": 0,
+              "separable_by_census": 0,
+              "unpredicted": 33
+            },
+            "rule_survival_rate": 0.75,
+            "rules_fired": 12,
+            "rules_never_fired": 0,
+            "rules_survived": 9,
+            "separating_guard_family": {},
+            "test_transitions": 342
+          }
+        },
+        "full": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.177,
+            "accuracy_over_covered": 0.2247,
+            "correct": 20,
+            "coverage": 0.7876,
+            "covered": 89,
+            "failure_split": {
+              "guard_fixable": 0,
+              "separable_by_census": 69,
+              "unpredicted": 0
+            },
+            "rule_survival_rate": 0.8333,
+            "rules_fired": 6,
+            "rules_never_fired": 9,
+            "rules_survived": 5,
+            "separating_guard_family": {
+              "count": 69
+            },
+            "test_transitions": 113
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.0673,
+            "correct": 23,
+            "coverage": 0.0673,
+            "covered": 23
+          },
+          "rule_tiers": {
+            "majority": 4,
+            "tier0": 5,
+            "tier1": 6
+          },
+          "rules_mined_l1": 15,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 7,
+              "key": "('A', 0)",
+              "majority_share": 0.3333,
+              "transitions": 15
+            },
+            {
+              "distinct_effects": 3,
+              "key": "('A', 4)",
+              "majority_share": 0.8438,
+              "transitions": 32
+            },
+            {
+              "distinct_effects": 3,
+              "key": "('A6', 8)",
+              "majority_share": 0.6429,
+              "transitions": 70
+            },
+            {
+              "distinct_effects": 4,
+              "key": "('A6', 9)",
+              "majority_share": 0.7698,
+              "transitions": 139
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.845,
+            "accuracy_over_covered": 0.8525,
+            "correct": 289,
+            "coverage": 0.9912,
+            "covered": 339,
+            "failure_split": {
+              "guard_fixable": 16,
+              "separable_by_census": 0,
+              "unpredicted": 34
+            },
+            "rule_survival_rate": 0.6875,
+            "rules_fired": 16,
+            "rules_never_fired": 1,
+            "rules_survived": 11,
+            "separating_guard_family": {
+              "adj": 16
+            },
+            "test_transitions": 342
+          }
+        },
+        "moveset": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.177,
+            "accuracy_over_covered": 0.2247,
+            "correct": 20,
+            "coverage": 0.7876,
+            "covered": 89,
+            "failure_split": {
+              "guard_fixable": 0,
+              "separable_by_census": 69,
+              "unpredicted": 0
+            },
+            "rule_survival_rate": 0.8333,
+            "rules_fired": 6,
+            "rules_never_fired": 9,
+            "rules_survived": 5,
+            "separating_guard_family": {
+              "count": 69
+            },
+            "test_transitions": 113
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.0673,
+            "correct": 23,
+            "coverage": 0.0673,
+            "covered": 23
+          },
+          "rule_tiers": {
+            "majority": 4,
+            "tier0": 5,
+            "tier1": 6
+          },
+          "rules_mined_l1": 15,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 4,
+              "key": "('A', 0)",
+              "majority_share": 0.7333,
+              "transitions": 15
+            },
+            {
+              "distinct_effects": 3,
+              "key": "('A', 4)",
+              "majority_share": 0.8438,
+              "transitions": 32
+            },
+            {
+              "distinct_effects": 3,
+              "key": "('A6', 8)",
+              "majority_share": 0.6429,
+              "transitions": 70
+            },
+            {
+              "distinct_effects": 4,
+              "key": "('A6', 9)",
+              "majority_share": 0.7698,
+              "transitions": 139
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.845,
+            "accuracy_over_covered": 0.8525,
+            "correct": 289,
+            "coverage": 0.9912,
+            "covered": 339,
+            "failure_split": {
+              "guard_fixable": 16,
+              "separable_by_census": 0,
+              "unpredicted": 34
+            },
+            "rule_survival_rate": 0.6875,
+            "rules_fired": 16,
+            "rules_never_fired": 1,
+            "rules_survived": 11,
+            "separating_guard_family": {
+              "adj": 16
+            },
+            "test_transitions": 342
+          }
+        }
+      },
+      "distinct_effects": {
+        "l1": 15,
+        "l2": 8
+      },
+      "game": "ft09",
+      "l1_transitions": 464,
+      "l2_transitions": 113,
+      "split_half_sizes": [
+        122,
+        342
+      ]
+    },
+    {
+      "by_effect_mode": {
+        "changed": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.9791,
+            "accuracy_over_covered": 0.9791,
+            "correct": 1921,
+            "coverage": 1.0,
+            "covered": 1962,
+            "failure_split": {
+              "guard_fixable": 0,
+              "separable_by_census": 0,
+              "unpredicted": 41
+            },
+            "rule_survival_rate": 0.8,
+            "rules_fired": 5,
+            "rules_never_fired": 0,
+            "rules_survived": 4,
+            "separating_guard_family": {},
+            "test_transitions": 1962
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.1079,
+            "correct": 34,
+            "coverage": 0.1079,
+            "covered": 34
+          },
+          "rule_tiers": {
+            "majority": 1,
+            "tier0": 4
+          },
+          "rules_mined_l1": 5,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 2,
+              "key": "('A', 1)",
+              "majority_share": 0.8894,
+              "transitions": 199
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.9492,
+            "accuracy_over_covered": 0.9492,
+            "correct": 299,
+            "coverage": 1.0,
+            "covered": 315,
+            "failure_split": {
+              "guard_fixable": 0,
+              "separable_by_census": 0,
+              "unpredicted": 16
+            },
+            "rule_survival_rate": 0.75,
+            "rules_fired": 4,
+            "rules_never_fired": 1,
+            "rules_survived": 3,
+            "separating_guard_family": {},
+            "test_transitions": 315
+          }
+        },
+        "full": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.4506,
+            "accuracy_over_covered": 0.4506,
+            "correct": 884,
+            "coverage": 1.0,
+            "covered": 1962,
+            "failure_split": {
+              "guard_fixable": 127,
+              "separable_by_census": 745,
+              "unpredicted": 206
+            },
+            "rule_survival_rate": 0.0,
+            "rules_fired": 5,
+            "rules_never_fired": 0,
+            "rules_survived": 0,
+            "separating_guard_family": {
+              "adj": 127,
+              "count": 745
+            },
+            "test_transitions": 1962
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.1079,
+            "correct": 34,
+            "coverage": 0.1079,
+            "covered": 34
+          },
+          "rule_tiers": {
+            "majority": 4,
+            "tier0": 1
+          },
+          "rules_mined_l1": 5,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 12,
+              "key": "('A', 1)",
+              "majority_share": 0.3317,
+              "transitions": 199
+            },
+            {
+              "distinct_effects": 8,
+              "key": "('A', 2)",
+              "majority_share": 0.2576,
+              "transitions": 66
+            },
+            {
+              "distinct_effects": 8,
+              "key": "('A', 3)",
+              "majority_share": 0.6364,
+              "transitions": 110
+            },
+            {
+              "distinct_effects": 10,
+              "key": "('A', 4)",
+              "majority_share": 0.6058,
+              "transitions": 104
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.4349,
+            "accuracy_over_covered": 0.4349,
+            "correct": 137,
+            "coverage": 1.0,
+            "covered": 315,
+            "failure_split": {
+              "guard_fixable": 43,
+              "separable_by_census": 0,
+              "unpredicted": 135
+            },
+            "rule_survival_rate": 0.0,
+            "rules_fired": 4,
+            "rules_never_fired": 1,
+            "rules_survived": 0,
+            "separating_guard_family": {
+              "adj": 43
+            },
+            "test_transitions": 315
+          }
+        },
+        "moveset": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.7273,
+            "accuracy_over_covered": 0.7273,
+            "correct": 1427,
+            "coverage": 1.0,
+            "covered": 1962,
+            "failure_split": {
+              "guard_fixable": 77,
+              "separable_by_census": 337,
+              "unpredicted": 121
+            },
+            "rule_survival_rate": 0.0,
+            "rules_fired": 5,
+            "rules_never_fired": 0,
+            "rules_survived": 0,
+            "separating_guard_family": {
+              "adj": 77,
+              "count": 337
+            },
+            "test_transitions": 1962
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.1079,
+            "correct": 34,
+            "coverage": 0.1079,
+            "covered": 34
+          },
+          "rule_tiers": {
+            "majority": 4,
+            "tier0": 1
+          },
+          "rules_mined_l1": 5,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 11,
+              "key": "('A', 1)",
+              "majority_share": 0.4573,
+              "transitions": 199
+            },
+            {
+              "distinct_effects": 7,
+              "key": "('A', 2)",
+              "majority_share": 0.4394,
+              "transitions": 66
+            },
+            {
+              "distinct_effects": 7,
+              "key": "('A', 3)",
+              "majority_share": 0.7455,
+              "transitions": 110
+            },
+            {
+              "distinct_effects": 9,
+              "key": "('A', 4)",
+              "majority_share": 0.625,
+              "transitions": 104
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.581,
+            "accuracy_over_covered": 0.581,
+            "correct": 183,
+            "coverage": 1.0,
+            "covered": 315,
+            "failure_split": {
+              "guard_fixable": 43,
+              "separable_by_census": 0,
+              "unpredicted": 89
+            },
+            "rule_survival_rate": 0.0,
+            "rules_fired": 4,
+            "rules_never_fired": 1,
+            "rules_survived": 0,
+            "separating_guard_family": {
+              "adj": 43
+            },
+            "test_transitions": 315
+          }
+        }
+      },
+      "distinct_effects": {
+        "l1": 17,
+        "l2": 45
+      },
+      "game": "ls20",
+      "l1_transitions": 480,
+      "l2_transitions": 1962,
+      "split_half_sizes": [
+        165,
+        315
+      ]
+    },
+    {
+      "by_effect_mode": {
+        "changed": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.9347,
+            "accuracy_over_covered": 0.9396,
+            "correct": 1617,
+            "coverage": 0.9948,
+            "covered": 1721,
+            "failure_split": {
+              "guard_fixable": 0,
+              "separable_by_census": 2,
+              "unpredicted": 102
+            },
+            "rule_survival_rate": 0.0,
+            "rules_fired": 7,
+            "rules_never_fired": 0,
+            "rules_survived": 0,
+            "separating_guard_family": {
+              "count": 2
+            },
+            "test_transitions": 1730
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.1429,
+            "correct": 18,
+            "coverage": 0.1508,
+            "covered": 19
+          },
+          "rule_tiers": {
+            "majority": 6,
+            "tier0": 1
+          },
+          "rules_mined_l1": 7,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 2,
+              "key": "('A', 1)",
+              "majority_share": 0.9762,
+              "transitions": 126
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A', 2)",
+              "majority_share": 0.9592,
+              "transitions": 49
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A', 3)",
+              "majority_share": 0.8333,
+              "transitions": 60
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A', 4)",
+              "majority_share": 0.9362,
+              "transitions": 94
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A', 5)",
+              "majority_share": 0.625,
+              "transitions": 8
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 10)",
+              "majority_share": 0.75,
+              "transitions": 4
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.9127,
+            "accuracy_over_covered": 0.9127,
+            "correct": 115,
+            "coverage": 1.0,
+            "covered": 126,
+            "failure_split": {
+              "guard_fixable": 0,
+              "separable_by_census": 0,
+              "unpredicted": 11
+            },
+            "rule_survival_rate": 0.5,
+            "rules_fired": 6,
+            "rules_never_fired": 1,
+            "rules_survived": 3,
+            "separating_guard_family": {},
+            "test_transitions": 126
+          }
+        },
+        "full": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.3514,
+            "accuracy_over_covered": 0.3533,
+            "correct": 608,
+            "coverage": 0.9948,
+            "covered": 1721,
+            "failure_split": {
+              "guard_fixable": 0,
+              "separable_by_census": 87,
+              "unpredicted": 1026
+            },
+            "rule_survival_rate": 0.0,
+            "rules_fired": 7,
+            "rules_never_fired": 0,
+            "rules_survived": 0,
+            "separating_guard_family": {
+              "count": 87
+            },
+            "test_transitions": 1730
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.0794,
+            "correct": 10,
+            "coverage": 0.1508,
+            "covered": 19
+          },
+          "rule_tiers": {
+            "majority": 6,
+            "tier0": 1
+          },
+          "rules_mined_l1": 7,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 8,
+              "key": "('A', 1)",
+              "majority_share": 0.3016,
+              "transitions": 126
+            },
+            {
+              "distinct_effects": 9,
+              "key": "('A', 2)",
+              "majority_share": 0.2245,
+              "transitions": 49
+            },
+            {
+              "distinct_effects": 10,
+              "key": "('A', 3)",
+              "majority_share": 0.3333,
+              "transitions": 60
+            },
+            {
+              "distinct_effects": 11,
+              "key": "('A', 4)",
+              "majority_share": 0.234,
+              "transitions": 94
+            },
+            {
+              "distinct_effects": 3,
+              "key": "('A', 5)",
+              "majority_share": 0.625,
+              "transitions": 8
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 10)",
+              "majority_share": 0.75,
+              "transitions": 4
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.2381,
+            "accuracy_over_covered": 0.2381,
+            "correct": 30,
+            "coverage": 1.0,
+            "covered": 126,
+            "failure_split": {
+              "guard_fixable": 49,
+              "separable_by_census": 0,
+              "unpredicted": 47
+            },
+            "rule_survival_rate": 0.1667,
+            "rules_fired": 6,
+            "rules_never_fired": 1,
+            "rules_survived": 1,
+            "separating_guard_family": {
+              "adj": 49
+            },
+            "test_transitions": 126
+          }
+        },
+        "moveset": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.5283,
+            "accuracy_over_covered": 0.5311,
+            "correct": 914,
+            "coverage": 0.9948,
+            "covered": 1721,
+            "failure_split": {
+              "guard_fixable": 0,
+              "separable_by_census": 62,
+              "unpredicted": 745
+            },
+            "rule_survival_rate": 0.0,
+            "rules_fired": 7,
+            "rules_never_fired": 0,
+            "rules_survived": 0,
+            "separating_guard_family": {
+              "count": 62
+            },
+            "test_transitions": 1730
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.0794,
+            "correct": 10,
+            "coverage": 0.1508,
+            "covered": 19
+          },
+          "rule_tiers": {
+            "majority": 6,
+            "tier0": 1
+          },
+          "rules_mined_l1": 7,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 6,
+              "key": "('A', 1)",
+              "majority_share": 0.5238,
+              "transitions": 126
+            },
+            {
+              "distinct_effects": 7,
+              "key": "('A', 2)",
+              "majority_share": 0.4286,
+              "transitions": 49
+            },
+            {
+              "distinct_effects": 7,
+              "key": "('A', 3)",
+              "majority_share": 0.4167,
+              "transitions": 60
+            },
+            {
+              "distinct_effects": 7,
+              "key": "('A', 4)",
+              "majority_share": 0.4787,
+              "transitions": 94
+            },
+            {
+              "distinct_effects": 3,
+              "key": "('A', 5)",
+              "majority_share": 0.625,
+              "transitions": 8
+            },
+            {
+              "distinct_effects": 2,
+              "key": "('A6', 10)",
+              "majority_share": 0.75,
+              "transitions": 4
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.4841,
+            "accuracy_over_covered": 0.4841,
+            "correct": 61,
+            "coverage": 1.0,
+            "covered": 126,
+            "failure_split": {
+              "guard_fixable": 18,
+              "separable_by_census": 2,
+              "unpredicted": 45
+            },
+            "rule_survival_rate": 0.1667,
+            "rules_fired": 6,
+            "rules_never_fired": 1,
+            "rules_survived": 1,
+            "separating_guard_family": {
+              "adj": 18,
+              "count": 2
+            },
+            "test_transitions": 126
+          }
+        }
+      },
+      "distinct_effects": {
+        "l1": 14,
+        "l2": 22
+      },
+      "game": "m0r0",
+      "l1_transitions": 343,
+      "l2_transitions": 1730,
+      "split_half_sizes": [
+        217,
+        126
+      ]
+    },
+    {
+      "by_effect_mode": {
+        "changed": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.9288,
+            "accuracy_over_covered": 1.0,
+            "correct": 248,
+            "coverage": 0.9288,
+            "covered": 248,
+            "failure_split": {
+              "guard_fixable": 0,
+              "separable_by_census": 0,
+              "unpredicted": 0
+            },
+            "rule_survival_rate": 1.0,
+            "rules_fired": 4,
+            "rules_never_fired": 0,
+            "rules_survived": 4,
+            "separating_guard_family": {},
+            "test_transitions": 267
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.5743,
+            "correct": 85,
+            "coverage": 0.5743,
+            "covered": 85
+          },
+          "rule_tiers": {
+            "tier0": 4
+          },
+          "rules_mined_l1": 4,
+          "unresolved_l1": [],
+          "within_l1": {
+            "accuracy_over_all": 1.0,
+            "accuracy_over_covered": 1.0,
+            "correct": 148,
+            "coverage": 1.0,
+            "covered": 148,
+            "failure_split": {
+              "guard_fixable": 0,
+              "separable_by_census": 0,
+              "unpredicted": 0
+            },
+            "rule_survival_rate": 1.0,
+            "rules_fired": 4,
+            "rules_never_fired": 0,
+            "rules_survived": 4,
+            "separating_guard_family": {},
+            "test_transitions": 148
+          }
+        },
+        "full": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.588,
+            "accuracy_over_covered": 0.6331,
+            "correct": 157,
+            "coverage": 0.9288,
+            "covered": 248,
+            "failure_split": {
+              "guard_fixable": 91,
+              "separable_by_census": 0,
+              "unpredicted": 0
+            },
+            "rule_survival_rate": 0.2,
+            "rules_fired": 5,
+            "rules_never_fired": 1,
+            "rules_survived": 1,
+            "separating_guard_family": {
+              "adj": 91
+            },
+            "test_transitions": 267
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.5743,
+            "correct": 85,
+            "coverage": 0.5743,
+            "covered": 85
+          },
+          "rule_tiers": {
+            "majority": 3,
+            "tier1": 3
+          },
+          "rules_mined_l1": 6,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 3,
+              "key": "('A', 1)",
+              "majority_share": 0.8529,
+              "transitions": 34
+            },
+            {
+              "distinct_effects": 3,
+              "key": "('A', 2)",
+              "majority_share": 0.81,
+              "transitions": 100
+            },
+            {
+              "distinct_effects": 3,
+              "key": "('A', 4)",
+              "majority_share": 0.8431,
+              "transitions": 102
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.8716,
+            "accuracy_over_covered": 0.8716,
+            "correct": 129,
+            "coverage": 1.0,
+            "covered": 148,
+            "failure_split": {
+              "guard_fixable": 12,
+              "separable_by_census": 0,
+              "unpredicted": 7
+            },
+            "rule_survival_rate": 0.2,
+            "rules_fired": 5,
+            "rules_never_fired": 0,
+            "rules_survived": 1,
+            "separating_guard_family": {
+              "adj": 12
+            },
+            "test_transitions": 148
+          }
+        },
+        "moveset": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.588,
+            "accuracy_over_covered": 0.6331,
+            "correct": 157,
+            "coverage": 0.9288,
+            "covered": 248,
+            "failure_split": {
+              "guard_fixable": 91,
+              "separable_by_census": 0,
+              "unpredicted": 0
+            },
+            "rule_survival_rate": 0.2,
+            "rules_fired": 5,
+            "rules_never_fired": 1,
+            "rules_survived": 1,
+            "separating_guard_family": {
+              "adj": 91
+            },
+            "test_transitions": 267
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.5743,
+            "correct": 85,
+            "coverage": 0.5743,
+            "covered": 85
+          },
+          "rule_tiers": {
+            "majority": 3,
+            "tier1": 3
+          },
+          "rules_mined_l1": 6,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 3,
+              "key": "('A', 1)",
+              "majority_share": 0.8529,
+              "transitions": 34
+            },
+            {
+              "distinct_effects": 3,
+              "key": "('A', 2)",
+              "majority_share": 0.81,
+              "transitions": 100
+            },
+            {
+              "distinct_effects": 3,
+              "key": "('A', 4)",
+              "majority_share": 0.8431,
+              "transitions": 102
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.8716,
+            "accuracy_over_covered": 0.8716,
+            "correct": 129,
+            "coverage": 1.0,
+            "covered": 148,
+            "failure_split": {
+              "guard_fixable": 12,
+              "separable_by_census": 0,
+              "unpredicted": 7
+            },
+            "rule_survival_rate": 0.2,
+            "rules_fired": 5,
+            "rules_never_fired": 0,
+            "rules_survived": 1,
+            "separating_guard_family": {
+              "adj": 12
+            },
+            "test_transitions": 148
+          }
+        }
+      },
+      "distinct_effects": {
+        "l1": 5,
+        "l2": 8
+      },
+      "game": "tu93",
+      "l1_transitions": 270,
+      "l2_transitions": 267,
+      "split_half_sizes": [
+        122,
+        148
+      ]
+    },
+    {
+      "by_effect_mode": {
+        "changed": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.9903,
+            "accuracy_over_covered": 1.0,
+            "correct": 205,
+            "coverage": 0.9903,
+            "covered": 205,
+            "failure_split": {
+              "guard_fixable": 0,
+              "separable_by_census": 0,
+              "unpredicted": 0
+            },
+            "rule_survival_rate": 1.0,
+            "rules_fired": 5,
+            "rules_never_fired": 1,
+            "rules_survived": 5,
+            "separating_guard_family": {},
+            "test_transitions": 207
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.0517,
+            "correct": 3,
+            "coverage": 0.0517,
+            "covered": 3
+          },
+          "rule_tiers": {
+            "tier0": 6
+          },
+          "rules_mined_l1": 6,
+          "unresolved_l1": [],
+          "within_l1": {
+            "accuracy_over_all": 1.0,
+            "accuracy_over_covered": 1.0,
+            "correct": 58,
+            "coverage": 1.0,
+            "covered": 58,
+            "failure_split": {
+              "guard_fixable": 0,
+              "separable_by_census": 0,
+              "unpredicted": 0
+            },
+            "rule_survival_rate": 1.0,
+            "rules_fired": 6,
+            "rules_never_fired": 0,
+            "rules_survived": 6,
+            "separating_guard_family": {},
+            "test_transitions": 58
+          }
+        },
+        "full": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.0966,
+            "accuracy_over_covered": 0.0976,
+            "correct": 20,
+            "coverage": 0.9903,
+            "covered": 205,
+            "failure_split": {
+              "guard_fixable": 8,
+              "separable_by_census": 177,
+              "unpredicted": 0
+            },
+            "rule_survival_rate": 0.8333,
+            "rules_fired": 6,
+            "rules_never_fired": 4,
+            "rules_survived": 5,
+            "separating_guard_family": {
+              "adj": 8,
+              "count": 177
+            },
+            "test_transitions": 207
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.0517,
+            "correct": 3,
+            "coverage": 0.0517,
+            "covered": 3
+          },
+          "rule_tiers": {
+            "majority": 1,
+            "tier0": 1,
+            "tier1": 8
+          },
+          "rules_mined_l1": 10,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 5,
+              "key": "('A6', 9)",
+              "majority_share": 0.875,
+              "transitions": 64
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.8793,
+            "accuracy_over_covered": 0.8793,
+            "correct": 51,
+            "coverage": 1.0,
+            "covered": 58,
+            "failure_split": {
+              "guard_fixable": 3,
+              "separable_by_census": 3,
+              "unpredicted": 1
+            },
+            "rule_survival_rate": 0.75,
+            "rules_fired": 8,
+            "rules_never_fired": 1,
+            "rules_survived": 6,
+            "separating_guard_family": {
+              "adj": 3,
+              "count": 3
+            },
+            "test_transitions": 58
+          }
+        },
+        "moveset": {
+          "l1_to_l2": {
+            "accuracy_over_all": 0.0966,
+            "accuracy_over_covered": 0.0976,
+            "correct": 20,
+            "coverage": 0.9903,
+            "covered": 205,
+            "failure_split": {
+              "guard_fixable": 8,
+              "separable_by_census": 177,
+              "unpredicted": 0
+            },
+            "rule_survival_rate": 0.8333,
+            "rules_fired": 6,
+            "rules_never_fired": 4,
+            "rules_survived": 5,
+            "separating_guard_family": {
+              "adj": 8,
+              "count": 177
+            },
+            "test_transitions": 207
+          },
+          "memorizer_l1_to_l2": {
+            "accuracy_over_all": 0.0,
+            "correct": 0,
+            "coverage": 0.0,
+            "covered": 0
+          },
+          "memorizer_within_l1": {
+            "accuracy_over_all": 0.0517,
+            "correct": 3,
+            "coverage": 0.0517,
+            "covered": 3
+          },
+          "rule_tiers": {
+            "majority": 1,
+            "tier0": 1,
+            "tier1": 8
+          },
+          "rules_mined_l1": 10,
+          "unresolved_l1": [
+            {
+              "distinct_effects": 5,
+              "key": "('A6', 9)",
+              "majority_share": 0.875,
+              "transitions": 64
+            }
+          ],
+          "within_l1": {
+            "accuracy_over_all": 0.8793,
+            "accuracy_over_covered": 0.8793,
+            "correct": 51,
+            "coverage": 1.0,
+            "covered": 58,
+            "failure_split": {
+              "guard_fixable": 3,
+              "separable_by_census": 3,
+              "unpredicted": 1
+            },
+            "rule_survival_rate": 0.75,
+            "rules_fired": 8,
+            "rules_never_fired": 1,
+            "rules_survived": 6,
+            "separating_guard_family": {
+              "adj": 3,
+              "count": 3
+            },
+            "test_transitions": 58
+          }
+        }
+      },
+      "distinct_effects": {
+        "l1": 6,
+        "l2": 11
+      },
+      "game": "vc33",
+      "l1_transitions": 137,
+      "l2_transitions": 207,
+      "split_half_sizes": [
+        79,
+        58
+      ]
+    }
+  ],
+  "row": "M"
+}

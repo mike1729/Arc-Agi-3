@@ -54,5 +54,173 @@ register:
     effective_spec_sections: []   # no specification is in force on this branch
     approved_at: 2026-08-04
 
-# No gate blocks are open. The first block on this branch pre-registers the offline L1 -> L2
-# rule-survival measurement, and must be written and frozen BEFORE that measurement runs.
+# ======================================================================================
+# RS — the offline L1 -> L2 rule-survival measurement
+# ======================================================================================
+#
+# WHAT IT PRICES. The new direction spends its evidence budget at level 1 and expects what it
+# learns there to be worth something at level 2 and beyond. The standing objection is that it
+# is not: that an ARC-AGI-3 level is a fresh mechanical world wearing the previous level's
+# skin, so a rule induced at L1 is out-of-distribution at L2 by construction. That objection
+# has never been measured. It is measurable today, offline, with zero model calls, from the
+# human replay corpus plus the frozen game sources.
+#
+# WHAT IT IS NOT. It does not measure whether any model can FIND the rules, only whether rules
+# that are true at L1 remain true at L2. A negative result kills the L1 evidence budget; a
+# positive result does not establish that anything can learn them.
+
+rs:
+  status: frozen
+  frozen_at: 2026-08-04
+  kind: measurement            # report-only; feeds RS-2026-08-04, gates nothing by itself
+  model_calls: 0
+
+  # ---- corpus and scope --------------------------------------------------------------
+  corpus:
+    source: data/human_replays/kaggle_mirror/public_games-dataset
+    provenance: >
+      ARC-AGI-3 Public Demo human testing release (ARC Prize, 2026-04-14). The Kaggle mirror
+      was verified md5-identical to the official Google Drive zip file-for-file on 2026-07-28,
+      340/340. The blog's 342 is NOT a usable denominator: two g50t sessions, one of them a
+      solve, are absent from the archive. Every denominator here counts recordings that exist.
+    recordings: 340
+  games: 25                    # all public games; every one carries usable L1 and L2 material
+  levels: [1, 2]               # L1 = transitions taken at levels_completed == 0
+
+  # Measured by census before freeze, over all 25 games (2026-08-04):
+  measured_volume:
+    l1_transitions: 14363
+    l2_transitions: 25834
+    sessions_reaching_l2: 297  # of 340
+
+  # ---- transition convention ---------------------------------------------------------
+  # Inherited unchanged from the audited GI-2/ES estate, which is why it is stated rather
+  # than chosen here: pre = previous settled frame (next_level_initial immediately after a
+  # completion, or the level's opening frame); post = solved_terminal for a completing
+  # action and the settled last frame otherwise; a transition's level index is its
+  # PRE-action levels_completed + 1. Frame roles come from gi2_traces.frame_roles.
+  # A level reset (levels_completed decreasing) re-seeds `pre` and contributes no transition.
+  transition_convention: gi2_traces.frame_roles + es_questions settled-frame convention
+
+  # ---- engine truth ------------------------------------------------------------------
+  # Labels are read from the recording, and the recording is verified against the executing
+  # game source rather than trusted. Fidelity is byte-equality of every returned frame under
+  # ReplayDriver over arcengine. GI-2 verified this on 6 games / 18 sessions; this block
+  # extends it to all 25 and reports per-game fidelity as a result, not as a precondition.
+  # Games failing byte-fidelity are reported and EXCLUDED from both rows, never silently kept.
+  engine_truth: agent/harness/rs_replay.py::ReplayDriver
+
+  # ---- row M: mechanics rules --------------------------------------------------------
+  # Finite, per (game, action id). Objects are 4-connected same-colour components over the
+  # state-local background (modal colour, ties to the smaller value); lineage within a
+  # transition is forward-only, matching by colour + cell-set intersection. Both conventions
+  # are the frozen ES/GI-2 ones.
+  row_m:
+    rule_family:
+      - noop                        # every a-transition leaves the settled grid unchanged
+      - always_changes              # every a-transition changes it
+      - rigid_translation           # every changing a-transition is one rigid translation by
+                                    #   (dx,dy); the vector set is drawn from L1 observations
+      - single_object_moves         # every changing a-transition moves exactly one component
+      - histogram_invariant         # colour histogram preserved
+      - cellcount_invariant         # non-background cell count preserved
+      - no_appearance               # no component without an ancestor
+      - no_disappearance            # no component without a descendant
+      - bounded_change              # changed cells <= k, k = max observed at L1
+      - never_completes             # a never completes a level
+    mined_when: holds on every L1 transition with that action AND L1 support >= 1
+    # `bounded_change` and `rigid_translation` are parameterized from L1 only. No parameter
+    # is ever fitted on L2 — that would be scoring a rule against its own training data.
+
+  # ---- row C: completion-condition rules ---------------------------------------------
+  # The frozen ES visual candidate grammar, resurrected unmodified from the archive branch.
+  # Visual universe only: source-semantic terms never enter. Three-valued (true/false/unknown);
+  # `unknown` neither eliminates nor confirms.
+  row_c:
+    grammar: es_candidates.py @ archive/screening-line-2026-08-04
+    grammar_spec_hash: 49c0cc3e4abc7418        # asserted at run time; a mismatch aborts
+    expression_depth_bound: 6
+    max_clauses: 2
+    tractability_limit_candidates: 512
+    universe_enumerated_from: the level's opening state
+    mined_when: consistent with every labelled L1 transition (complete / non_complete)
+    # KNOWN CONFOUND, measured not assumed. The ES screen closed coverage-blocked with six of
+    # six games unproven, and the pre-freeze spike reproduces it: vc33 and ft09 retain ZERO
+    # candidates against their own L1 evidence, tu93 retains 12 of 150. Where the L1 survivor
+    # set is empty the grammar cannot express that game's completion condition at all, the
+    # L1 -> L2 rate is 0/0, and the cell is reported UNDEFINED. It is never reported as 0%,
+    # and never averaged into a survival rate. Row C's own coverage is a result of this
+    # measurement: how many of 25 games the grammar can express at all.
+
+  # ---- outcome categories (both rows) ------------------------------------------------
+  # Three, not two. Collapsing `vacuous` into `survived` is the failure mode this measurement
+  # exists to avoid: a rule that cannot be evaluated at L2 has not transferred, it is silent.
+  outcomes:
+    falsified:  some L2 transition where the rule makes a definite prediction that is wrong
+    survived:   never contradicted at L2 AND at least one definite correct L2 prediction
+    vacuous:    never definite at any L2 transition (action unseen at L2, or terms unbound)
+
+  # ---- the control -------------------------------------------------------------------
+  # Load-bearing. Rules die from estimation noise as well as from level change, and a raw
+  # L1 -> L2 survival rate cannot tell the two apart. Sessions are split by GUID sort order
+  # into halves A and B; rules are mined on L1-A and scored on L1-B by the identical
+  # procedure. WITHIN-L1 survival is the ceiling any L1 -> L2 number must be read against.
+  control:
+    name: split_half_within_l1
+    split: sessions by sha256(guid) parity, fixed before the run
+    estimand: survival(L1-A -> L1-B) - survival(L1 -> L2)
+  # NO THRESHOLD IS PRE-REGISTERED. There is no defensible prior number for "enough rules
+  # survive", and inventing one would corrupt this file. The reported quantity is the pair
+  # (within-L1 survival, L1 -> L2 survival) per game per row, and the gap between them. What
+  # the gap licenses is a decision taken after seeing it, recorded in the register.
+
+  deviations: []
+  errata:
+    - id: RS-E1
+      date: 2026-08-04
+      change: >
+        Row M is re-specified as a predictive forward model, not a set of universally
+        quantified boolean invariants. The block was frozen before `notes/l1-evidence-first.md`
+        was visible; that document specifies this measurement as E0 and asks for held-out-L1
+        accuracy, L2 survival, a pure-memorizer floor, and a repair-vs-invalidate failure
+        split. The invariant family named in row_m.rule_family cannot produce a repair split,
+        so it is replaced by `key [+ one guard] -> effect` mining over object events
+        (agent/harness/rs_e0.py). The estimand, the control, and the three outcome categories
+        are unchanged. The invariant family was never run; no result is withdrawn.
+    - id: RS-E2
+      date: 2026-08-04
+      change: >
+        Scope reduced from 25 games to the six iteration games (dc22, ft09, ls20, m0r0, tu93,
+        vc33). `notes/l1-evidence-first.md` reserves the remaining games — "six iteration
+        games only; one-shot and reserved stay sealed". The operator selected all 25 before
+        that document existed, and the two are in direct conflict. Analysing a sealed game
+        offline still spends it: what is learned informs design, and the game stops being an
+        un-peeked confirmation set whether or not a model ever saw it. The measurement is
+        therefore run on six and the conflict referred to the operator rather than resolved
+        by this file. Extending to 25 is one flag and costs minutes; it is not being withheld
+        on grounds of cost.
+    - id: RS-E3
+      date: 2026-08-04
+      change: >
+        `levels_completed` can increase on a RESET without a level having been solved.
+        m0r0/921c2033 step 197 goes 0 -> 1 on a RESET issued out of GAME_OVER, returning a
+        single frame byte-identical to the level-2 opening frame every other m0r0 session
+        reaches by completing. Treated as level bookkeeping, not a completion: a RESET never
+        completes a level. Without this, row C would receive a `complete` label for a state
+        no player solved, and m0r0's L1 completion count reads 12 instead of 11. Zero-frame
+        responses (the client's reply to actions taken while GAME_OVER) yield no transition
+        and leave the current pre-state undisturbed. One occurrence in the six-game corpus;
+        both handlers are general.
+    - id: RS-E4
+      date: 2026-08-04
+      change: >
+        The failure split gains a third category, `separable_by_census`. As first defined,
+        `guard_fixable` asked only whether some guard feature took an unseen value, which the
+        first run showed to be near-vacuous — 100% guard-fixable on four of six games, and
+        the separating feature was `count:` in essentially every case. Every supporter of a
+        rule shares that rule's effect by construction, so with per-colour counts in the
+        vocabulary almost any unseen state separates. Tightened twice: the separating feature
+        must be CONSTANT across supporters, and only an `adj` guard (a mechanical
+        precondition) counts as a repair. `count`/`present` separators are reported apart as
+        `separable_by_census` — distinguishing but not explanatory. The corrected numbers are
+        materially more pessimistic about repairability and are the ones reported.
