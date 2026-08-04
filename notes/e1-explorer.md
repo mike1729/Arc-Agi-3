@@ -12,6 +12,53 @@
 **Status: design draft 2026-08-04, lean mode. Working numbers are labelled (w).**
 Consumes nothing from Qwen. Produces the evidence stores E2 synthesizes over.
 
+## v2 — the rerun (2026-08-04, after `notes/e1-outcomes.md`)
+
+The run refutes three mechanisms. v2 changes exactly those, keeps the measurement definition,
+and re-runs once as a single arm.
+
+1. **The frontier holds tier 1 only: advertised actions + one representative per
+   (colour, shape) class** — ≤22 classes measured corpus-wide, so ~27 entries/state against
+   v1's ~160. v1's frontier grew ~100 entries per discovered state; testing can never catch up
+   (bp35 ended with 238,337 untested; `closed` was unreachable *by construction*). E0's rules
+   are class-level, so tier 1 is the information-bearing set. Duplicates + lattice become an
+   **on-demand tier 2**: enumerated at a state only when tier 1 is closed there with budget
+   remaining, or when a later M-phase directive asks. `closed` splits: **closed-t1** (every
+   tier-1 candidate at every reachable state tested) is the achievable milestone and the
+   reported one; full closure is not claimed. E1-pre's duplicate/lattice reachability results
+   concern *completion-path* clicks — X-phase's job under a goal hypothesis, not blind
+   coverage's.
+2. **The accidental DFS is adopted deliberately, minus its skew.** Measured, depth wins every
+   axis E1 scores: `nearest` 920 states / both completions / overhead 0.02, `shallowest` 44 /
+   none / 1.72, and lp85 flips completed→saturated on policy alone. v2 keeps advance-first —
+   test where you stand, follow any transition into a *new* state immediately, leave the rest
+   on the frontier — and fixes the one-rule-sampler skew: candidate order at each state starts
+   at index `state-hash mod n` (deterministic rotation), so class coverage spreads across
+   states instead of over-testing the priority-1 candidate everywhere. On local dead-end,
+   route to the nearest tier-1 frontier entry, tie-break **deepest** — v1 said shallowest;
+   the depth finding reverses it.
+3. **`closed-unreachable` requires a conflict-free graph.** g50t/sc25 were declared
+   unreachable in both arms while carrying the corpus's heaviest alias-conflict counts
+   (394, 224) — the routing graph was shredded by hash under-identification, not by walls.
+   v2, parameter-free: frontier unreachable *and* any alias conflicts recorded → drop to
+   **walk mode** (continue-from-current-state novelty-greedy, the same fallback already
+   specified for REPLAY-DET falsification; the graph keeps recording as M-phase evidence).
+   `closed-unreachable` then means unreachable on a graph with no known identity failures.
+4. **Novelty = new state hash OR new `moveset` signature**, adopting the run's substitution as
+   the definition — the `changed` layer is `(bool(effect),)`, ≤2 values per game measured,
+   dead as a signal. Window/threshold stay working numbers; the early-saturation finding is
+   partly about them, and the advance-first stream differs — re-read at bring-up.
+5. **The store is rebuilt from the single v2 arm.** The "no more evidence than replays"
+   reading is an artifact of storing the thin arm (502 median test actions; `nearest` already
+   produced 2,784). Public-game volume is moot — replays exist; the number that matters is
+   what a hidden game gets from one explorer run, and that is what v2's store measures.
+
+Stands without rerunning: the human reference (all 24 L1s completed, median 13–78 actions) ·
+alias concentration on g50t/sc25 · the depth-vs-coverage finding itself · RESET behaving under
+engine control. Line-level, unchanged by v2: **22/24 uncompleted at ~100× human budget is the
+measured size of the gap M-phase exists to close** — E2's goal-candidate question is now the
+gating question of the line.
+
 ## What E0's first row changes in this design
 
 From `logs/e0_row_m_all.json` / `e0_row_c_all.json` (24 public games, human replays; full run
