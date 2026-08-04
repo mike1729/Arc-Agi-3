@@ -8,6 +8,11 @@
 > coverage, is what produces incidental completions. §4's novelty signal is degenerate as
 > written: E0's `changed` layer is `(bool(effect),)` and yields ≤2 values per game, measured.
 > The paragraphs below are the design as drafted; read the result note before building on them.
+>
+> **v2 RERUN same day (spec: "v2 — the rerun" below; result: `notes/e1-outcomes.md` §v2):**
+> 4 of 24 completed (lp85 at 43 actions), `closed-unreachable` eliminated, overhead 0.02,
+> stored volume median 2,920 test actions/game. The v2 store (`logs/e1_store_v2/`) is the one
+> E2 consumes.
 
 **Status: design draft 2026-08-04, lean mode. Working numbers are labelled (w).**
 Consumes nothing from Qwen. Produces the evidence stores E2 synthesizes over.

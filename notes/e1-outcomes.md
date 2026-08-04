@@ -119,3 +119,50 @@ arm, against 137–641 human L1 transitions per game in E0. The explorer produce
 evidence as the human replays already sitting on disk**, and worse evidence in one specific
 respect — humans reach the completion, so their traces contain the positive goal example that
 22 of these 24 runs never saw.
+
+## v2 rerun (2026-08-04, same day — policy per the design note's v2 section)
+
+Code `e1_explorer.py --policy v2` (now the default) · outcomes `logs/e1_outcomes_v2.json` ·
+store `logs/e1_store_v2/` (268 MB, gitignored, single-disk).
+
+| | v1 `nearest` | v1 `shallowest` | **v2** |
+|---|---:|---:|---:|
+| completed | 2 | 0 | **4** |
+| closed-unreachable | 2 | 2 | **0** |
+| saturated | 8 | 10 | 3 |
+| saturated-by-budget | 12 | 12 | 17 |
+| routing overhead, median | 0.02 | 1.72 | **0.02** |
+| test actions, median | 2,784 | 502 | **2,920** |
+| unique states, median | 920 | 44 | **969** |
+
+Completions: **lp85 43 · r11l 135 · lf52 149 · sp80 1106** — twice v1's best arm, and lp85
+lands inside the human 13–78 band. r11l completed **without the lattice** (tier 1 holds no
+lattice points and tier 2 never materialized there): the human completions needed lattice
+clicks, the explorer found a different path — reachability and point-imitation come apart in
+both directions.
+
+What the three v2 mechanisms did:
+
+- **Advance-first + rotation** delivers depth at breadth prices: routing overhead median 0.02
+  (v1's corrected arm paid 1.72), test-action share ≈ 97%, stored volume median 2,920/game —
+  5–20× the human corpus. The v1 volume critique was an artifact of storing the thin arm, as
+  suspected.
+- **Walk mode replaces the false abort.** g50t never even needed it — with conflicted edges
+  quarantined per-edge and targets rotated by failed attempts, clean routing survived 43
+  distinct conflicted edges (654 conflict *events*; the gap is walk()-traversal re-counting,
+  both numbers now reported). sc25 entered walk mode at action 1,979. Both ran to budget with
+  full stores instead of aborting as `closed-unreachable`; that outcome now occurs zero times.
+- **The tier machinery fired exactly once and worked**: ft09 closed tier 1 at action 18 (its
+  initial reach is 9 states), materialized tier 2 (duplicates + lattice) for those states, and
+  then saturated honestly at 1,401. Everywhere else `closed-t1` was never reached — even a
+  ~27/state frontier outruns 3,000 actions when discovery keeps paying.
+
+The structural finding the rerun adds: **state-hash novelty is inexhaustible in roughly half
+the corpus.** 17 of 24 games end the budget with window novelty 0.14–0.98 (re86 and tr87 at
+0.98 discover a new state on essentially every test action — 2,861 and 2,904 states). Only
+ft09/su15/vc33 saturate. Whether those state floods carry rule information or are hash churn
+(counters, animation residue) is exactly what E2's dose curve reads off this store.
+
+Limits: single run per game, same working thresholds as v1 (window 200 / 0.02 / budget
+3,000), completions n=4. The v1 arms were not re-run; their rows are the 2026-08-04 morning
+measurements.

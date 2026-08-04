@@ -35,6 +35,20 @@ OUTCOMES
     saturated            novelty below threshold over the window, frontier still nonempty
     saturated-by-budget  action or wall-clock budget exhausted first
 
+V2 (notes/e1-explorer.md "v2 — the rerun")
+------------------------------------------
+The `v2` policy implements the rerun spec: the frontier holds TIER 1 only (advertised
+actions + one representative per (colour, shape) class, admission order area desc /
+members desc / colour asc / shape lex when a cap ever binds); duplicates + lattice are
+tier 2, materialized per state only after every tier-1 candidate at every discovered
+state is tested (`closed_t1_at` milestone; terminal `closed` needs tier 2 empty too).
+Policy is advance-first — test where you stand, follow transitions into new states,
+candidate order rotated by `state-hash mod n` — with dead-end routing to the nearest
+clean frontier state, tie-break DEEPEST. `closed-unreachable` is declared only on a
+conflict-free graph; with conflicts recorded the explorer drops to WALK MODE instead:
+best-effort routes over the full graph (conflicted edges included), divergences
+re-observed and kept as evidence, termination left to saturation or budget.
+
 Run:
   .venv/bin/python agent/harness/e1_explorer.py --games dc22 --budget 400
   .venv/bin/python agent/harness/e1_explorer.py --all --jobs 8 --out logs/e1_outcomes.json
@@ -78,6 +92,7 @@ STORE = ROOT / "logs/e1_store"
 FORMAT_VERSION = 1
 
 CANDIDATE_CAP = 96  # E1-pre measured; >=96, see notes/e1-pre-recall.md
+TIER2_DUP_CAP = 96  # (w) v2: per-tier cap on class-duplicate clicks
 LATTICE = 8  # (w)
 ACTION_BUDGET = 3000  # (w)
 WALL_BUDGET = 20 * 60  # (w) seconds
@@ -100,6 +115,51 @@ def _act(action: tuple[int, int | None, int | None]) -> ActionInput:
     return ActionInput(id=GameAction.from_id(action_id), data=data)
 
 
+def tier1_nodes(nodes: list[dict], cap: int) -> list[dict]:
+    """One representative per (colour, shape) class — v2's whole click frontier.
+
+    Representative = top-left-most member (matches `cull`). Admission order when the cap
+    binds on classes (never observed in the corpus, kept as the hidden-game determinism
+    guarantee): total class area desc -> member count desc -> colour asc -> shape lex.
+    """
+    classes: dict[tuple, list[dict]] = {}
+    for node in nodes:
+        classes.setdefault((node["colour"], node["shape"]), []).append(node)
+    ranked = sorted(
+        classes.items(),
+        key=lambda item: (
+            -sum(node["size"] for node in item[1]),
+            -len(item[1]),
+            item[0][0],
+            item[0][1],
+        ),
+    )
+    return [
+        min(members, key=lambda node: min(node["cells"]))
+        for _, members in ranked[:cap]
+    ]
+
+
+def tier2_points(
+    nodes: list[dict], tier1: list[dict], height: int, width: int
+) -> list[tuple[int, int]]:
+    """Class duplicates (largest-first, capped) then lattice points, deduped in order."""
+    tier1_ids = {id(node) for node in tier1}
+    duplicates = sorted(
+        (node for node in nodes if id(node) not in tier1_ids),
+        key=lambda node: (-node["size"], min(node["cells"])),
+    )[:TIER2_DUP_CAP]
+    seen = {node["point"] for node in tier1}
+    out: list[tuple[int, int]] = []
+    for point in [node["point"] for node in duplicates] + list(
+        lattice_points(height, width, LATTICE)
+    ):
+        if point not in seen:
+            seen.add(point)
+            out.append(point)
+    return out
+
+
 class Explorer:
     def __init__(
         self, game: str, *, budget: int, wall: float, cap: int, policy: str = "shallowest"
@@ -116,11 +176,19 @@ class Explorer:
         self.discovered: dict[str, int] = {}  # hash -> discovery index
         self.prefix: dict[str, list] = {}  # hash -> shortest action list from origin
         self.frontier: dict[str, list] = {}  # hash -> untested candidate actions
+        self.available: dict[str, tuple] = {}  # hash -> advertised actions at discovery
         self.edges: dict[tuple[str, tuple], str] = {}
         self.conflicted: set[tuple[str, tuple]] = set()
         self.attempts: dict[tuple[str, tuple], int] = {}
         self.suspect: set[str] = set()
         self.deferred: set[tuple[str, tuple]] = set()
+
+        # v2 bookkeeping
+        self.walk_mode_at: int | None = None
+        self.closed_t1_at: int | None = None
+        self.tier2_states: set[str] = set()
+        self.tier2_entries: set[tuple[str, tuple]] = set()
+        self.reset_anomaly_count = 0
 
         self.signatures_moveset: set[tuple] = set()
         self.signatures_changed: set[tuple] = set()
@@ -180,6 +248,43 @@ class Explorer:
             )
         return out
 
+    def _rotate(self, digest: str, items: list[tuple]) -> list[tuple]:
+        """v2: start each state's candidate order at hash mod n — deterministic, spreads
+        which candidate an advance-first walk tests first across states."""
+        if len(items) < 2:
+            return items
+        pivot = int(digest, 16) % len(items)
+        return items[pivot:] + items[:pivot]
+
+    def tier1_candidates(self, digest: str, grid: list, available: tuple) -> list[tuple]:
+        out: list[tuple] = [
+            (action_id, None, None)
+            for action_id in SIMPLE_ACTIONS
+            if not available or action_id in available
+        ]
+        if not available or 6 in available:
+            reps = tier1_nodes(segment(grid), self.cap)
+            out.extend((6, row, col) for row, col in (node["point"] for node in reps))
+        return self._rotate(digest, out)
+
+    def materialize_tier2(self, digest: str) -> int:
+        """Append the state's tier-2 candidates (duplicates + lattice) to its frontier."""
+        self.tier2_states.add(digest)
+        grid = self.states[digest]
+        available = self.available.get(digest, ())
+        if available and 6 not in available:
+            return 0
+        nodes = segment(grid)
+        reps = tier1_nodes(nodes, self.cap)
+        added = [
+            (6, row, col)
+            for row, col in tier2_points(nodes, reps, len(grid), len(grid[0]))
+        ]
+        added = self._rotate(digest, added)
+        self.frontier.setdefault(digest, []).extend(added)
+        self.tier2_entries.update((digest, action) for action in added)
+        return len(added)
+
     # -- graph ----------------------------------------------------------------------
     def observe(self, result: dict[str, Any], prefix: list) -> str | None:
         grid = result["grid"]
@@ -190,7 +295,12 @@ class Explorer:
             self.discovered[digest] = len(self.states)
             self.states[digest] = grid
             self.prefix[digest] = list(prefix)
-            self.frontier[digest] = self.candidates(grid, result["available"])
+            self.available[digest] = tuple(result["available"])
+            self.frontier[digest] = (
+                self.tier1_candidates(digest, grid, result["available"])
+                if self.policy == "v2"
+                else self.candidates(grid, result["available"])
+            )
         elif len(prefix) < len(self.prefix.get(digest, prefix)):
             self.prefix[digest] = list(prefix)
         return digest
@@ -221,6 +331,72 @@ class Explorer:
     def clean_path(self, source: str) -> list[tuple] | None:
         return self._bfs(source, goal=None)
 
+    def _adjacency(self, *, clean: bool) -> dict[str, list[tuple[tuple, str]]]:
+        adjacency: dict[str, list[tuple[tuple, str]]] = {}
+        for (origin, action), target in self.edges.items():
+            if clean and ((origin, action) in self.conflicted or origin in self.suspect):
+                continue
+            adjacency.setdefault(origin, []).append((action, target))
+        return adjacency
+
+    def _bfs_frontier(self, source: str, *, clean: bool) -> list[tuple] | None:
+        """v2 routing: nearest state with untested candidates, tie-break DEEPEST.
+
+        ``clean=False`` is walk mode — the full graph, conflicted edges and suspect
+        nodes included, because a best-effort route that diverges still moves us and
+        still records evidence.
+        """
+        adjacency = self._adjacency(clean=clean)
+        seen = {source}
+        layer: list[tuple[str, list]] = [(source, [])]
+        while layer:
+            matches = [
+                (node, path)
+                for node, path in layer
+                if self.frontier.get(node) and (not clean or node not in self.suspect)
+            ]
+            if matches:
+                return max(
+                    matches,
+                    key=lambda item: (
+                        len(self.prefix.get(item[0], [])),
+                        -self.discovered.get(item[0], 0),
+                    ),
+                )[1]
+            following: list[tuple[str, list]] = []
+            for node, path in layer:
+                for action, target in adjacency.get(node, []):
+                    if target not in seen:
+                        seen.add(target)
+                        following.append((target, path + [action]))
+            layer = following
+        return None
+
+    def _reset_target(self, *, clean: bool) -> str | None:
+        """Cheapest RESET+prefix frontier target; failed attempts rotate targets."""
+        entries: list[tuple[int, int, int, str]] = []
+        for digest, actions in self.frontier.items():
+            if not actions:
+                continue
+            if clean and digest in self.suspect:
+                continue
+            key = (digest, ("route",))
+            attempts = self.attempts.get(key, 0)
+            if clean and attempts >= RETEST_LIMIT:
+                self.deferred.add(key)
+                continue
+            entries.append(
+                (
+                    attempts,
+                    len(self.prefix.get(digest, [])),
+                    self.discovered.get(digest, 0),
+                    digest,
+                )
+            )
+        if not entries:
+            return None
+        return min(entries)[3]
+
     # -- routing --------------------------------------------------------------------
     def walk(self, path: list[tuple], *, expect: str | None = None) -> bool:
         """Execute a route step-validated. False on divergence; the bad edge is conflicted."""
@@ -250,9 +426,11 @@ class Explorer:
         self.routing_actions += 1
         digest = self.observe(result, [])
         if self.origin is not None and digest != self.origin:
-            self.anomalies.append(
-                {"kind": "reset_not_origin", "step": self.actions_used, "got": digest}
-            )
+            self.reset_anomaly_count += 1
+            if self.reset_anomaly_count <= 10:  # keep the first ten; count the rest
+                self.anomalies.append(
+                    {"kind": "reset_not_origin", "step": self.actions_used, "got": digest}
+                )
         self.current = digest
         if target == digest:
             return True
@@ -280,6 +458,17 @@ class Explorer:
                 if actions
             ]
             if not pending:
+                if self.policy == "v2":
+                    missing = [
+                        digest
+                        for digest in self.states
+                        if digest not in self.tier2_states
+                    ]
+                    if missing:
+                        if self.closed_t1_at is None:
+                            self.closed_t1_at = self.actions_used
+                        if sum(self.materialize_tier2(digest) for digest in missing):
+                            continue
                 outcome = "closed"
                 break
 
@@ -288,7 +477,18 @@ class Explorer:
                 break
 
             target = self.select(pending)
+            if self.out_of_budget() or self.completed_at is not None:
+                continue  # the loop top names the outcome
             if target is None:
+                if (
+                    self.policy == "v2"
+                    and self.walk_mode_at is None
+                    and (self.conflicted or self.suspect)
+                ):
+                    # unreachable on a graph with known identity failures is not a
+                    # verdict — push on best-effort instead of declaring one
+                    self.walk_mode_at = self.actions_used
+                    continue
                 outcome = "closed-unreachable"
                 break
             if not self.test(target):
@@ -296,9 +496,37 @@ class Explorer:
         return self.summary(outcome)
 
     def select(self, pending: list[tuple[str, list]]) -> str | None:
+        if self.policy == "v2":
+            return self.select_v2(pending)
         if self.policy == "shallowest":
             return self.select_shallowest(pending)
         return self.select_nearest(pending)
+
+    def select_v2(self, pending: list[tuple[str, list]]) -> str | None:
+        """Advance-first with rotated candidates; dead-end routing nearest/deepest.
+
+        Every pass either returns a testable state, consumes >=1 action, or proves
+        nothing is routable (None) — so the loop always terminates on budget.
+        """
+        while not self.out_of_budget() and self.completed_at is None:
+            if self.current and self.frontier.get(self.current):
+                return self.current  # distance 0 — the adopted DFS degeneracy
+            clean = self.walk_mode_at is None
+            path = (
+                self._bfs_frontier(self.current, clean=clean) if self.current else None
+            )
+            if path:
+                self.walk(path)  # divergence conflicts the edge; re-plan from landing
+                continue
+            target = self._reset_target(clean=clean)
+            if target is None:
+                return None
+            if not self.reset_route(target):
+                key = (target, ("route",))
+                self.attempts[key] = self.attempts.get(key, 0) + 1
+            # continue: either standing on the target, or re-planning from wherever
+            # the divergence left us — both consumed actions
+        return self.current if self.current and self.frontier.get(self.current) else None
 
     def select_shallowest(self, pending: list[tuple[str, list]]) -> str | None:
         """Exhaust the shallowest state with untested candidates, routing back to it.
@@ -421,7 +649,14 @@ class Explorer:
                 "frames": result["frames"],
                 "state": result["state"],
                 "step": self.actions_used,
-                "route_mode": "suspect" if digest in self.suspect else "clean",
+                "route_mode": (
+                    "walk"
+                    if self.walk_mode_at is not None
+                    else "suspect"
+                    if digest in self.suspect
+                    else "clean"
+                ),
+                "tier": 2 if (digest, action) in self.tier2_entries else 1,
                 "prefix": len(self.prefix.get(digest, [])),
             }
         )
@@ -445,8 +680,13 @@ class Explorer:
             "transitions": len(self.transitions),
             "frontier_remaining": remaining,
             "alias_conflicts": len(self.alias_conflicts),
+            "alias_conflict_edges": len(self.conflicted),
             "alias_suspect_nodes": len(self.suspect),
             "deferred": len(self.deferred),
+            "closed_t1_at": self.closed_t1_at,
+            "walk_mode_at": self.walk_mode_at,
+            "tier2_states": len(self.tier2_states),
+            "reset_anomalies": self.reset_anomaly_count,
             "moveset_signatures": len(self.signatures_moveset),
             "changed_signatures": len(self.signatures_changed),
             "novelty_window": (
@@ -457,23 +697,23 @@ class Explorer:
         }
 
 
-def run_game(job: tuple[str, int, float, int, bool, str]) -> dict[str, Any]:
-    game, budget, wall, cap, store, policy = job
+def run_game(job: tuple[str, int, float, int, Path | None, str]) -> dict[str, Any]:
+    game, budget, wall, cap, store_dir, policy = job
     explorer = Explorer(game, budget=budget, wall=wall, cap=cap, policy=policy)
     try:
         summary = explorer.run()
     except Exception as error:  # a game that breaks the driver is a result, not a crash
         return {"game": game, "outcome": "error", "error": f"{type(error).__name__}: {error}"}
     summary["policy"] = policy
-    if store:
-        STORE.mkdir(parents=True, exist_ok=True)
-        (STORE / f"{game}.states.json").write_text(
+    if store_dir is not None:
+        store_dir.mkdir(parents=True, exist_ok=True)
+        (store_dir / f"{game}.states.json").write_text(
             json.dumps(explorer.states, separators=(",", ":"))
         )
-        with (STORE / f"{game}.transitions.jsonl").open("w") as handle:
+        with (store_dir / f"{game}.transitions.jsonl").open("w") as handle:
             for row in explorer.transitions:
                 handle.write(json.dumps(row, separators=(",", ":")) + "\n")
-        (STORE / f"{game}.graph.json").write_text(
+        (store_dir / f"{game}.graph.json").write_text(
             json.dumps(
                 {
                     "origin": explorer.origin,
@@ -485,6 +725,9 @@ def run_game(job: tuple[str, int, float, int, bool, str]) -> dict[str, Any]:
                         [source, list(action)] for source, action in explorer.conflicted
                     ],
                     "suspect": sorted(explorer.suspect),
+                    "conflict_records": explorer.alias_conflicts,
+                    "closed_t1_at": explorer.closed_t1_at,
+                    "walk_mode_at": explorer.walk_mode_at,
                     "prefix": {k: [list(a) for a in v] for k, v in explorer.prefix.items()},
                 },
                 separators=(",", ":"),
@@ -519,11 +762,15 @@ def main() -> int:
     parser.add_argument("--jobs", type=int, default=6)
     parser.add_argument(
         "--policy",
-        choices=("shallowest", "nearest"),
-        default="shallowest",
-        help="`nearest` is notes/e1-explorer.md SS3 as written; it never routes",
+        choices=("v2", "shallowest", "nearest"),
+        default="v2",
+        help=(
+            "`v2` is the rerun spec (tier-1 frontier, advance-first, walk mode); "
+            "`nearest` is SS3 as written (never routes); `shallowest` the v1 correction"
+        ),
     )
     parser.add_argument("--no-store", action="store_true")
+    parser.add_argument("--store-dir", type=Path, default=STORE)
     parser.add_argument("--out", type=Path, default=OUTPUT)
     args = parser.parse_args()
 
@@ -533,7 +780,14 @@ def main() -> int:
         else list(args.games)
     )
     jobs = [
-        (game, args.budget, args.wall, args.cap, not args.no_store, args.policy)
+        (
+            game,
+            args.budget,
+            args.wall,
+            args.cap,
+            None if args.no_store else args.store_dir,
+            args.policy,
+        )
         for game in games
     ]
     print(
