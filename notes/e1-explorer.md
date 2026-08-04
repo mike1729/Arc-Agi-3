@@ -1,5 +1,14 @@
 # E1 — the L1 explorer: design (exploratory)
 
+> **RUN 2026-08-04 — `notes/e1-outcomes.md`.** Built and run over all 24 games.
+> **No game closed; 2 of 24 completed; humans complete all 24 in a median of 13–78 actions.**
+> §3's `nearest` routing **never routes** (the state you stand on always has untested
+> candidates, so distance 0 always wins) — measured overhead 0.02. A corrected `shallowest`
+> arm is reported alongside; the two disagree about the outcome distribution, and depth, not
+> coverage, is what produces incidental completions. §4's novelty signal is degenerate as
+> written: E0's `changed` layer is `(bool(effect),)` and yields ≤2 values per game, measured.
+> The paragraphs below are the design as drafted; read the result note before building on them.
+
 **Status: design draft 2026-08-04, lean mode. Working numbers are labelled (w).**
 Consumes nothing from Qwen. Produces the evidence stores E2 synthesizes over.
 
