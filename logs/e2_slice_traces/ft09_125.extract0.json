@@ -1,0 +1,15 @@
+{
+  "prompt_chars": 3084,
+  "prefilled_empty_think": true,
+  "prompt_opens_think": false,
+  "think_opened": false,
+  "think_closed": false,
+  "think_chars": 0,
+  "answer": "{\n  \"rules\": [\n    {\n      \"action_id\": 6,\n      \"click_colour\": 9,\n      \"guard\": {\n        \"feature\": \"clicked component adjacent to colour 12\",\n        \"value\": true\n      },\n      \"effect\": [\n        [\"appear\", 8],\n        [\"appear\", 11],\n        [\"disappear\", 9],\n        [\"reshape\", 12]\n      ]\n    },\n    {\n      \"action_id\": 6,\n      \"click_colour\": 9,\n      \"guard\": {\n        \"feature\": \"clicked component adjacent to colour 12\",\n        \"value\": false\n      },\n      \"effect\": []\n    }\n  ],\n  \"goal\": \"The level likely requires selectively clicking colour-9 components that are adjacent to colour 12 until all colour-9 objects are removed (or until colour 12 reaches a target configuration).\",\n  \"hidden_state\": \"None. The absence of alias conflicts and deterministic replay confirms that the observed frame fully captures the game state. The unresolved split is purely a limitation of the miner's feature vocabulary, not an unobserved game variable.\",\n  \"next_probe\": \"Perform ACTION6 on two carefully chosen colour-9 components in a fresh state: one that is directly adjacent (orthogonally) to the colour-12 object, and one that is not adjacent to colour 12 (e.g., isolated or touching only background/other colours).\"\n}",
+  "raw": "{\n  \"rules\": [\n    {\n      \"action_id\": 6,\n      \"click_colour\": 9,\n      \"guard\": {\n        \"feature\": \"clicked component adjacent to colour 12\",\n        \"value\": true\n      },\n      \"effect\": [\n        [\"appear\", 8],\n        [\"appear\", 11],\n        [\"disappear\", 9],\n        [\"reshape\", 12]\n      ]\n    },\n    {\n      \"action_id\": 6,\n      \"click_colour\": 9,\n      \"guard\": {\n        \"feature\": \"clicked component adjacent to colour 12\",\n        \"value\": false\n      },\n      \"effect\": []\n    }\n  ],\n  \"goal\": \"The level likely requires selectively clicking colour-9 components that are adjacent to colour 12 until all colour-9 objects are removed (or until colour 12 reaches a target configuration).\",\n  \"hidden_state\": \"None. The absence of alias conflicts and deterministic replay confirms that the observed frame fully captures the game state. The unresolved split is purely a limitation of the miner's feature vocabulary, not an unobserved game variable.\",\n  \"next_probe\": \"Perform ACTION6 on two carefully chosen colour-9 components in a fresh state: one that is directly adjacent (orthogonally) to the colour-12 object, and one that is not adjacent to colour 12 (e.g., isolated or touching only background/other colours).\"\n}",
+  "wall_seconds": 37.5,
+  "prompt_tps": 393.03082556861267,
+  "generation_tps": 9.380708775841795,
+  "temp": 0.0,
+  "seed": 20260804
+}

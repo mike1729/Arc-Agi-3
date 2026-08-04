@@ -1,0 +1,2388 @@
+{
+  "budgets": {
+    "extract": 4096,
+    "think": 16384
+  },
+  "cells": [
+    {
+      "digest_chars": 10225,
+      "dose": 125,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.1997,
+          "accuracy_over_covered": 0.2081,
+          "correct": 128,
+          "coverage": 0.9594,
+          "covered": 615,
+          "failure_split": {
+            "guard_fixable": 341,
+            "separable_by_census": 0,
+            "unpredicted": 146
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 18,
+          "rules_never_fired": 1,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 341
+          },
+          "test_transitions": 641
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0641,
+          "accuracy_over_covered": 0.0734,
+          "correct": 65,
+          "coverage": 0.8728,
+          "covered": 885,
+          "failure_split": {
+            "guard_fixable": 820,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.1667,
+          "rules_fired": 12,
+          "rules_never_fired": 7,
+          "rules_survived": 2,
+          "separating_guard_family": {
+            "adj": 820
+          },
+          "test_transitions": 1014
+        }
+      },
+      "game": "dc22",
+      "goal": "The level likely requires clearing or consolidating the colour-0 objects to trigger a cascade/win condition.",
+      "hidden_state": "The hidden state is almost certainly a binary toggle flag (or parity counter) combined with a selection cursor.",
+      "miner_rules": 19,
+      "next_probe": "Execute ACTION6 on colour 8 in a state where adj:13:left=8 and count:0=14 to observe whether it triggers the appear(4)x5 + disappear(...) chain, flips the hidden toggle, or does nothing.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 8,
+      "qwen_only": {
+        "human_l1": {
+          "accuracy_over_all": 0.0078,
+          "accuracy_over_covered": 0.625,
+          "correct": 5,
+          "coverage": 0.0125,
+          "covered": 8,
+          "failure_split": {
+            "guard_fixable": 3,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 1,
+          "rules_never_fired": 1,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 3
+          },
+          "test_transitions": 641
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0,
+          "accuracy_over_covered": null,
+          "correct": 0,
+          "coverage": 0.0,
+          "covered": 0,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": null,
+          "rules_fired": 0,
+          "rules_never_fired": 2,
+          "rules_survived": 0,
+          "separating_guard_family": {},
+          "test_transitions": 1014
+        }
+      },
+      "store_transitions": 125,
+      "thinking": {
+        "generation_tps": 9.128191286406347,
+        "prefilled_empty_think": false,
+        "prompt_chars": 11518,
+        "prompt_opens_think": true,
+        "prompt_tps": 366.861221363435,
+        "seed": 20260804,
+        "temp": 0.6,
+        "think_chars": 31404,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 1037.5
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.2028,
+          "accuracy_over_covered": 0.2114,
+          "correct": 130,
+          "coverage": 0.9594,
+          "covered": 615,
+          "failure_split": {
+            "guard_fixable": 339,
+            "separable_by_census": 0,
+            "unpredicted": 146
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 19,
+          "rules_never_fired": 2,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 339
+          },
+          "test_transitions": 641
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0641,
+          "accuracy_over_covered": 0.0734,
+          "correct": 65,
+          "coverage": 0.8728,
+          "covered": 885,
+          "failure_split": {
+            "guard_fixable": 820,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.1667,
+          "rules_fired": 12,
+          "rules_never_fired": 9,
+          "rules_survived": 2,
+          "separating_guard_family": {
+            "adj": 820
+          },
+          "test_transitions": 1014
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0051,
+          "miner_accuracy_over_all": 0.2183,
+          "transitions": 394,
+          "union_accuracy_over_all": 0.2234
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.0866,
+          "transitions": 589,
+          "union_accuracy_over_all": 0.0866
+        }
+      },
+      "unresolved_keys": 10,
+      "verification": [
+        {
+          "contradicted_on_store": 1,
+          "kept": false,
+          "rule": "A6:2|adj:14:down=2",
+          "support_on_store": 5
+        },
+        {
+          "contradicted_on_store": 1,
+          "kept": false,
+          "rule": "A6:2|adj:14:down=None",
+          "support_on_store": 3
+        },
+        {
+          "contradicted_on_store": 7,
+          "kept": false,
+          "rule": "A6:3|adj:13:right=4",
+          "support_on_store": 6
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A6:3|adj:13:right=None",
+          "support_on_store": 2
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A6:13|count:0=14",
+          "support_on_store": 1
+        },
+        {
+          "contradicted_on_store": 1,
+          "kept": false,
+          "rule": "A6:13|count:0=12",
+          "support_on_store": 5
+        },
+        {
+          "contradicted_on_store": 2,
+          "kept": false,
+          "rule": "A6:14|adj:13:left=8",
+          "support_on_store": 4
+        },
+        {
+          "contradicted_on_store": 2,
+          "kept": false,
+          "rule": "A6:14|adj:13:left=4",
+          "support_on_store": 2
+        }
+      ],
+      "verified": 2,
+      "wall_seconds": 1117.5
+    },
+    {
+      "digest_chars": 15938,
+      "dose": null,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.2278,
+          "accuracy_over_covered": 0.2281,
+          "correct": 146,
+          "coverage": 0.9984,
+          "covered": 640,
+          "failure_split": {
+            "guard_fixable": 270,
+            "separable_by_census": 0,
+            "unpredicted": 224
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 13,
+          "rules_never_fired": 1,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 270
+          },
+          "test_transitions": 641
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0552,
+          "accuracy_over_covered": 0.0593,
+          "correct": 56,
+          "coverage": 0.931,
+          "covered": 944,
+          "failure_split": {
+            "guard_fixable": 888,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.1667,
+          "rules_fired": 12,
+          "rules_never_fired": 2,
+          "rules_survived": 2,
+          "separating_guard_family": {
+            "adj": 888
+          },
+          "test_transitions": 1014
+        }
+      },
+      "game": "dc22",
+      "goal": "Reduce the board to a state with zero components of colour 3 (and likely colour 0), spawning a single colour-5 object as a completion marker.",
+      "hidden_state": "None.",
+      "miner_rules": 14,
+      "next_probe": "Execute ACTION6 on colour 0 in two carefully constructed states that are identical in all adj:* features but differ in count:3 (specifically, one state with count:3=1 and one with count:3=2).",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 7,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 2939,
+      "thinking": {
+        "generation_tps": 9.062109502978423,
+        "prefilled_empty_think": false,
+        "prompt_chars": 17231,
+        "prompt_opens_think": true,
+        "prompt_tps": 411.2544018056794,
+        "seed": 20260804,
+        "temp": 0.6,
+        "think_chars": 29986,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 1159.2
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.2278,
+          "accuracy_over_covered": 0.2281,
+          "correct": 146,
+          "coverage": 0.9984,
+          "covered": 640,
+          "failure_split": {
+            "guard_fixable": 270,
+            "separable_by_census": 0,
+            "unpredicted": 224
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 13,
+          "rules_never_fired": 1,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 270
+          },
+          "test_transitions": 641
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0552,
+          "accuracy_over_covered": 0.0593,
+          "correct": 56,
+          "coverage": 0.931,
+          "covered": 944,
+          "failure_split": {
+            "guard_fixable": 888,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.1667,
+          "rules_fired": 12,
+          "rules_never_fired": 2,
+          "rules_survived": 2,
+          "separating_guard_family": {
+            "adj": 888
+          },
+          "test_transitions": 1014
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.2281,
+          "transitions": 640,
+          "union_accuracy_over_all": 0.2281
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.0593,
+          "transitions": 944,
+          "union_accuracy_over_all": 0.0593
+        }
+      },
+      "unresolved_keys": 14,
+      "verification": [
+        {
+          "contradicted_on_store": 55,
+          "kept": false,
+          "rule": "A:1|adj:14:up=2",
+          "support_on_store": 39
+        },
+        {
+          "contradicted_on_store": 18,
+          "kept": false,
+          "rule": "A:1|adj:14:up=9",
+          "support_on_store": 7
+        },
+        {
+          "contradicted_on_store": 31,
+          "kept": false,
+          "rule": "A:1|adj:14:up=4",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:0|count:0=greater than 1",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:0|count:0=1",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:0|count:0=0",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:None|count:3=2",
+          "support_on_store": 0
+        }
+      ],
+      "verified": 0,
+      "wall_seconds": 1235.1000000000001
+    },
+    {
+      "digest_chars": 2105,
+      "dose": 125,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.2522,
+          "accuracy_over_covered": 0.4432,
+          "correct": 117,
+          "coverage": 0.569,
+          "covered": 264,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 147
+          },
+          "rule_survival_rate": 0.6667,
+          "rules_fired": 6,
+          "rules_never_fired": 2,
+          "rules_survived": 4,
+          "separating_guard_family": {},
+          "test_transitions": 464
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0885,
+          "accuracy_over_covered": 0.1064,
+          "correct": 10,
+          "coverage": 0.8319,
+          "covered": 94,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 84,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 3,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "count": 84
+          },
+          "test_transitions": 113
+        }
+      },
+      "game": "ft09",
+      "goal": "The level likely requires selectively clicking colour-9 components that are adjacent to colour 12 until all colour-9 objects are removed (or until colour 12 reaches a target configuration).",
+      "hidden_state": "None. The absence of alias conflicts and deterministic replay confirms that the observed frame fully captures the game state. The unresolved split is purely a limitation of the miner's feature vocabulary, not an unobserved game variable.",
+      "miner_rules": 8,
+      "next_probe": "Perform ACTION6 on two carefully chosen colour-9 components in a fresh state: one that is directly adjacent (orthogonally) to the colour-12 object, and one that is not adjacent to colour 12 (e.g., isolated or touching only background/other colours).",
+      "outcome": "scored",
+      "parse_rejected": [
+        "rule 0: guard 'clicked component adjacent to colour 12' is not in the vocabulary",
+        "rule 1: guard 'clicked component adjacent to colour 12' is not in the vocabulary"
+      ],
+      "proposed": 0,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 125,
+      "thinking": {
+        "generation_tps": 9.270066966216584,
+        "prefilled_empty_think": false,
+        "prompt_chars": 3398,
+        "prompt_opens_think": true,
+        "prompt_tps": 339.6406272023107,
+        "seed": 20260804,
+        "temp": 0.6,
+        "think_chars": 16231,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 533.0
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.2522,
+          "accuracy_over_covered": 0.4432,
+          "correct": 117,
+          "coverage": 0.569,
+          "covered": 264,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 147
+          },
+          "rule_survival_rate": 0.6667,
+          "rules_fired": 6,
+          "rules_never_fired": 2,
+          "rules_survived": 4,
+          "separating_guard_family": {},
+          "test_transitions": 464
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0885,
+          "accuracy_over_covered": 0.1064,
+          "correct": 10,
+          "coverage": 0.8319,
+          "covered": 94,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 84,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 3,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "count": 84
+          },
+          "test_transitions": 113
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.1223,
+          "transitions": 139,
+          "union_accuracy_over_all": 0.1223
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.0,
+          "transitions": 69,
+          "union_accuracy_over_all": 0.0
+        }
+      },
+      "unresolved_keys": 1,
+      "verification": [],
+      "verified": 0,
+      "wall_seconds": 570.5
+    },
+    {
+      "digest_chars": 2549,
+      "dose": null,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.2522,
+          "accuracy_over_covered": 0.4432,
+          "correct": 117,
+          "coverage": 0.569,
+          "covered": 264,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 147
+          },
+          "rule_survival_rate": 0.6667,
+          "rules_fired": 6,
+          "rules_never_fired": 2,
+          "rules_survived": 4,
+          "separating_guard_family": {},
+          "test_transitions": 464
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0885,
+          "accuracy_over_covered": 0.1064,
+          "correct": 10,
+          "coverage": 0.8319,
+          "covered": 94,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 84,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 3,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "count": 84
+          },
+          "test_transitions": 113
+        }
+      },
+      "game": "ft09",
+      "goal": "The level likely requires balancing the counts of colours 8 and 9 to 18 each, or positioning the single colour-11 object to the right of the single colour-12 object.",
+      "hidden_state": "None.",
+      "miner_rules": 8,
+      "next_probe": "ACTION6 on colour 9 when count:8 == 16 and present:11 == True.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 5,
+      "qwen_only": {
+        "human_l1": {
+          "accuracy_over_all": 0.0647,
+          "accuracy_over_covered": 1.0,
+          "correct": 30,
+          "coverage": 0.0647,
+          "covered": 30,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 1.0,
+          "rules_fired": 1,
+          "rules_never_fired": 0,
+          "rules_survived": 1,
+          "separating_guard_family": {},
+          "test_transitions": 464
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0,
+          "accuracy_over_covered": null,
+          "correct": 0,
+          "coverage": 0.0,
+          "covered": 0,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": null,
+          "rules_fired": 0,
+          "rules_never_fired": 1,
+          "rules_survived": 0,
+          "separating_guard_family": {},
+          "test_transitions": 113
+        }
+      },
+      "store_transitions": 1231,
+      "thinking": {
+        "generation_tps": 9.208658219156609,
+        "prefilled_empty_think": false,
+        "prompt_chars": 3842,
+        "prompt_opens_think": true,
+        "prompt_tps": 411.0552015301905,
+        "seed": 20260804,
+        "temp": 0.6,
+        "think_chars": 27346,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 1039.0
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.2522,
+          "accuracy_over_covered": 0.4432,
+          "correct": 117,
+          "coverage": 0.569,
+          "covered": 264,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 147
+          },
+          "rule_survival_rate": 0.7143,
+          "rules_fired": 7,
+          "rules_never_fired": 2,
+          "rules_survived": 5,
+          "separating_guard_family": {},
+          "test_transitions": 464
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0885,
+          "accuracy_over_covered": 0.1064,
+          "correct": 10,
+          "coverage": 0.8319,
+          "covered": 94,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 84,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 4,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "count": 84
+          },
+          "test_transitions": 113
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.2967,
+          "transitions": 209,
+          "union_accuracy_over_all": 0.2967
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.0,
+          "transitions": 69,
+          "union_accuracy_over_all": 0.0
+        }
+      },
+      "unresolved_keys": 2,
+      "verification": [
+        {
+          "contradicted_on_store": 112,
+          "kept": false,
+          "rule": "A6:8|count:8=17",
+          "support_on_store": 9
+        },
+        {
+          "contradicted_on_store": 92,
+          "kept": false,
+          "rule": "A6:9|count:8=17",
+          "support_on_store": 63
+        },
+        {
+          "contradicted_on_store": 21,
+          "kept": false,
+          "rule": "A6:9|count:8=16",
+          "support_on_store": 16
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A6:8|count:8=16",
+          "support_on_store": 26
+        },
+        {
+          "contradicted_on_store": 16,
+          "kept": false,
+          "rule": "A6:9|count:8=16",
+          "support_on_store": 21
+        }
+      ],
+      "verified": 1,
+      "wall_seconds": 1094.7
+    },
+    {
+      "digest_chars": 5171,
+      "dose": 125,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.4396,
+          "accuracy_over_covered": 0.4405,
+          "correct": 211,
+          "coverage": 0.9979,
+          "covered": 479,
+          "failure_split": {
+            "guard_fixable": 86,
+            "separable_by_census": 0,
+            "unpredicted": 182
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 86
+          },
+          "test_transitions": 480
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3466,
+          "accuracy_over_covered": 0.3484,
+          "correct": 680,
+          "coverage": 0.9949,
+          "covered": 1952,
+          "failure_split": {
+            "guard_fixable": 341,
+            "separable_by_census": 786,
+            "unpredicted": 145
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 341,
+            "count": 786
+          },
+          "test_transitions": 1962
+        }
+      },
+      "game": "ls20",
+      "goal": "The level likely requires synchronizing the singletons (11 and 12) to permanently disable the 9/12 toggle or clear the reshaping 3-blocks.",
+      "hidden_state": "The feature vocabulary is incomplete, implying the miner is missing a critical state variable such as exact coordinates, global step counter, or action directionality.",
+      "miner_rules": 4,
+      "next_probe": "Record the exact grid coordinates of objects 11 and 12 before each transition, and log the global step count.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 4,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 125,
+      "thinking": {
+        "generation_tps": 9.186605280833017,
+        "prefilled_empty_think": false,
+        "prompt_chars": 6464,
+        "prompt_opens_think": true,
+        "prompt_tps": 395.4188012024428,
+        "seed": 20260804,
+        "temp": 0.6,
+        "think_chars": 28457,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 1009.3
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.4396,
+          "accuracy_over_covered": 0.4405,
+          "correct": 211,
+          "coverage": 0.9979,
+          "covered": 479,
+          "failure_split": {
+            "guard_fixable": 86,
+            "separable_by_census": 0,
+            "unpredicted": 182
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 86
+          },
+          "test_transitions": 480
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3466,
+          "accuracy_over_covered": 0.3484,
+          "correct": 680,
+          "coverage": 0.9949,
+          "covered": 1952,
+          "failure_split": {
+            "guard_fixable": 341,
+            "separable_by_census": 786,
+            "unpredicted": 145
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 341,
+            "count": 786
+          },
+          "test_transitions": 1962
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.4405,
+          "transitions": 479,
+          "union_accuracy_over_all": 0.4405
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.3484,
+          "transitions": 1952,
+          "union_accuracy_over_all": 0.3484
+        }
+      },
+      "unresolved_keys": 4,
+      "verification": [
+        {
+          "contradicted_on_store": 26,
+          "kept": false,
+          "rule": "A:1",
+          "support_on_store": 6
+        },
+        {
+          "contradicted_on_store": 21,
+          "kept": false,
+          "rule": "A:2",
+          "support_on_store": 10
+        },
+        {
+          "contradicted_on_store": 27,
+          "kept": false,
+          "rule": "A:3",
+          "support_on_store": 3
+        },
+        {
+          "contradicted_on_store": 29,
+          "kept": false,
+          "rule": "A:4",
+          "support_on_store": 3
+        }
+      ],
+      "verified": 0,
+      "wall_seconds": 1049.1
+    },
+    {
+      "digest_chars": 6772,
+      "dose": null,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.4396,
+          "accuracy_over_covered": 0.4405,
+          "correct": 211,
+          "coverage": 0.9979,
+          "covered": 479,
+          "failure_split": {
+            "guard_fixable": 73,
+            "separable_by_census": 0,
+            "unpredicted": 195
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 73
+          },
+          "test_transitions": 480
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3466,
+          "accuracy_over_covered": 0.3484,
+          "correct": 680,
+          "coverage": 0.9949,
+          "covered": 1952,
+          "failure_split": {
+            "guard_fixable": 73,
+            "separable_by_census": 940,
+            "unpredicted": 259
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 73,
+            "count": 940
+          },
+          "test_transitions": 1962
+        }
+      },
+      "game": "ls20",
+      "goal": "The level likely requires positioning or merging the active pieces (colours 9 and 12) to clear the board or reach a target configuration.",
+      "hidden_state": "None.",
+      "miner_rules": 4,
+      "next_probe": "Execute a controlled positional test: Reset to a known state, place colours 9 and 12 at a fixed coordinate, and systematically press each action while varying their distance to the nearest grid edge and adjacent obstacles.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 4,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 2877,
+      "thinking": {
+        "generation_tps": 9.190052844634504,
+        "prefilled_empty_think": false,
+        "prompt_chars": 8065,
+        "prompt_opens_think": true,
+        "prompt_tps": 431.44910402070786,
+        "seed": 20260804,
+        "temp": 0.6,
+        "think_chars": 25468,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 810.9
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.4396,
+          "accuracy_over_covered": 0.4405,
+          "correct": 211,
+          "coverage": 0.9979,
+          "covered": 479,
+          "failure_split": {
+            "guard_fixable": 73,
+            "separable_by_census": 0,
+            "unpredicted": 195
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 73
+          },
+          "test_transitions": 480
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3466,
+          "accuracy_over_covered": 0.3484,
+          "correct": 680,
+          "coverage": 0.9949,
+          "covered": 1952,
+          "failure_split": {
+            "guard_fixable": 73,
+            "separable_by_census": 940,
+            "unpredicted": 259
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 73,
+            "count": 940
+          },
+          "test_transitions": 1962
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.4405,
+          "transitions": 479,
+          "union_accuracy_over_all": 0.4405
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.3484,
+          "transitions": 1952,
+          "union_accuracy_over_all": 0.3484
+        }
+      },
+      "unresolved_keys": 4,
+      "verification": [
+        {
+          "contradicted_on_store": 231,
+          "kept": false,
+          "rule": "A:1",
+          "support_on_store": 519
+        },
+        {
+          "contradicted_on_store": 342,
+          "kept": false,
+          "rule": "A:2",
+          "support_on_store": 398
+        },
+        {
+          "contradicted_on_store": 160,
+          "kept": false,
+          "rule": "A:3",
+          "support_on_store": 479
+        },
+        {
+          "contradicted_on_store": 217,
+          "kept": false,
+          "rule": "A:4",
+          "support_on_store": 531
+        }
+      ],
+      "verified": 0,
+      "wall_seconds": 867.4
+    },
+    {
+      "digest_chars": 7668,
+      "dose": 125,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.2362,
+          "accuracy_over_covered": 0.2362,
+          "correct": 81,
+          "coverage": 1.0,
+          "covered": 343,
+          "failure_split": {
+            "guard_fixable": 106,
+            "separable_by_census": 4,
+            "unpredicted": 152
+          },
+          "rule_survival_rate": 0.1429,
+          "rules_fired": 7,
+          "rules_never_fired": 3,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 106,
+            "count": 4
+          },
+          "test_transitions": 343
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3422,
+          "accuracy_over_covered": 0.344,
+          "correct": 592,
+          "coverage": 0.9948,
+          "covered": 1721,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 88,
+            "unpredicted": 1041
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 7,
+          "rules_never_fired": 3,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "count": 88
+          },
+          "test_transitions": 1730
+        }
+      },
+      "game": "m0r0",
+      "goal": "The level likely requires repositioning the two colour-10 blocks into a target configuration while strategically triggering reshape(0) events to alter the board layout.",
+      "hidden_state": "The unobserved variable is almost certainly a binary phase/mode flag (or turn parity).",
+      "miner_rules": 10,
+      "next_probe": "Execute ACTION2 from the initial state, then immediately perform ACTION6 on colour 11 when adj:12:left == 11.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 17,
+      "qwen_only": {
+        "human_l1": {
+          "accuracy_over_all": 0.0583,
+          "accuracy_over_covered": 0.625,
+          "correct": 20,
+          "coverage": 0.0933,
+          "covered": 32,
+          "failure_split": {
+            "guard_fixable": 4,
+            "separable_by_census": 0,
+            "unpredicted": 8
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 1,
+          "rules_never_fired": 1,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 4
+          },
+          "test_transitions": 343
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0,
+          "accuracy_over_covered": null,
+          "correct": 0,
+          "coverage": 0.0,
+          "covered": 0,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": null,
+          "rules_fired": 0,
+          "rules_never_fired": 2,
+          "rules_survived": 0,
+          "separating_guard_family": {},
+          "test_transitions": 1730
+        }
+      },
+      "store_transitions": 125,
+      "thinking": {
+        "generation_tps": 9.149931527495408,
+        "prefilled_empty_think": false,
+        "prompt_chars": 8961,
+        "prompt_opens_think": true,
+        "prompt_tps": 410.86623223040624,
+        "seed": 20260804,
+        "temp": 0.6,
+        "think_chars": 28292,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 1132.1
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.2362,
+          "accuracy_over_covered": 0.2362,
+          "correct": 81,
+          "coverage": 1.0,
+          "covered": 343,
+          "failure_split": {
+            "guard_fixable": 106,
+            "separable_by_census": 4,
+            "unpredicted": 152
+          },
+          "rule_survival_rate": 0.125,
+          "rules_fired": 8,
+          "rules_never_fired": 4,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 106,
+            "count": 4
+          },
+          "test_transitions": 343
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3422,
+          "accuracy_over_covered": 0.344,
+          "correct": 592,
+          "coverage": 0.9948,
+          "covered": 1721,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 88,
+            "unpredicted": 1041
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 7,
+          "rules_never_fired": 5,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "count": 88
+          },
+          "test_transitions": 1730
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.2415,
+          "transitions": 294,
+          "union_accuracy_over_all": 0.2415
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.266,
+          "transitions": 1218,
+          "union_accuracy_over_all": 0.266
+        }
+      },
+      "unresolved_keys": 9,
+      "verification": [
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A6:0|adj:12:left=11",
+          "support_on_store": 2
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:0|adj:12:left=not 11",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 3,
+          "kept": false,
+          "rule": "A6:5|adj:12:left=11",
+          "support_on_store": 1
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:5|adj:12:left=not 11",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 1,
+          "kept": false,
+          "rule": "A6:11|adj:12:left=11",
+          "support_on_store": 4
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:11|adj:12:left=not 11",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 4,
+          "kept": false,
+          "rule": "A6:12|adj:12:left=10",
+          "support_on_store": 3
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:12|adj:12:left=not 10",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 3,
+          "kept": false,
+          "rule": "A6:10|adj:12:right=10",
+          "support_on_store": 3
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:10|adj:12:right=not 10",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 4,
+          "kept": false,
+          "rule": "A:1|adj:12:left=10",
+          "support_on_store": 3
+        },
+        {
+          "contradicted_on_store": 5,
+          "kept": false,
+          "rule": "A:1|adj:12:left=11",
+          "support_on_store": 3
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A:3|adj:12:left=11",
+          "support_on_store": 4
+        },
+        {
+          "contradicted_on_store": 2,
+          "kept": false,
+          "rule": "A:3|adj:12:left=10",
+          "support_on_store": 1
+        },
+        {
+          "contradicted_on_store": 4,
+          "kept": false,
+          "rule": "A:4|adj:12:left=10",
+          "support_on_store": 1
+        },
+        {
+          "contradicted_on_store": 2,
+          "kept": false,
+          "rule": "A:4|adj:12:left=11",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 1,
+          "kept": false,
+          "rule": "A:5|adj:12:left=10",
+          "support_on_store": 2
+        }
+      ],
+      "verified": 2,
+      "wall_seconds": 1287.3999999999999
+    },
+    {
+      "digest_chars": 12087,
+      "dose": null,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.2624,
+          "accuracy_over_covered": 0.2624,
+          "correct": 90,
+          "coverage": 1.0,
+          "covered": 343,
+          "failure_split": {
+            "guard_fixable": 80,
+            "separable_by_census": 8,
+            "unpredicted": 165
+          },
+          "rule_survival_rate": 0.1429,
+          "rules_fired": 7,
+          "rules_never_fired": 3,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 80,
+            "count": 8
+          },
+          "test_transitions": 343
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3988,
+          "accuracy_over_covered": 0.4009,
+          "correct": 690,
+          "coverage": 0.9948,
+          "covered": 1721,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 87,
+            "unpredicted": 944
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 7,
+          "rules_never_fired": 3,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "count": 87
+          },
+          "test_transitions": 1730
+        }
+      },
+      "game": "m0r0",
+      "goal": "The level requires positioning both colour-10 objects adjacent to the fixed 11\u201312 horizontal pair, while using ACTION5/ACTION6 to reshape the two colour-0 components into a continuous path or key shape that unlocks the 11\u201312 structure.",
+      "hidden_state": "A binary toggle/phase flag (or turn-parity counter) that is not rendered in the frame hash.",
+      "miner_rules": 10,
+      "next_probe": "Execute ACTION5 repeatedly from a single, fixed visual state to see if results strictly alternate between no-change and reshape(0).",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 10,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 2943,
+      "thinking": {
+        "generation_tps": 9.09788770192337,
+        "prefilled_empty_think": false,
+        "prompt_chars": 13380,
+        "prompt_opens_think": true,
+        "prompt_tps": 431.53674343585755,
+        "seed": 20260804,
+        "temp": 0.6,
+        "think_chars": 31142,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 1162.3
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.2624,
+          "accuracy_over_covered": 0.2624,
+          "correct": 90,
+          "coverage": 1.0,
+          "covered": 343,
+          "failure_split": {
+            "guard_fixable": 80,
+            "separable_by_census": 8,
+            "unpredicted": 165
+          },
+          "rule_survival_rate": 0.1429,
+          "rules_fired": 7,
+          "rules_never_fired": 3,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 80,
+            "count": 8
+          },
+          "test_transitions": 343
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3988,
+          "accuracy_over_covered": 0.4009,
+          "correct": 690,
+          "coverage": 0.9948,
+          "covered": 1721,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 87,
+            "unpredicted": 944
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 7,
+          "rules_never_fired": 3,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "count": 87
+          },
+          "test_transitions": 1730
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.2624,
+          "transitions": 343,
+          "union_accuracy_over_all": 0.2624
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.4009,
+          "transitions": 1721,
+          "union_accuracy_over_all": 0.4009
+        }
+      },
+      "unresolved_keys": 10,
+      "verification": [
+        {
+          "contradicted_on_store": 202,
+          "kept": false,
+          "rule": "A:1|count:10=2",
+          "support_on_store": 101
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A:1|count:10=1",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 74,
+          "kept": false,
+          "rule": "A:2|count:10=2",
+          "support_on_store": 114
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A:2|count:10=1",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 72,
+          "kept": false,
+          "rule": "A:3|count:10=2",
+          "support_on_store": 82
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A:3|count:10=1",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 128,
+          "kept": false,
+          "rule": "A:4|count:10=2",
+          "support_on_store": 67
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A:4|count:10=1",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 465,
+          "kept": false,
+          "rule": "A6:5|adj:12:left=11",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 112,
+          "kept": false,
+          "rule": "A6:5|adj:12:left=10",
+          "support_on_store": 124
+        }
+      ],
+      "verified": 0,
+      "wall_seconds": 1269.3
+    },
+    {
+      "digest_chars": 4407,
+      "dose": 125,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.4778,
+          "accuracy_over_covered": 0.4778,
+          "correct": 129,
+          "coverage": 1.0,
+          "covered": 270,
+          "failure_split": {
+            "guard_fixable": 141,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.3333,
+          "rules_fired": 6,
+          "rules_never_fired": 0,
+          "rules_survived": 2,
+          "separating_guard_family": {
+            "adj": 141
+          },
+          "test_transitions": 270
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.5431,
+          "accuracy_over_covered": 0.5847,
+          "correct": 145,
+          "coverage": 0.9288,
+          "covered": 248,
+          "failure_split": {
+            "guard_fixable": 103,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.2,
+          "rules_fired": 5,
+          "rules_never_fired": 1,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 103
+          },
+          "test_transitions": 267
+        }
+      },
+      "game": "tu93",
+      "goal": "The level requires moving either color 4 or 9 onto the singleton color 14 tile.",
+      "hidden_state": "None.",
+      "miner_rules": 6,
+      "next_probe": "Execute ACTION2 in a state where adj:9:right=4 (or adj:9:left=2), then immediately follow with ACTION1 or ACTION4 to shift the swapped 4/9 pair toward the color 14 tile.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 6,
+      "qwen_only": {
+        "human_l1": {
+          "accuracy_over_all": 0.0185,
+          "accuracy_over_covered": 1.0,
+          "correct": 5,
+          "coverage": 0.0185,
+          "covered": 5,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 1.0,
+          "rules_fired": 1,
+          "rules_never_fired": 0,
+          "rules_survived": 1,
+          "separating_guard_family": {},
+          "test_transitions": 270
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.015,
+          "accuracy_over_covered": 0.8,
+          "correct": 4,
+          "coverage": 0.0187,
+          "covered": 5,
+          "failure_split": {
+            "guard_fixable": 1,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 1,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 1
+          },
+          "test_transitions": 267
+        }
+      },
+      "store_transitions": 125,
+      "thinking": {
+        "generation_tps": 9.166550260731533,
+        "prefilled_empty_think": false,
+        "prompt_chars": 5700,
+        "prompt_opens_think": true,
+        "prompt_tps": 394.17455705829553,
+        "seed": 20260804,
+        "temp": 0.6,
+        "think_chars": 32989,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 1231.6
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.4963,
+          "accuracy_over_covered": 0.4963,
+          "correct": 134,
+          "coverage": 1.0,
+          "covered": 270,
+          "failure_split": {
+            "guard_fixable": 136,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.4286,
+          "rules_fired": 7,
+          "rules_never_fired": 0,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "adj": 136
+          },
+          "test_transitions": 270
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.5581,
+          "accuracy_over_covered": 0.6008,
+          "correct": 149,
+          "coverage": 0.9288,
+          "covered": 248,
+          "failure_split": {
+            "guard_fixable": 99,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.1667,
+          "rules_fired": 6,
+          "rules_never_fired": 1,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 99
+          },
+          "test_transitions": 267
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0212,
+          "miner_accuracy_over_all": 0.4068,
+          "transitions": 236,
+          "union_accuracy_over_all": 0.428
+        },
+        "human_l2": {
+          "delta": 0.0172,
+          "miner_accuracy_over_all": 0.5647,
+          "transitions": 232,
+          "union_accuracy_over_all": 0.5819
+        }
+      },
+      "unresolved_keys": 3,
+      "verification": [
+        {
+          "contradicted_on_store": 10,
+          "kept": false,
+          "rule": "A:1|adj:9:right=2",
+          "support_on_store": 1
+        },
+        {
+          "contradicted_on_store": 6,
+          "kept": false,
+          "rule": "A:1|adj:9:right=4",
+          "support_on_store": 13
+        },
+        {
+          "contradicted_on_store": 2,
+          "kept": false,
+          "rule": "A:2|adj:9:right=4",
+          "support_on_store": 8
+        },
+        {
+          "contradicted_on_store": 5,
+          "kept": false,
+          "rule": "A:2|adj:9:right=2",
+          "support_on_store": 12
+        },
+        {
+          "contradicted_on_store": 2,
+          "kept": false,
+          "rule": "A:4|adj:9:right=2",
+          "support_on_store": 18
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A:4|adj:9:right=4",
+          "support_on_store": 16
+        }
+      ],
+      "verified": 1,
+      "wall_seconds": 1309.5
+    },
+    {
+      "digest_chars": 6283,
+      "dose": null,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.7296,
+          "accuracy_over_covered": 0.7296,
+          "correct": 197,
+          "coverage": 1.0,
+          "covered": 270,
+          "failure_split": {
+            "guard_fixable": 28,
+            "separable_by_census": 0,
+            "unpredicted": 45
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 28
+          },
+          "test_transitions": 270
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.5768,
+          "accuracy_over_covered": 0.621,
+          "correct": 154,
+          "coverage": 0.9288,
+          "covered": 248,
+          "failure_split": {
+            "guard_fixable": 94,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 94
+          },
+          "test_transitions": 267
+        }
+      },
+      "game": "tu93",
+      "goal": "Complete the level by moving object 4 (or 9) onto color 14.",
+      "hidden_state": "None.",
+      "miner_rules": 4,
+      "next_probe": "Execute ACTION1/2/3/4 when object 4 is directly adjacent to color 14 in the direction of 14.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 12,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 2573,
+      "thinking": {
+        "generation_tps": 9.15074964065513,
+        "prefilled_empty_think": false,
+        "prompt_chars": 7576,
+        "prompt_opens_think": true,
+        "prompt_tps": 429.97179503087386,
+        "seed": 20260804,
+        "temp": 0.6,
+        "think_chars": 33646,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 1205.8
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.7296,
+          "accuracy_over_covered": 0.7296,
+          "correct": 197,
+          "coverage": 1.0,
+          "covered": 270,
+          "failure_split": {
+            "guard_fixable": 28,
+            "separable_by_census": 0,
+            "unpredicted": 45
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 28
+          },
+          "test_transitions": 270
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.5768,
+          "accuracy_over_covered": 0.621,
+          "correct": 154,
+          "coverage": 0.9288,
+          "covered": 248,
+          "failure_split": {
+            "guard_fixable": 94,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 94
+          },
+          "test_transitions": 267
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.7296,
+          "transitions": 270,
+          "union_accuracy_over_all": 0.7296
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.621,
+          "transitions": 248,
+          "union_accuracy_over_all": 0.621
+        }
+      },
+      "unresolved_keys": 4,
+      "verification": [
+        {
+          "contradicted_on_store": 2,
+          "kept": false,
+          "rule": "A:1|adj:4:down=None",
+          "support_on_store": 89
+        },
+        {
+          "contradicted_on_store": 184,
+          "kept": false,
+          "rule": "A:1|adj:4:down=9",
+          "support_on_store": 293
+        },
+        {
+          "contradicted_on_store": 74,
+          "kept": false,
+          "rule": "A:1|adj:4:down=2",
+          "support_on_store": 3
+        },
+        {
+          "contradicted_on_store": 51,
+          "kept": false,
+          "rule": "A:2|adj:4:right=None",
+          "support_on_store": 69
+        },
+        {
+          "contradicted_on_store": 285,
+          "kept": false,
+          "rule": "A:2|adj:4:right=9",
+          "support_on_store": 196
+        },
+        {
+          "contradicted_on_store": 60,
+          "kept": false,
+          "rule": "A:2|adj:4:right=2",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 3,
+          "kept": false,
+          "rule": "A:3|adj:4:left=None",
+          "support_on_store": 119
+        },
+        {
+          "contradicted_on_store": 214,
+          "kept": false,
+          "rule": "A:3|adj:4:left=9",
+          "support_on_store": 259
+        },
+        {
+          "contradicted_on_store": 25,
+          "kept": false,
+          "rule": "A:3|adj:4:left=2",
+          "support_on_store": 1
+        },
+        {
+          "contradicted_on_store": 54,
+          "kept": false,
+          "rule": "A:4|adj:4:up=None",
+          "support_on_store": 32
+        },
+        {
+          "contradicted_on_store": 277,
+          "kept": false,
+          "rule": "A:4|adj:4:up=9",
+          "support_on_store": 217
+        },
+        {
+          "contradicted_on_store": 66,
+          "kept": false,
+          "rule": "A:4|adj:4:up=2",
+          "support_on_store": 0
+        }
+      ],
+      "verified": 0,
+      "wall_seconds": 1358.6
+    },
+    {
+      "digest_chars": 2946,
+      "dose": 125,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.9197,
+          "accuracy_over_covered": 0.9197,
+          "correct": 126,
+          "coverage": 1.0,
+          "covered": 137,
+          "failure_split": {
+            "guard_fixable": 4,
+            "separable_by_census": 5,
+            "unpredicted": 2
+          },
+          "rule_survival_rate": 0.625,
+          "rules_fired": 8,
+          "rules_never_fired": 1,
+          "rules_survived": 5,
+          "separating_guard_family": {
+            "adj": 4,
+            "count": 5
+          },
+          "test_transitions": 137
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.087,
+          "accuracy_over_covered": 0.0878,
+          "correct": 18,
+          "coverage": 0.9903,
+          "covered": 205,
+          "failure_split": {
+            "guard_fixable": 10,
+            "separable_by_census": 177,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 4,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "adj": 10,
+            "count": 177
+          },
+          "test_transitions": 207
+        }
+      },
+      "game": "vc33",
+      "goal": "The level likely requires clearing the board of all non-background objects, with colour 7 acting as a primary target or pivot.",
+      "hidden_state": "None. The evidence explicitly records zero alias conflicts, meaning the settled frame hash fully and deterministically identifies the game state.",
+      "miner_rules": 9,
+      "next_probe": "Execute ACTION6 on colour 0 (or 5) in a state where adj:7:down == 0 but count:0 == 1 (or vice versa) to break the perfect correlation and reveal whether the true causal guard is spatial or numerical.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 6,
+      "qwen_only": {
+        "human_l1": {
+          "accuracy_over_all": 0.2263,
+          "accuracy_over_covered": 0.9118,
+          "correct": 31,
+          "coverage": 0.2482,
+          "covered": 34,
+          "failure_split": {
+            "guard_fixable": 1,
+            "separable_by_census": 0,
+            "unpredicted": 2
+          },
+          "rule_survival_rate": 0.3333,
+          "rules_fired": 3,
+          "rules_never_fired": 0,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 1
+          },
+          "test_transitions": 137
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0773,
+          "accuracy_over_covered": 0.8889,
+          "correct": 16,
+          "coverage": 0.087,
+          "covered": 18,
+          "failure_split": {
+            "guard_fixable": 2,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.5,
+          "rules_fired": 2,
+          "rules_never_fired": 1,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 2
+          },
+          "test_transitions": 207
+        }
+      },
+      "store_transitions": 125,
+      "thinking": {
+        "generation_tps": 9.228282690894536,
+        "prefilled_empty_think": false,
+        "prompt_chars": 4239,
+        "prompt_opens_think": true,
+        "prompt_tps": 367.4856983387925,
+        "seed": 20260804,
+        "temp": 0.6,
+        "think_chars": 22968,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 835.1
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.9416,
+          "accuracy_over_covered": 0.9416,
+          "correct": 129,
+          "coverage": 1.0,
+          "covered": 137,
+          "failure_split": {
+            "guard_fixable": 4,
+            "separable_by_census": 0,
+            "unpredicted": 4
+          },
+          "rule_survival_rate": 0.5556,
+          "rules_fired": 9,
+          "rules_never_fired": 3,
+          "rules_survived": 5,
+          "separating_guard_family": {
+            "adj": 4
+          },
+          "test_transitions": 137
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.087,
+          "accuracy_over_covered": 0.0878,
+          "correct": 18,
+          "coverage": 0.9903,
+          "covered": 205,
+          "failure_split": {
+            "guard_fixable": 10,
+            "separable_by_census": 177,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 7,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "adj": 10,
+            "count": 177
+          },
+          "test_transitions": 207
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0323,
+          "miner_accuracy_over_all": 0.9032,
+          "transitions": 93,
+          "union_accuracy_over_all": 0.9355
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.0788,
+          "transitions": 203,
+          "union_accuracy_over_all": 0.0788
+        }
+      },
+      "unresolved_keys": 3,
+      "verification": [
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A6:0|adj:7:down=0",
+          "support_on_store": 14
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:0|adj:7:down=!= 0",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A6:5|adj:7:down=0",
+          "support_on_store": 13
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:5|adj:7:down=!= 0",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A6:9|count:0=1",
+          "support_on_store": 5
+        },
+        {
+          "contradicted_on_store": 2,
+          "kept": false,
+          "rule": "A6:9|count:0=2",
+          "support_on_store": 6
+        }
+      ],
+      "verified": 3,
+      "wall_seconds": 907.1
+    },
+    {
+      "digest_chars": 5523,
+      "dose": null,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.4891,
+          "accuracy_over_covered": 0.4891,
+          "correct": 67,
+          "coverage": 1.0,
+          "covered": 137,
+          "failure_split": {
+            "guard_fixable": 10,
+            "separable_by_census": 58,
+            "unpredicted": 2
+          },
+          "rule_survival_rate": 0.1667,
+          "rules_fired": 6,
+          "rules_never_fired": 1,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 10,
+            "count": 58
+          },
+          "test_transitions": 137
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.2367,
+          "accuracy_over_covered": 0.239,
+          "correct": 49,
+          "coverage": 0.9903,
+          "covered": 205,
+          "failure_split": {
+            "guard_fixable": 10,
+            "separable_by_census": 146,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 2,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "adj": 10,
+            "count": 146
+          },
+          "test_transitions": 207
+        }
+      },
+      "game": "vc33",
+      "goal": "Completing the level probably involves driving count:7 to zero, accumulating a specific count of colour 11, or breaking the homeostatic loop by forcing the untested count:0==1 & count:4==1 state.",
+      "hidden_state": "No alias conflicts were recorded, meaning the visual grid frame (cell colours and positions) fully determines the game state.",
+      "miner_rules": 7,
+      "next_probe": "Execute ACTION6 on any colour in a state where count:0 == 1 AND count:4 == 1.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 3,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 800,
+      "thinking": {
+        "generation_tps": 9.207947528523892,
+        "prefilled_empty_think": false,
+        "prompt_chars": 6816,
+        "prompt_opens_think": true,
+        "prompt_tps": 416.15750896837613,
+        "seed": 20260804,
+        "temp": 0.6,
+        "think_chars": 24453,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 813.8
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.4891,
+          "accuracy_over_covered": 0.4891,
+          "correct": 67,
+          "coverage": 1.0,
+          "covered": 137,
+          "failure_split": {
+            "guard_fixable": 10,
+            "separable_by_census": 58,
+            "unpredicted": 2
+          },
+          "rule_survival_rate": 0.1667,
+          "rules_fired": 6,
+          "rules_never_fired": 1,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 10,
+            "count": 58
+          },
+          "test_transitions": 137
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.2367,
+          "accuracy_over_covered": 0.239,
+          "correct": 49,
+          "coverage": 0.9903,
+          "covered": 205,
+          "failure_split": {
+            "guard_fixable": 10,
+            "separable_by_census": 146,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 2,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "adj": 10,
+            "count": 146
+          },
+          "test_transitions": 207
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.4891,
+          "transitions": 137,
+          "union_accuracy_over_all": 0.4891
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.239,
+          "transitions": 205,
+          "union_accuracy_over_all": 0.239
+        }
+      },
+      "unresolved_keys": 7,
+      "verification": [
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:None|count:4=1",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:None|count:0=1",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:None|count:4=2",
+          "support_on_store": 0
+        }
+      ],
+      "verified": 0,
+      "wall_seconds": 853.4
+    }
+  ],
+  "doses": [
+    125,
+    "full"
+  ],
+  "format_version": 1,
+  "mode": "full",
+  "model": "/Users/michal/models/mlx/Qwen3.6-27B-8bit"
+}

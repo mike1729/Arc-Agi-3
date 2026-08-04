@@ -286,6 +286,16 @@ CLAUDE.md
 /logs/*/*
 !/logs/*/run_config.json
 
+# EXCEPTION 4: the E2 slice's raw call traces (600 KB, 24 files). Same argument as the S1
+# measurement JSONs above, and the same disk: the run is 3.59 h of sampled generation
+# (temp 0.6, seeded but model-version-dependent), so a lost trace set cannot be reproduced,
+# only re-sampled into different text. They ARE the audit trail for the instrument rule that
+# voided the July screens — each file carries the rendered prompt tail, the think-block
+# verdict, and the untruncated completion. logs/e2_slice.json holds only the verdicts.
+# Local-model reasoning, not the reference model's — but same bucket for publishing: tracked
+# here, never copied to the clean repo. See PUBLISHING.md.
+!/logs/e2_slice_traces/*.json
+
 # EXCEPTION 3: the v3/v4 first-pass label batches. They live in a subdirectory, so EXCEPTION 1's
 # `!/logs/*.json` never reached them and `/logs/*/*` excluded them — leaving 50 of the pooled corpus's
 # 75 first-pass labels in no commit, and the corpus unreproducible from tracked inputs. 58 KB total.
