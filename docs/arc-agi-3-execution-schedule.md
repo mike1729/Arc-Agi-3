@@ -13,6 +13,16 @@ specification's and are reproduced, not re-decided.
 Budget assumption throughout: **40–50 h/week, ~5 focused days/week.** Calendar days that are not
 focused days are where overrun absorbs.
 
+> **Status note — 2026-08-03 (register `SCHED-2026-08-03`, manifest errata `META-E1`).** The **Aug 22
+> sprint hard stop no longer binds**, and the Phase A → B boundary floats with it: the screening line
+> (VP → GI-2 → ES → MU) has not yet established that any usable local-model capability exists, and
+> the operator has decided that **discovering whether anything is possible at all precedes the build
+> calendar**. The spine and phase sections below are retained as the frozen 2026-07-28 plan and are
+> **not re-anchored**; official external dates (Oct 26 · Nov 2 · Nov 8) still bind, and every
+> build-window figure compresses day-for-day as discovery extends. Fork G-F's "at Aug 22" decision
+> point floats with sprint end (SPEC §9.6/§13.4 amended the same day). A re-anchored schedule is a
+> future edit, pending the MU §5.1 outcome.
+
 ---
 
 ## 1. The spine

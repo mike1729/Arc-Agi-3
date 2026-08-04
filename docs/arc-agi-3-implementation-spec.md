@@ -861,7 +861,9 @@ bound of the paired improvement > −5pp.
 
 ### 9.6 Fork G-F — goal families
 
-Two sprint families (Alias, Delay) make hold-one-out train on n=1 — noise. Decided Aug 22:
+Two sprint families (Alias, Delay) make hold-one-out train on n=1 — noise. Decided at sprint end
+*(was Aug 22; the hard stop is lifted and the decision point floats)* `[amended 2026-08-03 —
+SCHED-2026-08-03]`:
 **Branch A** (≥ 5 build-days slack): build the **Order** (ordered-event-program) and **Count** (cumulative-counter)
 families (2–3 days each, generator + verifier + ground-truth parameters);
 family transfer = train 3, hold out 1, rotate. **Branch B:** family transfer declared untestable and
@@ -1091,7 +1093,8 @@ descriptively. Rare catastrophic events additionally reported per episode and pe
 Margin \(\max(10\text{pp}, \min(20\text{pp}, 2\sigma))\), \(\sigma\) from ≥ 4 baseline seeds (else
 10pp floor); 1-completion non-inferiority: ≤ 3pp regression, one-sided 90% LCB > −5pp; online rule
 ≥ 5% actions-to-first-completion improvement or non-inferior with ≥ 20% lower executive cost; Order/Count
-priced 2–3 days each; Branch A requires ≥ 5 slack days at Aug 22.
+priced 2–3 days each; Branch A requires ≥ 5 slack days at sprint end *(was "at Aug 22"; the anchor
+floats and the criterion awaits re-anchoring)* `[amended 2026-08-03 — SCHED-2026-08-03]`.
 
 ### 13.5 Public-game partition and leakage policy `[frozen at step 1]`
 

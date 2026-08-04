@@ -23,7 +23,7 @@
 meta:
   sprint: "Stage 0 — Score-Oriented Screening Sprint"
   created: 2026-07-25
-  hard_stop: 2026-08-22
+  hard_stop: 2026-08-22   # SUPERSEDED 2026-08-03 — errata META-E1 / register SCHED-2026-08-03: no longer binding
   utility_ordering: "leaderboard score primary; paper is a continuous by-product, not a fallback"
   publishing_policy: "THIS REPOSITORY IS NEVER MADE PUBLIC. agent/reference/ holds an unlicensed
                       third-party snapshot; entrant-authored work is released as a NEW CLEAN REPOSITORY
@@ -818,6 +818,32 @@ errata:
     consequence: >
       es_candidates.clause_count/max_conjunction_arity implement the reading; the
       calibration artifact carries both counts per gold. No frozen number changes.
+
+  - id: META-E1
+    date: 2026-08-03
+    scope:
+      - "meta.hard_stop"
+    correction: >
+      The 2026-08-22 sprint hard stop NO LONGER BINDS. Operator decision of 2026-08-03,
+      recorded as docs/README.md register entry SCHED-2026-08-03: the screening line
+      (VP -> GI-2 -> ES -> MU) has not yet established that any usable local-model
+      capability exists, so the binding objective is to discover whether anything is
+      possible at all — ending discovery on a calendar boundary would decide the
+      feasibility question by default rather than by measurement. meta.hard_stop keeps
+      its frozen value above per the append-only rule; this erratum is the record that
+      it is superseded.
+    unchanged: >
+      Official external dates (Oct 26 entry + team-merge, Nov 2 final submission, Nov 8
+      paper) and the 1/day + 2 final submission quota. The Oct 18 internal feature-freeze
+      target is not re-decided here. Frozen blocks that cite Aug 22 in prose (s1
+      build-order consequences, submission arithmetic, es.schedule_note) keep their
+      wording; where the date served as a calendar anchor, the anchor now floats with
+      sprint end.
+    consequence: >
+      The Aug 24 -> Oct 18 build window compresses day-for-day as discovery extends —
+      accepted knowingly. SPEC §9.6/§13.4 Fork G-F calendar anchors amended the same day
+      (see the register entry); the Branch-A slack criterion awaits re-anchoring. mu ->
+      call_budget.cost_disclosure (DRAFT block) updated in place to cite this erratum.
 
 # =====================================================================================
 # S0 — External execution-path proof.
@@ -2913,3 +2939,4 @@ es:
        dated erratum at common freeze"
     - "partition: full hash rule frozen in corpus.partition_rule; the role-by-game inventory is
        an implementation artifact published at partition freeze (logs/es_inventory.json)"
+

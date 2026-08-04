@@ -22,7 +22,9 @@ their index and their interpretation.
 
 ## 1. Status board
 
-**Sprint: 18.5 focused days, hard stop Aug 22.** Budget 40–50 h/week solo, ~5 focused days/week.
+**Sprint: 18.5 focused days, hard stop Aug 22** — **hard stop lifted 2026-08-03** (register
+`SCHED-2026-08-03`, manifest errata `META-E1`): discovery of whether anything is possible at all now
+precedes the calendar; external Kaggle dates unchanged. Budget 40–50 h/week solo, ~5 focused days/week.
 
 | Sprint | Days | State | Decides (binding) | Evidence |
 |---|---:|---|---|---|
@@ -546,6 +548,7 @@ is not.
 | 2026-07-28 | Added a measured training-data readiness summary: what exists, required presentation scale, acquisition difficulty, and the distinction between abundant factual transitions and scarce counterfactual labels |
 | 2026-07-28 | §4.3 rewritten: the reset result had been reported as configuring the controller only, when it also **settles SPEC §4.1's reset posture** — recorded as `RESET-CASE-2026-07-28` and amended into the spec the same day. The scope limits both claims carry (offline, one game) are now stated where the result is |
 | 2026-07-28 | **S2 re-scoped after the specification created SPEC §4.9.** S2 was described as building "the instruments S3 uses"; the suite is Tier 1 unconditional substrate with six consumers outside S3 and is a **build step-1 precondition**, so a slip moves D0 and the whole build. §7's generator interface was a strict subset of the spec's and now carries the three requirements §4.9 added — ground-truth state IDs, seed and random-stream control with CRN declared, and on-demand generation. **The 3.5-day budget predates that interface and has not been re-examined.** §3's S1 row lost a dangling `Case` label; §11 gained generator throughput |
+| 2026-08-03 | §1: **the Aug 22 hard stop no longer binds** — operator decision, register `SCHED-2026-08-03`, manifest errata `META-E1`. The screening line (VP → GI-2 → ES → MU) has not yet established that any usable local-model capability exists; the sprint continues until that feasibility question is answered by measurement. External Kaggle dates and the 1/day quota unchanged; the Aug 24 → Oct 18 build window compresses day-for-day; SPEC §9.6/§13.4 calendar anchors amended the same day |
 
 ---
 

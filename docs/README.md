@@ -453,6 +453,47 @@ effective_spec_sections: []   # none — deliberately not a spec change; the §9
 approved_at: 2026-08-03
 ```
 
+```yaml
+decision_id: SCHED-2026-08-03
+question: >
+  The Stage 0 sprint carries a hard stop of 2026-08-22 (gate_manifest.yaml -> meta.hard_stop;
+  execution-schedule Phase A -> B boundary). ES ended coverage-blocked on 2026-08-03 with zero
+  model calls spent (ES note §11), and its successor MU is a screen that selects an interface —
+  it cannot itself establish a deployable capability. Does the Aug 22 hard stop still bind?
+evidence:
+  - artifact: notes/qwen-evidence-sufficiency-screen.md   # §11 — ES ends coverage-blocked
+  - artifact: notes/mu-representation-screen.md           # the successor screen and its §5.1 contract
+decision: hard_stop_lifted
+detail: >
+  Operator decision of 2026-08-03: the 2026-08-22 sprint hard stop NO LONGER BINDS. The
+  screening line (VP -> GI-2 -> ES -> MU) has not yet established that any local-model
+  capability usable by the agent exists; the binding objective is now to discover whether
+  anything is possible at all, and ending discovery on a calendar boundary would decide that
+  feasibility question by default rather than by measurement. Recorded in the manifest as
+  errata META-E1 (meta.hard_stop keeps its frozen value, superseded); dated status notes in
+  the execution schedule, the screening document §1, and CLAUDE.md; the mu block's
+  cost_disclosure (DRAFT) updated in place.
+unchanged: >
+  Official external dates still bind: Oct 26 entry + team-merge, Nov 2 23:59 UTC final
+  submission, Nov 8 paper deadline. The 1/day + 2 final submission quota is unaffected. The
+  Oct 18 feature-freeze target and ~Nov 5 paper target are project-internal and are NOT
+  re-decided here. The utility ordering (score primary) is unchanged — this reorders work,
+  not objectives.
+consequences: >
+  The Phase A -> B boundary (Aug 22 / Aug 24) floats, so every figure derived from the
+  Aug 24 -> Oct 18 build window (~8.4 weeks; "~59 submissions") compresses day-for-day as
+  discovery extends — accepted knowingly: a build on a substrate with no demonstrated
+  capability would spend that window on nothing. Fork G-F loses its calendar anchor: SPEC
+  §9.6 "decided Aug 22" and §13.4 "≥ 5 slack days at Aug 22" were defined against the hard
+  stop and now read "at sprint end", with the Branch-A slack criterion awaiting re-anchoring
+  once a sprint end exists — re-anchoring (or defaulting to Branch B) is a separate decision,
+  not made here. No re-anchored schedule exists yet; producing one is a schedule act pending
+  the MU §5.1 outcome. Open items 2 and 6 keep their content; their calendar arithmetic
+  floats with the boundary.
+effective_spec_sections: ["§9.6", "§13.4"]   # calendar anchors only; decision rules unchanged
+approved_at: 2026-08-03
+```
+
 ---
 
 ## Open items requiring a decision
