@@ -31,6 +31,55 @@ meta:
                       sufficient — git history counts as redistribution. See PUBLISHING.md"
 
 errata:
+  - id: MU-E2
+    date: 2026-08-03
+    scope:
+      - "tests/test_mu_screen.py (a member of mu's frozen file set)"
+    correction: "AFTER the S and C passes completed, one regression was rewritten:
+                 test_the_results_document_carries_a_decision_and_both_completeness_flags
+                 asserted `s_pass_complete is False`, which pinned the moment before any
+                 measured call rather than a rule, and so failed the day the measurement
+                 finished. It now asserts the INVARIANT — `pending` exactly while a pass is
+                 unfinished, unless the S-side no-legible-arm short-circuit fires."
+    measurement_impact: "NONE. The file is a test module and is not on any measurement path.
+                         No gold, prompt, guided schema, scorer, floor, gate, margin, arm,
+                         case, or routing rule changed, and no row of logs/mu_raw.jsonl was
+                         re-scored or re-collected under this erratum."
+    freeze_handling: "logs/mu_freeze.json is NOT re-issued. It records the instrument that
+                      actually produced the measurement, and re-freezing would falsely assert
+                      that the edited file set did. Consequence, stated so it is not read as a
+                      fault later: `mu_screen.py --verify` reports `frozen file drift:
+                      tests/test_mu_screen.py` from this date onward, BY DESIGN. A future MU
+                      measurement must re-freeze before running."
+  - id: MU-E1
+    date: 2026-08-03
+    scope:
+      - "mu.model.decoding (scoring side only; the guided schema and every rendered prompt are
+         UNCHANGED and byte-identical)"
+    defect: "agent/harness/mu_probes.parse_answer refused a MU-T3 answer whose `delta` was
+             non-null on a non-`moved` outcome. But `delta` is REQUIRED in the guided schema
+             sent to the server and typed [\"array\",\"null\"] with no conditional, so
+             {\"kind\":\"unchanged\",\"delta\":[0,0]} is exactly what the model was asked to
+             produce. The instrument required a field, permitted a value for it, and then
+             scored that value as a schema violation."
+    measured_impact: "19 of 46 MU-T3 rows in the first S-pass run (41%) were scored 0 while
+                      carrying correct content — 72 of the rejected object entries were
+                      (unchanged, [0,0]). The loss was UNEQUAL by arm (grid 6, map 5, film 5,
+                      card 2, verbal 1), i.e. concentrated on exactly the contrast MU exists to
+                      make, and MU-T3 is one of the two funding probes in mu.decision."
+    correction: "parse_answer IGNORES `delta` unless the outcome is `moved`; a `moved` outcome
+                 still requires an integer pair and the pair is still compared. score_case was
+                 already delta-blind off `moved`, so no gold, threshold, gate, margin, arm,
+                 case, prompt, guided schema, or routing rule changed. This is a validity
+                 repair of a request/scoring contradiction, NOT a threshold change."
+    evidence_handling: "the 214 rows already collected are RE-SCORED, not re-collected, because
+                        the stimulus is provably identical: mu_screen --rescore recomputes each
+                        row's request payload under the corrected code and fails closed unless
+                        it reproduces the stored request_sha256 byte-for-byte. Re-scored rows
+                        carry `rescored_from` (the superseded freeze fingerprint) and
+                        `rescored_at`. Precedent: the VP implementation-conformance erratum of
+                        2026-08-02 (fix, refreeze, exclude affected responses, restart)."
+    superseded_freeze: "a3e1f859e1aadbc0e8e862be02651c1fc3c312dab304512f024b97ae8a493258"
   - id: S1-E1
     date: 2026-07-26
     scope:
@@ -2940,3 +2989,302 @@ es:
     - "partition: full hash rule frozen in corpus.partition_rule; the role-by-game inventory is
        an implementation artifact published at partition freeze (logs/es_inventory.json)"
 
+mu:
+  # DRAFT 2026-08-03. Numeric authority for the MU mechanics-representation screen
+  # (notes/mu-representation-screen.md, 2026-08-03). The governing note declares THIS block the
+  # numeric authority and marks every one of its numbers PROPOSED until the operator accepts them;
+  # logs/mu_freeze.json records this block's digest and is NOT a second authority. Like `es`, MU
+  # has no SPEC §13 counterpart, so it does not add to docs/README.md open item 1.
+  # NOTHING MEASURED MAY RUN AGAINST THIS BLOCK WHILE IT IS DRAFT: agent/harness/mu_screen.py
+  # --freeze refuses unless status is `frozen`, and the measured passes require the freeze.
+  # The zero-call build (governing note §6 step 1) is what produced the derived numbers below.
+  status: frozen
+  drafted_on: 2026-08-03
+  frozen_on: 2026-08-03
+  accepted: "operator, 2026-08-03 — accepted after the measured bring-up. Two values were
+             REPLACED rather than accepted as drafted (cases_per_probe_per_game_per_role and
+             both margins) and one was forced by a replacement (t3_executed_share); every other
+             PROPOSED value stands as drafted. See resolved_at_freeze below. From this point
+             every change to this block is a dated erratum, never an in-place edit."
+  freeze_condition: "SATISFIED 2026-08-03: every PROPOSED value accepted or replaced; bring-up
+                     measured and its numbers carried in bringup.measured; guided JSON validated
+                     live. Recorded here as the condition that was met, not as a pending one"
+  governing_note: "notes/mu-representation-screen.md"
+  governs: "MU-T1..MU-T5 only. Supersedes nothing: ES, VP Freeze 1, and the GI-2 record are
+            untouched. MU is an offline screen and makes no score-stack conformance claim; a
+            deployment claim needs a separate exact-stack protocol (governing note §1)"
+  predecessor: "MU follows the ES closeout (notes/qwen-evidence-sufficiency-screen.md §11,
+                2026-08-03): route-2 closure exhausted its frozen budget on m0r0, tu93, and
+                vc33 (logs/es_domain_closure.json), so ES-IDENT S reads coverage-blocked
+                under es -> gates.coverage_rule and ES-USE/ES-VALUE never open. MU drops
+                every identifiability obligation and measures interface legibility and
+                usability instead; its outcomes route per the `decision` section below"
+
+  corpus:                                      # measured inventory facts, not judgments
+    games: [dc22, ft09, ls20, m0r0, tu93, vc33]
+    sessions: 18
+    roles: "the FROZEN ES assignment reused unchanged (gate_manifest.yaml -> es ->
+            corpus.partition_rule, republished in logs/es_inventory.json): S = selection,
+            C = confirmation, R sealed and untouched by MU. mu_screen fails closed if an R
+            guid reaches the inventory"
+    reuse: "frames and roles from gi2_traces; components, matching, and lineage from
+            gi2_observation; forks from logs/gi2_fork_table.json plus vc33's erratum-regenerated
+            logs/gi2_ar_vc33_forks.json, each fork row authenticated byte-for-byte against the
+            window's query state before use. No source adapter is read: every MU gold is engine-
+            or replay-derived, so MU takes no custody of ES source gold"
+    conditionality: "all conclusions are conditional on these six games; no unseen-game claim"
+
+  model:
+    measurement: "Qwen3.6-27B-8bit"            # the only evidentiary model (governing note §1)
+    development_only: "Qwen3.6-35B-A3B-4bit"   # non-evidentiary; never scored
+    decoding: "temperature=0, top_p=1, guided JSON via response_format json_schema, thinking
+               disabled; per-probe schema templates frozen with the implementation, instantiated
+               per case and fingerprinted in logs/mu_freeze.json"
+
+  representations:                             # frozen interface bundles; one canonical form each
+    arms: [grid, objects, events, card, map, verbal, film]
+    estimand: "INTERFACE BUNDLE SELECTION, not a pure rendering comparison. Every arm starts
+               from the same evidence window with the same withholdings, but the arms differ
+               in information content: grid ⊂ objects ⊂ events ⊂ card add computed layers,
+               map is deliberately lossy, verbal is computed from the object registry, and
+               film re-renders grid exactly. A difference between adjacent nested bundles
+               identifies the added layer (ES §4.2 precedent: only the added information is
+               identified); grid vs film is the only matched-information pure-rendering
+               contrast; map and verbal are ranked as bundles, never attributed to
+               formatting alone"
+    presentation: "frozen per representation in agent/harness/mu_render.py's docstring before
+                   measurement — no per-game tuning. The task framing, question, and output
+                   schema are generated once and asserted byte-identical across arms by
+                   tests/test_mu_render.py"
+    state_economy: "the window's first state in full, later states as exact deltas, the query
+                    state in full; where a delta list would be longer in characters than the full
+                    board, the full board is printed. Both encodings are exact, so the choice is
+                    economy, never truncation (ES §4.2 precedent)"
+
+  windows:
+    prefix_window: {T1: 4, T2: 2, T3: 4, T4: 4, T5: 4}   # PROPOSED, in transitions
+    rule: "the last prefix_window transitions of the CURRENT level ending at the query state; a
+           window never crosses a level boundary or a RESET, and the tracker is instantiated at
+           the window's first state, so identity is window-local"
+    leakage: "the queried outcome is never inside the shown prefix. T3-executed queries the
+              recorded action AFTER the window; T3-fork/T4/T5 query alternative actions at the
+              query state; T2 shows both frames but withholds the last transition's derived
+              tables (identity, events, catalogue, verbal narration), which ARE its answer"
+
+  cases:
+    cases_per_probe_per_game_per_role: {T1: 2, T2: 2, T3: 2, T4: 2, T5: 2}   # OPERATOR, 2026-08-03
+                                               # reduced from 3/3/4/3/3 after bring-up priced the
+                                               # S pass; see cohort_size_consequence below
+    t3_executed_share: 1                       # OPERATOR, 2026-08-03; BOUND to the T3 count —
+                                               # at 2 it would leave zero fork-form cases and
+                                               # silently drop half of T3's design
+    anchor_slack_factor: 6                     # PROPOSED; anchors tried per case wanted
+    t2_rows_max: 8                             # PROPOSED; B rows asked per identity case
+    t3_objects_per_case: 4                     # PROPOSED; named referents per mechanics case
+    closed_action_options: 6                   # PROPOSED; offered options for T4 and T5
+    closed_action_options_min: 3               # PROPOSED; ls20/tu93 advertise three actions, so
+                                               # the offered set is the whole legal set there and
+                                               # is never padded
+    mouse_representative_cap: 16               # PROPOSED; the bounded fork-representative policy
+    selection_rule: "anchors are walked in a frozen hash order and the first cases_per_probe
+                     ELIGIBLE anchors are kept, bounded by anchor_slack_factor; exhausting the
+                     slack is a published shortfall for that cell, never a resample"
+    eligibility: "a case is emitted only where its gold is two-valued: an object whose transition
+                  outcome is not in the frozen vocabulary (split, merge, or reshaped) is excluded
+                  from the probes that name objects rather than being coerced into a label"
+
+  context:
+    context_window_tokens: 32768               # the frozen S1 local serving context
+    output_headroom_tokens_min: 512            # copied from es -> es_use
+    audit: "every canonical request is rendered through the exact measurement tokenizer and chat
+            template at inventory time; the per-arm token census is published in
+            logs/mu_inventory.json"
+    feasibility_rule: "context feasibility is an ANCHOR ELIGIBILITY CONDITION, not a post-hoc
+                       exclusion: an anchor is admissible only where all seven arms fit
+                       context_window_tokens - output_headroom_tokens_min. This keeps the
+                       factorial matched — every arm sees exactly the same cases — and the count
+                       of anchors excluded this way is published per game. m0r0 reaches 879
+                       observable components on one level and is the reason the rule exists"
+
+  map_arm:
+    map_lattice: 16                            # PROPOSED; 64x64 board -> 16x16, factor 4
+    card_click_block: 8                        # PROPOSED; ACTION6 cluster = 8x8 board blocks
+
+  floors:                                      # one model-free floor per probe (note §4)
+    definitions: "T1 template look-up over the tracker registry; T2 greedy appearance match
+                  without the tracker; T3 modal effect from the shown-prefix catalogue; T4 the
+                  nearest prefix transition satisfying the target condition by state similarity;
+                  T5 catalogue-ranked action frequency. All are computed at inventory time from
+                  the same evidence window, so every case's baseline is on record before any
+                  model sees it"
+    margin_quantum: "one game-macro quantum at the accepted cohort = 1 / (6 games x 2 cases)
+                     = 0.0833. Both margins below are the smallest value STRICTLY ABOVE it,
+                     rounded to 0.09 — derived from the cohort, not chosen. A margin under one
+                     quantum is cleared by any nonzero difference and is therefore not a margin;
+                     at 0.09 a ONE-CASE gap counts as a tie. If the cohort is ever enlarged by
+                     erratum, these two numbers are recomputed from the same rule"
+    screen_positive_margin: 0.09               # OPERATOR 2026-08-03; a cell is SCREEN-POSITIVE
+                                               # (deliberately not "a capability": C holds ~18
+                                               # cases per probe, so one binary case moves
+                                               # game-macro by ~0.056) only where the model
+                                               # exceeds its floor game-macro by this margin on C
+    screen_positive_min_games: 4               # PROPOSED; and beats the floor's per-game mean in
+                                               # at least this many of the six games — the paired
+                                               # per-game consistency requirement, so a one-game
+                                               # spike cannot carry the verdict
+    t1_legibility_gate: 0.70                   # PROPOSED; an arm whose T1 game-macro is below
+                                               # this is INELIGIBLE for T2-T5 selection on S, and
+                                               # its T2-T5 rates are REPORTED but not interpreted
+                                               # as reasoning results (note §2). On C the verdict
+                                               # requires the arm's own measured T1 there
+    t1_is_a_gate_not_a_cell: "T1's floor is exact by construction, so no arm can exceed it.
+                              T1 gates selection eligibility on S and interpretation on both
+                              roles; it is never itself a selected or screen-positive cell"
+
+  selection:
+    metric: "per-probe case rate averaged within game, then the six game means averaged with
+             equal weight (game-macro); S only; T2-T5 only (T1 is a gate, never selected)"
+    eligibility: "contenders for a T2-T5 probe are the arms passing t1_legibility_gate on S;
+                  if none passes, the probe records no_legible_arm and has no C pass — that
+                  outcome routes through `decision`, never through a relaxed gate"
+    selection_margin: 0.09                     # OPERATOR 2026-08-03; inside it the CHEAPER arm wins
+                                               # (fewer prompt tokens, then the frozen arm order),
+                                               # so a representation must earn its cost
+    confirmation: "C runs the selected arm on every T2-T5 C case, PLUS T1 on every unique
+                   selected arm so confirmation legibility is measured for every arm the
+                   profile uses, plus floors; no C result may select a fallback arm"
+
+  call_budget:                                 # DERIVED at partition time from the case inventory
+    derivation: "S pass = 7 arms x every S case. C pass = the selected arm on every T2-T5 C
+                 case, plus T1 x every UNIQUE selected arm (1..4, fixed only at selection),
+                 so the budget prices the worst case. Plus a predeclared 10% retry reserve.
+                 The realized numbers are published in logs/mu_inventory.json -> call_budget
+                 and are filled in here at acceptance"
+    planned_calls_worst: 516                   # DERIVED 2026-08-03 from logs/mu_inventory.json
+                                               # at the OPERATOR-reduced cohort: 60 S cases x 7
+                                               # arms = 420, plus 48 T2-T5 C cases, plus 12 T1 C
+                                               # cases x at most 4 unique selected arms = 48
+    call_ceiling: 568                          # DERIVED: 516 + a 10% retry reserve (52)
+    s_pass_prompt_tokens: 3253873              # DERIVED: measured through the exact tokenizer
+    median_prompt_tokens_by_arm: {grid: 6430, objects: 9139, events: 12628, card: 12706,
+                                  map: 1415, verbal: 4038, film: 6232}
+    max_prompt_tokens_by_arm: {grid: 14426, objects: 15817, events: 23685, card: 23845,
+                               map: 1923, verbal: 10033, film: 8468}
+    cost_disclosure: "SUPERSEDED BY MEASUREMENT, 2026-08-03. The pre-bring-up figure here was a
+                      VP-derived lower bound of ~29-31 h serial for the S pass; it was wrong for
+                      this workload, because VP's p50 came from thinking-enabled decodes while
+                      MU disables thinking and emits ~8 output tokens under guided JSON. The
+                      measured stack is PREFILL-BOUND at ~276 tok/s (bringup.measured), so the
+                      S pass is 3,253,873 prompt tokens over 420 calls = ~2.6 h serial. Rows are
+                      ordered by case_id, so a resumable run completes T1 (the legibility gate,
+                      all seven arms) at ~0.7 h, T2 at ~1.3 h, T3 at ~2.0 h and T4 at ~2.7 h:
+                      staged reads need no protocol change and --score refuses to select off an
+                      incomplete pass. Still a first-order claim on the same single GPU as ES;
+                      meta.hard_stop 2026-08-22 NO LONGER BINDS it (errata META-E1 / register
+                      SCHED-2026-08-03, 2026-08-03) — wall clock is a cost to size, not a
+                      calendar gate"
+    cohort_size_consequence: "the OPERATOR reduced cases_per_probe_per_game_per_role from
+                              3/3/4/3/3 to 2/2/2/2/2 on 2026-08-03 after bring-up priced the
+                              pass. Consequences, recorded because they bind the read: each role
+                              now holds 12 cases per probe, so ONE binary case moves a game-macro
+                              by 0.083. Both margins were RAISED to 0.09 in the same decision so
+                              that neither sits under one quantum (see margin_quantum): a
+                              one-case gap is now a tie, the cheaper arm wins it in selection,
+                              and a screen-positive needs more than one case of separation as
+                              well as screen_positive_min_games (4 of 6, paired per game). The
+                              `screen-positive, not capability` naming in note §4 stands on the
+                              cohort size, not on the margins. Any later enlargement of the
+                              cohort is a dated erratum, never an in-place edit, once this block
+                              is frozen, and recomputes both margins from margin_quantum"
+
+  bringup:                                     # gates the freeze; note §8.3 items 2-3 made a gate
+    artifact: "logs/mu_bringup.json, written by mu_screen.py --bringup; sha256 pinned in
+               logs/mu_freeze.json. --freeze REFUSES without it, refuses when
+               guided_json_validated is not true, and refuses until `measured` below equals
+               the artifact byte-for-byte — bring-up is a freeze precondition, not advice"
+    calls: 12                                  # PROPOSED; discarded, non-evidentiary, synthetic
+                                               # prompts only — never case content, so bring-up
+                                               # spends nothing measured
+    prompt_token_targets: [1400, 12600, 24500] # PROPOSED; census min/median/max by arm, so the
+                                               # measured latency covers MU's real sizes
+    validates: "per-call latency at the three targets (p50/p95 taken at the LARGEST target)
+                and that the serving stack honours response_format json_schema — a rejection
+                is an implementation failure to fix and re-measure, never a silent fallback
+                to free-text decoding"
+    measured:                                  # MECHANICAL FILL, 2026-08-03, transcribed from
+                                               # logs/mu_bringup.json (12 discarded calls on the
+                                               # live 8-bit stack). Numbers, not judgments; the
+                                               # operator's acceptance is the status flip above.
+      p50_s: 90.623
+      p95_s: 90.623
+      max_prompt_tokens: 24742
+    sample_note: "p50/p95 at the largest target come from n=4 calls — adequate for scale-setting
+                  and for the guided-JSON validation this gates, NOT a latency distribution.
+                  Quote them as such"
+    measured_reading: "guided JSON VALIDATED 12/12 — the freeze precondition is met and the
+                       frozen `model.decoding` stands. Cost is PREFILL-BOUND, not decode-bound:
+                       thinking is disabled and guided JSON emits ~8 output tokens, so latency
+                       is prompt_tokens / ~276 tok/s + ~1 s. Measured 15-19 s at 5.0k tokens,
+                       54-63 s at 14.9k, 85-91 s at 24.7k. This REPLACES the VP-derived ~29 h
+                       lower bound in call_budget.cost_disclosure: that figure came from VP's
+                       thinking-enabled decodes and does not describe this workload. The S pass
+                       is 5,231,935 prompt tokens over 665 calls -> ~5.4 h serial"
+
+  decision:                                    # the decision contract (note §5.1); shapes fixed
+                                               # here, PROPOSED until acceptance
+    outcomes:
+      stop: "no arm passes t1_legibility_gate on S, OR no selected cell among {T3, T4} is
+             screen-positive on C. Routing: the representation menu is exhausted for Qwen
+             MECHANICS use and no goal-inference continuation is funded; advisor work on that
+             axis proceeds programmatic-only (catalogue floors); a new menu requires a new
+             registered protocol. SCOPE: `stop` is not a finding that Qwen is useless on this
+             interface — a T2 or T5 screen-positive cell under a stop verdict remains a
+             reported component result, and reopening one as an advisor component needs its own
+             registered protocol rather than a re-reading of this one"
+      continue: "at least one of {T3, T4} is screen-positive on C. Routing: fund the
+                 continuation protocol — goal inference over the winning interface — as a
+                 separately registered protocol. T5 (terminal-action discrimination at a
+                 REVEALED pre-terminal state) informs that design but cannot fund it alone:
+                 it does not establish goal induction from ordinary states"
+      adopt: "never from MU. MU is offline and makes no score-stack claim; adoption into the
+              deployed agent requires a separate exact-stack protocol plus the
+              docs/README.md register + dated SPEC amendment route"
+    funding_probes: [T3, T4]                   # PROPOSED; the mechanics probes fund, T5 informs
+    anchor_scope: "the reused fork corpora exist ONLY at completion pre-states, so T3-fork, T4
+                   and T5 anchor only there. T4 is a funding probe, so this binds a funding
+                   decision: a T4 screen-positive licenses `the winning interface supports
+                   control NEAR A COMPLETION`, never `...from ordinary states`. T3-executed is
+                   the only mechanics evidence at arbitrary in-level states — one case per game
+                   per role at the accepted cohort — and is reported as a contrast against
+                   T3-fork, never pooled silently with it. A continuation protocol inherits the
+                   interface choice, not the arbitrary-state control question"
+    min_screen_positive_cells: 1               # PROPOSED; among funding_probes, on C
+    confirmation_usability: "a probe's C read is interpretable only when its selected arm's
+                             own C T1 passes t1_legibility_gate; t1_unmeasured_on_C and
+                             arm_illegible_on_C rows can never be screen-positive"
+    computed_by: "mu_screen.decision_verdict, published as logs/mu_results.json -> decision and
+                  printed by --summary. The verdict is COMPUTED, not left to a reader, and both
+                  numbers above are mirror-checked like every other applied value. Until both
+                  passes are complete the verdict reads `pending`: an unfinished pass is not
+                  evidence of absence, the same rule that forbids selecting off a half-finished
+                  S pass. `adopt` is unreachable by construction — it is carried as a routing
+                  note beside the verdict, never produced as one"
+
+  resolved_at_freeze:                          # how every open item closed, 2026-08-03
+    - "PROPOSED values: all accepted as drafted EXCEPT
+       cases_per_probe_per_game_per_role (3/3/4/3/3 -> 2/2/2/2/2, operator, after bring-up
+       priced the pass) and the two margins (0.03 / 0.05 -> 0.09 / 0.09, derived from
+       margin_quantum once the smaller cohort put both under one quantum)"
+    - "t3_executed_share 2 -> 1: FORCED by the cohort replacement, not an independent judgment.
+       At a T3 count of 2 a share of 2 leaves zero fork-form cases and silently drops half of
+       T3's design; the share is bound to the count"
+    - "call_budget: mechanical fills from logs/mu_inventory.json, rebuilt against this block —
+       516 worst-case calls, 568 ceiling, 3,253,873 S-pass prompt tokens"
+    - "per-call latency: MEASURED (logs/mu_bringup.json, 12 discarded calls). The stack is
+       prefill-bound at ~276 tok/s; the pre-bring-up VP-derived ~29-31 h figure was wrong for
+       this workload and is withdrawn in call_budget.cost_disclosure. S pass ~2.6 h serial"
+    - "guided-JSON decoding: VALIDATED 12/12 live, so model.decoding stands unchanged"
+    - "review findings of 2026-08-03 wired before acceptance: decision.anchor_scope (T4 is a
+       funding probe anchored only at completion pre-states), the narrowed `card` claim (note
+       §3 — a <=4-sample catalogue, not an accumulated one), the narrowed `stop` routing, the
+       stated alias tie-break, and bringup.sample_note (p50/p95 from n=4)"

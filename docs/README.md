@@ -494,6 +494,55 @@ effective_spec_sections: ["§9.6", "§13.4"]   # calendar anchors only; decision
 approved_at: 2026-08-03
 ```
 
+```yaml
+decision_id: MU-2026-08-03
+question: >
+  MU screened seven live-constructible interface bundles over the running game against five
+  probes, on the six iteration games. Does any bundle let Qwen3.6-27B-8bit demonstrate mechanics
+  understanding well enough to fund a goal-inference continuation?
+evidence:
+  - artifact: notes/mu-representation-screen.md          # protocol, §5.1 decision contract
+  - artifact: notes/mu-representation-screen-results.md  # the measurement and its diagnostics
+  - artifact: logs/mu_results.json                       # computed verdict, decision.verdict
+  - artifact: logs/mu_freeze.json                        # 40fc3c5f34d72fe2… (MU-E1 supersedes a3e1f859…)
+decision: stop
+detail: >
+  MU returns `stop` under its pre-registered §5.1 contract: no funding cell among {T3, T4} is
+  screen-positive on the confirmation cohort. 492 measured calls, zero request errors, first-pass
+  schema validity 1.000, 3.55 h GPU. The T1 legibility gate split the menu cleanly and
+  unanimously across all six games — `verbal`/`card`/`events`/`objects` pass (0.896-1.000),
+  `grid`/`film`/`map` fail (0.229-0.292) with `bbox` at 0.00 on 48 items each: the model cannot
+  perform connected-component analysis on a 64x64 character grid, though it answers the same
+  board almost perfectly once a computed object table accompanies it. Selection took `verbal`
+  for T2/T3/T4 and `objects` for T5 — every legible arm sat inside the 0.09 margin, so the
+  cheaper-arm rule decided it. On C each funding probe failed a DIFFERENT one of the two
+  screen-positive requirements: T3 met per-game consistency (4/6) and missed the margin
+  (+0.056 < 0.09); T4 met the margin (+0.167) and missed consistency (3/6). Either criterion
+  alone would have returned `continue`; requiring both, fixed before any call, produced the stop.
+  A reported diagnostic added after the S pass (and therefore deciding nothing) sharpens it:
+  on T3 the selected arm scores 0.736, EXACTLY what a constant "unchanged" reply scores.
+consequence: >
+  No goal-inference continuation is funded. Advisor work on the mechanics axis proceeds
+  programmatic-only (catalogue floors). Per §5.1's scope limits this is NOT a finding that Qwen
+  is useless on this interface: a T2 or T5 component result remains reportable, and reopening one
+  needs its own registered protocol. Adoption was never reachable from MU — it is offline and
+  makes no score-stack claim.
+limitations: >
+  Conditional on the six iteration games; no unseen-game claim. §3's only matched-information
+  pure-rendering contrast (`grid` vs `film`) died at the T1 gate, so MU says nothing about
+  whether rendering format alone matters. T3-fork, T4 and T5 anchor only at completion
+  pre-states (`mu -> decision.anchor_scope`), so control near a completion is what was measured.
+  `card` was a <=4-sample catalogue, not the accumulated one a deployed advisor would carry.
+  One methodological defect is recorded rather than repaired: the frozen T3 and T4 floors are
+  WEAKER than the trivial constant-answer baseline, so the screen-positive test was easier to
+  pass than it reads — conservative here, since the gate failed anyway. A future protocol should
+  define each floor as the strongest trivial strategy available.
+errata: ["MU-E1 (scorer/guided-schema contradiction, caught mid-pass; 214 rows re-scored, not
+  re-collected, after 214/214 stimulus hashes reproduced)", "MU-E2 (post-measurement test edit)"]
+effective_spec_sections: []   # none — MU is a screen; it defines no deployed component
+approved_at: 2026-08-03
+```
+
 ---
 
 ## Open items requiring a decision
