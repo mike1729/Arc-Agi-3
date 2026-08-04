@@ -31,7 +31,8 @@ only completion rows — whose post frame the explorer does not retain as a stat
 to the stored effect signature.
 
 Run:
-  .venv/bin/python agent/harness/e2_dose.py --jobs 8 --out logs/e2_dose.json
+  .venv/bin/python agent/harness/e2_dose.py --jobs 8 --out logs/e2_dose_vocab_v2.json
+  .venv/bin/python agent/harness/e2_dose.py --jobs 8 --vocab v1 --out logs/e2_dose.json
 """
 
 from __future__ import annotations
@@ -58,7 +59,14 @@ from rs_completion import (  # noqa: E402
     ObjectCache,
     score as goal_score,
 )
-from rs_e0 import EFFECT_MODES, memorizer, mine, score  # noqa: E402
+from rs_e0 import (  # noqa: E402
+    EFFECT_MODES,
+    SCOPES,
+    guard_families,
+    memorizer,
+    mine,
+    score,
+)
 from rs_transitions import (  # noqa: E402
     ALL_GAMES,
     EXCLUDED_GAMES,
@@ -67,6 +75,8 @@ from rs_transitions import (  # noqa: E402
     effect_signature,
     guard_features,
     load_game,
+    set_vocab,
+    vocab,
 )
 
 STORE = ROOT / "logs/e1_store_v2"
@@ -132,7 +142,10 @@ def load_store(game: str) -> tuple[list[Transition], set[int]]:
 
 
 def mechanics_curve(
-    explorer: list[Transition], human_l1: list[Transition], human_l2: list[Transition]
+    explorer: list[Transition],
+    human_l1: list[Transition],
+    human_l2: list[Transition],
+    scope: str = "none",
 ) -> dict[str, Any]:
     out: dict[str, Any] = {}
     for mode in MODES:
@@ -142,18 +155,19 @@ def mechanics_curve(
             if dose is not None and len(explorer) < dose:
                 doses.append({"dose": dose, "skipped": "store smaller than dose"})
                 continue
-            rules, _ = mine(prefix, mode)
+            rules, _ = mine(prefix, mode, scope)
             doses.append(
                 {
                     "dose": dose if dose is not None else len(explorer),
                     "full_store": dose is None,
                     "rules": len(rules),
+                    "tier1_guard_families": guard_families(rules),
                     "on_human_l1": score(rules, prefix, human_l1, mode),
                     "on_human_l2": score(rules, prefix, human_l2, mode),
                     "memorizer_on_human_l1": memorizer(prefix, human_l1, mode),
                 }
             )
-        ceiling_rules, _ = mine(human_l1, mode)
+        ceiling_rules, _ = mine(human_l1, mode, scope)
         out[mode] = {
             "doses": doses,
             "human_ceiling_on_l2": score(ceiling_rules, human_l1, human_l2, mode),
@@ -208,7 +222,7 @@ def goal_curve(
     return row
 
 
-def run_game(game: str) -> dict[str, Any]:
+def run_game(game: str, *, scope: str = "none") -> dict[str, Any]:
     explorer, post_missing = load_store(game)
     human = load_game(game, max_level=2)
     human_l1 = [t for t in human if t.level == 1]
@@ -219,15 +233,15 @@ def run_game(game: str) -> dict[str, Any]:
         "store_completions": sum(t.completed for t in explorer),
         "human_l1": len(human_l1),
         "human_l2": len(human_l2),
-        "mechanics": mechanics_curve(explorer, human_l1, human_l2),
+        "mechanics": mechanics_curve(explorer, human_l1, human_l2, scope),
         "goal": goal_curve(explorer, human_l1, post_missing),
     }
     return row
 
 
-def _job(game: str) -> dict[str, Any]:
+def _job(game: str, scope: str) -> dict[str, Any]:
     try:
-        return run_game(game)
+        return run_game(game, scope=scope)
     except Exception as error:
         return {"game": game, "error": f"{type(error).__name__}: {error}"}
 
@@ -241,11 +255,20 @@ def main() -> int:
     )
     parser.add_argument("--jobs", type=int, default=6)
     parser.add_argument("--out", type=Path, default=OUTPUT)
+    # The floors every slice compares against. The vocabulary is now v2 and the floor file
+    # of record moved with it — `logs/e2_dose_vocab_v2.json`, not `logs/e2_dose.json`, which
+    # is retained as the v1 measurement and is reproducible with `--vocab v1`. See the dated
+    # addendum in notes/e2-dose.md.
+    parser.add_argument("--vocab", choices=("v1", "v2"), default="v2")
+    parser.add_argument("--scope", choices=SCOPES, default="none")
     args = parser.parse_args()
 
+    # Set before the pool exists: workers spawn on macOS and inherit the environment, not
+    # the parent's globals.
+    set_vocab(args.vocab)
     results = []
     with concurrent.futures.ProcessPoolExecutor(max_workers=args.jobs) as pool:
-        futures = {pool.submit(_job, game): game for game in args.games}
+        futures = {pool.submit(_job, game, args.scope): game for game in args.games}
         for future in concurrent.futures.as_completed(futures):
             row = future.result()
             results.append(row)
@@ -271,6 +294,8 @@ def main() -> int:
         "store": str(STORE.relative_to(ROOT)),
         "doses": list(DOSES),
         "modes": list(MODES),
+        "guard_vocabulary": vocab(),
+        "census_scope": args.scope,
         "games": {row["game"]: row for row in results},
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)

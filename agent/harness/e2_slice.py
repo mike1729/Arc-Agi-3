@@ -93,7 +93,7 @@ SEED = 20260804  # phase 1 is sampled; seeded and recorded so a cell is reproduc
 # feature outside it is REJECTED, not silently unguarded: `guards.get(unknown)` is None for
 # every transition, which equals a null guard_value, so an invented guard would vanish and
 # the rule would be scored as unguarded — strictly more permissive than proposed.
-GUARD_PREFIXES = ("present:", "count:", "adj:")
+GUARD_PREFIXES = ("present:", "count:", "adj:", "clicked_adjacent_to:")
 GUARD_EXACT = ("click_colour", "click_on_background")
 
 
@@ -240,7 +240,9 @@ KEYS THE MINER COULD NOT RESOLVE — the actual problem
   A key is unresolved when its transitions disagree about the effect and NO SINGLE guard
   feature in the miner's vocabulary separates them. The vocabulary is: present:C, count:C,
   adj:C:direction (the first non-background colour met stepping one cell out from colour C's
-  single object, or "edge"), click_colour, click_on_background.
+  single object, or "edge"), clicked_adjacent_to:C (ACTION6 only — does the 4-connected
+  same-colour component under the click touch any cell of colour C), click_colour,
+  click_on_background.
 {chr(10).join(unresolved_lines) if unresolved_lines else "  none"}
 
 ALIAS CONFLICTS (same state hash + same action -> different outcome; replay is deterministic,

@@ -55,6 +55,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -99,6 +100,33 @@ EXCLUDED_SESSIONS = {
 }
 
 ORTHOGONAL = {"up": (-1, 0), "down": (1, 0), "left": (0, -1), "right": (0, 1)}
+
+# ---- guard vocabulary version (notes/miner-vocab-v2.md) --------------------------------
+# v2 ADOPTED 2026-08-04 and is the default. It adds `clicked_adjacent_to:C` and nothing else.
+# The adoption rule was pre-committed in the note and the measured deltas satisfy it: v2 has
+# ZERO losses on every metric of all 24 games, and non-zero gains on a few (ft09 held-out-L1
+# 0.845 -> 0.892; explorer-store floors move in 2 games). Its real effect is on the FAILURE
+# TYPING, not the headline — it reclassifies 217 L1->L2 failures out of census/unpredicted
+# into guard_fixable across 9 games. See notes/miner-vocab-v2-results.md.
+#
+# v1 is the vocabulary every EARLIER number was measured under and stays available:
+# `--vocab v1` reproduces logs/e0_row_m_all.json and logs/e2_dose.json exactly, and that
+# equivalence is asserted, not assumed — see the regression in the results note.
+#
+# The setting is read at CALL time and mirrored into the environment, because e2_dose runs
+# games in a ProcessPoolExecutor: on macOS the default start method is `spawn`, so a global
+# set in the parent after import would not reach a worker, while the environment is inherited.
+VOCAB_ENV = "RS_GUARD_VOCAB"
+
+
+def set_vocab(version: str) -> None:
+    if version not in ("v1", "v2"):
+        raise ValueError(f"unknown guard vocabulary: {version}")
+    os.environ[VOCAB_ENV] = version
+
+
+def vocab() -> str:
+    return os.environ.get(VOCAB_ENV, "v2")
 
 # Data defects met during extraction, keyed by game/guid. Reported, never swallowed.
 ANOMALIES: dict[str, list[dict[str, Any]]] = {}
@@ -191,6 +219,42 @@ def effect_signature(pre_objects: _Objects, post_objects: _Objects) -> tuple:
 # Bounded, mechanical, and computed from the PRE-state and the action alone — never from the
 # outcome. A guard the miner could only evaluate after seeing the effect would make every
 # misprediction look guard-fixable, which is precisely the number E0 exists to measure.
+#
+# v1:            present:C · count:C · adj:C:direction · click_colour · click_on_background
+# v2 (default):  the above + clicked_adjacent_to:C   (ACTION6, in-bounds clicks only)
+#
+# Guards are recomputed at LOAD time from grids, here and in `e2_dose.load_store`, so v2 is a
+# code-only change: no store regenerates, E1 does not rerun.
+
+
+def _clicked_component(pre: list, row: int, col: int) -> tuple[int, set[tuple[int, int]]]:
+    """The 4-connected same-colour component containing (row, col).
+
+    Deliberately a local flood fill rather than a call to ``componentize``: only one
+    component is ever needed, and the whole-grid version is already paid for once per state
+    by ``_Objects``. It must agree with ``componentize`` on connectivity and colour, and it
+    does — 4-connected, exact value equality, no background exclusion. Background-coloured
+    components ARE legitimate here (clicking empty canvas is a real action in the placement
+    games), which is exactly where this differs from ``_Objects``.
+    """
+    height = len(pre)
+    width = len(pre[0]) if height else 0
+    colour = int(pre[row][col])
+    seen = {(row, col)}
+    stack = [(row, col)]
+    while stack:
+        r, c = stack.pop()
+        for dr, dc in ORTHOGONAL.values():
+            nr, nc = r + dr, c + dc
+            if (
+                0 <= nr < height
+                and 0 <= nc < width
+                and (nr, nc) not in seen
+                and int(pre[nr][nc]) == colour
+            ):
+                seen.add((nr, nc))
+                stack.append((nr, nc))
+    return colour, seen
 
 
 def guard_features(pre: list, pre_objects: _Objects, action_id: int, data: dict) -> dict:
@@ -231,6 +295,28 @@ def guard_features(pre: list, pre_objects: _Objects, action_id: int, data: dict)
         if isinstance(row, int) and isinstance(col, int) and 0 <= row < height and 0 <= col < width:
             guards["click_colour"] = pre[row][col]
             guards["click_on_background"] = pre[row][col] == pre_objects.background
+
+            # v2 — `clicked_adjacent_to:C`. The feature the E2 slice named as missing: what
+            # the CLICKED object touches, as opposed to `adj:C:direction`, which describes
+            # the neighbourhood of a colour that happens to denote exactly one object, from a
+            # reference point the action never mentions. Per-component and per-click, so it
+            # survives a level that duplicates a colour — which is where `adj:` goes silent.
+            #
+            # Background clicks make K the canvas and the feature near-vacuously True for
+            # most C. Not special-cased: the tier-1 selection either finds it separating or
+            # it does not, and the guard-quality count below reports which.
+            if vocab() == "v2":
+                own, cells = _clicked_component(pre, row, col)
+                touched: set[int] = set()
+                for r, c in cells:
+                    for dr, dc in ORTHOGONAL.values():
+                        nr, nc = r + dr, c + dc
+                        if 0 <= nr < height and 0 <= nc < width:
+                            value = int(pre[nr][nc])
+                            if value != own:
+                                touched.add(value)
+                for colour in sorted({int(v) for line in pre for v in line} - {own}):
+                    guards[f"clicked_adjacent_to:{colour}"] = colour in touched
         else:
             guards["click_colour"] = None
             guards["click_on_background"] = None

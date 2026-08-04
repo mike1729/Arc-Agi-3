@@ -96,3 +96,36 @@ thinking check identical to the probe, an unclosed think block voids the call.
   that is precisely what the Qwen slice measures.
 - Goal positives: 4 games, 1 example each, excluded this run (frame retention fixed
   forward).
+
+---
+
+## Addendum 2026-08-04 — the floor definition changed
+
+**Guard vocabulary v2 adopted** (`notes/miner-vocab-v2-results.md`): `clicked_adjacent_to:C`
+is now in the miner's vocabulary and `rs_transitions.vocab()` defaults to it. The floors
+above were measured under v1.
+
+**Floor file of record: `logs/e2_dose_vocab_v2.json`.** `logs/e2_dose.json` is retained as the
+v1 measurement and is still reproducible — `e2_dose.py --vocab v1`.
+
+**What actually moved: 2 of 24 games per target, median delta 0.0000.**
+
+| target | game | v1 → v2 |
+|---|---|---|
+| on-human-L1 | ft09 | 0.2522 → **0.3017** |
+| on-human-L1 | sb26 | 0.5308 → 0.5330 |
+| on-human-L2 | lf52 | 0.2011 → 0.2050 |
+| on-human-L2 | lp85 | 0.0590 → 0.0594 (`full`), 0.2396 → **0.2505** (`moveset`) |
+
+Every other game and every other cell is byte-identical, and no cell moved down. Slice
+comparisons made against the v1 floors are therefore still valid except on those four games,
+where the v2 floor is the one to beat. The claim above that **the dose curve is flat in the
+median** is unaffected: v2 changes no median at any dose.
+
+`clicked_adjacent_to:*` is selected in **8 of 23 tier-1 rules on the explorer store** across
+ft09, lf52, lp85 and sb26 — against 2 of 60 on human replays. The explorer's click evidence
+exercises the feature far harder than human play does.
+
+Census-scoped firing (mechanism 2 of the same note) was **rejected** and changes no floor:
+on the explorer store it leaves on-human-L1 coverage near-intact (−0.046 median) while
+collapsing on-human-L2 coverage by 0.780. `logs/e2_dose_scoped.json` records it.
