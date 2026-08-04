@@ -3,7 +3,7 @@
 **Run 2026-08-04. Zero model calls.** Pre-registered as `gate_manifest.yaml → rs` (frozen
 2026-08-04, errata RS-E1…RS-E5). **All 25 public games**, of which 24 carry engine truth; the
 seal on the nineteen non-iteration games was lifted by operator decision after the six-game
-result (RS-E2).
+result (RS-E2). Both rows complete.
 
 Artifacts: `logs/e0_row_m_all.json`, `logs/e0_row_c_all.json`, `logs/e0_fidelity.json`,
 `logs/e0_fidelity_rest.json`. Six-game first pass retained at `logs/e0_row_m.json`,
@@ -28,6 +28,9 @@ Across 24 games:
 | **detailed dynamics** — what exactly it does | 0.327 | 0.164 | **+0.182** |
 
 Which actions are live survives the level change essentially intact. What they *do* does not.
+And the completion condition, where the hypothesis language can express it at all, survives at
+**0.930** pooled (66 of 71 hypotheses, 10 of 24 games expressible) with a within-L1 rate of
+exactly 1.000 — no thin-evidence gap to subtract.
 
 **And the loss concentrates exactly where there was something to lose.** Split the 24 games by
 whether L1 supported a good detailed model at all:
@@ -123,34 +126,43 @@ is a property of the game — hidden state — not of the level change.
 
 ## Row C — completion conditions
 
-*(run in progress at time of writing; six-game result stands below and will be superseded by
-`logs/e0_row_c_all.json`)*
-
 Frozen ES visual grammar, hash asserted at run time. Outcomes are three-way; `vacuous` (never
 definite at L2, terms unbound) is kept separate from `survived`, so grammar silence cannot be
 reported as goal stability.
 
-Six-game pass:
+**10 of 24 games are expressible at all. Across those 10: 66 of 71 L1-consistent hypotheses
+survive L2 — a pooled rate of 0.930, with zero vacuous survivals.**
 
 | game | universe | L1 survivors | L1→L2 survived / falsified / vacuous | rate |
 |---|---:|---:|---|---|
-| dc22 | 177 | 13 | 12 / 1 / 0 | **0.923** |
-| tu93 | 150 | 12 | 12 / 0 / 0 | **1.000** |
-| ft09 | 70 | 0 | — | UNDEFINED |
-| ls20 | 168 | 0 | — | UNDEFINED |
-| m0r0 | 43 | 0 | — | UNDEFINED |
-| vc33 | 70 | 0 | — | UNDEFINED |
+| sp80 | 214 | 20 | 20 / 0 / 0 | 1.000 |
+| tu93 | 150 | 12 | 12 / 0 / 0 | 1.000 |
+| sb26 | 72 | 7 | 7 / 0 / 0 | 1.000 |
+| sk48 | 81 | 4 | 4 / 0 / 0 | 1.000 |
+| sc25 | 63 | 2 | 2 / 0 / 0 | 1.000 |
+| lf52 | 45 | 1 | 1 / 0 / 0 | 1.000 |
+| dc22 | 177 | 13 | 12 / 1 / 0 | 0.923 |
+| su15 | 61 | 7 | 6 / 1 / 0 | 0.857 |
+| tn36 | 45 | 4 | 2 / 2 / 0 | 0.500 |
+| tr87 | 54 | 1 | 0 / 1 / 0 | 0.000 |
 
-**Where the goal is expressible, it transfers.** dc22 loses one hypothesis of thirteen across
-1014 L2 transitions; tu93 loses none. Within-L1 rate is 1.000 for both, so there is no gap to
-explain, and nothing survives vacuously — every survivor made definite correct L2 predictions.
+UNDEFINED (empty L1 survivor set): ar25, bp35, cd82, cn04, ft09, g50t, ka59, lp85, ls20, m0r0,
+r11l, re86, vc33, wa30.
 
-**Expressibility is the binding limit.** An empty L1 survivor set means the visual grammar cannot
-express that game's completion condition *at all* — 0/0, reported UNDEFINED, never 0%. The
-early 24-game returns (ar25, bp35, cd82, cn04 all UNDEFINED) suggest the six-game rate of 4-in-6
-is optimistic rather than pessimistic. This independently reproduces the ES screen's
-coverage-blocked closeout from a different direction: worth something as corroboration, worth
-nothing as reassurance.
+**Where the goal is expressible, it transfers — and this is the row that survives contact with
+n=24.** Every game's within-L1 rate is exactly 1.000, so there is no thin-evidence gap to
+subtract; the L1 → L2 number is the level change alone. Nothing survives vacuously anywhere:
+all 66 survivors made definite, correct predictions on L2 transitions rather than going quiet.
+
+The two low cells are small-n, not counter-evidence: `tr87` rests on a single hypothesis and
+`tn36` on four. Every game with more than seven survivors scores ≥ 0.923.
+
+**Expressibility, not stability, is the binding limit.** An empty L1 survivor set means the
+visual grammar cannot express that game's completion condition *at all* — 0/0, reported
+UNDEFINED, never 0%, and never averaged in. At 14 of 24 the six-game rate was indeed optimistic.
+This reproduces the ES screen's coverage-blocked closeout from an entirely different direction —
+worth something as corroboration, worth nothing as reassurance. **Row C's positive finding is
+conditional on a hypothesis language that fails on the majority of games.**
 
 ## What this licenses, and what it does not
 
@@ -163,6 +175,14 @@ nothing as reassurance.
 - **Repair-vs-invalidate defaults can now be bounded, not set.** 25.4% of mispredictions admit a
   mechanical guard repair; 25.0% admit none. A repair policy built on the remaining 49.6% —
   object-census differences — would be fitting noise.
+- **The goal is the durable thing, and that is the actionable asymmetry.** A completion
+  hypothesis consistent with L1 is worth carrying to L2 (0.930); a detailed dynamics rule
+  largely is not (median accuracy 0.164). That argues for spending L1 on goal identification and
+  action inventory, and for re-deriving dynamics per level rather than transporting them.
+- **Row C's positive result is hostage to expressibility.** 14 of 24 games have no expressible
+  completion condition in the frozen visual grammar at all. Widening that language is the
+  prerequisite for the finding to generalize, and nothing here says a wider language would keep
+  the 0.930.
 - **This says nothing about whether anything can FIND these rules.** It measures only whether
   rules that are true at L1 stay true. A miner with perfect L1 evidence is assumed throughout.
 
