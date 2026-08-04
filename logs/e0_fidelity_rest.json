@@ -1,0 +1,4203 @@
+{
+  "format_version": 1,
+  "per_game": {
+    "ar25": {
+      "divergent": [],
+      "exact": 10,
+      "matched": 9323,
+      "role_divergent": [],
+      "role_exact": 10,
+      "role_matched": 9323,
+      "sessions": 10,
+      "steps": 9323
+    },
+    "bp35": {
+      "divergent": [
+        {
+          "first_divergence": {
+            "action_id": 4,
+            "recorded_frames": 47,
+            "replayed_frames": 47,
+            "step": 13
+          },
+          "guid": "01e79bb8-4697-45c2-9bde-8de3b8c25169"
+        },
+        {
+          "first_divergence": {
+            "action_id": 3,
+            "recorded_frames": 25,
+            "replayed_frames": 25,
+            "step": 11
+          },
+          "guid": "092c5051-3cda-4a35-bf7f-1323253b797d"
+        },
+        {
+          "first_divergence": {
+            "action_id": 3,
+            "recorded_frames": 25,
+            "replayed_frames": 25,
+            "step": 17
+          },
+          "guid": "132b5f89-e602-4684-b845-de63146ef402"
+        },
+        {
+          "first_divergence": {
+            "action_id": 3,
+            "recorded_frames": 25,
+            "replayed_frames": 25,
+            "step": 11
+          },
+          "guid": "2078567b-7d84-4bd4-8b8a-0f427c417c78"
+        },
+        {
+          "first_divergence": {
+            "action_id": 3,
+            "recorded_frames": 25,
+            "replayed_frames": 25,
+            "step": 14
+          },
+          "guid": "3098fb46-f1d7-4eae-a2b2-60e03a55b294"
+        },
+        {
+          "first_divergence": {
+            "action_id": 4,
+            "recorded_frames": 47,
+            "replayed_frames": 47,
+            "step": 8
+          },
+          "guid": "3493839a-d1a7-4abf-8d80-636daa3cd20c"
+        },
+        {
+          "first_divergence": {
+            "action_id": 3,
+            "recorded_frames": 25,
+            "replayed_frames": 25,
+            "step": 11
+          },
+          "guid": "37623647-bd22-417c-831c-69b557ad1a05"
+        },
+        {
+          "first_divergence": {
+            "action_id": 3,
+            "recorded_frames": 31,
+            "replayed_frames": 31,
+            "step": 13
+          },
+          "guid": "506a5ecb-7568-4e23-b5f3-da94be47ad14"
+        },
+        {
+          "first_divergence": {
+            "action_id": 3,
+            "recorded_frames": 31,
+            "replayed_frames": 31,
+            "step": 14
+          },
+          "guid": "58bc55eb-02e2-4d0f-8731-d06fc1f94eb4"
+        },
+        {
+          "first_divergence": {
+            "action_id": 3,
+            "recorded_frames": 43,
+            "replayed_frames": 43,
+            "step": 16
+          },
+          "guid": "9cedf1a9-3337-4472-8208-c2042bb4ad73"
+        },
+        {
+          "first_divergence": {
+            "action_id": 3,
+            "recorded_frames": 25,
+            "replayed_frames": 25,
+            "step": 72
+          },
+          "guid": "cf4004d8-6975-4a28-9033-9c91d047728d"
+        },
+        {
+          "first_divergence": {
+            "action_id": 3,
+            "recorded_frames": 24,
+            "replayed_frames": 32,
+            "step": 41
+          },
+          "guid": "d731594b-0b14-41f0-8615-d24fe0574776"
+        }
+      ],
+      "exact": 2,
+      "matched": 6208,
+      "role_divergent": [
+        {
+          "first_role_divergence": {
+            "action_id": 4,
+            "completion": true,
+            "step": 555
+          },
+          "guid": "01e79bb8-4697-45c2-9bde-8de3b8c25169"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 4,
+            "completion": true,
+            "step": 638
+          },
+          "guid": "092c5051-3cda-4a35-bf7f-1323253b797d"
+        }
+      ],
+      "role_exact": 12,
+      "role_matched": 6648,
+      "sessions": 14,
+      "steps": 6650
+    },
+    "cd82": {
+      "divergent": [],
+      "exact": 11,
+      "matched": 2106,
+      "role_divergent": [],
+      "role_exact": 11,
+      "role_matched": 2106,
+      "sessions": 11,
+      "steps": 2106
+    },
+    "cn04": {
+      "divergent": [
+        {
+          "first_divergence": {
+            "action_id": 0,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 626
+          },
+          "guid": "295a945d-dd3d-4608-b989-0e3fc98ab481"
+        },
+        {
+          "first_divergence": {
+            "action_id": 0,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 461
+          },
+          "guid": "ce770223-3119-448e-970c-6610fe1ae3e2"
+        }
+      ],
+      "exact": 10,
+      "matched": 7172,
+      "role_divergent": [
+        {
+          "first_role_divergence": {
+            "action_id": 0,
+            "completion": false,
+            "step": 626
+          },
+          "guid": "295a945d-dd3d-4608-b989-0e3fc98ab481"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 0,
+            "completion": false,
+            "step": 461
+          },
+          "guid": "ce770223-3119-448e-970c-6610fe1ae3e2"
+        }
+      ],
+      "role_exact": 10,
+      "role_matched": 7172,
+      "sessions": 12,
+      "steps": 7974
+    },
+    "g50t": {
+      "divergent": [],
+      "exact": 12,
+      "matched": 5618,
+      "role_divergent": [],
+      "role_exact": 12,
+      "role_matched": 5618,
+      "sessions": 12,
+      "steps": 5618
+    },
+    "ka59": {
+      "divergent": [],
+      "exact": 10,
+      "matched": 3964,
+      "role_divergent": [],
+      "role_exact": 10,
+      "role_matched": 3964,
+      "sessions": 10,
+      "steps": 3964
+    },
+    "lf52": {
+      "divergent": [
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 21,
+            "replayed_frames": 21,
+            "step": 24
+          },
+          "guid": "09ed6d45-ac12-462f-aa01-49164a5f7ec7"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 21,
+            "replayed_frames": 21,
+            "step": 46
+          },
+          "guid": "2adcd0b8-5e21-42e6-8976-b163b0d96d4a"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 21,
+            "replayed_frames": 21,
+            "step": 46
+          },
+          "guid": "2b7ab5e3-7ba6-4e65-845e-fa50fa439f8a"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 21,
+            "replayed_frames": 21,
+            "step": 29
+          },
+          "guid": "401bf4ae-848b-4c07-8f95-9e3d85ee1ebf"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 21,
+            "replayed_frames": 21,
+            "step": 28
+          },
+          "guid": "40bd319e-4d3a-451e-87e2-c88b02c2b024"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 21,
+            "replayed_frames": 21,
+            "step": 43
+          },
+          "guid": "549e2635-b796-480c-b67f-f740c42bc086"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 21,
+            "replayed_frames": 21,
+            "step": 42
+          },
+          "guid": "72a712db-3ae0-48df-8cfc-9bf9ceeca010"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 21,
+            "replayed_frames": 21,
+            "step": 37
+          },
+          "guid": "be7ef956-16ed-4bbd-9ce9-b8e92e666f2c"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 21,
+            "replayed_frames": 21,
+            "step": 23
+          },
+          "guid": "c492c65f-dc07-4c5e-97ac-fce7a4366dbd"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 21,
+            "replayed_frames": 21,
+            "step": 33
+          },
+          "guid": "d55d768c-0ead-4e34-9c5e-288449092557"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 21,
+            "replayed_frames": 21,
+            "step": 43
+          },
+          "guid": "da243e77-1d54-4996-815b-8ec8d9611e5f"
+        }
+      ],
+      "exact": 0,
+      "matched": 10339,
+      "role_divergent": [
+        {
+          "first_role_divergence": {
+            "action_id": 0,
+            "completion": false,
+            "step": 67
+          },
+          "guid": "72a712db-3ae0-48df-8cfc-9bf9ceeca010"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 0,
+            "completion": false,
+            "step": 918
+          },
+          "guid": "be7ef956-16ed-4bbd-9ce9-b8e92e666f2c"
+        }
+      ],
+      "role_exact": 9,
+      "role_matched": 10364,
+      "sessions": 11,
+      "steps": 11262
+    },
+    "lp85": {
+      "divergent": [
+        {
+          "first_divergence": {
+            "action_id": 0,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 521
+          },
+          "guid": "2bfe836e-615b-4ebf-8b1c-6763557fbdb7"
+        },
+        {
+          "first_divergence": {
+            "action_id": 0,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 401
+          },
+          "guid": "662864be-cfe2-4d9c-b1a5-fc57a7464786"
+        },
+        {
+          "first_divergence": {
+            "action_id": 0,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 258
+          },
+          "guid": "ea54afd5-a445-4946-bb02-df015265caa9"
+        },
+        {
+          "first_divergence": {
+            "action_id": 0,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 490
+          },
+          "guid": "f570ae55-c6d3-43d0-bf7b-614c080d330f"
+        }
+      ],
+      "exact": 50,
+      "matched": 13241,
+      "role_divergent": [
+        {
+          "first_role_divergence": {
+            "action_id": 0,
+            "completion": false,
+            "step": 521
+          },
+          "guid": "2bfe836e-615b-4ebf-8b1c-6763557fbdb7"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 0,
+            "completion": false,
+            "step": 401
+          },
+          "guid": "662864be-cfe2-4d9c-b1a5-fc57a7464786"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 0,
+            "completion": false,
+            "step": 258
+          },
+          "guid": "ea54afd5-a445-4946-bb02-df015265caa9"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 0,
+            "completion": false,
+            "step": 490
+          },
+          "guid": "f570ae55-c6d3-43d0-bf7b-614c080d330f"
+        }
+      ],
+      "role_exact": 50,
+      "role_matched": 13241,
+      "sessions": 54,
+      "steps": 14320
+    },
+    "r11l": {
+      "divergent": [
+        {
+          "first_divergence": {
+            "action_id": 0,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 42
+          },
+          "guid": "1c820c2e-0bb7-4f54-bffe-e4d9a1385f89"
+        }
+      ],
+      "exact": 9,
+      "matched": 2837,
+      "role_divergent": [
+        {
+          "first_role_divergence": {
+            "action_id": 0,
+            "completion": false,
+            "step": 42
+          },
+          "guid": "1c820c2e-0bb7-4f54-bffe-e4d9a1385f89"
+        }
+      ],
+      "role_exact": 9,
+      "role_matched": 2837,
+      "sessions": 10,
+      "steps": 2949
+    },
+    "re86": {
+      "divergent": [],
+      "exact": 11,
+      "matched": 12679,
+      "role_divergent": [],
+      "role_exact": 11,
+      "role_matched": 12679,
+      "sessions": 11,
+      "steps": 12679
+    },
+    "s5i5": {
+      "divergent": [
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 2
+          },
+          "guid": "157d3bc0-93da-449e-9186-67fc0402a9a4"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 2
+          },
+          "guid": "17941b1a-7e06-46d4-8bc4-5765a2a1656d"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 2
+          },
+          "guid": "2f21a731-87b0-4a78-b1a3-4e392c3433ea"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 2
+          },
+          "guid": "4dd39f12-983c-471c-8821-0b01e55de6a1"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 2
+          },
+          "guid": "583978f2-3d54-48c6-a5ba-388bc6a05cc4"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 2
+          },
+          "guid": "66d63c5e-5e2b-4c87-81c7-b46bd78a038b"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 2
+          },
+          "guid": "8a528ea6-633f-421f-9ad2-a4cf2f10ddc7"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 2
+          },
+          "guid": "8cefd372-6a72-4bc3-b3c7-5549633cb615"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 2
+          },
+          "guid": "95112af8-80f3-4b41-8412-c5b92839e113"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 2
+          },
+          "guid": "960b9124-1de0-4eb1-a916-bdc51474664c"
+        },
+        {
+          "first_divergence": {
+            "action_id": 6,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 2
+          },
+          "guid": "e9c797d3-363f-4f19-b532-9b5eb9a5eb75"
+        }
+      ],
+      "exact": 0,
+      "matched": 98,
+      "role_divergent": [
+        {
+          "first_role_divergence": {
+            "action_id": 6,
+            "completion": false,
+            "step": 2
+          },
+          "guid": "157d3bc0-93da-449e-9186-67fc0402a9a4"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 6,
+            "completion": false,
+            "step": 2
+          },
+          "guid": "17941b1a-7e06-46d4-8bc4-5765a2a1656d"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 6,
+            "completion": false,
+            "step": 2
+          },
+          "guid": "2f21a731-87b0-4a78-b1a3-4e392c3433ea"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 6,
+            "completion": false,
+            "step": 2
+          },
+          "guid": "4dd39f12-983c-471c-8821-0b01e55de6a1"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 6,
+            "completion": false,
+            "step": 2
+          },
+          "guid": "583978f2-3d54-48c6-a5ba-388bc6a05cc4"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 6,
+            "completion": false,
+            "step": 2
+          },
+          "guid": "66d63c5e-5e2b-4c87-81c7-b46bd78a038b"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 6,
+            "completion": false,
+            "step": 2
+          },
+          "guid": "8a528ea6-633f-421f-9ad2-a4cf2f10ddc7"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 6,
+            "completion": false,
+            "step": 2
+          },
+          "guid": "8cefd372-6a72-4bc3-b3c7-5549633cb615"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 6,
+            "completion": false,
+            "step": 2
+          },
+          "guid": "95112af8-80f3-4b41-8412-c5b92839e113"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 6,
+            "completion": false,
+            "step": 2
+          },
+          "guid": "960b9124-1de0-4eb1-a916-bdc51474664c"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 6,
+            "completion": false,
+            "step": 2
+          },
+          "guid": "e9c797d3-363f-4f19-b532-9b5eb9a5eb75"
+        }
+      ],
+      "role_exact": 0,
+      "role_matched": 99,
+      "sessions": 11,
+      "steps": 6475
+    },
+    "sb26": {
+      "divergent": [],
+      "exact": 12,
+      "matched": 2549,
+      "role_divergent": [],
+      "role_exact": 12,
+      "role_matched": 2549,
+      "sessions": 12,
+      "steps": 2549
+    },
+    "sc25": {
+      "divergent": [
+        {
+          "first_divergence": {
+            "action_id": 0,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 1210
+          },
+          "guid": "eb6b26b6-0873-4164-9fbe-89660e2b783f"
+        },
+        {
+          "first_divergence": {
+            "action_id": 0,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 492
+          },
+          "guid": "f253a1f3-77a3-45b2-b0aa-dab4f3355f6c"
+        }
+      ],
+      "exact": 13,
+      "matched": 5414,
+      "role_divergent": [
+        {
+          "first_role_divergence": {
+            "action_id": 0,
+            "completion": false,
+            "step": 1210
+          },
+          "guid": "eb6b26b6-0873-4164-9fbe-89660e2b783f"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 0,
+            "completion": false,
+            "step": 492
+          },
+          "guid": "f253a1f3-77a3-45b2-b0aa-dab4f3355f6c"
+        }
+      ],
+      "role_exact": 13,
+      "role_matched": 5414,
+      "sessions": 15,
+      "steps": 5699
+    },
+    "sk48": {
+      "divergent": [
+        {
+          "first_divergence": {
+            "action_id": 0,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 1366
+          },
+          "guid": "72b6c9b6-9138-40ff-96fa-f084327a3a5a"
+        }
+      ],
+      "exact": 13,
+      "matched": 14219,
+      "role_divergent": [
+        {
+          "first_role_divergence": {
+            "action_id": 0,
+            "completion": false,
+            "step": 1366
+          },
+          "guid": "72b6c9b6-9138-40ff-96fa-f084327a3a5a"
+        }
+      ],
+      "role_exact": 13,
+      "role_matched": 14219,
+      "sessions": 14,
+      "steps": 14705
+    },
+    "sp80": {
+      "divergent": [
+        {
+          "first_divergence": {
+            "action_id": 0,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 253
+          },
+          "guid": "0a573e1a-5010-4914-ba09-9c106ab21354"
+        },
+        {
+          "first_divergence": {
+            "action_id": 0,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 298
+          },
+          "guid": "add9ed90-535f-49f8-b90f-d804b5c96f68"
+        }
+      ],
+      "exact": 10,
+      "matched": 3949,
+      "role_divergent": [
+        {
+          "first_role_divergence": {
+            "action_id": 0,
+            "completion": false,
+            "step": 253
+          },
+          "guid": "0a573e1a-5010-4914-ba09-9c106ab21354"
+        },
+        {
+          "first_role_divergence": {
+            "action_id": 0,
+            "completion": false,
+            "step": 298
+          },
+          "guid": "add9ed90-535f-49f8-b90f-d804b5c96f68"
+        }
+      ],
+      "role_exact": 10,
+      "role_matched": 3949,
+      "sessions": 12,
+      "steps": 4018
+    },
+    "su15": {
+      "divergent": [],
+      "exact": 13,
+      "matched": 3573,
+      "role_divergent": [],
+      "role_exact": 13,
+      "role_matched": 3573,
+      "sessions": 13,
+      "steps": 3573
+    },
+    "tn36": {
+      "divergent": [],
+      "exact": 14,
+      "matched": 3874,
+      "role_divergent": [],
+      "role_exact": 14,
+      "role_matched": 3874,
+      "sessions": 14,
+      "steps": 3874
+    },
+    "tr87": {
+      "divergent": [],
+      "exact": 12,
+      "matched": 5270,
+      "role_divergent": [],
+      "role_exact": 12,
+      "role_matched": 5270,
+      "sessions": 12,
+      "steps": 5270
+    },
+    "wa30": {
+      "divergent": [
+        {
+          "first_divergence": {
+            "action_id": 0,
+            "recorded_frames": 1,
+            "replayed_frames": 1,
+            "step": 918
+          },
+          "guid": "5c0bed76-ae96-43c1-b99b-aa293848257e"
+        }
+      ],
+      "exact": 13,
+      "matched": 19304,
+      "role_divergent": [
+        {
+          "first_role_divergence": {
+            "action_id": 0,
+            "completion": false,
+            "step": 918
+          },
+          "guid": "5c0bed76-ae96-43c1-b99b-aa293848257e"
+        }
+      ],
+      "role_exact": 13,
+      "role_matched": 19304,
+      "sessions": 14,
+      "steps": 19621
+    }
+  },
+  "sessions": [
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1556,
+      "game": "ar25",
+      "guid": "00589449-cfb4-4b98-a31e-2a344db66f89",
+      "role_exact": true,
+      "role_frames_matched": 1556,
+      "steps": 1556
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 969,
+      "game": "ar25",
+      "guid": "03665144-5518-4e4b-af99-ec7fe6ab546d",
+      "role_exact": true,
+      "role_frames_matched": 969,
+      "steps": 969
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1034,
+      "game": "ar25",
+      "guid": "0cf890a2-b328-47f3-a845-0fa379d29358",
+      "role_exact": true,
+      "role_frames_matched": 1034,
+      "steps": 1034
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1622,
+      "game": "ar25",
+      "guid": "2a854897-cb79-48f4-92e1-0288df2cf6a9",
+      "role_exact": true,
+      "role_frames_matched": 1622,
+      "steps": 1622
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1563,
+      "game": "ar25",
+      "guid": "2ef9c7c0-8d10-4ab0-af3f-27d9e655e113",
+      "role_exact": true,
+      "role_frames_matched": 1563,
+      "steps": 1563
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 752,
+      "game": "ar25",
+      "guid": "41285539-37a7-4553-b731-a17a37a3f2df",
+      "role_exact": true,
+      "role_frames_matched": 752,
+      "steps": 752
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 578,
+      "game": "ar25",
+      "guid": "b36f18b1-39c1-4aec-9d65-73a083a09f6a",
+      "role_exact": true,
+      "role_frames_matched": 578,
+      "steps": 578
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 685,
+      "game": "ar25",
+      "guid": "e7f9a7d6-273f-4a1f-b9dd-01e694cda138",
+      "role_exact": true,
+      "role_frames_matched": 685,
+      "steps": 685
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 60,
+      "game": "ar25",
+      "guid": "e8c9d67c-83a5-4352-bd16-575577dabfd2",
+      "role_exact": true,
+      "role_frames_matched": 60,
+      "steps": 60
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 504,
+      "game": "ar25",
+      "guid": "f4698acc-06ff-418b-b419-c384194aef0a",
+      "role_exact": true,
+      "role_frames_matched": 504,
+      "steps": 504
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 4,
+        "recorded_frames": 47,
+        "replayed_frames": 47,
+        "step": 13
+      },
+      "first_role_divergence": {
+        "action_id": 4,
+        "completion": true,
+        "step": 555
+      },
+      "frames_matched": 515,
+      "game": "bp35",
+      "guid": "01e79bb8-4697-45c2-9bde-8de3b8c25169",
+      "role_exact": false,
+      "role_frames_matched": 554,
+      "steps": 555
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 3,
+        "recorded_frames": 25,
+        "replayed_frames": 25,
+        "step": 11
+      },
+      "first_role_divergence": {
+        "action_id": 4,
+        "completion": true,
+        "step": 638
+      },
+      "frames_matched": 600,
+      "game": "bp35",
+      "guid": "092c5051-3cda-4a35-bf7f-1323253b797d",
+      "role_exact": false,
+      "role_frames_matched": 637,
+      "steps": 638
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 3,
+        "recorded_frames": 25,
+        "replayed_frames": 25,
+        "step": 17
+      },
+      "first_role_divergence": null,
+      "frames_matched": 574,
+      "game": "bp35",
+      "guid": "132b5f89-e602-4684-b845-de63146ef402",
+      "role_exact": true,
+      "role_frames_matched": 617,
+      "steps": 617
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 3,
+        "recorded_frames": 25,
+        "replayed_frames": 25,
+        "step": 11
+      },
+      "first_role_divergence": null,
+      "frames_matched": 10,
+      "game": "bp35",
+      "guid": "2078567b-7d84-4bd4-8b8a-0f427c417c78",
+      "role_exact": true,
+      "role_frames_matched": 11,
+      "steps": 11
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 3,
+        "recorded_frames": 25,
+        "replayed_frames": 25,
+        "step": 14
+      },
+      "first_role_divergence": null,
+      "frames_matched": 553,
+      "game": "bp35",
+      "guid": "3098fb46-f1d7-4eae-a2b2-60e03a55b294",
+      "role_exact": true,
+      "role_frames_matched": 584,
+      "steps": 584
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 4,
+        "recorded_frames": 47,
+        "replayed_frames": 47,
+        "step": 8
+      },
+      "first_role_divergence": null,
+      "frames_matched": 641,
+      "game": "bp35",
+      "guid": "3493839a-d1a7-4abf-8d80-636daa3cd20c",
+      "role_exact": true,
+      "role_frames_matched": 694,
+      "steps": 694
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 3,
+        "recorded_frames": 25,
+        "replayed_frames": 25,
+        "step": 11
+      },
+      "first_role_divergence": null,
+      "frames_matched": 752,
+      "game": "bp35",
+      "guid": "37623647-bd22-417c-831c-69b557ad1a05",
+      "role_exact": true,
+      "role_frames_matched": 793,
+      "steps": 793
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 2,
+      "game": "bp35",
+      "guid": "5003fba9-c264-47cb-8f34-9108a5ee9df0",
+      "role_exact": true,
+      "role_frames_matched": 2,
+      "steps": 2
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 3,
+        "recorded_frames": 31,
+        "replayed_frames": 31,
+        "step": 13
+      },
+      "first_role_divergence": null,
+      "frames_matched": 349,
+      "game": "bp35",
+      "guid": "506a5ecb-7568-4e23-b5f3-da94be47ad14",
+      "role_exact": true,
+      "role_frames_matched": 379,
+      "steps": 379
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 3,
+        "recorded_frames": 31,
+        "replayed_frames": 31,
+        "step": 14
+      },
+      "first_role_divergence": null,
+      "frames_matched": 689,
+      "game": "bp35",
+      "guid": "58bc55eb-02e2-4d0f-8731-d06fc1f94eb4",
+      "role_exact": true,
+      "role_frames_matched": 735,
+      "steps": 735
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 3,
+        "recorded_frames": 43,
+        "replayed_frames": 43,
+        "step": 16
+      },
+      "first_role_divergence": null,
+      "frames_matched": 575,
+      "game": "bp35",
+      "guid": "9cedf1a9-3337-4472-8208-c2042bb4ad73",
+      "role_exact": true,
+      "role_frames_matched": 613,
+      "steps": 613
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 3,
+        "recorded_frames": 25,
+        "replayed_frames": 25,
+        "step": 72
+      },
+      "first_role_divergence": null,
+      "frames_matched": 343,
+      "game": "bp35",
+      "guid": "cf4004d8-6975-4a28-9033-9c91d047728d",
+      "role_exact": true,
+      "role_frames_matched": 370,
+      "steps": 370
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 3,
+        "recorded_frames": 24,
+        "replayed_frames": 32,
+        "step": 41
+      },
+      "first_role_divergence": null,
+      "frames_matched": 602,
+      "game": "bp35",
+      "guid": "d731594b-0b14-41f0-8615-d24fe0574776",
+      "role_exact": true,
+      "role_frames_matched": 656,
+      "steps": 656
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 3,
+      "game": "bp35",
+      "guid": "e81af5ee-065a-4f3f-b8b4-3c3897d8a3fc",
+      "role_exact": true,
+      "role_frames_matched": 3,
+      "steps": 3
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 277,
+      "game": "cd82",
+      "guid": "0c6d47d7-7bc3-40a6-97bd-9388d6411ebe",
+      "role_exact": true,
+      "role_frames_matched": 277,
+      "steps": 277
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 154,
+      "game": "cd82",
+      "guid": "130512d8-1d1b-4ee4-ab4b-9e0397fa6af8",
+      "role_exact": true,
+      "role_frames_matched": 154,
+      "steps": 154
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 125,
+      "game": "cd82",
+      "guid": "2e4399fe-f0f6-421d-bc32-7827ad792b96",
+      "role_exact": true,
+      "role_frames_matched": 125,
+      "steps": 125
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 355,
+      "game": "cd82",
+      "guid": "33f6b2f7-9e0d-41c5-ab94-5f929cdb85c1",
+      "role_exact": true,
+      "role_frames_matched": 355,
+      "steps": 355
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 200,
+      "game": "cd82",
+      "guid": "52879352-3a32-4bde-a55d-075f1d2a5a3f",
+      "role_exact": true,
+      "role_frames_matched": 200,
+      "steps": 200
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 159,
+      "game": "cd82",
+      "guid": "627766f8-bfb7-4a25-ba48-ca4a555d63a6",
+      "role_exact": true,
+      "role_frames_matched": 159,
+      "steps": 159
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 137,
+      "game": "cd82",
+      "guid": "68939ee7-b3fe-40f6-9307-3f143ddf03d2",
+      "role_exact": true,
+      "role_frames_matched": 137,
+      "steps": 137
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 191,
+      "game": "cd82",
+      "guid": "73141bdd-24a4-4725-8c51-514e23f107eb",
+      "role_exact": true,
+      "role_frames_matched": 191,
+      "steps": 191
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 22,
+      "game": "cd82",
+      "guid": "acb3b87e-7c9d-4781-8515-b21fb3d41964",
+      "role_exact": true,
+      "role_frames_matched": 22,
+      "steps": 22
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 259,
+      "game": "cd82",
+      "guid": "bac88f30-3772-4c39-8ed0-2b3fc6d8eab2",
+      "role_exact": true,
+      "role_frames_matched": 259,
+      "steps": 259
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 227,
+      "game": "cd82",
+      "guid": "eccc0126-e306-4e6e-8bff-3e76fef63777",
+      "role_exact": true,
+      "role_frames_matched": 227,
+      "steps": 227
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 411,
+      "game": "cn04",
+      "guid": "14a28e82-4f24-4cb6-8810-39d70b9d0b4b",
+      "role_exact": true,
+      "role_frames_matched": 411,
+      "steps": 411
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 779,
+      "game": "cn04",
+      "guid": "1e88ef7d-2a0c-4d4b-94c4-9d50ac0e6b58",
+      "role_exact": true,
+      "role_frames_matched": 779,
+      "steps": 779
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 262,
+      "game": "cn04",
+      "guid": "1fe0b79b-b173-4ac6-9bc0-9d232c074233",
+      "role_exact": true,
+      "role_frames_matched": 262,
+      "steps": 262
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 0,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 626
+      },
+      "first_role_divergence": {
+        "action_id": 0,
+        "completion": false,
+        "step": 626
+      },
+      "frames_matched": 626,
+      "game": "cn04",
+      "guid": "295a945d-dd3d-4608-b989-0e3fc98ab481",
+      "role_exact": false,
+      "role_frames_matched": 626,
+      "steps": 1206
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 556,
+      "game": "cn04",
+      "guid": "368a1bda-05c2-4995-a0f3-947c28a6e9fc",
+      "role_exact": true,
+      "role_frames_matched": 556,
+      "steps": 556
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1164,
+      "game": "cn04",
+      "guid": "49345faa-7b95-4661-ba20-594e12326e76",
+      "role_exact": true,
+      "role_frames_matched": 1164,
+      "steps": 1164
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 183,
+      "game": "cn04",
+      "guid": "6fcb0288-417d-44ce-a3a8-0d27bf16c270",
+      "role_exact": true,
+      "role_frames_matched": 183,
+      "steps": 183
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1,
+      "game": "cn04",
+      "guid": "8150a401-8105-4cb3-abf1-283b9a04ec14",
+      "role_exact": true,
+      "role_frames_matched": 1,
+      "steps": 1
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 360,
+      "game": "cn04",
+      "guid": "a52b9c50-af36-46fd-9c70-3132d7f422cb",
+      "role_exact": true,
+      "role_frames_matched": 360,
+      "steps": 360
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1521,
+      "game": "cn04",
+      "guid": "b2a7c347-81f0-4075-a54b-96ddd336bd36",
+      "role_exact": true,
+      "role_frames_matched": 1521,
+      "steps": 1521
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 849,
+      "game": "cn04",
+      "guid": "cc4c82aa-4768-4505-a109-c4a99a65c0bb",
+      "role_exact": true,
+      "role_frames_matched": 849,
+      "steps": 849
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 0,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 461
+      },
+      "first_role_divergence": {
+        "action_id": 0,
+        "completion": false,
+        "step": 461
+      },
+      "frames_matched": 460,
+      "game": "cn04",
+      "guid": "ce770223-3119-448e-970c-6610fe1ae3e2",
+      "role_exact": false,
+      "role_frames_matched": 460,
+      "steps": 682
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 447,
+      "game": "g50t",
+      "guid": "08d5d2c0-3a61-449d-9de6-62ec5e253e29",
+      "role_exact": true,
+      "role_frames_matched": 447,
+      "steps": 447
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 203,
+      "game": "g50t",
+      "guid": "0a967229-b557-44c1-8350-a74377558894",
+      "role_exact": true,
+      "role_frames_matched": 203,
+      "steps": 203
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 153,
+      "game": "g50t",
+      "guid": "1b6e7580-35a9-47bf-ac6d-0ed80f8c8513",
+      "role_exact": true,
+      "role_frames_matched": 153,
+      "steps": 153
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 564,
+      "game": "g50t",
+      "guid": "224bacfb-31d3-43e7-9d72-976a6b540435",
+      "role_exact": true,
+      "role_frames_matched": 564,
+      "steps": 564
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 476,
+      "game": "g50t",
+      "guid": "3de1fb81-8541-4803-8624-5f5cb62dc78e",
+      "role_exact": true,
+      "role_frames_matched": 476,
+      "steps": 476
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 598,
+      "game": "g50t",
+      "guid": "42e8affb-ab23-4535-9831-a8bb04a1131a",
+      "role_exact": true,
+      "role_frames_matched": 598,
+      "steps": 598
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 532,
+      "game": "g50t",
+      "guid": "686fbe44-90d9-47f6-8a6b-16493cfe3fe0",
+      "role_exact": true,
+      "role_frames_matched": 532,
+      "steps": 532
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 245,
+      "game": "g50t",
+      "guid": "8200b321-a2a4-4030-9ee6-ef9bfcfa5876",
+      "role_exact": true,
+      "role_frames_matched": 245,
+      "steps": 245
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 350,
+      "game": "g50t",
+      "guid": "9de391b3-3357-41e0-bafc-86793839ccc0",
+      "role_exact": true,
+      "role_frames_matched": 350,
+      "steps": 350
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 473,
+      "game": "g50t",
+      "guid": "c27295c4-6885-4157-b990-d6f9a6290a55",
+      "role_exact": true,
+      "role_frames_matched": 473,
+      "steps": 473
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 576,
+      "game": "g50t",
+      "guid": "c71254fe-00b6-4ee2-b68a-941263eab37f",
+      "role_exact": true,
+      "role_frames_matched": 576,
+      "steps": 576
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1001,
+      "game": "g50t",
+      "guid": "c7e359dd-11e2-44e1-984a-9b38e794ae01",
+      "role_exact": true,
+      "role_frames_matched": 1001,
+      "steps": 1001
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 442,
+      "game": "ka59",
+      "guid": "021d8b1d-980f-4ff0-a40d-6a02dc27c415",
+      "role_exact": true,
+      "role_frames_matched": 442,
+      "steps": 442
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 51,
+      "game": "ka59",
+      "guid": "52dd648e-dc33-4b71-8bb8-6ce0f3bd61ed",
+      "role_exact": true,
+      "role_frames_matched": 51,
+      "steps": 51
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 34,
+      "game": "ka59",
+      "guid": "6a1d161a-29f9-497d-8ec5-574e61085adc",
+      "role_exact": true,
+      "role_frames_matched": 34,
+      "steps": 34
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 746,
+      "game": "ka59",
+      "guid": "7c3222bf-3d88-40df-8d35-eabd7a572642",
+      "role_exact": true,
+      "role_frames_matched": 746,
+      "steps": 746
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 95,
+      "game": "ka59",
+      "guid": "993191db-ce93-425f-ac62-c6d0a023afa8",
+      "role_exact": true,
+      "role_frames_matched": 95,
+      "steps": 95
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 120,
+      "game": "ka59",
+      "guid": "9bd8dbeb-72a0-464d-b97e-117fbc3f3981",
+      "role_exact": true,
+      "role_frames_matched": 120,
+      "steps": 120
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 137,
+      "game": "ka59",
+      "guid": "9cf1e190-5731-47fc-8a94-fe148312bb9d",
+      "role_exact": true,
+      "role_frames_matched": 137,
+      "steps": 137
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 827,
+      "game": "ka59",
+      "guid": "c714584f-2af3-442a-89d3-aed9bddbf705",
+      "role_exact": true,
+      "role_frames_matched": 827,
+      "steps": 827
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 905,
+      "game": "ka59",
+      "guid": "df12c800-c18c-494e-9949-c9fac56cf863",
+      "role_exact": true,
+      "role_frames_matched": 905,
+      "steps": 905
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 607,
+      "game": "ka59",
+      "guid": "fa26a895-2e85-4227-ab94-29ab00efa8b8",
+      "role_exact": true,
+      "role_frames_matched": 607,
+      "steps": 607
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 21,
+        "replayed_frames": 21,
+        "step": 24
+      },
+      "first_role_divergence": null,
+      "frames_matched": 1246,
+      "game": "lf52",
+      "guid": "09ed6d45-ac12-462f-aa01-49164a5f7ec7",
+      "role_exact": true,
+      "role_frames_matched": 1252,
+      "steps": 1252
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 21,
+        "replayed_frames": 21,
+        "step": 46
+      },
+      "first_role_divergence": null,
+      "frames_matched": 1741,
+      "game": "lf52",
+      "guid": "2adcd0b8-5e21-42e6-8976-b163b0d96d4a",
+      "role_exact": true,
+      "role_frames_matched": 1742,
+      "steps": 1742
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 21,
+        "replayed_frames": 21,
+        "step": 46
+      },
+      "first_role_divergence": null,
+      "frames_matched": 75,
+      "game": "lf52",
+      "guid": "2b7ab5e3-7ba6-4e65-845e-fa50fa439f8a",
+      "role_exact": true,
+      "role_frames_matched": 78,
+      "steps": 78
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 21,
+        "replayed_frames": 21,
+        "step": 29
+      },
+      "first_role_divergence": null,
+      "frames_matched": 79,
+      "game": "lf52",
+      "guid": "401bf4ae-848b-4c07-8f95-9e3d85ee1ebf",
+      "role_exact": true,
+      "role_frames_matched": 80,
+      "steps": 80
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 21,
+        "replayed_frames": 21,
+        "step": 28
+      },
+      "first_role_divergence": null,
+      "frames_matched": 1601,
+      "game": "lf52",
+      "guid": "40bd319e-4d3a-451e-87e2-c88b02c2b024",
+      "role_exact": true,
+      "role_frames_matched": 1605,
+      "steps": 1605
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 21,
+        "replayed_frames": 21,
+        "step": 43
+      },
+      "first_role_divergence": null,
+      "frames_matched": 1313,
+      "game": "lf52",
+      "guid": "549e2635-b796-480c-b67f-f740c42bc086",
+      "role_exact": true,
+      "role_frames_matched": 1314,
+      "steps": 1314
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 21,
+        "replayed_frames": 21,
+        "step": 42
+      },
+      "first_role_divergence": {
+        "action_id": 0,
+        "completion": false,
+        "step": 67
+      },
+      "frames_matched": 64,
+      "game": "lf52",
+      "guid": "72a712db-3ae0-48df-8cfc-9bf9ceeca010",
+      "role_exact": false,
+      "role_frames_matched": 66,
+      "steps": 68
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 21,
+        "replayed_frames": 21,
+        "step": 37
+      },
+      "first_role_divergence": {
+        "action_id": 0,
+        "completion": false,
+        "step": 918
+      },
+      "frames_matched": 916,
+      "game": "lf52",
+      "guid": "be7ef956-16ed-4bbd-9ce9-b8e92e666f2c",
+      "role_exact": false,
+      "role_frames_matched": 917,
+      "steps": 1813
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 21,
+        "replayed_frames": 21,
+        "step": 23
+      },
+      "first_role_divergence": null,
+      "frames_matched": 1107,
+      "game": "lf52",
+      "guid": "c492c65f-dc07-4c5e-97ac-fce7a4366dbd",
+      "role_exact": true,
+      "role_frames_matched": 1108,
+      "steps": 1108
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 21,
+        "replayed_frames": 21,
+        "step": 33
+      },
+      "first_role_divergence": null,
+      "frames_matched": 1211,
+      "game": "lf52",
+      "guid": "d55d768c-0ead-4e34-9c5e-288449092557",
+      "role_exact": true,
+      "role_frames_matched": 1212,
+      "steps": 1212
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 21,
+        "replayed_frames": 21,
+        "step": 43
+      },
+      "first_role_divergence": null,
+      "frames_matched": 986,
+      "game": "lf52",
+      "guid": "da243e77-1d54-4996-815b-8ec8d9611e5f",
+      "role_exact": true,
+      "role_frames_matched": 990,
+      "steps": 990
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 49,
+      "game": "lp85",
+      "guid": "02ec6bb4-1419-41e7-a888-b6a98b45abda",
+      "role_exact": true,
+      "role_frames_matched": 49,
+      "steps": 49
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 229,
+      "game": "lp85",
+      "guid": "03f416d0-f5af-4822-8427-0b010ef928ed",
+      "role_exact": true,
+      "role_frames_matched": 229,
+      "steps": 229
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 386,
+      "game": "lp85",
+      "guid": "05b0a343-1666-4286-8c81-c5d212f3cf72",
+      "role_exact": true,
+      "role_frames_matched": 386,
+      "steps": 386
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 368,
+      "game": "lp85",
+      "guid": "072f2a2b-5624-48b5-a3f5-83edf1879de5",
+      "role_exact": true,
+      "role_frames_matched": 368,
+      "steps": 368
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 33,
+      "game": "lp85",
+      "guid": "17f1dce5-db63-4b50-bf7f-38481c917e68",
+      "role_exact": true,
+      "role_frames_matched": 33,
+      "steps": 33
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 247,
+      "game": "lp85",
+      "guid": "18aeec67-f441-4ea1-92c2-e19dd9802cf6",
+      "role_exact": true,
+      "role_frames_matched": 247,
+      "steps": 247
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 9,
+      "game": "lp85",
+      "guid": "1f996ded-1669-4e10-813a-0a7e9f7db34c",
+      "role_exact": true,
+      "role_frames_matched": 9,
+      "steps": 9
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 15,
+      "game": "lp85",
+      "guid": "2bdef327-cfbe-4404-87e1-3816f7838334",
+      "role_exact": true,
+      "role_frames_matched": 15,
+      "steps": 15
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 0,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 521
+      },
+      "first_role_divergence": {
+        "action_id": 0,
+        "completion": false,
+        "step": 521
+      },
+      "frames_matched": 520,
+      "game": "lp85",
+      "guid": "2bfe836e-615b-4ebf-8b1c-6763557fbdb7",
+      "role_exact": false,
+      "role_frames_matched": 520,
+      "steps": 544
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 150,
+      "game": "lp85",
+      "guid": "305c24c4-6bcf-4323-b511-13e083be1882",
+      "role_exact": true,
+      "role_frames_matched": 150,
+      "steps": 150
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 948,
+      "game": "lp85",
+      "guid": "380aead7-3d4f-427b-8933-4b76d09b3a45",
+      "role_exact": true,
+      "role_frames_matched": 948,
+      "steps": 948
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 53,
+      "game": "lp85",
+      "guid": "38ccc118-ea37-40c7-9dd0-477e9b397c46",
+      "role_exact": true,
+      "role_frames_matched": 53,
+      "steps": 53
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 9,
+      "game": "lp85",
+      "guid": "3d73793f-dea7-413a-9b98-93ea630fd60e",
+      "role_exact": true,
+      "role_frames_matched": 9,
+      "steps": 9
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 138,
+      "game": "lp85",
+      "guid": "438fcfdf-ceed-474b-ad62-878c3fe3b69f",
+      "role_exact": true,
+      "role_frames_matched": 138,
+      "steps": 138
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 24,
+      "game": "lp85",
+      "guid": "4a3b9486-4deb-4b7d-b824-3cd7c05c5e0b",
+      "role_exact": true,
+      "role_frames_matched": 24,
+      "steps": 24
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 152,
+      "game": "lp85",
+      "guid": "4a980020-408b-4cf2-9baa-0460c8d9f2ef",
+      "role_exact": true,
+      "role_frames_matched": 152,
+      "steps": 152
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 346,
+      "game": "lp85",
+      "guid": "4bcb78d5-e9b5-4cd6-91ac-4234a7e7ba9e",
+      "role_exact": true,
+      "role_frames_matched": 346,
+      "steps": 346
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 423,
+      "game": "lp85",
+      "guid": "543d2fc4-84f4-497d-a87a-47bd578d8410",
+      "role_exact": true,
+      "role_frames_matched": 423,
+      "steps": 423
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 8,
+      "game": "lp85",
+      "guid": "5541ada3-5705-407e-977a-08f7a86e6544",
+      "role_exact": true,
+      "role_frames_matched": 8,
+      "steps": 8
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 2,
+      "game": "lp85",
+      "guid": "572af32f-449f-419a-a5d0-8066a765fcdf",
+      "role_exact": true,
+      "role_frames_matched": 2,
+      "steps": 2
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 16,
+      "game": "lp85",
+      "guid": "57470621-98b5-420b-8bd0-8376c0f7c4de",
+      "role_exact": true,
+      "role_frames_matched": 16,
+      "steps": 16
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 0,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 401
+      },
+      "first_role_divergence": {
+        "action_id": 0,
+        "completion": false,
+        "step": 401
+      },
+      "frames_matched": 400,
+      "game": "lp85",
+      "guid": "662864be-cfe2-4d9c-b1a5-fc57a7464786",
+      "role_exact": false,
+      "role_frames_matched": 400,
+      "steps": 870
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 420,
+      "game": "lp85",
+      "guid": "6b63d889-ccaf-434a-929e-f74076fb6c62",
+      "role_exact": true,
+      "role_frames_matched": 420,
+      "steps": 420
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 29,
+      "game": "lp85",
+      "guid": "6d5c4537-5244-4532-9187-aafdb08d0783",
+      "role_exact": true,
+      "role_frames_matched": 29,
+      "steps": 29
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 299,
+      "game": "lp85",
+      "guid": "6d80a815-bcac-432f-a310-d0b6f3bcb665",
+      "role_exact": true,
+      "role_frames_matched": 299,
+      "steps": 299
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 163,
+      "game": "lp85",
+      "guid": "6e91a6cf-9fdd-467c-b6fe-e17d6edd8358",
+      "role_exact": true,
+      "role_frames_matched": 163,
+      "steps": 163
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 404,
+      "game": "lp85",
+      "guid": "72f71d14-f711-4964-bc44-cd10110dab84",
+      "role_exact": true,
+      "role_frames_matched": 404,
+      "steps": 404
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 169,
+      "game": "lp85",
+      "guid": "75dd891e-a56e-4d03-b890-7d8a4ae01830",
+      "role_exact": true,
+      "role_frames_matched": 169,
+      "steps": 169
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 318,
+      "game": "lp85",
+      "guid": "7cec8346-ff5e-4af8-92ec-69c983e35ff1",
+      "role_exact": true,
+      "role_frames_matched": 318,
+      "steps": 318
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 22,
+      "game": "lp85",
+      "guid": "7fa2edf9-6ab6-483a-a4d5-a946a9fa68a3",
+      "role_exact": true,
+      "role_frames_matched": 22,
+      "steps": 22
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 270,
+      "game": "lp85",
+      "guid": "8070629d-1e1c-4343-abb5-4b5e9021ffb5",
+      "role_exact": true,
+      "role_frames_matched": 270,
+      "steps": 270
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 307,
+      "game": "lp85",
+      "guid": "813ed237-7717-491d-8524-bab13aef81c9",
+      "role_exact": true,
+      "role_frames_matched": 307,
+      "steps": 307
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 20,
+      "game": "lp85",
+      "guid": "8677bd80-6f0c-4289-a10d-5cee33ef288d",
+      "role_exact": true,
+      "role_frames_matched": 20,
+      "steps": 20
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 222,
+      "game": "lp85",
+      "guid": "8fafc2ba-fe99-47e2-a9ec-4369e51bfd6b",
+      "role_exact": true,
+      "role_frames_matched": 222,
+      "steps": 222
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 238,
+      "game": "lp85",
+      "guid": "9cd4a0d0-3872-464c-930f-42cec2a79252",
+      "role_exact": true,
+      "role_frames_matched": 238,
+      "steps": 238
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1311,
+      "game": "lp85",
+      "guid": "9fb719e2-d70e-48fc-a29e-b45a4228dc0e",
+      "role_exact": true,
+      "role_frames_matched": 1311,
+      "steps": 1311
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 252,
+      "game": "lp85",
+      "guid": "a0504234-bec5-4879-9e76-f0df8be63cd0",
+      "role_exact": true,
+      "role_frames_matched": 252,
+      "steps": 252
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 350,
+      "game": "lp85",
+      "guid": "a6c7591f-f185-42f6-afce-a9d05e744dd0",
+      "role_exact": true,
+      "role_frames_matched": 350,
+      "steps": 350
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 21,
+      "game": "lp85",
+      "guid": "a9a6aed8-8d10-4ee0-afe0-e0c5000ba06f",
+      "role_exact": true,
+      "role_frames_matched": 21,
+      "steps": 21
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 369,
+      "game": "lp85",
+      "guid": "ab38af90-db82-4d68-9b72-0ccdbe274099",
+      "role_exact": true,
+      "role_frames_matched": 369,
+      "steps": 369
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 360,
+      "game": "lp85",
+      "guid": "aec841b6-4faf-4236-bbff-557cf77db467",
+      "role_exact": true,
+      "role_frames_matched": 360,
+      "steps": 360
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 212,
+      "game": "lp85",
+      "guid": "c43754a4-4f55-42ac-a8a6-299758cb17cf",
+      "role_exact": true,
+      "role_frames_matched": 212,
+      "steps": 212
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 421,
+      "game": "lp85",
+      "guid": "c49e1411-c863-42c0-a14d-1875a5b2db0f",
+      "role_exact": true,
+      "role_frames_matched": 421,
+      "steps": 421
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 35,
+      "game": "lp85",
+      "guid": "d5a4ed93-6757-473b-be54-87438575363f",
+      "role_exact": true,
+      "role_frames_matched": 35,
+      "steps": 35
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 281,
+      "game": "lp85",
+      "guid": "d9260832-f236-463a-98e8-0cd8e4b427b2",
+      "role_exact": true,
+      "role_frames_matched": 281,
+      "steps": 281
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 215,
+      "game": "lp85",
+      "guid": "dc1c2fbc-c14b-4b6e-b44b-4311dabba550",
+      "role_exact": true,
+      "role_frames_matched": 215,
+      "steps": 215
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 278,
+      "game": "lp85",
+      "guid": "df57c5db-5678-41c4-8f4b-ff4b4e2d9c5e",
+      "role_exact": true,
+      "role_frames_matched": 278,
+      "steps": 278
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 0,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 258
+      },
+      "first_role_divergence": {
+        "action_id": 0,
+        "completion": false,
+        "step": 258
+      },
+      "frames_matched": 257,
+      "game": "lp85",
+      "guid": "ea54afd5-a445-4946-bb02-df015265caa9",
+      "role_exact": false,
+      "role_frames_matched": 257,
+      "steps": 658
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 167,
+      "game": "lp85",
+      "guid": "eab6d9f0-b851-4446-a9f2-b076a257c597",
+      "role_exact": true,
+      "role_frames_matched": 167,
+      "steps": 167
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 223,
+      "game": "lp85",
+      "guid": "eec9c692-6e11-4e7d-a01e-69d2f6ea939a",
+      "role_exact": true,
+      "role_frames_matched": 223,
+      "steps": 223
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 556,
+      "game": "lp85",
+      "guid": "ef1c5813-724c-4910-b23c-215815c6a336",
+      "role_exact": true,
+      "role_frames_matched": 556,
+      "steps": 556
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 0,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 490
+      },
+      "first_role_divergence": {
+        "action_id": 0,
+        "completion": false,
+        "step": 490
+      },
+      "frames_matched": 489,
+      "game": "lp85",
+      "guid": "f570ae55-c6d3-43d0-bf7b-614c080d330f",
+      "role_exact": false,
+      "role_frames_matched": 489,
+      "steps": 673
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 23,
+      "game": "lp85",
+      "guid": "f6bb890a-1be1-45fc-8a0c-ce303d2f2880",
+      "role_exact": true,
+      "role_frames_matched": 23,
+      "steps": 23
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 15,
+      "game": "lp85",
+      "guid": "fb4ba1e6-2ee1-487f-9dca-4ad6d78d3666",
+      "role_exact": true,
+      "role_frames_matched": 15,
+      "steps": 15
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 208,
+      "game": "r11l",
+      "guid": "0218265f-d04d-4f5e-8119-37d3aa7a481f",
+      "role_exact": true,
+      "role_frames_matched": 208,
+      "steps": 208
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 0,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 42
+      },
+      "first_role_divergence": {
+        "action_id": 0,
+        "completion": false,
+        "step": 42
+      },
+      "frames_matched": 41,
+      "game": "r11l",
+      "guid": "1c820c2e-0bb7-4f54-bffe-e4d9a1385f89",
+      "role_exact": false,
+      "role_frames_matched": 41,
+      "steps": 153
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 281,
+      "game": "r11l",
+      "guid": "448ad63a-64a7-436e-8956-f2fe9163cd93",
+      "role_exact": true,
+      "role_frames_matched": 281,
+      "steps": 281
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 267,
+      "game": "r11l",
+      "guid": "669c3a6f-669a-42c4-b718-e5c3976310ad",
+      "role_exact": true,
+      "role_frames_matched": 267,
+      "steps": 267
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 168,
+      "game": "r11l",
+      "guid": "7bda9483-2c94-4d34-9657-e6fae7aa82ef",
+      "role_exact": true,
+      "role_frames_matched": 168,
+      "steps": 168
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 447,
+      "game": "r11l",
+      "guid": "9a66bffc-2f6e-46f1-8243-eab372227374",
+      "role_exact": true,
+      "role_frames_matched": 447,
+      "steps": 447
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 210,
+      "game": "r11l",
+      "guid": "bb1c0808-4214-4bb7-a3b0-ebd42d37a985",
+      "role_exact": true,
+      "role_frames_matched": 210,
+      "steps": 210
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 194,
+      "game": "r11l",
+      "guid": "c12f8e45-8cbf-461d-a1be-e3e001eb9ba0",
+      "role_exact": true,
+      "role_frames_matched": 194,
+      "steps": 194
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 328,
+      "game": "r11l",
+      "guid": "ceb779a0-75fa-47f3-a7e0-4347310fe8e5",
+      "role_exact": true,
+      "role_frames_matched": 328,
+      "steps": 328
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 693,
+      "game": "r11l",
+      "guid": "ffb9b53d-d7a0-4d0b-866e-c49839ee57c5",
+      "role_exact": true,
+      "role_frames_matched": 693,
+      "steps": 693
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1072,
+      "game": "re86",
+      "guid": "0d461c1c-21e5-4dc8-b263-9922332a6485",
+      "role_exact": true,
+      "role_frames_matched": 1072,
+      "steps": 1072
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1471,
+      "game": "re86",
+      "guid": "1bc8ef4d-deb5-423e-994d-87ceb5d7c496",
+      "role_exact": true,
+      "role_frames_matched": 1471,
+      "steps": 1471
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1214,
+      "game": "re86",
+      "guid": "27857e7d-0959-4d33-aa11-6be1a5d5b13f",
+      "role_exact": true,
+      "role_frames_matched": 1214,
+      "steps": 1214
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 347,
+      "game": "re86",
+      "guid": "37442af6-3490-4416-96d5-01e71ddd9757",
+      "role_exact": true,
+      "role_frames_matched": 347,
+      "steps": 347
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 2281,
+      "game": "re86",
+      "guid": "79ae6a3a-0101-454c-8ede-74c363f4ab2b",
+      "role_exact": true,
+      "role_frames_matched": 2281,
+      "steps": 2281
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 680,
+      "game": "re86",
+      "guid": "953a2d9f-12d2-4131-90b6-e57f49d4288b",
+      "role_exact": true,
+      "role_frames_matched": 680,
+      "steps": 680
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 357,
+      "game": "re86",
+      "guid": "c3950c6c-21c9-4e5d-bd2a-fa9205cc29f1",
+      "role_exact": true,
+      "role_frames_matched": 357,
+      "steps": 357
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 691,
+      "game": "re86",
+      "guid": "c9b181b2-6088-408a-8622-204fcb733b34",
+      "role_exact": true,
+      "role_frames_matched": 691,
+      "steps": 691
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 2248,
+      "game": "re86",
+      "guid": "dca94d28-b02d-450a-ad31-f421d9a94678",
+      "role_exact": true,
+      "role_frames_matched": 2248,
+      "steps": 2248
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1284,
+      "game": "re86",
+      "guid": "ea40f804-1c1f-4db4-8354-8228ff01f8c2",
+      "role_exact": true,
+      "role_frames_matched": 1284,
+      "steps": 1284
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1034,
+      "game": "re86",
+      "guid": "ed783823-e742-4ae5-a1f1-0a306fb42921",
+      "role_exact": true,
+      "role_frames_matched": 1034,
+      "steps": 1034
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 2
+      },
+      "first_role_divergence": {
+        "action_id": 6,
+        "completion": false,
+        "step": 2
+      },
+      "frames_matched": 13,
+      "game": "s5i5",
+      "guid": "157d3bc0-93da-449e-9186-67fc0402a9a4",
+      "role_exact": false,
+      "role_frames_matched": 13,
+      "steps": 657
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 2
+      },
+      "first_role_divergence": {
+        "action_id": 6,
+        "completion": false,
+        "step": 2
+      },
+      "frames_matched": 7,
+      "game": "s5i5",
+      "guid": "17941b1a-7e06-46d4-8bc4-5765a2a1656d",
+      "role_exact": false,
+      "role_frames_matched": 7,
+      "steps": 753
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 2
+      },
+      "first_role_divergence": {
+        "action_id": 6,
+        "completion": false,
+        "step": 2
+      },
+      "frames_matched": 20,
+      "game": "s5i5",
+      "guid": "2f21a731-87b0-4a78-b1a3-4e392c3433ea",
+      "role_exact": false,
+      "role_frames_matched": 21,
+      "steps": 837
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 2
+      },
+      "first_role_divergence": {
+        "action_id": 6,
+        "completion": false,
+        "step": 2
+      },
+      "frames_matched": 13,
+      "game": "s5i5",
+      "guid": "4dd39f12-983c-471c-8821-0b01e55de6a1",
+      "role_exact": false,
+      "role_frames_matched": 13,
+      "steps": 609
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 2
+      },
+      "first_role_divergence": {
+        "action_id": 6,
+        "completion": false,
+        "step": 2
+      },
+      "frames_matched": 10,
+      "game": "s5i5",
+      "guid": "583978f2-3d54-48c6-a5ba-388bc6a05cc4",
+      "role_exact": false,
+      "role_frames_matched": 10,
+      "steps": 586
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 2
+      },
+      "first_role_divergence": {
+        "action_id": 6,
+        "completion": false,
+        "step": 2
+      },
+      "frames_matched": 10,
+      "game": "s5i5",
+      "guid": "66d63c5e-5e2b-4c87-81c7-b46bd78a038b",
+      "role_exact": false,
+      "role_frames_matched": 10,
+      "steps": 624
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 2
+      },
+      "first_role_divergence": {
+        "action_id": 6,
+        "completion": false,
+        "step": 2
+      },
+      "frames_matched": 2,
+      "game": "s5i5",
+      "guid": "8a528ea6-633f-421f-9ad2-a4cf2f10ddc7",
+      "role_exact": false,
+      "role_frames_matched": 2,
+      "steps": 142
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 2
+      },
+      "first_role_divergence": {
+        "action_id": 6,
+        "completion": false,
+        "step": 2
+      },
+      "frames_matched": 14,
+      "game": "s5i5",
+      "guid": "8cefd372-6a72-4bc3-b3c7-5549633cb615",
+      "role_exact": false,
+      "role_frames_matched": 14,
+      "steps": 1469
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 2
+      },
+      "first_role_divergence": {
+        "action_id": 6,
+        "completion": false,
+        "step": 2
+      },
+      "frames_matched": 2,
+      "game": "s5i5",
+      "guid": "95112af8-80f3-4b41-8412-c5b92839e113",
+      "role_exact": false,
+      "role_frames_matched": 2,
+      "steps": 42
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 2
+      },
+      "first_role_divergence": {
+        "action_id": 6,
+        "completion": false,
+        "step": 2
+      },
+      "frames_matched": 2,
+      "game": "s5i5",
+      "guid": "960b9124-1de0-4eb1-a916-bdc51474664c",
+      "role_exact": false,
+      "role_frames_matched": 2,
+      "steps": 251
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 6,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 2
+      },
+      "first_role_divergence": {
+        "action_id": 6,
+        "completion": false,
+        "step": 2
+      },
+      "frames_matched": 5,
+      "game": "s5i5",
+      "guid": "e9c797d3-363f-4f19-b532-9b5eb9a5eb75",
+      "role_exact": false,
+      "role_frames_matched": 5,
+      "steps": 505
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 257,
+      "game": "sb26",
+      "guid": "005a84c0-2969-488b-baa1-d57e68866b33",
+      "role_exact": true,
+      "role_frames_matched": 257,
+      "steps": 257
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 435,
+      "game": "sb26",
+      "guid": "06c7cb54-5e41-4599-bfc4-6983ca16b671",
+      "role_exact": true,
+      "role_frames_matched": 435,
+      "steps": 435
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 154,
+      "game": "sb26",
+      "guid": "0a3dac2e-1302-46df-b6ca-6250f3c1b6e1",
+      "role_exact": true,
+      "role_frames_matched": 154,
+      "steps": 154
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 365,
+      "game": "sb26",
+      "guid": "22407b34-bff1-44be-97e2-ba99986e24a0",
+      "role_exact": true,
+      "role_frames_matched": 365,
+      "steps": 365
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 245,
+      "game": "sb26",
+      "guid": "441ddef6-1d8d-4f84-9416-ac5fd969ff58",
+      "role_exact": true,
+      "role_frames_matched": 245,
+      "steps": 245
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 336,
+      "game": "sb26",
+      "guid": "48aac0ed-7f3f-4b2a-9ee9-795131d24377",
+      "role_exact": true,
+      "role_frames_matched": 336,
+      "steps": 336
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 199,
+      "game": "sb26",
+      "guid": "4ad15cb2-a6e4-4f6f-9457-3b64b1d7ec07",
+      "role_exact": true,
+      "role_frames_matched": 199,
+      "steps": 199
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 47,
+      "game": "sb26",
+      "guid": "50c5f0cd-23e5-45f6-a668-22a6d097f047",
+      "role_exact": true,
+      "role_frames_matched": 47,
+      "steps": 47
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 152,
+      "game": "sb26",
+      "guid": "72305960-4a13-4d9f-9044-463185ec707a",
+      "role_exact": true,
+      "role_frames_matched": 152,
+      "steps": 152
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 58,
+      "game": "sb26",
+      "guid": "ba4a3c59-7991-4157-9f4e-3fdb9f6711a7",
+      "role_exact": true,
+      "role_frames_matched": 58,
+      "steps": 58
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 135,
+      "game": "sb26",
+      "guid": "f471f3fd-7867-41d9-9a75-57e917278f7e",
+      "role_exact": true,
+      "role_frames_matched": 135,
+      "steps": 135
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 166,
+      "game": "sb26",
+      "guid": "ffef2c25-8ea9-4a2b-a4a5-a109bbfc5156",
+      "role_exact": true,
+      "role_frames_matched": 166,
+      "steps": 166
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 305,
+      "game": "sc25",
+      "guid": "0115a266-f750-41d0-9646-1b3113f8cf1c",
+      "role_exact": true,
+      "role_frames_matched": 305,
+      "steps": 305
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 450,
+      "game": "sc25",
+      "guid": "0966d61f-d6d1-43f9-8f87-f35883dfa020",
+      "role_exact": true,
+      "role_frames_matched": 450,
+      "steps": 450
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 208,
+      "game": "sc25",
+      "guid": "18dd1fff-bad5-436a-98aa-c8f2b21522ee",
+      "role_exact": true,
+      "role_frames_matched": 208,
+      "steps": 208
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 411,
+      "game": "sc25",
+      "guid": "34ab3462-db6e-4c26-a361-88fdf53cafc0",
+      "role_exact": true,
+      "role_frames_matched": 411,
+      "steps": 411
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 356,
+      "game": "sc25",
+      "guid": "55ca108d-e25d-4eb9-9ce4-02fc80685c71",
+      "role_exact": true,
+      "role_frames_matched": 356,
+      "steps": 356
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 24,
+      "game": "sc25",
+      "guid": "660643c5-f037-4f8a-bc7d-9e258f5fd5c3",
+      "role_exact": true,
+      "role_frames_matched": 24,
+      "steps": 24
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 378,
+      "game": "sc25",
+      "guid": "8f50e6d5-f1e4-46e1-86b3-fad3ffd1c76a",
+      "role_exact": true,
+      "role_frames_matched": 378,
+      "steps": 378
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 217,
+      "game": "sc25",
+      "guid": "b0b236ff-bd06-4f16-a350-5f1ca9f2446d",
+      "role_exact": true,
+      "role_frames_matched": 217,
+      "steps": 217
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 386,
+      "game": "sc25",
+      "guid": "b1877d54-7639-4f85-8836-c2701909eb77",
+      "role_exact": true,
+      "role_frames_matched": 386,
+      "steps": 386
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 22,
+      "game": "sc25",
+      "guid": "bf0940fa-bfa7-4452-8a1a-7393ab1677a3",
+      "role_exact": true,
+      "role_frames_matched": 22,
+      "steps": 22
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 355,
+      "game": "sc25",
+      "guid": "d7a33e9c-ae5f-4a6d-a4a6-79c5b86b28cc",
+      "role_exact": true,
+      "role_frames_matched": 355,
+      "steps": 355
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 284,
+      "game": "sc25",
+      "guid": "e46999e5-b318-4fe3-86e1-d9178e2e185d",
+      "role_exact": true,
+      "role_frames_matched": 284,
+      "steps": 284
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 318,
+      "game": "sc25",
+      "guid": "eb453464-f145-4cb1-8887-fcf2c47cbbfb",
+      "role_exact": true,
+      "role_frames_matched": 318,
+      "steps": 318
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 0,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 1210
+      },
+      "first_role_divergence": {
+        "action_id": 0,
+        "completion": false,
+        "step": 1210
+      },
+      "frames_matched": 1209,
+      "game": "sc25",
+      "guid": "eb6b26b6-0873-4164-9fbe-89660e2b783f",
+      "role_exact": false,
+      "role_frames_matched": 1209,
+      "steps": 1289
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 0,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 492
+      },
+      "first_role_divergence": {
+        "action_id": 0,
+        "completion": false,
+        "step": 492
+      },
+      "frames_matched": 491,
+      "game": "sc25",
+      "guid": "f253a1f3-77a3-45b2-b0aa-dab4f3355f6c",
+      "role_exact": false,
+      "role_frames_matched": 491,
+      "steps": 696
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 332,
+      "game": "sk48",
+      "guid": "01a5191c-a488-40b7-abf7-7cef06283cb0",
+      "role_exact": true,
+      "role_frames_matched": 332,
+      "steps": 332
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 529,
+      "game": "sk48",
+      "guid": "0244ce99-39bb-435c-a67b-558b5f0f7197",
+      "role_exact": true,
+      "role_frames_matched": 529,
+      "steps": 529
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 2951,
+      "game": "sk48",
+      "guid": "03243599-4f62-41a9-bf9e-cc42bd41e74c",
+      "role_exact": true,
+      "role_frames_matched": 2951,
+      "steps": 2951
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 945,
+      "game": "sk48",
+      "guid": "20fb75ad-57fa-4c94-b030-9316f4e61313",
+      "role_exact": true,
+      "role_frames_matched": 945,
+      "steps": 945
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 165,
+      "game": "sk48",
+      "guid": "3e464e09-7ab5-4d8e-8baf-d2b07aac6491",
+      "role_exact": true,
+      "role_frames_matched": 165,
+      "steps": 165
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1844,
+      "game": "sk48",
+      "guid": "6b7d5bb2-5987-48e3-a350-11de56b83cee",
+      "role_exact": true,
+      "role_frames_matched": 1844,
+      "steps": 1844
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 0,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 1366
+      },
+      "first_role_divergence": {
+        "action_id": 0,
+        "completion": false,
+        "step": 1366
+      },
+      "frames_matched": 1365,
+      "game": "sk48",
+      "guid": "72b6c9b6-9138-40ff-96fa-f084327a3a5a",
+      "role_exact": false,
+      "role_frames_matched": 1365,
+      "steps": 1851
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1155,
+      "game": "sk48",
+      "guid": "74db5f57-616a-4e99-8b23-12f18b5a1e6b",
+      "role_exact": true,
+      "role_frames_matched": 1155,
+      "steps": 1155
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 648,
+      "game": "sk48",
+      "guid": "ae7fa71b-5f0e-4460-8a76-ee13e54ac6f1",
+      "role_exact": true,
+      "role_frames_matched": 648,
+      "steps": 648
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 697,
+      "game": "sk48",
+      "guid": "b62df293-1d00-4689-83ef-75fa091b59d3",
+      "role_exact": true,
+      "role_frames_matched": 697,
+      "steps": 697
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1397,
+      "game": "sk48",
+      "guid": "d2d6fa4b-fdf2-4f63-85b9-37d2b18e5298",
+      "role_exact": true,
+      "role_frames_matched": 1397,
+      "steps": 1397
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 851,
+      "game": "sk48",
+      "guid": "da6b0954-9a3d-4c03-9cf6-dd5d66a8d23f",
+      "role_exact": true,
+      "role_frames_matched": 851,
+      "steps": 851
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 435,
+      "game": "sk48",
+      "guid": "e29f3161-6692-4da7-98b2-985018e13472",
+      "role_exact": true,
+      "role_frames_matched": 435,
+      "steps": 435
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 905,
+      "game": "sk48",
+      "guid": "fc416db5-aa41-4259-988f-6d2bfe664d17",
+      "role_exact": true,
+      "role_frames_matched": 905,
+      "steps": 905
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 0,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 253
+      },
+      "first_role_divergence": {
+        "action_id": 0,
+        "completion": false,
+        "step": 253
+      },
+      "frames_matched": 252,
+      "game": "sp80",
+      "guid": "0a573e1a-5010-4914-ba09-9c106ab21354",
+      "role_exact": false,
+      "role_frames_matched": 252,
+      "steps": 274
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 269,
+      "game": "sp80",
+      "guid": "0e7037a5-ceaf-4654-b246-cc7067e47330",
+      "role_exact": true,
+      "role_frames_matched": 269,
+      "steps": 269
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 69,
+      "game": "sp80",
+      "guid": "25b5db58-46f8-45af-a679-32494f3a9f60",
+      "role_exact": true,
+      "role_frames_matched": 69,
+      "steps": 69
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 135,
+      "game": "sp80",
+      "guid": "45683b33-7bb5-4089-834a-2f993939b252",
+      "role_exact": true,
+      "role_frames_matched": 135,
+      "steps": 135
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 155,
+      "game": "sp80",
+      "guid": "83caf46a-8c23-4d49-9440-3971018d0dba",
+      "role_exact": true,
+      "role_frames_matched": 155,
+      "steps": 155
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1162,
+      "game": "sp80",
+      "guid": "8dd23daf-8643-40ec-975c-88a28080fdf7",
+      "role_exact": true,
+      "role_frames_matched": 1162,
+      "steps": 1162
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 442,
+      "game": "sp80",
+      "guid": "99c07645-c856-4c45-954d-e43e1b116fc5",
+      "role_exact": true,
+      "role_frames_matched": 442,
+      "steps": 442
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 0,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 298
+      },
+      "first_role_divergence": {
+        "action_id": 0,
+        "completion": false,
+        "step": 298
+      },
+      "frames_matched": 297,
+      "game": "sp80",
+      "guid": "add9ed90-535f-49f8-b90f-d804b5c96f68",
+      "role_exact": false,
+      "role_frames_matched": 297,
+      "steps": 344
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 32,
+      "game": "sp80",
+      "guid": "b6eabe86-57b6-4b9a-938e-d18535dd5ce4",
+      "role_exact": true,
+      "role_frames_matched": 32,
+      "steps": 32
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 228,
+      "game": "sp80",
+      "guid": "caa65c15-ff33-4ead-92ac-51230084bd98",
+      "role_exact": true,
+      "role_frames_matched": 228,
+      "steps": 228
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 435,
+      "game": "sp80",
+      "guid": "dcc71276-e037-4e3a-8711-7f0d88b8b3c9",
+      "role_exact": true,
+      "role_frames_matched": 435,
+      "steps": 435
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 473,
+      "game": "sp80",
+      "guid": "ee7752b0-a9ad-4c23-8de4-173307367f31",
+      "role_exact": true,
+      "role_frames_matched": 473,
+      "steps": 473
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 567,
+      "game": "su15",
+      "guid": "20f8d100-ff47-420b-bf1d-3d239a255a77",
+      "role_exact": true,
+      "role_frames_matched": 567,
+      "steps": 567
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 217,
+      "game": "su15",
+      "guid": "274da438-5f61-4688-b290-5d927e6fbd77",
+      "role_exact": true,
+      "role_frames_matched": 217,
+      "steps": 217
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 62,
+      "game": "su15",
+      "guid": "3a47010c-3f84-454b-b3cd-3464b8f4992f",
+      "role_exact": true,
+      "role_frames_matched": 62,
+      "steps": 62
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 268,
+      "game": "su15",
+      "guid": "3d4cbfde-01a1-44c1-8e1a-3e93e7971ad0",
+      "role_exact": true,
+      "role_frames_matched": 268,
+      "steps": 268
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 470,
+      "game": "su15",
+      "guid": "4be2291c-367e-4927-8b3f-f53aa17b9395",
+      "role_exact": true,
+      "role_frames_matched": 470,
+      "steps": 470
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 506,
+      "game": "su15",
+      "guid": "606d9b04-7bac-4892-b2e1-3072dea7062a",
+      "role_exact": true,
+      "role_frames_matched": 506,
+      "steps": 506
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 399,
+      "game": "su15",
+      "guid": "645988a9-6eef-4eb9-867d-e44ec93a6926",
+      "role_exact": true,
+      "role_frames_matched": 399,
+      "steps": 399
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 49,
+      "game": "su15",
+      "guid": "823b42ee-9e93-4658-92ae-00f0619f7c6c",
+      "role_exact": true,
+      "role_frames_matched": 49,
+      "steps": 49
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 91,
+      "game": "su15",
+      "guid": "93195a31-64bf-4dfc-aa44-2a1fb3569701",
+      "role_exact": true,
+      "role_frames_matched": 91,
+      "steps": 91
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 60,
+      "game": "su15",
+      "guid": "b25b9a41-aba6-4df4-b731-f77c9f1ffdcd",
+      "role_exact": true,
+      "role_frames_matched": 60,
+      "steps": 60
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 203,
+      "game": "su15",
+      "guid": "c2bf26cf-eaed-4492-a715-73007e936022",
+      "role_exact": true,
+      "role_frames_matched": 203,
+      "steps": 203
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 29,
+      "game": "su15",
+      "guid": "cd48292b-a674-42cf-94d2-a19bd33065aa",
+      "role_exact": true,
+      "role_frames_matched": 29,
+      "steps": 29
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 652,
+      "game": "su15",
+      "guid": "fdeab422-e1e4-43de-a2c0-6441b16ae748",
+      "role_exact": true,
+      "role_frames_matched": 652,
+      "steps": 652
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 499,
+      "game": "tn36",
+      "guid": "0268d6a8-2294-473c-8ed0-f1fefbf4005b",
+      "role_exact": true,
+      "role_frames_matched": 499,
+      "steps": 499
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 10,
+      "game": "tn36",
+      "guid": "18c6d4b0-8ca1-4f91-96da-54022676e5e3",
+      "role_exact": true,
+      "role_frames_matched": 10,
+      "steps": 10
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 236,
+      "game": "tn36",
+      "guid": "28c6b31e-993d-483f-9584-c88bd15d423d",
+      "role_exact": true,
+      "role_frames_matched": 236,
+      "steps": 236
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 485,
+      "game": "tn36",
+      "guid": "47d0e2b1-25ee-442c-84ae-01d781f5e257",
+      "role_exact": true,
+      "role_frames_matched": 485,
+      "steps": 485
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 20,
+      "game": "tn36",
+      "guid": "544ffb3a-41d4-4711-a14b-9d2fb9e6e54e",
+      "role_exact": true,
+      "role_frames_matched": 20,
+      "steps": 20
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 370,
+      "game": "tn36",
+      "guid": "84115ab3-7401-4d00-b9ef-8ce102480e13",
+      "role_exact": true,
+      "role_frames_matched": 370,
+      "steps": 370
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 337,
+      "game": "tn36",
+      "guid": "85db062c-c74d-43fe-b6a9-8bd09b1c254b",
+      "role_exact": true,
+      "role_frames_matched": 337,
+      "steps": 337
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 59,
+      "game": "tn36",
+      "guid": "8c62a0ab-bec9-443a-90a3-b69da21377d0",
+      "role_exact": true,
+      "role_frames_matched": 59,
+      "steps": 59
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 251,
+      "game": "tn36",
+      "guid": "90f13b17-9916-4d8a-81ad-dabf059bd943",
+      "role_exact": true,
+      "role_frames_matched": 251,
+      "steps": 251
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 507,
+      "game": "tn36",
+      "guid": "98d37f25-6357-4543-9eda-48136a48a3b4",
+      "role_exact": true,
+      "role_frames_matched": 507,
+      "steps": 507
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 262,
+      "game": "tn36",
+      "guid": "a343d0c8-ebbc-48a6-b0cf-24e831314ed0",
+      "role_exact": true,
+      "role_frames_matched": 262,
+      "steps": 262
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 21,
+      "game": "tn36",
+      "guid": "b389c19f-8b5a-40d5-b6a4-8d42f32d327c",
+      "role_exact": true,
+      "role_frames_matched": 21,
+      "steps": 21
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 393,
+      "game": "tn36",
+      "guid": "b7e8173a-76be-4a71-ae4b-b28561e86c9d",
+      "role_exact": true,
+      "role_frames_matched": 393,
+      "steps": 393
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 424,
+      "game": "tn36",
+      "guid": "eeb9ae5a-2abe-4f3a-8e49-af6b10f6c989",
+      "role_exact": true,
+      "role_frames_matched": 424,
+      "steps": 424
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 318,
+      "game": "tr87",
+      "guid": "147def87-0b0e-44f9-aa34-bdaf51d0cdb9",
+      "role_exact": true,
+      "role_frames_matched": 318,
+      "steps": 318
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 678,
+      "game": "tr87",
+      "guid": "2c1d29bb-610b-4e95-a615-26e7ba13f812",
+      "role_exact": true,
+      "role_frames_matched": 678,
+      "steps": 678
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 689,
+      "game": "tr87",
+      "guid": "3519e988-59d8-433b-acee-6f98539352ad",
+      "role_exact": true,
+      "role_frames_matched": 689,
+      "steps": 689
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 298,
+      "game": "tr87",
+      "guid": "3c0b8607-d7d7-47ad-955b-77a6a2153bfc",
+      "role_exact": true,
+      "role_frames_matched": 298,
+      "steps": 298
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 520,
+      "game": "tr87",
+      "guid": "4808fbde-18ba-40da-bf0f-afc426077b11",
+      "role_exact": true,
+      "role_frames_matched": 520,
+      "steps": 520
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 439,
+      "game": "tr87",
+      "guid": "64fc55eb-cf12-4824-ad15-2b908edfdecb",
+      "role_exact": true,
+      "role_frames_matched": 439,
+      "steps": 439
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 302,
+      "game": "tr87",
+      "guid": "713a3919-0f6a-4a6f-83b7-7910071937b9",
+      "role_exact": true,
+      "role_frames_matched": 302,
+      "steps": 302
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 448,
+      "game": "tr87",
+      "guid": "7a166e4a-5a18-4ab7-931a-c36f8c496697",
+      "role_exact": true,
+      "role_frames_matched": 448,
+      "steps": 448
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 509,
+      "game": "tr87",
+      "guid": "a8d60184-988b-4e1f-a03f-3a9b3a6af90b",
+      "role_exact": true,
+      "role_frames_matched": 509,
+      "steps": 509
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 560,
+      "game": "tr87",
+      "guid": "c703a2d9-f8a3-4672-9f60-d06da8f62284",
+      "role_exact": true,
+      "role_frames_matched": 560,
+      "steps": 560
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 129,
+      "game": "tr87",
+      "guid": "c8042b0c-ffd4-4bab-b8c3-882d9a6bfa57",
+      "role_exact": true,
+      "role_frames_matched": 129,
+      "steps": 129
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 380,
+      "game": "tr87",
+      "guid": "eb28c424-e3a7-443d-8b09-9fade27f19e2",
+      "role_exact": true,
+      "role_frames_matched": 380,
+      "steps": 380
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1565,
+      "game": "wa30",
+      "guid": "0f88f0f8-aeeb-438d-a901-fe09de856cfb",
+      "role_exact": true,
+      "role_frames_matched": 1565,
+      "steps": 1565
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 90,
+      "game": "wa30",
+      "guid": "2075c80c-6806-4a27-bfd0-2c8df2909e44",
+      "role_exact": true,
+      "role_frames_matched": 90,
+      "steps": 90
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 245,
+      "game": "wa30",
+      "guid": "2438c147-5a11-4cf3-9caa-91d1a6d9f7b5",
+      "role_exact": true,
+      "role_frames_matched": 245,
+      "steps": 245
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 379,
+      "game": "wa30",
+      "guid": "3e1755f8-402f-4867-8fdc-a59ce99eb307",
+      "role_exact": true,
+      "role_frames_matched": 379,
+      "steps": 379
+    },
+    {
+      "exact": false,
+      "first_divergence": {
+        "action_id": 0,
+        "recorded_frames": 1,
+        "replayed_frames": 1,
+        "step": 918
+      },
+      "first_role_divergence": {
+        "action_id": 0,
+        "completion": false,
+        "step": 918
+      },
+      "frames_matched": 917,
+      "game": "wa30",
+      "guid": "5c0bed76-ae96-43c1-b99b-aa293848257e",
+      "role_exact": false,
+      "role_frames_matched": 917,
+      "steps": 1234
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1520,
+      "game": "wa30",
+      "guid": "5fd30bfc-e7c4-48e1-ac4c-65b80de6f7d8",
+      "role_exact": true,
+      "role_frames_matched": 1520,
+      "steps": 1520
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 2065,
+      "game": "wa30",
+      "guid": "8ded76ac-a0e1-4f00-98f6-7de0b3f7984f",
+      "role_exact": true,
+      "role_frames_matched": 2065,
+      "steps": 2065
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 2149,
+      "game": "wa30",
+      "guid": "9149006d-c076-477e-bc91-7304a870fa28",
+      "role_exact": true,
+      "role_frames_matched": 2149,
+      "steps": 2149
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1719,
+      "game": "wa30",
+      "guid": "c070bccb-d8c1-4843-a094-4a997cbe6f5f",
+      "role_exact": true,
+      "role_frames_matched": 1719,
+      "steps": 1719
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 2209,
+      "game": "wa30",
+      "guid": "d4fc9e5d-56c3-4715-b4f6-bc231214e789",
+      "role_exact": true,
+      "role_frames_matched": 2209,
+      "steps": 2209
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 817,
+      "game": "wa30",
+      "guid": "d7d7ab7e-44cb-49f4-93c0-b1d80aac9c39",
+      "role_exact": true,
+      "role_frames_matched": 817,
+      "steps": 817
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 2292,
+      "game": "wa30",
+      "guid": "e326447f-992b-4aba-bc39-21240eabe0e1",
+      "role_exact": true,
+      "role_frames_matched": 2292,
+      "steps": 2292
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1720,
+      "game": "wa30",
+      "guid": "f73b1e1d-dbfc-412b-93a5-561954a3e88a",
+      "role_exact": true,
+      "role_frames_matched": 1720,
+      "steps": 1720
+    },
+    {
+      "exact": true,
+      "first_divergence": null,
+      "first_role_divergence": null,
+      "frames_matched": 1617,
+      "game": "wa30",
+      "guid": "fbd3f8c7-8327-4ad4-ac4b-91e00e6ddd9a",
+      "role_exact": true,
+      "role_frames_matched": 1617,
+      "steps": 1617
+    }
+  ]
+}

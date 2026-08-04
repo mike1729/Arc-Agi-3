@@ -199,6 +199,13 @@ rs:
         therefore run on six and the conflict referred to the operator rather than resolved
         by this file. Extending to 25 is one flag and costs minutes; it is not being withheld
         on grounds of cost.
+      resolution: >
+        2026-08-04, operator decision after seeing the six-game result: run the remaining
+        nineteen. The seal is lifted for E0 specifically. Scope is therefore all 25 public
+        games as originally pre-registered, and `notes/l1-evidence-first.md`'s "six iteration
+        games only" no longer describes E0. What this spends is the un-peeked status of the
+        nineteen for any LATER claim on this line; that cost is now paid and should not be
+        re-argued when E1-E3 want a holdout.
     - id: RS-E3
       date: 2026-08-04
       change: >
@@ -224,3 +231,22 @@ rs:
         precondition) counts as a repair. `count`/`present` separators are reported apart as
         `separable_by_census` — distinguishing but not explanatory. The corrected numbers are
         materially more pessimistic about repairability and are the ones reported.
+    - id: RS-E5
+      date: 2026-08-04
+      change: >
+        Fidelity exclusions, from extending the pre-registered engine-truth gate to all 25
+        games. The block said a failing game is excluded from both rows; that is applied at
+        SESSION granularity where the failure is one session, and at game granularity only
+        where the game fails wholesale, so that usable evidence is not discarded with the
+        unusable.
+        EXCLUDED GAME — s5i5: all 11 sessions diverge on role-bearing frames at step 2, on
+        ACTION6, inside the L1 window. The frozen source is not the build these recordings
+        came from. Dropped from both rows; 24 games remain.
+        EXCLUDED SESSIONS — cn04/ce770223, lf52/72a712db, sp80/add9ed90: one session each
+        whose role-bearing divergence falls inside the L1/L2 window, all three on RESET.
+        NOT EXCLUDED — divergences after the E0 window (bp35 2, lp85 4, r11l 1, sc25 2,
+        sk48 1, wa30 1, m0r0 1, tu93 1, vc33 1, cn04 1, lf52 1, sp80 1) cannot affect a
+        result read from levels 1 and 2, and bp35's and vc33's ALL-frame failures (2/14 and
+        3/10 sessions exact) are confined to intermediate animation frames, which no
+        transition endpoint is ever drawn from. Over every frame E0 reads, the 24 retained
+        games reproduce byte-exactly.

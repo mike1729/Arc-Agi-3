@@ -71,13 +71,40 @@ from gi2_traces import frame_roles, normalize_action_id  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 CORPUS = ROOT / "data/human_replays/kaggle_mirror/public_games-dataset"
 
-# The six iteration games. One-shot and reserved games stay sealed — see RS-E2.
+# The six iteration games. The seal on the other nineteen was lifted for E0 — see RS-E2.
 ITERATION_GAMES = ("dc22", "ft09", "ls20", "m0r0", "tu93", "vc33")
+ALL_GAMES = (
+    "ar25", "bp35", "cd82", "cn04", "dc22", "ft09", "g50t", "ka59", "lf52", "lp85", "ls20",
+    "m0r0", "r11l", "re86", "s5i5", "sb26", "sc25", "sk48", "sp80", "su15", "tn36", "tr87",
+    "tu93", "vc33", "wa30",
+)
+
+# ---- fidelity exclusions (RS-E5) -----------------------------------------------------
+# Derived from logs/e0_fidelity.json + logs/e0_fidelity_rest.json. A recording only carries
+# engine truth where the frozen source reproduces its role-bearing frames; where it does not,
+# any E0 finding would be about a source/client divergence rather than about levels.
+#
+# s5i5 fails wholesale: all 11 sessions diverge at step 2 on ACTION6, inside the L1 window.
+# The frozen source is not the build these recordings came from, so no session of it is
+# usable and the game is dropped from both rows.
+EXCLUDED_GAMES = {"s5i5": "role-bearing divergence at step 2 of all 11 sessions (ACTION6)"}
+
+# Single sessions whose divergence falls INSIDE the L1/L2 window. All three are on RESET,
+# consistent with GI-2's standing note that remote and local reset metadata are not assumed
+# identical. Divergences after the window are harmless and are not listed.
+EXCLUDED_SESSIONS = {
+    ("cn04", "ce770223"): "RESET divergence at step 461, window ends 682",
+    ("lf52", "72a712db"): "RESET divergence at step 67, window ends 68",
+    ("sp80", "add9ed90"): "RESET divergence at step 298, window ends 344",
+}
 
 ORTHOGONAL = {"up": (-1, 0), "down": (1, 0), "left": (0, -1), "right": (0, 1)}
 
 # Data defects met during extraction, keyed by game/guid. Reported, never swallowed.
 ANOMALIES: dict[str, list[dict[str, Any]]] = {}
+
+# Which fidelity exclusions actually fired this run. Reported alongside every result.
+EXCLUDED_APPLIED: list[str] = []
 
 
 def grid_digest(grid: list) -> str:
@@ -308,8 +335,14 @@ def iter_session_transitions(
 
 
 def load_game(game: str, *, max_level: int = 2) -> list[Transition]:
+    if game in EXCLUDED_GAMES:
+        raise ValueError(f"{game}: excluded by fidelity — {EXCLUDED_GAMES[game]}")
     transitions: list[Transition] = []
     for path in sorted((CORPUS / game).glob("*.recording.jsonl")):
+        guid = path.name.split(".")[0]
+        if (game, guid[:8]) in EXCLUDED_SESSIONS:
+            EXCLUDED_APPLIED.append(f"{game}/{guid[:8]}")
+            continue
         transitions.extend(iter_session_transitions(game, path, max_level=max_level))
     return transitions
 
