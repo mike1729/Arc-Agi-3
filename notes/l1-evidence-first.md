@@ -49,7 +49,12 @@ completion — its best regime).
   pooled evidence; the repair-vs-invalidate split is set from E0's measured guard-fixable rate,
   not invented. Worst case: re-explore level k, taxing only level k.
 
-## Experiments (in order; six iteration games only — one-shot and reserved stay sealed)
+## Experiments (in order; **all public games are usable** — operator decision 2026-08-04:
+E0–E3 train nothing on them, so the old one-shot/reserved seals don't apply. Two caveats
+travel with that: design-naivety on the public set is spent — the only honest holdout left is
+the hidden set, and public numbers were never evidence of hidden generalization anyway; and
+the split question returns the moment any learned component appears. Practical discipline:
+debug against the six iteration games' detailed traces, read the rest aggregate-first.)
 
 **E0 — offline L1→L2 rule survival (zero model calls; first).** From human replays via the
 replay driver (settled frames — the vc33 trap applies): mine complexity-bounded rules on a
@@ -86,6 +91,7 @@ recur in any harness, probe, or eval.
 
 ## Non-goals right now
 
-Manifest freezes and spec amendments (until a line beats the reference) · spending one-shot or
-reserved games · Qwen-vs-no-model decision tests (Qwen is the substrate; floors are reported as
-diagnostics only) · submissions off this line before E3 reads out.
+Manifest freezes and spec amendments (until a line beats the reference) · training anything on
+public games without first declaring a split · Qwen-vs-no-model decision tests (Qwen is the
+substrate; floors are reported as diagnostics only) · submissions off this line before E3 reads
+out.
