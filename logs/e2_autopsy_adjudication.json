@@ -1,0 +1,440 @@
+{
+ "format_version": 1,
+ "items": {
+  "dc22_full:guard_pair:17542": {
+   "context": "ss many actions. It might be the \"default\" behavior when clicking on most colors, unless a condition is met. - The condition might be `count:0 = 1` or `count:3 = 1`. - Given the data, I'll formulate rules based on `count:0` and `count:3` or `adj:14:dir`. - But I need to be ca",
+   "family": "guard_pair",
+   "token": "count:0=1",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "dc22_full:guard_pair:17559": {
+   "context": "It might be the \"default\" behavior when clicking on most colors, unless a condition is met. - The condition might be `count:0 = 1` or `count:3 = 1`. - Given the data, I'll formulate rules based on `count:0` and `count:3` or `adj:14:dir`. - But I need to be careful. The prompt",
+   "family": "guard_pair",
+   "token": "count:3=1",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "dc22_full:guard_pair:23679": {
+   "context": "AT WOULD SETTLE IT: I'll suggest trying ACTION1 when `adj:14:up=4` but with different `count:0` values, or trying ACTION6 on colour 0 when `count:3=1` vs `count:3=2`. Refining the Rules: I need to be precise. The prompt says \"at most ONE guard\". I'll propose: - ACTION",
+   "family": "guard_pair",
+   "token": "count:3=1",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "dc22_full:guard_pair:24671": {
+   "context": "hows `reshape(0)+reshape(3)` is dominant. I'll rule: `ACTION6 on colour C [count:0 >= 2] -> reshape(0) + reshape(3)`. `ACTION6 on colour C [count:0 = 1] -> no-change`. (Just a hypothesis to fit the split). Actually, looking at ACTION6 on colour 0: Groups 1 & 2 have identical guards but",
+   "family": "guard_pair",
+   "token": "count:0=1",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "dc22_full:guard_pair:25899": {
+   "context": "s conflicts, but the miner's local guards miss global counts. I'll clarify this. \"WHAT WOULD SETTLE IT\": Try ACTION6 on colour 0 when `count:3=1` vs `count:3=2`. One detail: `adj:C:direction` is defined as \"the first non-background colour met stepping one cell out from colour C",
+   "family": "guard_pair",
+   "token": "count:3=1",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "dc22_full:guard_pair:29627": {
+   "context": "-> appear(14) + disappear(14) + reshape(2)\" \"ACTION6 on colour 0 [count:0 > 1] -> reshape(0) + reshape(3)\" \"ACTION6 on colour 0 [count:0 = 1] -> no-change\" This fits. I'll produce the response. One minor point: The prompt says \"adj:C:direction (the first non-backg",
+   "family": "guard_pair",
+   "token": "count:0=1",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "ft09_125:feature_key:3926": {
+   "context": "single-object colours. Colour 9 has up to 20 components, so `adj:9:dir` might not be defined or is noisy. - Maybe the distinction is `adj:9:left/right/up/down`? But the vocabulary only lists `adj:12:right` in the varying guards. Why only 12? Because 12 is a single object. - Let'",
+   "family": "feature_key",
+   "token": "adj:9:left",
+   "verdict": "rejection",
+   "why": "named explicitly in order to rule it out"
+  },
+  "ft09_125:feature_key:5224": {
+   "context": "her than inventing a rule that fits.\" So I should check if the vocabulary *can* name it. If not, I state that. - What if the guard is `adj:9:up` or similar? Not in vocabulary. - What if the guard is `count:9 < X`? The census says max 20. The transitions show `count:9: 20` varyi",
+   "family": "feature_key",
+   "token": "adj:9:up",
+   "verdict": "rejection",
+   "why": "named explicitly in order to rule it out"
+  },
+  "ft09_125:guard_pair:12040": {
+   "context": "here 9 is a valve, 12 is a pipe that extends/reshapes, and 8/11 are fluid/water. Or maybe it's a \"merge\" puzzle. - Could the guard be `count:9 == 4`? No, 14 transitions, 4 effects. Maybe exactly 4 specific 9s trigger it? That would mean position matters. Adjacency to 12 is a good proxy",
+   "family": "guard_pair",
+   "token": "count:9=4",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "ft09_125:guard_pair:13351": {
+   "context": "HAT WOULD SETTLE IT - I'll keep it concise and precise. - Self-Correction/Refinement during thought: - Could the guard be `count:9 == 16`? No. - Could it be `present:11`? 11 appears in the effect, so maybe it's not present before. But the census says max 1 component of",
+   "family": "guard_pair",
+   "token": "count:9=16",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "ft09_125:guard_pair:15025": {
+   "context": "s a single object, `adj:12:dir` is tracked. But it only tracks the *first* non-background colour. If 9 is adjacent, it would be tracked as `adj:12:dir: 9`. But the log shows `adj:12:right: edge`. Maybe 9 is on a different side, or the miner only logged `right` for some reason. Regardless, adj",
+   "family": "guard_pair",
+   "token": "adj:12:dir=9",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "ft09_full:guard_pair:14410": {
+   "context": "ary just says 'edge' because it's the most common? Or maybe `adj:12:right` was actually 9 or 8? Let's reconsider the guard: `count:8 + count:9 == 36`. The miner might not support arithmetic. What if the guard is `present:11`? For x16, 11 appears, so it was absent. For x138, 11 was a",
+   "family": "guard_pair",
+   "token": "count:9=36",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "ft09_full:guard_pair:19555": {
+   "context": "IT:** - The most informative action: Try clicking colour 9 when `count:8 == 16` and `present:11 == True` (if possible), or try to reach `count:8 == 18`. But we can't directly control counts. - Actually, the toggle is 16/20 <-> 17/19. To test if 18/18 is the goal or if the toggle continu",
+   "family": "guard_pair",
+   "token": "count:8=18",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "ft09_full:guard_pair:22251": {
+   "context": "ted by the absence of 11, and whether the mechanic is a one-time initialization or a repeatable toggle. Alternatively, attempting to reach `count:8 == 18` (if possible via other means) would test the balance hypothesis. Let's refine the rules to exactly match the requested format: `ACT",
+   "family": "guard_pair",
+   "token": "count:8=18",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "ft09_full:guard_pair:3647": {
+   "context": "it requires a combination, or the guard vocabulary is limited, or the trigger is actually `count:8 == 17 AND count:9 == 19` (or `count:8 + count:9 == 36`?), but the miner only checks single features. - Wait, the prompt says: \"A key is unresolved when its transitions disagree about the eff",
+   "family": "guard_pair",
+   "token": "count:9=36",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "ls20_125:guard_pair:18074": {
+   "context": "ion-free. So maybe the rule is: `action -> reshape(3) + reshape(11) [always]`, and `appear/disappear(9/12)` happens when `count:3 == 3` or `adj:11:dir == 3`? But the data shows overlap. - Let's look at the rare effects: `appear(3)`, `disappear(11)`, `disappear(8)`. These happen when `count",
+   "family": "guard_pair",
+   "token": "adj:11:dir=3",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "ls20_125:guard_pair:9191": {
+   "context": "like a conditional toggle. Maybe 9 and 12 are \"switches\" that only toggle if a condition is met. The condition might be \"count:3 == 3\" or \"adj:11:right == 3\" or something. - Wait, the guard `count:3` takes values 2, 3, 5. `count:8` takes 1, 2, 3. - In the main effect, `count:3` is ofte",
+   "family": "guard_pair",
+   "token": "adj:11:right=3",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "m0r0_125:feature_key:16402": {
+   "context": "1`, `adj:12:down: 0`, `adj:12:up: 0` - Notice `adj:12:up` and `adj:12:down` vary. Maybe ACTION1 moves 10 vertically? If so, `adj:10:up` or `adj:10:down` would be the guard. But vocabulary has `adj:C:direction`. It should have `adj:10:up`. Why isn't it listed in the varying",
+   "family": "feature_key",
+   "token": "adj:10:up",
+   "verdict": "assertion_error",
+   "why": "asserts adj:10:* exists or uses it in a drafted rule, though colour 10 has 2 components and adj is single-object only"
+  },
+  "m0r0_125:feature_key:16417": {
+   "context": "n: 0`, `adj:12:up: 0` - Notice `adj:12:up` and `adj:12:down` vary. Maybe ACTION1 moves 10 vertically? If so, `adj:10:up` or `adj:10:down` would be the guard. But vocabulary has `adj:C:direction`. It should have `adj:10:up`. Why isn't it listed in the varying guards? The miner",
+   "family": "feature_key",
+   "token": "adj:10:down",
+   "verdict": "assertion_error",
+   "why": "asserts adj:10:* exists or uses it in a drafted rule, though colour 10 has 2 components and adj is single-object only"
+  },
+  "m0r0_125:feature_key:16504": {
+   "context": "ACTION1 moves 10 vertically? If so, `adj:10:up` or `adj:10:down` would be the guard. But vocabulary has `adj:C:direction`. It should have `adj:10:up`. Why isn't it listed in the varying guards? The miner only lists guards that *vary* across the transitions for that action. If `adj:10:up`",
+   "family": "feature_key",
+   "token": "adj:10:up",
+   "verdict": "assertion_error",
+   "why": "asserts adj:10:* exists or uses it in a drafted rule, though colour 10 has 2 components and adj is single-object only"
+  },
+  "m0r0_125:feature_key:16643": {
+   "context": "`adj:10:up`. Why isn't it listed in the varying guards? The miner only lists guards that *vary* across the transitions for that action. If `adj:10:up` was constant, it wouldn't be listed. But we don't know its value. - Actually, the miner lists `adj:11:...` and `adj:12:...`",
+   "family": "feature_key",
+   "token": "adj:10:up",
+   "verdict": "assertion_error",
+   "why": "asserts adj:10:* exists or uses it in a drafted rule, though colour 10 has 2 components and adj is single-object only"
+  },
+  "m0r0_full:feature_key:21256": {
+   "context": "2` -> `appear(10) + appear(10) + disappear(10) + disappear(10)`; `count:10 == 1` -> `appear(10) + disappear(10)`. `reshape(0)` occurs when `adj:10:down == 0` (or similar). - But I need to stick to \"at most ONE guard\". - Let's look at ACTION6 on colour 5: `reshape(0)` vs `no-ch",
+   "family": "feature_key",
+   "token": "adj:10:down",
+   "verdict": "assertion_error",
+   "why": "asserts adj:10:* exists or uses it in a drafted rule, though colour 10 has 2 components and adj is single-object only"
+  },
+  "m0r0_full:feature_key:27605": {
+   "context": "0) + appear(10) + disappear(10) + disappear(10)`; `count:10 == 1` -> `appear(10) + disappear(10)`. `reshape(0)` is a secondary effect when `adj:10:down == 0` (or similar). I'll simplify to the main effect. - Actually, the prompt says \"no single guard separates them\". I should respect tha",
+   "family": "feature_key",
+   "token": "adj:10:down",
+   "verdict": "assertion_error",
+   "why": "asserts adj:10:* exists or uses it in a drafted rule, though colour 10 has 2 components and adj is single-object only"
+  },
+  "m0r0_full:feature_key:30381": {
+   "context": "`reshape(0)` is independent or conditional on adjacency to 0. I'll note that `count:10` explains the appear/disappear multiplicity, while `adj:10:down==0` (or similar) explains reshape. But since I can only use one guard, I'll focus on the primary split. - Actually, the prompt says",
+   "family": "feature_key",
+   "token": "adj:10:down",
+   "verdict": "assertion_error",
+   "why": "asserts adj:10:* exists or uses it in a drafted rule, though colour 10 has 2 components and adj is single-object only"
+  },
+  "m0r0_full:guard_pair:17019": {
+   "context": "ys max 2 for 0 and 10. It doesn't say min. Maybe sometimes there's 1, sometimes 2. If `count:10 == 2`, you get double appear/disappear. If `count:10 == 1`, you get single. That would explain ACTION1's effects! `appear(10)+appear(10)+disappear(10)+disappear(10)` vs `appear(10)+disappear(10)`.",
+   "family": "guard_pair",
+   "token": "count:10=1",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "m0r0_full:guard_pair:17492": {
+   "context": "N1 moves 10s. Effect depends on `count:10`. - If `count:10 == 2`: `appear(10) + appear(10) + disappear(10) + disappear(10)` - If `count:10 == 1`: `appear(10) + disappear(10)` - What about `reshape(0)`? Maybe it's a side effect when 10 moves past 0, or depends on `count:0`.",
+   "family": "guard_pair",
+   "token": "count:10=1",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "m0r0_full:guard_pair:21182": {
+   "context": "ick_on_background`. - I will propose: - ACTION1: `count:10 == 2` -> `appear(10) + appear(10) + disappear(10) + disappear(10)`; `count:10 == 1` -> `appear(10) + disappear(10)`. `reshape(0)` occurs when `adj:10:down == 0` (or similar). - But I need to stick to \"at most ONE gu",
+   "family": "guard_pair",
+   "token": "count:10=1",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "m0r0_full:guard_pair:21256": {
+   "context": "2` -> `appear(10) + appear(10) + disappear(10) + disappear(10)`; `count:10 == 1` -> `appear(10) + disappear(10)`. `reshape(0)` occurs when `adj:10:down == 0` (or similar). - But I need to stick to \"at most ONE guard\". - Let's look at ACTION6 on colour 5: `reshape(0)` vs `no-change`",
+   "family": "guard_pair",
+   "token": "adj:10:down=0",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "m0r0_full:guard_pair:25251": {
+   "context": "ons. - Structure: **1. RULES** - ACTION1 (Move 10s): `count:10 == 2` -> `appear(10)+appear(10)+disappear(10)+disappear(10)`; `count:10 == 1` -> `appear(10)+disappear(10)`. `reshape(0)` adds when moving 10 crosses/adjacent to 0. (Vocabulary note: `count:10` is in vocab but miner",
+   "family": "guard_pair",
+   "token": "count:10=1",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "m0r0_full:guard_pair:27516": {
+   "context": "prompt's format. - Let's draft carefully. - ACTION1: `count:10 == 2` -> `appear(10) + appear(10) + disappear(10) + disappear(10)`; `count:10 == 1` -> `appear(10) + disappear(10)`. `reshape(0)` is a secondary effect when `adj:10:down == 0` (or similar). I'll simplify to the main effect",
+   "family": "guard_pair",
+   "token": "count:10=1",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "m0r0_full:guard_pair:27605": {
+   "context": "0) + appear(10) + disappear(10) + disappear(10)`; `count:10 == 1` -> `appear(10) + disappear(10)`. `reshape(0)` is a secondary effect when `adj:10:down == 0` (or similar). I'll simplify to the main effect. - Actually, the prompt says \"no single guard separates them\". I should respect that and",
+   "family": "guard_pair",
+   "token": "adj:10:down=0",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "m0r0_full:guard_pair:30381": {
+   "context": "`reshape(0)` is independent or conditional on adjacency to 0. I'll note that `count:10` explains the appear/disappear multiplicity, while `adj:10:down==0` (or similar) explains reshape. But since I can only use one guard, I'll focus on the primary split. - Actually, the prompt says \"at",
+   "family": "guard_pair",
+   "token": "adj:10:down=0",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "tu93_125:guard_pair:12873": {
+   "context": "ally. The state is either `[4, 9]` or `[9, 4]`. If state is `[4, 9]`, then `adj:4:right=9`, `adj:4:left=None`, `adj:9:left=4`, `adj:9:right=None`. If state is `[9, 4]`, then `adj:4:right=None`, `adj:4:left=9`, `adj:9:left=None`, `adj:9:right=4`. Let's check the data again",
+   "family": "guard_pair",
+   "token": "adj:9:right=None",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "tu93_full:count:259": {
+   "context": "nfamiliar grid-puzzle game (GAME tu93, level 1). - Data provided: - Action inventory: ACTION1, ACTION2, ACTION3, ACTION4 (each ~600-660 transitions). - Object census: Colors 0, 2, 4, 6, 9, 14 with max counts. Background is likely color 0 or 2 (most common). Wait, census says `{'0':",
+   "family": "count",
+   "token": "660 transitions",
+   "verdict": "approximation",
+   "why": "\"each ~600-660 transitions\" against a true range of 621-661"
+  },
+  "tu93_full:guard_pair:16214": {
+   "context": "is often 9. `adj:4:down` is often 9 or 2 or None. - This implies 4 and 9 are often adjacent. - Actually, look at the pattern of `adj:4:dir=None`. For each action, exactly one direction has `None` for the most frequent effect. ACTION1: `adj:4:down=None` (x338) ACTION2:",
+   "family": "guard_pair",
+   "token": "adj:4:dir=None",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "tu93_full:guard_pair:21355": {
+   "context": "has an open path for 4 (`adj:4:ACTION_DIR` is `None` or `2`), then 4 moves (appear/disappear), and 9 moves too. - If blocked by 9 (`adj:4:ACTION_DIR == 9`), then 4 doesn't move, just reshapes. - Let's test this hypothesis on ACTION1 (assume ACTION1 = Down): - `adj:4:down=None` (op",
+   "family": "guard_pair",
+   "token": "adj:4:ACTION_DIR=9",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "tu93_full:guard_pair:25002": {
+   "context": "kely Up/Down/Left/Right) - I will state the rules per action using the relevant `adj:4:dir` guard. - Effect mapping: - If `adj:4:dir == None` (edge): Big swap (move 4,9; reshape 0,6) - If `adj:4:dir == 9` (blocked by 9): Reshape only (0,6) - If `adj:4:dir == 2` (bac",
+   "family": "guard_pair",
+   "token": "adj:4:dir=None",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "tu93_full:guard_pair:25075": {
+   "context": "he relevant `adj:4:dir` guard. - Effect mapping: - If `adj:4:dir == None` (edge): Big swap (move 4,9; reshape 0,6) - If `adj:4:dir == 9` (blocked by 9): Reshape only (0,6) - If `adj:4:dir == 2` (background): Move 4,9; disappear 6; reshape 0 - If `adj:4:dir` is",
+   "family": "guard_pair",
+   "token": "adj:4:dir=9",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "tu93_full:guard_pair:25139": {
+   "context": "f `adj:4:dir == None` (edge): Big swap (move 4,9; reshape 0,6) - If `adj:4:dir == 9` (blocked by 9): Reshape only (0,6) - If `adj:4:dir == 2` (background): Move 4,9; disappear 6; reshape 0 - If `adj:4:dir` is something else? The data shows mostly None, 9, 2. - This co",
+   "family": "guard_pair",
+   "token": "adj:4:dir=2",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "tu93_full:guard_pair:25349": {
+   "context": "- If `adj:4:dir` is something else? The data shows mostly None, 9, 2. - This covers the 5 effects. The 5th effect (x1 or x7 etc.) has `adj:4:dir=2` and `adj:9:left=None` or similar, leading to `appear(0)+reshape(6)`. - I'll formulate the rules clearly. Now, GOAL: What comple",
+   "family": "guard_pair",
+   "token": "adj:4:dir=2",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "tu93_full:guard_pair:9842": {
+   "context": "ect B (reshape). `adj:4:up=None` correlates with Effect D (disappear 6). - Wait, the action direction might match the direction where `adj:4:dir=None`! - If ACTION1 is \"Down\", then `adj:4:down=None` means nothing below 4. Effect A happens. - If ACTION2 is \"Left\", let's check ACT",
+   "family": "guard_pair",
+   "token": "adj:4:dir=None",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "vc33_125:feature_key:10853": {
+   "context": "count:0==2`, it triggers a complex chain. The difference between the two complex chains (`disappear(4)` vs `disappear(0)`) might depend on `adj:4:down` or `adj:0:down` or `adj:7:down` (but `adj:7:down` is 0 in both). Maybe `adj:4:right`? Or `count:4`? I'll note that the vocabulary likely n",
+   "family": "feature_key",
+   "token": "adj:4:down",
+   "verdict": "hypothesis",
+   "why": "floated as a candidate missing feature, hedged"
+  },
+  "vc33_125:feature_key:10869": {
+   "context": "triggers a complex chain. The difference between the two complex chains (`disappear(4)` vs `disappear(0)`) might depend on `adj:4:down` or `adj:0:down` or `adj:7:down` (but `adj:7:down` is 0 in both). Maybe `adj:4:right`? Or `count:4`? I'll note that the vocabulary likely needs `adj:4:dire",
+   "family": "feature_key",
+   "token": "adj:0:down",
+   "verdict": "hypothesis",
+   "why": "floated as a candidate missing feature, hedged"
+  },
+  "vc33_125:feature_key:10937": {
+   "context": "ins (`disappear(4)` vs `disappear(0)`) might depend on `adj:4:down` or `adj:0:down` or `adj:7:down` (but `adj:7:down` is 0 in both). Maybe `adj:4:right`? Or `count:4`? I'll note that the vocabulary likely needs `adj:4:direction` or `count:4` to split the last two, but I'll formulate the rul",
+   "family": "feature_key",
+   "token": "adj:4:right",
+   "verdict": "hypothesis",
+   "why": "floated as a candidate missing feature, hedged"
+  },
+  "vc33_125:feature_key:11663": {
+   "context": "0) + reshape(4) + reshape(7)` (with a note that the `disappear(4)` vs `disappear(0)` variant likely depends on an untracked adjacency like `adj:4:down` or `count:4`, outside the miner's current split). - Actually, I can simplify: The complex effect for 9 when `count:0==2` is likely a si",
+   "family": "feature_key",
+   "token": "adj:4:down",
+   "verdict": "hypothesis",
+   "why": "floated as a candidate missing feature, hedged"
+  },
+  "vc33_125:feature_key:15443": {
+   "context": "for colour 9, try clicking 9 when `count:0 == 2` but with a different configuration of colour 4 (e.g., `count:4 == 1` vs `2`, or changing `adj:4:down`). This would split the last two effects. - I'll recommend: `ACTION6 on colour 0` in a state where `adj:7:down == 0` but `count:0 == 1`",
+   "family": "feature_key",
+   "token": "adj:4:down",
+   "verdict": "hypothesis",
+   "why": "floated as a candidate missing feature, hedged"
+  },
+  "vc33_125:feature_key:15714": {
+   "context": "but `count:0 == 1` (or vice versa) to isolate the true guard. If that's hard to set up, `ACTION6 on colour 9` when `count:0 == 2` but with `adj:4:down` varied (or `count:4` varied) to resolve the `disappear(4)` vs `disappear(0)` split. Let's refine the \"What would settle it\" to be prec",
+   "family": "feature_key",
+   "token": "adj:4:down",
+   "verdict": "hypothesis",
+   "why": "floated as a candidate missing feature, hedged"
+  },
+  "vc33_125:feature_key:6956": {
+   "context": "aping. - The key difference between Effect 2 and 3 is `disappear(4)` vs `disappear(0)`. Both have `count:0 == 2`. Maybe it depends on `adj:0:down` or `adj:4:down`? Or maybe `count:4`? The census says `4` has max 2. If `count:4 == 1` vs `2`, that could split them. - Alternatively,",
+   "family": "feature_key",
+   "token": "adj:0:down",
+   "verdict": "hypothesis",
+   "why": "floated as a candidate missing feature, hedged"
+  },
+  "vc33_125:feature_key:6972": {
+   "context": "e key difference between Effect 2 and 3 is `disappear(4)` vs `disappear(0)`. Both have `count:0 == 2`. Maybe it depends on `adj:0:down` or `adj:4:down`? Or maybe `count:4`? The census says `4` has max 2. If `count:4 == 1` vs `2`, that could split them. - Alternatively, maybe the rule",
+   "family": "feature_key",
+   "token": "adj:4:down",
+   "verdict": "hypothesis",
+   "why": "floated as a candidate missing feature, hedged"
+  },
+  "vc33_125:feature_key:7281": {
+   "context": "HEN count:0 == 1 -> reshape(4)+reshape(7)`. `WHEN count:0 == 2 -> complex effect`. The complex effect might depend on another feature like `adj:4:down` or `present:11`. - Let's step back. The prompt says: \"You may use any reasoning you like, but your final rules must be expressible as",
+   "family": "feature_key",
+   "token": "adj:4:down",
+   "verdict": "hypothesis",
+   "why": "floated as a candidate missing feature, hedged"
+  },
+  "vc33_125:feature_key:8482": {
+   "context": "effect]`. But the complex effect has two variants. The difference is `disappear(4)` vs `disappear(0)`. What guard could split these? Maybe `adj:4:down` or `adj:0:down`? Or `count:4`? Since the miner didn't list it, maybe it's `adj:4:right` or something. But I can hypothesize `count:4` or `",
+   "family": "feature_key",
+   "token": "adj:4:down",
+   "verdict": "hypothesis",
+   "why": "floated as a candidate missing feature, hedged"
+  },
+  "vc33_125:feature_key:8498": {
+   "context": "e complex effect has two variants. The difference is `disappear(4)` vs `disappear(0)`. What guard could split these? Maybe `adj:4:down` or `adj:0:down`? Or `count:4`? Since the miner didn't list it, maybe it's `adj:4:right` or something. But I can hypothesize `count:4` or `adj:4:down`. Act",
+   "family": "feature_key",
+   "token": "adj:0:down",
+   "verdict": "hypothesis",
+   "why": "floated as a candidate missing feature, hedged"
+  },
+  "vc33_125:feature_key:8569": {
+   "context": "`disappear(0)`. What guard could split these? Maybe `adj:4:down` or `adj:0:down`? Or `count:4`? Since the miner didn't list it, maybe it's `adj:4:right` or something. But I can hypothesize `count:4` or `adj:4:down`. Actually, looking at the complex effect: `appear(4)+appear(11)+disappear(4)",
+   "family": "feature_key",
+   "token": "adj:4:right",
+   "verdict": "hypothesis",
+   "why": "floated as a candidate missing feature, hedged"
+  },
+  "vc33_125:feature_key:8632": {
+   "context": "` or `adj:0:down`? Or `count:4`? Since the miner didn't list it, maybe it's `adj:4:right` or something. But I can hypothesize `count:4` or `adj:4:down`. Actually, looking at the complex effect: `appear(4)+appear(11)+disappear(4)+disappear(11)+reshape(0)+reshape(0)+reshape(4)+reshape(7)`. T",
+   "family": "feature_key",
+   "token": "adj:4:down",
+   "verdict": "hypothesis",
+   "why": "floated as a candidate missing feature, hedged"
+  },
+  "vc33_125:feature_key:8948": {
+   "context": "ction or a specific puzzle mechanic (maybe a \"swap\" or \"portal\" or \"gravity\" effect). The `disappear(4)` vs `disappear(0)` might depend on `adj:4:down == 0` or `adj:0:down == 4`. Or maybe it's `present:11`? The census says 11 max is 2. - Wait, the prompt says: \"If it cannot [be named",
+   "family": "feature_key",
+   "token": "adj:4:down",
+   "verdict": "hypothesis",
+   "why": "floated as a candidate missing feature, hedged"
+  },
+  "vc33_125:feature_key:8969": {
+   "context": "uzzle mechanic (maybe a \"swap\" or \"portal\" or \"gravity\" effect). The `disappear(4)` vs `disappear(0)` might depend on `adj:4:down == 0` or `adj:0:down == 4`. Or maybe it's `present:11`? The census says 11 max is 2. - Wait, the prompt says: \"If it cannot [be named by the vocabulary], s",
+   "family": "feature_key",
+   "token": "adj:0:down",
+   "verdict": "hypothesis",
+   "why": "floated as a candidate missing feature, hedged"
+  },
+  "vc33_125:guard_pair:15408": {
+   "context": "the true guard. - Alternatively, for colour 9, try clicking 9 when `count:0 == 2` but with a different configuration of colour 4 (e.g., `count:4 == 1` vs `2`, or changing `adj:4:down`). This would split the last two effects. - I'll recommend: `ACTION6 on colour 0` in a state where `adj",
+   "family": "guard_pair",
+   "token": "count:4=1",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "vc33_125:guard_pair:7040": {
+   "context": "ear(0)`. Both have `count:0 == 2`. Maybe it depends on `adj:0:down` or `adj:4:down`? Or maybe `count:4`? The census says `4` has max 2. If `count:4 == 1` vs `2`, that could split them. - Alternatively, maybe the rule for colour 9 is: `WHEN count:0 == 1 -> reshape(4)+reshape(7)`. `WHEN c",
+   "family": "guard_pair",
+   "token": "count:4=1",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "vc33_125:guard_pair:8948": {
+   "context": "ction or a specific puzzle mechanic (maybe a \"swap\" or \"portal\" or \"gravity\" effect). The `disappear(4)` vs `disappear(0)` might depend on `adj:4:down == 0` or `adj:0:down == 4`. Or maybe it's `present:11`? The census says 11 max is 2. - Wait, the prompt says: \"If it cannot [be named by th",
+   "family": "guard_pair",
+   "token": "adj:4:down=0",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "vc33_125:guard_pair:8969": {
+   "context": "uzzle mechanic (maybe a \"swap\" or \"portal\" or \"gravity\" effect). The `disappear(4)` vs `disappear(0)` might depend on `adj:4:down == 0` or `adj:0:down == 4`. Or maybe it's `present:11`? The census says 11 max is 2. - Wait, the prompt says: \"If it cannot [be named by the vocabulary], say so",
+   "family": "guard_pair",
+   "token": "adj:0:down=4",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "vc33_full:guard_pair:15792": {
+   "context": "cascade. The complex effects on 9 involve 11, which isn't in the simple rules. Maybe 11 is the target colour. Or maybe the goal is to make `count:7 == 0` or `count:0 == 0`. I'll hypothesize that the goal involves manipulating counts to trigger a win condition, possibly related to colour 11 o",
+   "family": "guard_pair",
+   "token": "count:7=0",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  },
+  "vc33_full:guard_pair:15810": {
+   "context": "ex effects on 9 involve 11, which isn't in the simple rules. Maybe 11 is the target colour. Or maybe the goal is to make `count:7 == 0` or `count:0 == 0`. I'll hypothesize that the goal involves manipulating counts to trigger a win condition, possibly related to colour 11 or clearing 7s. Evi",
+   "family": "guard_pair",
+   "token": "count:0=0",
+   "verdict": "hypothesis",
+   "why": "proposed or named as a probe target, not asserted of the digest"
+  }
+ },
+ "rater": "one rater; each item adjudicated from the context recorded in logs/e2_autopsy_claims.json"
+}

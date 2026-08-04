@@ -1,0 +1,2707 @@
+{
+ "blinding": {
+  "exceptions": {
+   "_refuted_eight": "the 8 refuted dose-125 rules are published in notes/e2-slice.md",
+   "dc22_125": "verification array read during schema discovery, before the trace"
+  },
+  "followed_for": [
+   "tu93_125",
+   "tu93_full",
+   "dc22_full",
+   "ft09_125",
+   "ft09_full",
+   "ls20_125",
+   "ls20_full",
+   "m0r0_125",
+   "m0r0_full",
+   "vc33_125",
+   "vc33_full"
+  ],
+  "policy": "label before joining outcomes",
+  "raters": 1
+ },
+ "cells": [
+  {
+   "cell": "tu93_125",
+   "extra_labels": [
+    {
+     "label": "misread-corrected",
+     "layer": "READING",
+     "quote": "The numbers after the colon are the *values*, not counts!"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING",
+     "quote": "Why did the miner fail?"
+    },
+    {
+     "label": "evidence-weight-blind",
+     "layer": "REASONING",
+     "quote": "This is perfectly consistent."
+    },
+    {
+     "label": "overgeneralization",
+     "layer": "REASONING",
+     "quote": "This might be a boundary case or noise."
+    }
+   ],
+   "goal": {
+    "label": "correct",
+    "quote": "almost always the goal marker",
+    "truth_paraphrase": "the level advances when every mover sprite stands on an exit tile; with one mover and one static target visible in the evidence this coincides with the trace's 'move 4 or 9 onto 14'"
+   },
+   "hidden_state": {
+    "label": "wrong",
+    "truth_paraphrase": "the game does carry an unrendered phase variable; the digest recorded no alias conflicts, so the evidence did not show it"
+   },
+   "lexicon": {
+    "refutation": {
+     "hits": {
+      "\\bcontradict(?:s|ed|ion|ions|ory)?\\b": 1,
+      "\\bexception(?:s)?\\b": 2
+     },
+     "total": 3
+    },
+    "weight": {
+     "hits": {
+      "\\bconfiden(?:t|ce)\\b": 1,
+      "\\bonly (?:one|two|a few|\\d+) (?:transition|row|case|example)": 1
+     },
+     "total": 2
+    }
+   },
+   "next_probe": {
+    "label": "non-discriminating",
+    "why": "it re-runs the configuration the rules were fitted to rather than a configuration on which the group-constancy reading would break"
+   },
+   "proposals": 6,
+   "reading_claims": {
+    "count": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 99,
+     "schematic": 0
+    },
+    "feature_key": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 343,
+     "schematic": 4
+    },
+    "guard_pair": {
+     "error": 0,
+     "flagged": 1,
+     "ok": 237,
+     "schematic": 0
+    }
+   }
+  },
+  {
+   "cell": "tu93_full",
+   "extra_labels": [
+    {
+     "label": "alternative-dropped",
+     "layer": "REASONING",
+     "quote": "If it cannot, say so explicitly rather than inventing a rule that fits."
+    }
+   ],
+   "goal": {
+    "label": "correct",
+    "quote": "Complete the level by moving object 4 (or 9) onto color 14.",
+    "truth_paraphrase": "as tu93_125 \u2014 all movers onto exit tiles"
+   },
+   "hidden_state": {
+    "label": "wrong",
+    "truth_paraphrase": "as tu93_125"
+   },
+   "lexicon": {
+    "refutation": {
+     "hits": {},
+     "total": 0
+    },
+    "weight": {
+     "hits": {
+      "\\bfrequent(?:ly)?\\b": 7,
+      "\\bsupport(?:s|ed|ing)?\\b": 1
+     },
+     "total": 8
+    }
+   },
+   "next_probe": {
+    "label": "discriminating",
+    "why": "positioning 4 adjacent to 14 in the action's direction would test the directional theory directly"
+   },
+   "proposals": 12,
+   "reading_claims": {
+    "count": {
+     "error": 1,
+     "flagged": 0,
+     "ok": 41,
+     "schematic": 0
+    },
+    "feature_key": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 210,
+     "schematic": 51
+    },
+    "guard_pair": {
+     "error": 0,
+     "flagged": 7,
+     "ok": 138,
+     "schematic": 0
+    }
+   }
+  },
+  {
+   "cell": "dc22_125",
+   "extra_labels": [
+    {
+     "label": "vocabulary-limit-named",
+     "layer": "EXPRESSIBILITY",
+     "quote": "cannot name"
+    }
+   ],
+   "goal": {
+    "label": "wrong",
+    "quote": "**clearing or consolidating the colour-0 objects**",
+    "truth_paraphrase": "the level advances when the avatar sprite occupies the goal tile \u2014 a reach-the-target level, not a clear-the-board one"
+   },
+   "hidden_state": {
+    "label": "wrong",
+    "truth_paraphrase": "the game's declared hidden state is a step counter, not a toggle or a selection cursor"
+   },
+   "lexicon": {
+    "refutation": {
+     "hits": {
+      "\\bcontradict(?:s|ed|ion|ions|ory)?\\b": 1
+     },
+     "total": 1
+    },
+    "weight": {
+     "hits": {
+      "\\bfrequency\\b": 1,
+      "\\bfrequent(?:ly)?\\b": 2,
+      "\\bsupport(?:s|ed|ing)?\\b": 2
+     },
+     "total": 5
+    }
+   },
+   "next_probe": {
+    "label": "non-discriminating",
+    "why": "it names a state by the same example-row guards it is trying to test"
+   },
+   "proposals": 8,
+   "reading_claims": {
+    "count": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 11,
+     "schematic": 0
+    },
+    "feature_key": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 172,
+     "schematic": 8
+    },
+    "guard_pair": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 114,
+     "schematic": 0
+    }
+   }
+  },
+  {
+   "cell": "dc22_full",
+   "extra_labels": [
+    {
+     "label": "misread-corrected",
+     "layer": "READING",
+     "quote": "within each group, the guards vary"
+    }
+   ],
+   "goal": {
+    "label": "wrong",
+    "quote": "Reduce the board to a state with zero components of colour 3",
+    "truth_paraphrase": "as dc22_125 \u2014 avatar onto the goal tile"
+   },
+   "hidden_state": {
+    "label": "licensed-none",
+    "truth_paraphrase": "a step counter exists but no alias conflict was shown"
+   },
+   "lexicon": {
+    "refutation": {
+     "hits": {
+      "\\bgeneralis|generaliz": 1
+     },
+     "total": 1
+    },
+    "weight": {
+     "hits": {
+      "\\bfrequent(?:ly)?\\b": 2,
+      "\\bhow many\\b": 2,
+      "\\bsupport(?:s|ed|ing)?\\b": 1
+     },
+     "total": 5
+    }
+   },
+   "next_probe": {
+    "label": "discriminating",
+    "why": "it asks for two states identical in every adj feature and differing only in count:3 \u2014 the correct shape for isolating a single guard"
+   },
+   "proposals": 7,
+   "reading_claims": {
+    "count": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 42,
+     "schematic": 0
+    },
+    "feature_key": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 188,
+     "schematic": 16
+    },
+    "guard_pair": {
+     "error": 0,
+     "flagged": 6,
+     "ok": 19,
+     "schematic": 0
+    }
+   }
+  },
+  {
+   "cell": "ft09_125",
+   "extra_labels": [],
+   "goal": {
+    "label": "wrong",
+    "quote": "until all colour-9 objects are removed",
+    "truth_paraphrase": "an edge-matching condition: every tile must satisfy a per-edge match/mismatch constraint against its neighbour, not a removal count"
+   },
+   "hidden_state": {
+    "label": "licensed-none",
+    "truth_paraphrase": "the game carries a hidden counter; no alias conflict was shown"
+   },
+   "lexicon": {
+    "refutation": {
+     "hits": {
+      "\\bcontradict(?:s|ed|ion|ions|ory)?\\b": 1
+     },
+     "total": 1
+    },
+    "weight": {
+     "hits": {
+      "\\bsupport(?:s|ed|ing)?\\b": 1
+     },
+     "total": 1
+    }
+   },
+   "next_probe": {
+    "label": "discriminating",
+    "why": "a paired adjacent/non-adjacent click is the minimal test of the adjacency hypothesis it proposed"
+   },
+   "proposals": 2,
+   "reading_claims": {
+    "count": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 8,
+     "schematic": 0
+    },
+    "feature_key": {
+     "error": 0,
+     "flagged": 2,
+     "ok": 45,
+     "schematic": 4
+    },
+    "guard_pair": {
+     "error": 0,
+     "flagged": 3,
+     "ok": 14,
+     "schematic": 0
+    }
+   }
+  },
+  {
+   "cell": "ft09_full",
+   "extra_labels": [
+    {
+     "label": "misread-corrected",
+     "layer": "READING",
+     "quote": "It doesn't mean they are constant. It just lists the values seen."
+    },
+    {
+     "label": "guard-outside-vocabulary",
+     "layer": "EXPRESSIBILITY",
+     "quote": "count:8 == 16 & present:11 == True"
+    }
+   ],
+   "goal": {
+    "label": "wrong",
+    "quote": "**balancing the counts of colours 8 and 9 to 18 each**",
+    "truth_paraphrase": "as ft09_125 \u2014 a per-edge matching condition over neighbouring tiles"
+   },
+   "hidden_state": {
+    "label": "licensed-none",
+    "truth_paraphrase": "as ft09_125"
+   },
+   "lexicon": {
+    "refutation": {
+     "hits": {},
+     "total": 0
+    },
+    "weight": {
+     "hits": {
+      "\\bfrequency\\b": 2,
+      "\\bsupport(?:s|ed|ing)?\\b": 2
+     },
+     "total": 4
+    }
+   },
+   "next_probe": {
+    "label": "discriminating",
+    "why": "it isolates present:11 at fixed count:8, the one interaction its rule set leaves untested"
+   },
+   "proposals": 5,
+   "reading_claims": {
+    "count": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 44,
+     "schematic": 0
+    },
+    "feature_key": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 257,
+     "schematic": 0
+    },
+    "guard_pair": {
+     "error": 0,
+     "flagged": 4,
+     "ok": 111,
+     "schematic": 0
+    }
+   }
+  },
+  {
+   "cell": "ls20_125",
+   "extra_labels": [],
+   "goal": {
+    "label": "wrong",
+    "quote": "**synchronizing the singletons (11 and 12)",
+    "truth_paraphrase": "the level advances once the avatar has reached every target sprite; a collect-them-all level"
+   },
+   "hidden_state": {
+    "label": "correct",
+    "truth_paraphrase": "it names an incomplete feature vocabulary and a step counter among the candidates; the game does carry a step counter"
+   },
+   "lexicon": {
+    "refutation": {
+     "hits": {
+      "\\bexception(?:s)?\\b": 3
+     },
+     "total": 3
+    },
+    "weight": {
+     "hits": {
+      "\\bfrequent(?:ly)?\\b": 1
+     },
+     "total": 1
+    }
+   },
+   "next_probe": {
+    "label": "out-of-band",
+    "why": "it asks for instrumentation the agent cannot obtain in play \u2014 exact coordinates and a global step count \u2014 rather than an action"
+   },
+   "proposals": 4,
+   "reading_claims": {
+    "count": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 25,
+     "schematic": 0
+    },
+    "feature_key": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 81,
+     "schematic": 1
+    },
+    "guard_pair": {
+     "error": 0,
+     "flagged": 2,
+     "ok": 25,
+     "schematic": 0
+    }
+   }
+  },
+  {
+   "cell": "ls20_full",
+   "extra_labels": [],
+   "goal": {
+    "label": "unfalsifiable",
+    "quote": "or reach a target configuration",
+    "truth_paraphrase": "as ls20_125 \u2014 reach every target; the trace's 'position or merge the active pieces to clear the board or reach a target configuration' admits no test"
+   },
+   "hidden_state": {
+    "label": "licensed-none",
+    "truth_paraphrase": "a step counter exists; no alias conflict was shown"
+   },
+   "lexicon": {
+    "refutation": {
+     "hits": {},
+     "total": 0
+    },
+    "weight": {
+     "hits": {
+      "\\bfrequency\\b": 2,
+      "\\bfrequent(?:ly)?\\b": 5,
+      "\\bsupport(?:s|ed|ing)?\\b": 1
+     },
+     "total": 8
+    }
+   },
+   "next_probe": {
+    "label": "out-of-band",
+    "why": "it asks to place objects at chosen coordinates, which is not an available action"
+   },
+   "proposals": 4,
+   "reading_claims": {
+    "count": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 4,
+     "schematic": 0
+    },
+    "feature_key": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 33,
+     "schematic": 4
+    },
+    "guard_pair": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 4,
+     "schematic": 0
+    }
+   }
+  },
+  {
+   "cell": "m0r0_125",
+   "extra_labels": [
+    {
+     "label": "guard-misread",
+     "layer": "REASONING",
+     "quote": "It should have `adj:10:up`."
+    },
+    {
+     "label": "guard-outside-vocabulary",
+     "layer": "EXPRESSIBILITY",
+     "quote": "adj:12:left == 11"
+    }
+   ],
+   "goal": {
+    "label": "partial",
+    "quote": "**repositioning the two colour-10 blocks into a target configuration**",
+    "truth_paraphrase": "the level advances when no unmatched piece remains \u2014 pieces brought together merge and become inert; the trace has the repositioning but not the pairing-to-zero"
+   },
+   "hidden_state": {
+    "label": "correct",
+    "truth_paraphrase": "the game's declared hidden state is an action count, and its own mode toggles on that count's parity \u2014 the trace named turn parity"
+   },
+   "lexicon": {
+    "refutation": {
+     "hits": {
+      "\\bcontradict(?:s|ed|ion|ions|ory)?\\b": 1
+     },
+     "total": 1
+    },
+    "weight": {
+     "hits": {
+      "\\bsupport(?:s|ed|ing)?\\b": 1
+     },
+     "total": 1
+    }
+   },
+   "next_probe": {
+    "label": "discriminating",
+    "why": "m0r0 is the one cell whose digest recorded alias conflicts, and the probe targets the parity it inferred from them"
+   },
+   "proposals": 17,
+   "reading_claims": {
+    "count": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 28,
+     "schematic": 0
+    },
+    "feature_key": {
+     "error": 0,
+     "flagged": 4,
+     "ok": 218,
+     "schematic": 16
+    },
+    "guard_pair": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 165,
+     "schematic": 0
+    }
+   }
+  },
+  {
+   "cell": "m0r0_full",
+   "extra_labels": [
+    {
+     "label": "guard-outside-vocabulary",
+     "layer": "EXPRESSIBILITY",
+     "quote": "adj:10:down == 0"
+    }
+   ],
+   "goal": {
+    "label": "wrong",
+    "quote": "reshape the two colour-0 components into a continuous path or key shape",
+    "truth_paraphrase": "as m0r0_125 \u2014 no unmatched piece remains; the lock-and-key path is invented"
+   },
+   "hidden_state": {
+    "label": "correct",
+    "truth_paraphrase": "as m0r0_125 \u2014 action count and its parity"
+   },
+   "lexicon": {
+    "refutation": {
+     "hits": {
+      "\\bexception(?:s)?\\b": 1
+     },
+     "total": 1
+    },
+    "weight": {
+     "hits": {
+      "\\bfrequency\\b": 1,
+      "\\bfrequent(?:ly)?\\b": 3,
+      "\\bsupport(?:s|ed|ing)?\\b": 6
+     },
+     "total": 10
+    }
+   },
+   "next_probe": {
+    "label": "discriminating",
+    "why": "repeating one action from a fixed visual state is the direct test of an alternating hidden phase"
+   },
+   "proposals": 10,
+   "reading_claims": {
+    "count": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 35,
+     "schematic": 0
+    },
+    "feature_key": {
+     "error": 0,
+     "flagged": 3,
+     "ok": 166,
+     "schematic": 9
+    },
+    "guard_pair": {
+     "error": 0,
+     "flagged": 8,
+     "ok": 18,
+     "schematic": 0
+    }
+   }
+  },
+  {
+   "cell": "vc33_125",
+   "extra_labels": [
+    {
+     "label": "alternative-dropped",
+     "layer": "REASONING",
+     "quote": "The miner couldn't separate them because *both* vary."
+    },
+    {
+     "label": "guard-outside-vocabulary",
+     "layer": "EXPRESSIBILITY",
+     "quote": "adj:7:down"
+    }
+   ],
+   "goal": {
+    "label": "wrong",
+    "quote": "clearing the board of all non-background objects",
+    "truth_paraphrase": "the level advances when every key object satisfies its matching slot/barrier relation \u2014 an assignment condition, not board clearing"
+   },
+   "hidden_state": {
+    "label": "licensed-none",
+    "truth_paraphrase": "a step counter exists; no alias conflict was shown"
+   },
+   "lexicon": {
+    "refutation": {
+     "hits": {},
+     "total": 0
+    },
+    "weight": {
+     "hits": {
+      "\\bsupport(?:s|ed|ing)?\\b": 3
+     },
+     "total": 3
+    }
+   },
+   "next_probe": {
+    "label": "discriminating",
+    "why": "it explicitly asks for the state that breaks the correlation between the two candidate guards \u2014 the best probe in the run"
+   },
+   "proposals": 6,
+   "reading_claims": {
+    "count": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 13,
+     "schematic": 0
+    },
+    "feature_key": {
+     "error": 0,
+     "flagged": 15,
+     "ok": 195,
+     "schematic": 10
+    },
+    "guard_pair": {
+     "error": 0,
+     "flagged": 4,
+     "ok": 81,
+     "schematic": 0
+    }
+   }
+  },
+  {
+   "cell": "vc33_full",
+   "extra_labels": [
+    {
+     "label": "alternative-dropped",
+     "layer": "REASONING",
+     "quote": "maybe the values listed are just examples and there's overlap not shown"
+    }
+   ],
+   "goal": {
+    "label": "wrong",
+    "quote": "manipulating the counts of colours 0, 4, and 7",
+    "truth_paraphrase": "as vc33_125 \u2014 a per-key matching condition"
+   },
+   "hidden_state": {
+    "label": "licensed-none",
+    "truth_paraphrase": "as vc33_125"
+   },
+   "lexicon": {
+    "refutation": {
+     "hits": {
+      "\\bcontradict(?:s|ed|ion|ions|ory)?\\b": 1
+     },
+     "total": 1
+    },
+    "weight": {
+     "hits": {
+      "\\bfrequent(?:ly)?\\b": 1,
+      "\\bsupport(?:s|ed|ing)?\\b": 1
+     },
+     "total": 2
+    }
+   },
+   "next_probe": {
+    "label": "discriminating",
+    "why": "it names a specific untested count configuration"
+   },
+   "proposals": 3,
+   "reading_claims": {
+    "count": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 3,
+     "schematic": 0
+    },
+    "feature_key": {
+     "error": 0,
+     "flagged": 0,
+     "ok": 159,
+     "schematic": 2
+    },
+    "guard_pair": {
+     "error": 0,
+     "flagged": 2,
+     "ok": 60,
+     "schematic": 0
+    }
+   }
+  }
+ ],
+ "format_version": 1,
+ "layers": {
+  "alternative-dropped": "REASONING",
+  "digest-assertion-overridden": "REASONING",
+  "evidence-weight-blind": "REASONING",
+  "example-row-as-group-constant": "READING",
+  "guard-misread": "REASONING",
+  "guard-outside-vocabulary": "EXPRESSIBILITY",
+  "misread-corrected": "READING",
+  "overgeneralization": "REASONING",
+  "vocabulary-limit-named": "EXPRESSIBILITY"
+ },
+ "rules": [
+  {
+   "cell": "tu93_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "evidence-weight-blind",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Six rules follow from reading one example row per group as the group's constant. The trace states the inference explicitly.",
+   "outcome": {
+    "contradicted_on_store": 10,
+    "kept": false,
+    "support_on_store": 1
+   },
+   "quote": "This implies the feature was constant across those transitions.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A1 | adj:9:right=2 -> appear0+appear4+appear9+disappear0+disappear4+disappear9+reshape0+reshape6",
+   "rule_index": 0
+  },
+  {
+   "cell": "tu93_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "evidence-weight-blind",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Six rules follow from reading one example row per group as the group's constant. The trace states the inference explicitly.",
+   "outcome": {
+    "contradicted_on_store": 6,
+    "kept": false,
+    "support_on_store": 13
+   },
+   "quote": "This implies the feature was constant across those transitions.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A1 | adj:9:right=4 -> reshape0+reshape6",
+   "rule_index": 1
+  },
+  {
+   "cell": "tu93_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "evidence-weight-blind",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Six rules follow from reading one example row per group as the group's constant. The trace states the inference explicitly.",
+   "outcome": {
+    "contradicted_on_store": 2,
+    "kept": false,
+    "support_on_store": 8
+   },
+   "quote": "This implies the feature was constant across those transitions.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A2 | adj:9:right=4 -> appear0+appear4+appear9+disappear0+disappear4+disappear9+reshape0+reshape6",
+   "rule_index": 2
+  },
+  {
+   "cell": "tu93_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "evidence-weight-blind",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Six rules follow from reading one example row per group as the group's constant. The trace states the inference explicitly.",
+   "outcome": {
+    "contradicted_on_store": 5,
+    "kept": false,
+    "support_on_store": 12
+   },
+   "quote": "This implies the feature was constant across those transitions.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A2 | adj:9:right=2 -> reshape0+reshape6",
+   "rule_index": 3
+  },
+  {
+   "cell": "tu93_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "evidence-weight-blind",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Six rules follow from reading one example row per group as the group's constant. The trace states the inference explicitly.",
+   "outcome": {
+    "contradicted_on_store": 2,
+    "kept": false,
+    "support_on_store": 18
+   },
+   "quote": "This implies the feature was constant across those transitions.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A4 | adj:9:right=2 -> appear0+appear4+appear9+disappear0+disappear4+disappear9+reshape0+reshape6",
+   "rule_index": 4
+  },
+  {
+   "cell": "tu93_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "evidence-weight-blind",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Six rules follow from reading one example row per group as the group's constant. The trace states the inference explicitly.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": true,
+    "support_on_store": 16
+   },
+   "quote": "This implies the feature was constant across those transitions.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A4 | adj:9:right=4 -> reshape0+reshape6",
+   "rule_index": 5
+  },
+  {
+   "cell": "tu93_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Twelve rules from one systematic theory: each action reads the adjacency in its own direction. Built on the same example-row read.",
+   "outcome": {
+    "contradicted_on_store": 2,
+    "kept": false,
+    "support_on_store": 89
+   },
+   "quote": "`adj:4:left` is always 9.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A1 | adj:4:down=None -> appear0+appear4+appear9+disappear0+disappear4+disappear9+reshape0+reshape6",
+   "rule_index": 0
+  },
+  {
+   "cell": "tu93_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Twelve rules from one systematic theory: each action reads the adjacency in its own direction. Built on the same example-row read.",
+   "outcome": {
+    "contradicted_on_store": 184,
+    "kept": false,
+    "support_on_store": 293
+   },
+   "quote": "`adj:4:left` is always 9.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A1 | adj:4:down=9 -> reshape0+reshape6",
+   "rule_index": 1
+  },
+  {
+   "cell": "tu93_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Twelve rules from one systematic theory: each action reads the adjacency in its own direction. Built on the same example-row read.",
+   "outcome": {
+    "contradicted_on_store": 74,
+    "kept": false,
+    "support_on_store": 3
+   },
+   "quote": "`adj:4:left` is always 9.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A1 | adj:4:down=2 -> appear0+appear4+appear9+disappear0+disappear4+disappear6+disappear9+reshape0",
+   "rule_index": 2
+  },
+  {
+   "cell": "tu93_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Twelve rules from one systematic theory: each action reads the adjacency in its own direction. Built on the same example-row read.",
+   "outcome": {
+    "contradicted_on_store": 51,
+    "kept": false,
+    "support_on_store": 69
+   },
+   "quote": "`adj:4:left` is always 9.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A2 | adj:4:right=None -> appear0+appear4+appear9+disappear0+disappear4+disappear9+reshape0+reshape6",
+   "rule_index": 3
+  },
+  {
+   "cell": "tu93_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Twelve rules from one systematic theory: each action reads the adjacency in its own direction. Built on the same example-row read.",
+   "outcome": {
+    "contradicted_on_store": 285,
+    "kept": false,
+    "support_on_store": 196
+   },
+   "quote": "`adj:4:left` is always 9.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A2 | adj:4:right=9 -> reshape0+reshape6",
+   "rule_index": 4
+  },
+  {
+   "cell": "tu93_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Twelve rules from one systematic theory: each action reads the adjacency in its own direction. Built on the same example-row read.",
+   "outcome": {
+    "contradicted_on_store": 60,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "`adj:4:left` is always 9.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A2 | adj:4:right=2 -> appear0+appear4+appear9+disappear0+disappear4+disappear6+disappear9+reshape0",
+   "rule_index": 5
+  },
+  {
+   "cell": "tu93_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Twelve rules from one systematic theory: each action reads the adjacency in its own direction. Built on the same example-row read.",
+   "outcome": {
+    "contradicted_on_store": 3,
+    "kept": false,
+    "support_on_store": 119
+   },
+   "quote": "`adj:4:left` is always 9.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A3 | adj:4:left=None -> reshape0+reshape6",
+   "rule_index": 6
+  },
+  {
+   "cell": "tu93_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Twelve rules from one systematic theory: each action reads the adjacency in its own direction. Built on the same example-row read.",
+   "outcome": {
+    "contradicted_on_store": 214,
+    "kept": false,
+    "support_on_store": 259
+   },
+   "quote": "`adj:4:left` is always 9.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A3 | adj:4:left=9 -> appear0+appear4+appear9+disappear0+disappear4+disappear9+reshape0+reshape6",
+   "rule_index": 7
+  },
+  {
+   "cell": "tu93_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Twelve rules from one systematic theory: each action reads the adjacency in its own direction. Built on the same example-row read.",
+   "outcome": {
+    "contradicted_on_store": 25,
+    "kept": false,
+    "support_on_store": 1
+   },
+   "quote": "`adj:4:left` is always 9.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A3 | adj:4:left=2 -> appear0+appear4+appear9+disappear0+disappear4+disappear6+disappear9+reshape0",
+   "rule_index": 8
+  },
+  {
+   "cell": "tu93_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Twelve rules from one systematic theory: each action reads the adjacency in its own direction. Built on the same example-row read.",
+   "outcome": {
+    "contradicted_on_store": 54,
+    "kept": false,
+    "support_on_store": 32
+   },
+   "quote": "`adj:4:left` is always 9.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A4 | adj:4:up=None -> appear0+appear4+appear9+disappear0+disappear4+disappear9+reshape0+reshape6",
+   "rule_index": 9
+  },
+  {
+   "cell": "tu93_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Twelve rules from one systematic theory: each action reads the adjacency in its own direction. Built on the same example-row read.",
+   "outcome": {
+    "contradicted_on_store": 277,
+    "kept": false,
+    "support_on_store": 217
+   },
+   "quote": "`adj:4:left` is always 9.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A4 | adj:4:up=9 -> reshape0+reshape6",
+   "rule_index": 10
+  },
+  {
+   "cell": "tu93_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Twelve rules from one systematic theory: each action reads the adjacency in its own direction. Built on the same example-row read.",
+   "outcome": {
+    "contradicted_on_store": 66,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "`adj:4:left` is always 9.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A4 | adj:4:up=2 -> appear0+appear4+appear9+disappear0+disappear4+disappear6+disappear9+reshape0",
+   "rule_index": 11
+  },
+  {
+   "cell": "dc22_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "The trace names the contradiction between its own separating guard and the digest's assertion, and proceeds on its own reading.",
+   "outcome": {
+    "contradicted_on_store": 1,
+    "kept": false,
+    "support_on_store": 5
+   },
+   "quote": "That *should* separate them! Why does the miner say it can't?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:2 | adj:14:down=2 -> reshape0+reshape3",
+   "rule_index": 0
+  },
+  {
+   "cell": "dc22_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "The trace names the contradiction between its own separating guard and the digest's assertion, and proceeds on its own reading.",
+   "outcome": {
+    "contradicted_on_store": 1,
+    "kept": false,
+    "support_on_store": 3
+   },
+   "quote": "That *should* separate them! Why does the miner say it can't?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:2 | adj:14:down=None -> no-change",
+   "rule_index": 1
+  },
+  {
+   "cell": "dc22_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "The trace names the contradiction between its own separating guard and the digest's assertion, and proceeds on its own reading.",
+   "outcome": {
+    "contradicted_on_store": 7,
+    "kept": false,
+    "support_on_store": 6
+   },
+   "quote": "That *should* separate them! Why does the miner say it can't?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:3 | adj:13:right=4 -> no-change",
+   "rule_index": 2
+  },
+  {
+   "cell": "dc22_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "The trace names the contradiction between its own separating guard and the digest's assertion, and proceeds on its own reading.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": true,
+    "support_on_store": 2
+   },
+   "quote": "That *should* separate them! Why does the miner say it can't?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:3 | adj:13:right=None -> reshape0+reshape3",
+   "rule_index": 3
+  },
+  {
+   "cell": "dc22_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "The trace names the contradiction between its own separating guard and the digest's assertion, and proceeds on its own reading.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": true,
+    "support_on_store": 1
+   },
+   "quote": "That *should* separate them! Why does the miner say it can't?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:13 | count:0=14 -> reshape0+reshape3",
+   "rule_index": 4
+  },
+  {
+   "cell": "dc22_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "The trace names the contradiction between its own separating guard and the digest's assertion, and proceeds on its own reading.",
+   "outcome": {
+    "contradicted_on_store": 1,
+    "kept": false,
+    "support_on_store": 5
+   },
+   "quote": "That *should* separate them! Why does the miner say it can't?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:13 | count:0=12 -> no-change",
+   "rule_index": 5
+  },
+  {
+   "cell": "dc22_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "The trace names the contradiction between its own separating guard and the digest's assertion, and proceeds on its own reading.",
+   "outcome": {
+    "contradicted_on_store": 2,
+    "kept": false,
+    "support_on_store": 4
+   },
+   "quote": "That *should* separate them! Why does the miner say it can't?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:14 | adj:13:left=8 -> reshape0+reshape3",
+   "rule_index": 6
+  },
+  {
+   "cell": "dc22_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "The trace names the contradiction between its own separating guard and the digest's assertion, and proceeds on its own reading.",
+   "outcome": {
+    "contradicted_on_store": 2,
+    "kept": false,
+    "support_on_store": 2
+   },
+   "quote": "That *should* separate them! Why does the miner say it can't?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:14 | adj:13:left=4 -> no-change",
+   "rule_index": 7
+  },
+  {
+   "cell": "dc22_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "The same trace states the CORRECT reading earlier \u2014 'within each group, the guards vary' \u2014 then reverses it and builds on the reversal. Both statements are in one trace.",
+   "outcome": {
+    "contradicted_on_store": 55,
+    "kept": false,
+    "support_on_store": 39
+   },
+   "quote": "Within a group, they are fixed.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A1 | adj:14:up=2 -> appear14+disappear14+reshape2",
+   "rule_index": 0
+  },
+  {
+   "cell": "dc22_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "The same trace states the CORRECT reading earlier \u2014 'within each group, the guards vary' \u2014 then reverses it and builds on the reversal. Both statements are in one trace.",
+   "outcome": {
+    "contradicted_on_store": 18,
+    "kept": false,
+    "support_on_store": 7
+   },
+   "quote": "Within a group, they are fixed.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A1 | adj:14:up=9 -> appear14+disappear14+reshape9",
+   "rule_index": 1
+  },
+  {
+   "cell": "dc22_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "The same trace states the CORRECT reading earlier \u2014 'within each group, the guards vary' \u2014 then reverses it and builds on the reversal. Both statements are in one trace.",
+   "outcome": {
+    "contradicted_on_store": 31,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "Within a group, they are fixed.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A1 | adj:14:up=4 -> appear14+disappear14+reshape0+reshape3",
+   "rule_index": 2
+  },
+  {
+   "cell": "dc22_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "The same trace states the CORRECT reading earlier \u2014 'within each group, the guards vary' \u2014 then reverses it and builds on the reversal. Both statements are in one trace.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "Within a group, they are fixed.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:0 | count:0=greater than 1 -> reshape0+reshape3",
+   "rule_index": 3
+  },
+  {
+   "cell": "dc22_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "The same trace states the CORRECT reading earlier \u2014 'within each group, the guards vary' \u2014 then reverses it and builds on the reversal. Both statements are in one trace.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "Within a group, they are fixed.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:0 | count:0=1 -> no-change",
+   "rule_index": 4
+  },
+  {
+   "cell": "dc22_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "The same trace states the CORRECT reading earlier \u2014 'within each group, the guards vary' \u2014 then reverses it and builds on the reversal. Both statements are in one trace.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "Within a group, they are fixed.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:0 | count:0=0 -> disappear0",
+   "rule_index": 5
+  },
+  {
+   "cell": "dc22_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "The same trace states the CORRECT reading earlier \u2014 'within each group, the guards vary' \u2014 then reverses it and builds on the reversal. Both statements are in one trace.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "Within a group, they are fixed.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6 | count:3=2 -> appear5+disappear3+disappear3+reshape0",
+   "rule_index": 6
+  },
+  {
+   "cell": "ft09_125",
+   "labels": [
+    {
+     "label": "vocabulary-limit-named",
+     "layer": "EXPRESSIBILITY"
+    },
+    {
+     "label": "guard-outside-vocabulary",
+     "layer": "EXPRESSIBILITY"
+    }
+   ],
+   "mechanism": "expressibility",
+   "note": "The diagnosis success of the run. Both proposals were rejected by the harness for naming a guard outside the vocabulary \u2014 which is exactly what the prompt asked the model to do.",
+   "outcome": {
+    "kept": false,
+    "reason": "parse_rejected \u2014 guard outside the miner's vocabulary"
+   },
+   "quote": "the vocabulary can't express \"clicked object is adjacent to C\"",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:9 | clicked component adjacent to colour 12=True -> appear8+appear11+disappear9+reshape12",
+   "rule_index": 0
+  },
+  {
+   "cell": "ft09_125",
+   "labels": [
+    {
+     "label": "vocabulary-limit-named",
+     "layer": "EXPRESSIBILITY"
+    },
+    {
+     "label": "guard-outside-vocabulary",
+     "layer": "EXPRESSIBILITY"
+    }
+   ],
+   "mechanism": "expressibility",
+   "note": "The diagnosis success of the run. Both proposals were rejected by the harness for naming a guard outside the vocabulary \u2014 which is exactly what the prompt asked the model to do.",
+   "outcome": {
+    "kept": false,
+    "reason": "parse_rejected \u2014 guard outside the miner's vocabulary"
+   },
+   "quote": "the vocabulary can't express \"clicked object is adjacent to C\"",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:9 | clicked component adjacent to colour 12=False -> no-change",
+   "rule_index": 1
+  },
+  {
+   "cell": "ft09_full",
+   "labels": [
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    },
+    {
+     "label": "overgeneralization",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "count-theory",
+   "note": "This trace reads the digest format CORRECTLY and still overrides the digest's no-single-guard assertion, by attributing the miner a defect it has no evidence for.",
+   "outcome": {
+    "contradicted_on_store": 112,
+    "kept": false,
+    "support_on_store": 9
+   },
+   "quote": "The miner failed because it likely",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:8 | count:8=17 -> appear9+disappear8+reshape11+reshape12",
+   "rule_index": 0
+  },
+  {
+   "cell": "ft09_full",
+   "labels": [
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    },
+    {
+     "label": "overgeneralization",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "count-theory",
+   "note": "This trace reads the digest format CORRECTLY and still overrides the digest's no-single-guard assertion, by attributing the miner a defect it has no evidence for.",
+   "outcome": {
+    "contradicted_on_store": 92,
+    "kept": false,
+    "support_on_store": 63
+   },
+   "quote": "The miner failed because it likely",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:9 | count:8=17 -> appear8+disappear9+reshape11+reshape12",
+   "rule_index": 1
+  },
+  {
+   "cell": "ft09_full",
+   "labels": [
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    },
+    {
+     "label": "overgeneralization",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "count-theory",
+   "note": "This trace reads the digest format CORRECTLY and still overrides the digest's no-single-guard assertion, by attributing the miner a defect it has no evidence for.",
+   "outcome": {
+    "contradicted_on_store": 21,
+    "kept": false,
+    "support_on_store": 16
+   },
+   "quote": "The miner failed because it likely",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:9 | count:8=16 -> appear8+appear11+disappear9+reshape12",
+   "rule_index": 2
+  },
+  {
+   "cell": "ft09_full",
+   "labels": [
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    },
+    {
+     "label": "overgeneralization",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "count-theory",
+   "note": "This trace reads the digest format CORRECTLY and still overrides the digest's no-single-guard assertion, by attributing the miner a defect it has no evidence for.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": true,
+    "support_on_store": 26
+   },
+   "quote": "The miner failed because it likely",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:8 | count:8=16 -> no-change",
+   "rule_index": 3
+  },
+  {
+   "cell": "ft09_full",
+   "labels": [
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    },
+    {
+     "label": "overgeneralization",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "count-theory",
+   "note": "This trace reads the digest format CORRECTLY and still overrides the digest's no-single-guard assertion, by attributing the miner a defect it has no evidence for.",
+   "outcome": {
+    "contradicted_on_store": 16,
+    "kept": false,
+    "support_on_store": 21
+   },
+   "quote": "The miner failed because it likely",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:9 | count:8=16 -> no-change",
+   "rule_index": 4
+  },
+  {
+   "cell": "ls20_125",
+   "labels": [
+    {
+     "label": "vocabulary-limit-named",
+     "layer": "EXPRESSIBILITY"
+    }
+   ],
+   "mechanism": "expressibility",
+   "note": "Declines to guard at all: four guard-free baseline rules plus a named list of candidate missing features (distance, parity, direction). A diagnosis, scored as four unguarded rules.",
+   "outcome": {
+    "contradicted_on_store": 26,
+    "kept": false,
+    "support_on_store": 6
+   },
+   "quote": "outside the vocabulary",
+   "quote_scope": "cell-mechanism",
+   "rule": "A1 | - -> reshape3+reshape11",
+   "rule_index": 0
+  },
+  {
+   "cell": "ls20_125",
+   "labels": [
+    {
+     "label": "vocabulary-limit-named",
+     "layer": "EXPRESSIBILITY"
+    }
+   ],
+   "mechanism": "expressibility",
+   "note": "Declines to guard at all: four guard-free baseline rules plus a named list of candidate missing features (distance, parity, direction). A diagnosis, scored as four unguarded rules.",
+   "outcome": {
+    "contradicted_on_store": 21,
+    "kept": false,
+    "support_on_store": 10
+   },
+   "quote": "outside the vocabulary",
+   "quote_scope": "cell-mechanism",
+   "rule": "A2 | - -> reshape3+reshape11",
+   "rule_index": 1
+  },
+  {
+   "cell": "ls20_125",
+   "labels": [
+    {
+     "label": "vocabulary-limit-named",
+     "layer": "EXPRESSIBILITY"
+    }
+   ],
+   "mechanism": "expressibility",
+   "note": "Declines to guard at all: four guard-free baseline rules plus a named list of candidate missing features (distance, parity, direction). A diagnosis, scored as four unguarded rules.",
+   "outcome": {
+    "contradicted_on_store": 27,
+    "kept": false,
+    "support_on_store": 3
+   },
+   "quote": "outside the vocabulary",
+   "quote_scope": "cell-mechanism",
+   "rule": "A3 | - -> reshape3+reshape11",
+   "rule_index": 2
+  },
+  {
+   "cell": "ls20_125",
+   "labels": [
+    {
+     "label": "vocabulary-limit-named",
+     "layer": "EXPRESSIBILITY"
+    }
+   ],
+   "mechanism": "expressibility",
+   "note": "Declines to guard at all: four guard-free baseline rules plus a named list of candidate missing features (distance, parity, direction). A diagnosis, scored as four unguarded rules.",
+   "outcome": {
+    "contradicted_on_store": 29,
+    "kept": false,
+    "support_on_store": 3
+   },
+   "quote": "outside the vocabulary",
+   "quote_scope": "cell-mechanism",
+   "rule": "A4 | - -> reshape3+reshape11",
+   "rule_index": 3
+  },
+  {
+   "cell": "ls20_full",
+   "labels": [
+    {
+     "label": "vocabulary-limit-named",
+     "layer": "EXPRESSIBILITY"
+    }
+   ],
+   "mechanism": "expressibility",
+   "note": "As ls20_125: four guard-free rules, differing only in the effect they attach to every action.",
+   "outcome": {
+    "contradicted_on_store": 231,
+    "kept": false,
+    "support_on_store": 519
+   },
+   "quote": "The miner couldn't find a single guard that separates them.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A1 | - -> appear9+appear12+disappear9+disappear12+reshape3+reshape3+reshape11",
+   "rule_index": 0
+  },
+  {
+   "cell": "ls20_full",
+   "labels": [
+    {
+     "label": "vocabulary-limit-named",
+     "layer": "EXPRESSIBILITY"
+    }
+   ],
+   "mechanism": "expressibility",
+   "note": "As ls20_125: four guard-free rules, differing only in the effect they attach to every action.",
+   "outcome": {
+    "contradicted_on_store": 342,
+    "kept": false,
+    "support_on_store": 398
+   },
+   "quote": "The miner couldn't find a single guard that separates them.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A2 | - -> appear9+appear12+disappear9+disappear12+reshape3+reshape3+reshape11",
+   "rule_index": 1
+  },
+  {
+   "cell": "ls20_full",
+   "labels": [
+    {
+     "label": "vocabulary-limit-named",
+     "layer": "EXPRESSIBILITY"
+    }
+   ],
+   "mechanism": "expressibility",
+   "note": "As ls20_125: four guard-free rules, differing only in the effect they attach to every action.",
+   "outcome": {
+    "contradicted_on_store": 160,
+    "kept": false,
+    "support_on_store": 479
+   },
+   "quote": "The miner couldn't find a single guard that separates them.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A3 | - -> appear9+appear12+disappear9+disappear12+reshape3+reshape3+reshape11",
+   "rule_index": 2
+  },
+  {
+   "cell": "ls20_full",
+   "labels": [
+    {
+     "label": "vocabulary-limit-named",
+     "layer": "EXPRESSIBILITY"
+    }
+   ],
+   "mechanism": "expressibility",
+   "note": "As ls20_125: four guard-free rules, differing only in the effect they attach to every action.",
+   "outcome": {
+    "contradicted_on_store": 217,
+    "kept": false,
+    "support_on_store": 531
+   },
+   "quote": "The miner couldn't find a single guard that separates them.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A4 | - -> appear9+appear12+disappear9+disappear12+reshape3+reshape3+reshape11",
+   "rule_index": 3
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": true,
+    "support_on_store": 2
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:0 | adj:12:left=11 -> reshape0+reshape0",
+   "rule_index": 0
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:0 | adj:12:left=not 11 -> no-change",
+   "rule_index": 1
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 3,
+    "kept": false,
+    "support_on_store": 1
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:5 | adj:12:left=11 -> reshape0+reshape0",
+   "rule_index": 2
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:5 | adj:12:left=not 11 -> no-change",
+   "rule_index": 3
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 1,
+    "kept": false,
+    "support_on_store": 4
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:11 | adj:12:left=11 -> reshape0+reshape0",
+   "rule_index": 4
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:11 | adj:12:left=not 11 -> no-change",
+   "rule_index": 5
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 4,
+    "kept": false,
+    "support_on_store": 3
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:12 | adj:12:left=10 -> reshape0+reshape0",
+   "rule_index": 6
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:12 | adj:12:left=not 10 -> no-change",
+   "rule_index": 7
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 3,
+    "kept": false,
+    "support_on_store": 3
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:10 | adj:12:right=10 -> reshape0+reshape0",
+   "rule_index": 8
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:10 | adj:12:right=not 10 -> no-change",
+   "rule_index": 9
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 4,
+    "kept": false,
+    "support_on_store": 3
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A1 | adj:12:left=10 -> appear10+disappear10",
+   "rule_index": 10
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 5,
+    "kept": false,
+    "support_on_store": 3
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A1 | adj:12:left=11 -> appear10+disappear10+reshape0+reshape0",
+   "rule_index": 11
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": true,
+    "support_on_store": 4
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A3 | adj:12:left=11 -> appear10+appear10+disappear10+disappear10",
+   "rule_index": 12
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 2,
+    "kept": false,
+    "support_on_store": 1
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A3 | adj:12:left=10 -> appear10+disappear10",
+   "rule_index": 13
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 4,
+    "kept": false,
+    "support_on_store": 1
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A4 | adj:12:left=10 -> appear10+disappear10",
+   "rule_index": 14
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 2,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A4 | adj:12:left=11 -> appear10+appear10+disappear10+disappear10",
+   "rule_index": 15
+  },
+  {
+   "cell": "m0r0_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Seventeen rules \u2014 the largest proposal set in the run \u2014 all keyed on adj:12:left, from one example row per group.",
+   "outcome": {
+    "contradicted_on_store": 1,
+    "kept": false,
+    "support_on_store": 2
+   },
+   "quote": "So `adj:12:left == 11` perfectly separates them! Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A5 | adj:12:left=10 -> no-change",
+   "rule_index": 16
+  },
+  {
+   "cell": "m0r0_full",
+   "labels": [
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    },
+    {
+     "label": "guard-misread",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "count-theory",
+   "note": "The trace states the discipline the digest requires of it and then breaks it in the same paragraph, proposing count:10 with an invented excuse for the miner.",
+   "outcome": {
+    "contradicted_on_store": 202,
+    "kept": false,
+    "support_on_store": 101
+   },
+   "quote": "I should not claim `count:10` separates it if the miner says it doesn't",
+   "quote_scope": "cell-mechanism",
+   "rule": "A1 | count:10=2 -> appear10+appear10+disappear10+disappear10",
+   "rule_index": 0
+  },
+  {
+   "cell": "m0r0_full",
+   "labels": [
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    },
+    {
+     "label": "guard-misread",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "count-theory",
+   "note": "The trace states the discipline the digest requires of it and then breaks it in the same paragraph, proposing count:10 with an invented excuse for the miner.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "I should not claim `count:10` separates it if the miner says it doesn't",
+   "quote_scope": "cell-mechanism",
+   "rule": "A1 | count:10=1 -> appear10+disappear10",
+   "rule_index": 1
+  },
+  {
+   "cell": "m0r0_full",
+   "labels": [
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    },
+    {
+     "label": "guard-misread",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "count-theory",
+   "note": "The trace states the discipline the digest requires of it and then breaks it in the same paragraph, proposing count:10 with an invented excuse for the miner.",
+   "outcome": {
+    "contradicted_on_store": 74,
+    "kept": false,
+    "support_on_store": 114
+   },
+   "quote": "I should not claim `count:10` separates it if the miner says it doesn't",
+   "quote_scope": "cell-mechanism",
+   "rule": "A2 | count:10=2 -> appear10+appear10+disappear10+disappear10",
+   "rule_index": 2
+  },
+  {
+   "cell": "m0r0_full",
+   "labels": [
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    },
+    {
+     "label": "guard-misread",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "count-theory",
+   "note": "The trace states the discipline the digest requires of it and then breaks it in the same paragraph, proposing count:10 with an invented excuse for the miner.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "I should not claim `count:10` separates it if the miner says it doesn't",
+   "quote_scope": "cell-mechanism",
+   "rule": "A2 | count:10=1 -> appear10+disappear10",
+   "rule_index": 3
+  },
+  {
+   "cell": "m0r0_full",
+   "labels": [
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    },
+    {
+     "label": "guard-misread",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "count-theory",
+   "note": "The trace states the discipline the digest requires of it and then breaks it in the same paragraph, proposing count:10 with an invented excuse for the miner.",
+   "outcome": {
+    "contradicted_on_store": 72,
+    "kept": false,
+    "support_on_store": 82
+   },
+   "quote": "I should not claim `count:10` separates it if the miner says it doesn't",
+   "quote_scope": "cell-mechanism",
+   "rule": "A3 | count:10=2 -> appear10+appear10+disappear10+disappear10",
+   "rule_index": 4
+  },
+  {
+   "cell": "m0r0_full",
+   "labels": [
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    },
+    {
+     "label": "guard-misread",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "count-theory",
+   "note": "The trace states the discipline the digest requires of it and then breaks it in the same paragraph, proposing count:10 with an invented excuse for the miner.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "I should not claim `count:10` separates it if the miner says it doesn't",
+   "quote_scope": "cell-mechanism",
+   "rule": "A3 | count:10=1 -> appear10+disappear10",
+   "rule_index": 5
+  },
+  {
+   "cell": "m0r0_full",
+   "labels": [
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    },
+    {
+     "label": "guard-misread",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "count-theory",
+   "note": "The trace states the discipline the digest requires of it and then breaks it in the same paragraph, proposing count:10 with an invented excuse for the miner.",
+   "outcome": {
+    "contradicted_on_store": 128,
+    "kept": false,
+    "support_on_store": 67
+   },
+   "quote": "I should not claim `count:10` separates it if the miner says it doesn't",
+   "quote_scope": "cell-mechanism",
+   "rule": "A4 | count:10=2 -> appear10+appear10+disappear10+disappear10",
+   "rule_index": 6
+  },
+  {
+   "cell": "m0r0_full",
+   "labels": [
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    },
+    {
+     "label": "guard-misread",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "count-theory",
+   "note": "The trace states the discipline the digest requires of it and then breaks it in the same paragraph, proposing count:10 with an invented excuse for the miner.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "I should not claim `count:10` separates it if the miner says it doesn't",
+   "quote_scope": "cell-mechanism",
+   "rule": "A4 | count:10=1 -> appear10+disappear10",
+   "rule_index": 7
+  },
+  {
+   "cell": "m0r0_full",
+   "labels": [
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    },
+    {
+     "label": "guard-misread",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "count-theory",
+   "note": "The trace states the discipline the digest requires of it and then breaks it in the same paragraph, proposing count:10 with an invented excuse for the miner.",
+   "outcome": {
+    "contradicted_on_store": 465,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "I should not claim `count:10` separates it if the miner says it doesn't",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:5 | adj:12:left=11 -> reshape0",
+   "rule_index": 8
+  },
+  {
+   "cell": "m0r0_full",
+   "labels": [
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    },
+    {
+     "label": "guard-misread",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "count-theory",
+   "note": "The trace states the discipline the digest requires of it and then breaks it in the same paragraph, proposing count:10 with an invented excuse for the miner.",
+   "outcome": {
+    "contradicted_on_store": 112,
+    "kept": false,
+    "support_on_store": 124
+   },
+   "quote": "I should not claim `count:10` separates it if the miner says it doesn't",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:5 | adj:12:left=10 -> no-change",
+   "rule_index": 9
+  },
+  {
+   "cell": "vc33_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "evidence-weight-blind",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Six rules on adj:7:down and count:0, read off the example rows.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": true,
+    "support_on_store": 14
+   },
+   "quote": "Here, `adj:7:down` is always 0.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:0 | adj:7:down=0 -> reshape4+reshape7",
+   "rule_index": 0
+  },
+  {
+   "cell": "vc33_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "evidence-weight-blind",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Six rules on adj:7:down and count:0, read off the example rows.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "Here, `adj:7:down` is always 0.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:0 | adj:7:down=!= 0 -> disappear7+reshape4",
+   "rule_index": 1
+  },
+  {
+   "cell": "vc33_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "evidence-weight-blind",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Six rules on adj:7:down and count:0, read off the example rows.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": true,
+    "support_on_store": 13
+   },
+   "quote": "Here, `adj:7:down` is always 0.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:5 | adj:7:down=0 -> reshape4+reshape7",
+   "rule_index": 2
+  },
+  {
+   "cell": "vc33_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "evidence-weight-blind",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Six rules on adj:7:down and count:0, read off the example rows.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "Here, `adj:7:down` is always 0.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:5 | adj:7:down=!= 0 -> disappear7+reshape4",
+   "rule_index": 3
+  },
+  {
+   "cell": "vc33_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "evidence-weight-blind",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Six rules on adj:7:down and count:0, read off the example rows.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": true,
+    "support_on_store": 5
+   },
+   "quote": "Here, `adj:7:down` is always 0.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:9 | count:0=1 -> reshape4+reshape7",
+   "rule_index": 4
+  },
+  {
+   "cell": "vc33_125",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "evidence-weight-blind",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Six rules on adj:7:down and count:0, read off the example rows.",
+   "outcome": {
+    "contradicted_on_store": 2,
+    "kept": false,
+    "support_on_store": 6
+   },
+   "quote": "Here, `adj:7:down` is always 0.",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6:9 | count:0=2 -> appear4+appear11+disappear4+disappear11+reshape0+reshape0+reshape4+reshape7",
+   "rule_index": 5
+  },
+  {
+   "cell": "vc33_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Three rules, and the trace itself floats the correct explanation \u2014 that the shown values are only examples \u2014 before discarding it.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6 | count:4=1 -> appear4+reshape7",
+   "rule_index": 0
+  },
+  {
+   "cell": "vc33_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Three rules, and the trace itself floats the correct explanation \u2014 that the shown values are only examples \u2014 before discarding it.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6 | count:0=1 -> disappear7+reshape4",
+   "rule_index": 1
+  },
+  {
+   "cell": "vc33_full",
+   "labels": [
+    {
+     "label": "example-row-as-group-constant",
+     "layer": "READING"
+    },
+    {
+     "label": "digest-assertion-overridden",
+     "layer": "REASONING"
+    }
+   ],
+   "mechanism": "row-constant",
+   "note": "Three rules, and the trace itself floats the correct explanation \u2014 that the shown values are only examples \u2014 before discarding it.",
+   "outcome": {
+    "contradicted_on_store": 0,
+    "kept": false,
+    "support_on_store": 0
+   },
+   "quote": "Why did the miner fail?",
+   "quote_scope": "cell-mechanism",
+   "rule": "A6 | count:4=2 -> reshape4+reshape7",
+   "rule_index": 2
+  }
+ ],
+ "source_note": "notes/e2-trace-autopsy.md"
+}
