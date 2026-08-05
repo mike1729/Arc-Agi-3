@@ -1,0 +1,51 @@
+{
+  "game": "m0r0",
+  "gate": "PASS",
+  "generation": {
+    "answer_chars": 1010,
+    "closing_tag_at_token": 6178,
+    "spare_tokens": 9930,
+    "think_chars": 21284,
+    "think_tokens": 6177,
+    "total_tokens": 6454
+  },
+  "model": "/Users/michal/models/mlx/Qwen3.6-27B-8bit",
+  "note": "notes/e2-slice3.md build item 6; protocol notes/think-budget-recheck.md",
+  "other_prompt_sizes": null,
+  "prompt": {
+    "caps": {
+      "alias_examples": 2,
+      "completion_diffs": 12,
+      "completion_frames": 3,
+      "diff_cells": 6,
+      "entity_columns": "compact",
+      "episode_steps": 12,
+      "gallery_examples": 1,
+      "gallery_keys": 5,
+      "global_examples": 1,
+      "key_examples": 1,
+      "max_entities": 80,
+      "refuted_examples": 2,
+      "snapshots": 1,
+      "unresolved_keys": 12
+    },
+    "chars": 101240,
+    "fb_chat_tokens": 41510,
+    "tokens": 38315,
+    "trim_step": 9
+  },
+  "seed": 1,
+  "think_budget": 16384,
+  "timing": {
+    "generation_tps": 8.408893353738351,
+    "prompt_tps": 331.1977411230408,
+    "wall_seconds": 883.5
+  },
+  "verdict": {
+    "answer_nonempty": true,
+    "no_prefilled_empty_think": true,
+    "think_closed": true,
+    "think_opened": true,
+    "think_substantive": true
+  }
+}

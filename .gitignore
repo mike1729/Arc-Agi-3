@@ -311,3 +311,11 @@ CLAUDE.md
 # (`kaggle competitions download -c arc-prize-2026-arc-agi-3 -f environment_files/...`).
 # Competition data — redistribution is governed by the competition rules, so it is not committed.
 /data/
+
+# SLICE 3 (2026-08-05, notes/e2-slice3.md cautions). Slice-3 prompts and think traces embed
+# RENDERED BOARDS of competition games. `!/logs/e2_slice_traces/*.json` above un-ignores every
+# file in that directory, so without these lines a night's traces would be committable — and
+# git history counts as redistribution (PUBLISHING.md). The scored result JSONs carry counts,
+# verdicts and the model's own answers, never a grid, and stay tracked.
+/logs/e2_slice_traces/*_s3r*.json
+/logs/e2_slice_traces/*_s3probe*.json

@@ -300,3 +300,180 @@ predicate whose truth anywhere in the store counted as self-refutation, which is
 what refutes a completion condition. The channel-A verdict does not depend on it —
 clause 1 was 0/8 on store-consistency, source-correctness and novelty independently —
 but the diagnostic itself must not be cited.
+
+---
+
+# BUILD RESULTS — 2026-08-05, against rev 2.1
+
+Build items 0–6 complete; the night is runnable. Every number below is measured today.
+Working choices are labelled (w). **Two findings changed the design and are called out
+as such** — block 5's premise, and the completion frame roles.
+
+## Item 0 — completion capture (`agent/harness/e3_completion_capture.py`) ✅
+
+Live replay of the verified walked routes. **All four gates passed** — each route
+reproduced its recorded pre-action board cell for cell — and the frame counts match the
+explorer's own recorded counts exactly, which is independent confirmation the replay is
+the same episode:
+
+| game | route | frames returned | explorer recorded | roles |
+|---|---:|---:|---:|---|
+| sp80 | 16 actions | 20 | 20 | 18 intermediate · solved_terminal · next_level_initial |
+| lf52 | 71 actions | 27 | 27 | 25 intermediate · solved_terminal · next_level_initial |
+| r11l | 9 actions | 23 | 23 | 21 intermediate · solved_terminal · next_level_initial |
+| lp85 | 38 actions | 2 | 2 | solved_terminal · next_level_initial |
+
+**This project now holds a solved board for the first time.** Local-only in
+`logs/e1_completions/` (`/logs/*/*` already ignores it).
+
+Two consequences beyond block 3. The positive half of channel A's clause 1 becomes
+measurable — `positives_evaluable` was 0 on all eight games in every prior slice because
+the explorer never retained the completion's post frame — and the FB arm gains a second,
+sharper counterexample type (**false negative**: the level completed and your condition
+is false of the solved board).
+
+**Rev 2.1's role rule is confirmed and it mattered.** On every one of the four, the
+solved board is the **penultimate** frame; the last already belongs to the next level.
+The renderer selects by role and raises on `role_error` or a role/frame length mismatch —
+it never indexes.
+
+## Item 1 — entity tracker (`agent/harness/e2_entities.py`) ✅
+
+Stable ids, normalized shape keys, bbox containment (the grammar's `bbox_contains`, not
+cell enclosure — a relation the model can see but cannot write would be worse than none),
+4-adjacency, and status. Matching is same-colour, exact-cell-set first, then scored on
+(identical shape, area ratio, centre distance); a match worse than "different shape and
+half the area" is refused and a **fresh id issued instead** — an id forced onto an
+unrelated component would assert a movement nothing observed.
+
+**Identity scope per rev 2:** ids are episode-local or pair-local, never global. Blocks 4
+and 4b build a fresh tracker per pair; the prompt states that ids are not comparable
+across blocks.
+
+`status` is `inert` / `touched` / `hud?`. The HUD guess is the bbox of the largest
+never-changing structure, stated as a guess wherever it is printed.
+
+## Item 2 — renderer (`agent/harness/e2_frames.py`) ✅
+
+Letter board + numeric↔letter legend + absolute rulers · entity table · **adaptive crops
+sized to the union of changed cells** · per-step entity-named diff lines · alias history
+blocks. Round-trip checked: the letters decode back to the exact 64×64 grid.
+
+**Measured, and it forced a cap.** Crops fall back to a full board when a change is too
+spread out to window. On dc22 that produced **28 full boards across blocks 4 and 4b —
+163k of a 248k-character record, four times the entire budget.** The fallback is now
+rationed (`global_examples`, shared across both blocks): the first board-wide changes are
+shown in full, and after that the cell list and the changed bounding box carry it, with
+the record saying so. dc22 went 248k → 129k chars.
+
+Block 3b is rendered as **crops** per the note — cropped to the entities of the colours
+the refuted condition names.
+
+## Item 3 — digest v4 behind `--frames` ✅
+
+**Regression gate: all 8 slice-2 prompts reproduce byte-for-byte** without the flag,
+asserted against last night's committed traces. The v3 evidence is unchanged; its section
+headers gain provenance tags (`OBSERVED` / `REPLAY-VERIFIED` / `MINER-INFERRED`) only in
+the v4 path. Traces are tagged `_s3r{seed}`, and `.gitignore` now excludes them —
+slice-3 prompts and traces embed rendered boards, and git history counts as
+redistribution.
+
+## Item 4 — interface fixes ✅
+
+Refuter field **deleted**; falsification is derived (`falsification()`): false positives
+from row-C survivorship, false negatives from the captured solved board. `evidence_ids`
+added to the schema and checked against the record's own step numbers and entity ids —
+the check verifies the referent **exists**, not that it supports the claim, and says so.
+One free-form out-of-DSL condition per cell, recorded and scored nowhere mechanically.
+Anchor removed. Reasoning contract with rev 2's six headings.
+
+## Item 5 — token accounting, both prompts ✅
+
+F ≤ 40,000 and FB chat ≤ 45,000, tokenizer with the chat template applied, FB counted as
+the assembled chat plus a **measured** worst-case counterexample plus a 1,000-token answer
+allowance (measured: slice 2's sixteen answers were 151–289 tokens).
+
+| game | F | FB chat | trim step |
+|---|---:|---:|---:|
+| dc22 | 38,715 | 41,871 | 9 |
+| ft09 | 28,074 | 31,169 | 0 |
+| ls20 | 37,952 | 41,008 | 0 |
+| m0r0 | 38,315 | 41,510 | 9 |
+| tu93 | 34,546 | 37,505 | 0 |
+| vc33 | 38,807 | 42,501 | 0 |
+| sp80 | 34,874 | 38,549 | 10 |
+| lf52 | 37,580 | 41,316 | 10 |
+
+**All eight fit both caps; none runs F-only.** Four need no trimming at all. The ladder
+runs episode span → matched contrasts → entity-table columns → episode snapshots →
+unresolved-key count; blocks 3 and 5 are never on it.
+
+## Item 6 — gates ✅
+
+**Contamination: PASS**, 0 hits across all eight prompts. The 306 `clicked_adjacent_to`
+hits found on the first pass were all in the DIGEST — value sets, strata tables and
+no-separation witnesses, i.e. the guard vocabulary as evidence, which a channel-C
+proposal needs in order for "missing" to mean anything. The anchor rev 2 removed was the
+sentence in the *request*, so the gate now checks the request (the templated prompt minus
+the digest) for it. Request is 6,313 chars on seven games, 6,371 on m0r0 (channel B).
+
+**Budget probe: PASS** — m0r0, the largest prompt.
+
+| | |
+|---|---|
+| prompt | 101,240 chars / **38,315 tokens** |
+| think | 21,284 chars / 6,177 tokens; `</think>` at generation token 6,178 |
+| total generation | **6,454 of 16,384 — 9,930 spare** |
+| wall | 883.5 s |
+| **warm prefill** | **331 tok/s** (the wall estimate needed this) |
+| decode | 8.4 tok/s |
+
+The block closes with 61% of the budget unused. Slice 2's precedent repeats: doubling the
+prompt again did not lengthen the think block — 6,177 think tokens here against slice 2's
+8,178 on a 19.4k prompt, so it got *shorter*. No budget change.
+
+**Revised wall estimate (w), from measured numbers:** prefill 38k/331 ≈ 116 s, decode
+≈ 6.5k/8.4 ≈ 13 min → **~15 min/cell**. 16 F cells ≈ 4 h, plus up to 8 FB turns ≈ 2 h →
+**~6 h**, comfortably inside the window and below rev 2's ~9 h estimate.
+
+## ⚠ Block 5: rev 2's premise did not survive checking, and the block was rebuilt
+
+Rev 2's availability census — "m0r0 3, the other seven zero" — is the `conflicted` count
+in `logs/e1_store_v2/*.graph.json`, and it is confirmed (m0r0 3; dc22, ft09, ls20, tu93,
+vc33, sp80, lf52 all 0). **But the store retains only ONE outcome for each of those
+pairs.** For all three m0r0 conflicts, `graph.json`'s own `edges` hold exactly one post
+state, the transitions log holds exactly one row, and `conflict_records` carries only
+`{state, action, step}`. The passive census over the transitions log is 0 repeated / 0
+aliased on all twelve games checked — which `notes/e2-hidden-state.md` already recorded.
+
+So **block 5 was unrenderable from stored data on all eight games**, m0r0 included. The
+flag records that a conflict was seen live; the other board was never kept. Rendering the
+one retained outcome twice would have fabricated exactly the thing the exhibit exists to
+show.
+
+Taken the note's own optional path (`agent/harness/e2_alias_probe.py`, the P2 method of
+`notes/e2-hidden-state.md`): drive two verified histories of different length to the same
+board, gate on both reproducing it cell for cell, then take the flagged action from each.
+
+**Result — 2 genuine REPLAY-VERIFIED alias exhibits on m0r0, and 1 flag confirmed an
+artifact:**
+
+| flagged pair | routes | gate | outcome |
+|---|---|---|---|
+| origin, ACTION1 | 0 vs 1 actions | both reproduced the board | **DIFFER, 2 cells** |
+| origin, ACTION6(9,19) | 0 vs 1 actions | both reproduced the board | **DIFFER, 2 cells** |
+| 639318dd, ACTION1 | 6 vs 7 actions | both reproduced the board | IDENTICAL — artifact |
+
+The third is what `notes/e1-prefix-audit.md` suspects this list of in both directions,
+now demonstrated rather than suspected. Block 5 renders on m0r0 with 2 exhibits and their
+histories; on the other seven it states that no pair of histories in the record reaches
+one board and diverges, and **channel B's request is suppressed there** — verified in the
+rendered prompts.
+
+## What is NOT done
+
+- **The night has not run.** `--frames --feedback`, seeds 1 then 2, `--out` explicit.
+- Source adjudication of channel A, the free-form conditions, and the readout are
+  post-night work, as in slice 2.
+- The optional dual-history probes for games with no flags at all were not attempted:
+  every non-m0r0 protocol game has zero flagged pairs, so there is nothing to probe.

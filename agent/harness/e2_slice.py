@@ -83,6 +83,7 @@ if str(HARNESS) not in sys.path:
     sys.path.insert(0, str(HARNESS))
 
 import e2_dsl as dsl  # noqa: E402
+import e2_frames as frames  # noqa: E402
 import es_candidates as ec  # noqa: E402
 from e2_dose import load_store  # noqa: E402
 from e2_prior_library import inert_inventory, object_census  # noqa: E402
@@ -94,7 +95,11 @@ OUTPUT = ROOT / "logs/e2_slice.json"
 TRACES = ROOT / "logs/e2_slice_traces"
 PRIOR_LIBRARY = ROOT / "logs/e2_prior_library.json"
 FLOOR = ROOT / "logs/e2_dose_vocab_v2.json"
+# 2 = slice 2's digest v3, text-only. 3 = slice 3's digest v4, the same digest plus rendered
+# boards (`--frames`) and optionally the contradiction-feedback turn (`--feedback`). The
+# version travels with the FILE so a reader never has to infer which prompt produced a cell.
 FORMAT_VERSION = 2
+FRAMES_FORMAT_VERSION = 3
 
 # The slice-2 protocol set: the six iteration games plus the two E1-completed games, whose
 # stores hold channel A's only own-completion examples.
@@ -108,6 +113,20 @@ THINK_BUDGET = 16384  # (w) >=16k; a 5k budget produced an unclosed block in bri
 EXTRACT_BUDGET = 4096
 TEMP = 0.6  # (w) Qwen thinking defaults
 TOP_P = 0.95
+
+# Slice 3's prompt ceilings. REV 2.1: TWO caps, with the reserve stated before F is rendered
+# rather than discovered after. A 45k F prompt cannot also yield a <=45k FB chat, because the
+# FB turn appends the model's own answer and a rendered counterexample to the SAME chat.
+# Neither is a hardware limit — the window is 262,144 tokens. They bound prefill wall and how
+# thinly attention is asked to spread.
+TOKEN_BUDGET = 40_000  # the F prompt
+FB_TOKEN_BUDGET = 45_000  # the full FB chat: F + the answer + the counterexample
+
+# The answer half of the 5k reserve. MEASURED rather than assumed: every one of slice 2's
+# sixteen phase-1 answers was 151-289 tokens (the think block is not resent — the chat carries
+# the ANSWER), and v4 asks for two more short fields. 1,000 is ~3.5x the largest observed. The
+# counterexample half is not allowanced at all: it is rendered per game and counted exactly.
+FB_ANSWER_ALLOWANCE = 1_000  # (w)
 
 MAX_RULES_SHOWN = 40
 MAX_UNRESOLVED_SHOWN = 12
@@ -618,7 +637,104 @@ def negative_evidence_lines(used: list, post_missing: set[int]) -> tuple[list[st
     return lines, {"nulls": nulls, "goals": goals}
 
 
-def build_digest(game: str, dose: int | None) -> dict[str, Any]:
+def resolved_rules(rules: dict[str, Rule]) -> dict[tuple, str]:
+    """Per action key, the miner's own resolved rules as one printable line.
+
+    Feeds the action gallery (`notes/e2-slice3.md` item 6): a mechanic the miner has already
+    solved is shown SOLVED, so the window is spent on what is unsolved rather than on
+    re-deriving what is known. `majority`-tier rules are excluded — that tier IS the miner's
+    "I could not resolve this key", and printing a guess as a rule is the one thing the
+    gallery must not do.
+    """
+    out: dict[tuple, list[str]] = {}
+    for rule in sorted(rules.values(), key=lambda r: -r.support):
+        if rule.tier == "majority":
+            continue
+        guard = "" if rule.guard is None else f" WHEN {rule.guard}={rule.guard_value}"
+        out.setdefault(rule.key, []).append(
+            f"[{rule.tier}]{guard} -> {_effect_text(rule.effect)} (support {rule.support})"
+        )
+    return {key: "; ".join(texts) for key, texts in out.items()}
+
+
+_DIGEST_CACHE: dict[tuple[str, Any], dict[str, Any]] = {}
+
+# Rev 2: the v3 digest's EVIDENCE CONTENT is unchanged in v4 — only its section headers gain
+# a provenance tag. Slice 2 blurred the distinction and a mined majority-tier rule was read
+# as ground truth. Applied as a post-pass over the v3 text so the v3 builder stays untouched
+# and an unframed run still reproduces slice 2's prompt character for character.
+PROVENANCE_TAGS = {
+    "ACTION INVENTORY": "OBSERVED",
+    "OBJECT CENSUS": "OBSERVED",
+    "RULES THE MECHANICAL MINER RESOLVED": "MINER-INFERRED",
+    "KEYS THE MINER COULD NOT RESOLVE": "MINER-INFERRED",
+    "STATE IDENTITY": "REPLAY-VERIFIED",
+    "COVERAGE LEDGER": "OBSERVED",
+    "INERT OBJECTS": "OBSERVED",
+    "OBSERVED INVARIANTS": "OBSERVED",
+    "NEGATIVE EVIDENCE": "OBSERVED",
+    "LEVEL COMPLETION": "OBSERVED",
+}
+
+
+def tag_provenance(text: str) -> str:
+    lines = text.split("\n")
+    for index, line in enumerate(lines):
+        for header, tag in PROVENANCE_TAGS.items():
+            if line.startswith(header):
+                lines[index] = f"{line}   [{tag}]"
+                break
+    return "\n".join(lines)
+
+
+def build_digest(
+    game: str, dose: int | None, *, with_frames: bool = False, caps: Any = None
+) -> dict[str, Any]:
+    """Digest v3, plus digest v4's rendered block when asked for it.
+
+    The v3 half is cached per (game, dose) because it is deterministic and expensive — the
+    row-C refuted-goal stream alone is ~45 s on the 3,000-transition stores — and slice 3's
+    trim ladder rebuilds the digest once per trial. Without the cache, fitting one dense game
+    to the token budget would cost seven minutes of pure recomputation of a block that cannot
+    change.
+    """
+    key = (game, dose)
+    if key not in _DIGEST_CACHE:
+        _DIGEST_CACHE[key] = _build_digest_v3(game, dose)
+    digest = dict(_DIGEST_CACHE[key])
+    if not with_frames:
+        digest["frames"] = {"rendered": False}
+        return digest
+
+    # DIGEST v4. Everything above is v3, unchanged and in the same order — the frames are
+    # APPENDED, so a v4 prompt contains a v3 prompt as a prefix and the two slices differ by
+    # exactly one block. Without `--frames` this does not run and the digest is slice 2's,
+    # character for character (asserted against last night's committed traces).
+    used, rules, _ = mined(game, dose)
+    _, post_missing = store_with_gaps(game)
+    block, frames_meta = frames.frames_section(
+        game,
+        used,
+        post_missing,
+        unresolved_keys(rules),
+        key_text=_key_text,
+        effect_text=_effect_text,
+        effect_mode=lambda effect: abstract(effect, MODE),
+        resolved=resolved_rules(rules),
+        refuted_events=digest["negative_evidence"]["satisfied_but_not_advanced_events"],
+        completion=load_completion(game),
+        alias_probe=load_alias_probe(game),
+        caps=caps,
+    )
+    frames_meta["rendered"] = True
+    frames_meta["chars"] = len(block)
+    digest["frames"] = frames_meta
+    digest["text"] = f"{tag_provenance(digest['text'])}\n{block}\n"
+    digest["chars"] = len(digest["text"])
+    return digest
+
+
+def _build_digest_v3(game: str, dose: int | None) -> dict[str, Any]:
     used, rules, _ = mined(game, dose)
 
     census = Counter()
@@ -793,6 +909,12 @@ LEVEL COMPLETION
             "satisfied_but_not_advanced": len(
                 negative_data["goals"].get("satisfied_but_not_advanced", [])
             ),
+            # The events themselves, for slice 3's block 3b — the boards that satisfied a
+            # candidate while the level did not advance. v3 renders them as predicate names;
+            # v4 renders the boards. Not written to the result file (`run_cell` drops it).
+            "satisfied_but_not_advanced_events": negative_data["goals"].get(
+                "satisfied_but_not_advanced", []
+            ),
         },
         "chars": len(text),
     }
@@ -815,7 +937,7 @@ questions, A, B and C.
 
 {counter_grammar}
 
-A. GOAL — one falsifiable predicate, its refuter, and one test action.
+{frames_preamble}A. GOAL — one falsifiable predicate, its refuter, and one test action.
    * PREDICATE: what must be true of the board for this level to be complete, written in the
      predicate grammar above. The NEGATIVE EVIDENCE section lists predicates this run has
      already refuted: a predicate that was satisfied while the level did not advance is not
@@ -841,6 +963,107 @@ C. VOCABULARY — at most 2 proposals for a feature the guard vocabulary is MISS
    word that became `clicked_adjacent_to:C` and moved the mechanical floor by 0.05.
 """
 
+# ======================================================================================
+# SLICE 3's prompt — the same three channels, with the frozen interface defects fixed
+# ======================================================================================
+#
+# `notes/e2-slice3.md` rev 2. Slice 2's PROMPT above is NOT edited: an unframed run has to
+# reproduce a slice-2 cell character for character, and that equivalence is asserted against
+# last night's committed traces. Slice 3 gets its own template.
+#
+# Three defects are fixed here, deliberately, at the cost of single-variable attribution:
+#
+#   * THE REFUTER FIELD IS GONE. It asked for "the single observation that would falsify
+#     your predicate", and the scorer counted a refuter the store already satisfied as
+#     self-refutation. That is not what refutes a completion condition: for a condition G the
+#     discriminating observations are `G true AND the level did not advance` or `completion
+#     AND G false`, and a bare predicate being true somewhere refutes nothing. Slice 2's
+#     "self-refuting 10/16" measured a broken instrument and is withdrawn. What replaces it
+#     is COMPUTED from the record rather than claimed by the model.
+#   * `evidence_ids` REPLACES FREE-TEXT CITATION. Grounding is a schema field, checkable
+#     against the record's own step numbers and entity ids — counting citations out of prose
+#     would be a text-matching exercise.
+#   * ONE OUT-OF-DSL SLOT. The grammar cannot express ft09-class per-clue match/differ
+#     constraints, so a model can read the board correctly and still be forced into a wrong
+#     aggregate predicate. The free-form condition is adjudicated separately and is NEVER a
+#     win against the prior library — that control has no free-form output, so the comparison
+#     would be unmatched. It measures understanding, not channel-A victory.
+#
+# CONTAMINATION HARD RULE: this text must never name the five stock goal shapes. They are
+# channel A's control, and naming them would turn `in_prior_library` from convergence into
+# compliance. The anchor is gone too — slice 2 was told `clicked_adjacent_to:C` was the
+# previous channel-C win and duly re-proposed it.
+PROMPT_V4 = """You are analysing an unfamiliar grid-puzzle game from a record of one autonomous run.
+
+{digest}
+
+An object is a 4-connected same-colour component, measured against the state's background
+(its most common colour). An effect is position-free: move(colour,dr,dc), reshape(colour),
+appear(colour), disappear(colour), or no-change. A recolour appears as disappear+appear.
+
+Do NOT propose transition rules. The mechanical miner's unresolved keys were asked for twice
+and answered twice with nothing; that channel is closed and anything you write about it is
+discarded unread.
+
+{predicate_grammar}
+
+{counter_grammar}
+
+HOW TO THINK BEFORE YOU ANSWER
+Work through these headings, in this order, in your own reasoning:
+  World model      what this level contains and how its parts relate
+  Goal candidates  several different conditions that would explain a completed level
+  Action model     what each action does, and what is still unknown about it
+  Hidden state     whether anything not visible on the board is deciding outcomes
+  Contradictions   which of your candidates the record above already rules out, and where
+  Open questions   what this record cannot decide, and what observation would decide it
+Generate several goal candidates. Eliminate the ones the record contradicts. Emit the one
+that survives. A candidate you did not try to contradict is not a candidate you tested.
+
+Then answer A, B and C.
+
+A. GOAL — what must be true of the board for this level to be complete.
+   * PREDICATE: one predicate in the grammar above. The record lists conditions this run has
+     already refuted — a condition satisfied by the board at a step where the level did NOT
+     advance is not the completion condition, and re-proposing one is a wasted answer.
+   * EVIDENCE: the specific things in the record that support it, as a short list of ids.
+     An id is `step <n>` for a stored action, `entity #<n>` for a row of the entity map, or
+     one of `initial board`, `solved board`, `next level board`. Cite what you actually
+     used; these are checked against the record.
+   * TEST ACTION: one concrete action whose outcome bears on the predicate, as
+     (precondition, action id, click target). The precondition is one guard `feature=value`
+     from the vocabulary above, or `none`. The click target is a colour for ACTION6 and
+     `n/a` otherwise. A goal with no action attached to it is not yet usable: read the
+     COVERAGE LEDGER and prefer an action that has NOT been tried.
+   * IF THE GRAMMAR CANNOT SAY IT: the grammar is small and this level's real condition may
+     not be expressible in it. If so, still give your best predicate above, and ALSO state
+     the real condition in one plain sentence. Say it plainly and concretely — name the
+     colours, the entities and the relation. This is read separately and costs you nothing.
+
+{latents_request}
+C. VOCABULARY — at most 2 proposals for a feature the guard vocabulary is MISSING. Each as:
+   a name, a definition sketch computable from the pre-action board and the action alone,
+   the unresolved keys above it should resolve, and the direction you expect it to move
+   them.
+"""
+
+# Channel B is SUPPRESSED where the record holds no alias exhibit. Rev 2: on seven of the
+# eight games nothing in the record is evidence of hidden state, and asking anyway is asking
+# for invention — slice 2's twelve latents were all unselected by the miner and all tied
+# their random controls to four decimals.
+LATENTS_REQUEST = """B. LATENTS — at most 3 candidate hidden variables, each as `name: <counter expression>` in
+   the counter grammar above. The record shows the SAME board reached by two different
+   histories and then diverging under the same action, so something not visible on the board
+   is deciding the outcome. Propose what it counts.
+
+"""
+
+LATENTS_SUPPRESSED = """B. LATENTS — none are asked for on this game. Nothing in this record shows one board
+   producing two different outcomes for the same action, so there is no observation here for
+   a hidden variable to explain. Anything you write about latents is discarded unread.
+
+"""
+
 EXTRACT = """Below is an analysis of a grid game. Re-read it and transcribe its conclusions into JSON.
 Do not add, judge, or correct anything — transcribe only what is stated. Copy the predicate
 and counter expressions CHARACTER FOR CHARACTER; do not tidy, complete or reformat them.
@@ -858,6 +1081,25 @@ Emit ONLY a JSON object, no commentary:
                  "expected_direction": "<one sentence>"}}]}}
 If the analysis states nothing for a section, return an empty list or null for it. Never
 invent an expression that the analysis does not contain."""
+
+EXTRACT_V4 = """Below is an analysis of a grid game. Re-read it and transcribe its conclusions into JSON.
+Do not add, judge, or correct anything — transcribe only what is stated. Copy the predicate
+and counter expressions CHARACTER FOR CHARACTER; do not tidy, complete or reformat them.
+
+{answer}
+
+Emit ONLY a JSON object, no commentary:
+{{"goal": {{"predicate": "<expression, exactly as written>",
+           "evidence_ids": ["<e.g. step 412>", "<e.g. entity #7>", "<e.g. solved board>"],
+           "free_form": "<the plain-sentence condition, if the analysis gives one, else empty>",
+           "test_action": {{"precondition": null or {{"feature": "<e.g. adj:3:up>", "value": <int, string or bool>}},
+                           "action_id": <int 1-7>, "click_colour": <int or null>}}}},
+ "latents": [{{"name": "<short name>", "definition": "<counter expression, exactly as written>"}}],
+ "vocabulary": [{{"name": "<short name>", "definition_sketch": "<one sentence>",
+                 "targeted_keys": ["<e.g. ACTION6 on colour 3>"],
+                 "expected_direction": "<one sentence>"}}]}}
+If the analysis states nothing for a section, return an empty list or null for it. Never
+invent an expression, an id, or a sentence that the analysis does not contain."""
 
 
 # ======================================================================================
@@ -944,6 +1186,215 @@ def thinking_verdict(call: dict[str, Any]) -> dict[str, bool]:
 # ======================================================================================
 # Proposal parsing, verification, scoring
 # ======================================================================================
+
+
+_TOKENIZER = None
+
+
+def token_count(text: str, model: Path = MODEL) -> int:
+    """Real tokens, from the model's own tokenizer. Never characters, never an estimate.
+
+    Slice 2's pre-flight measured why: digest v3 grew 59% in characters and the think block
+    did not move, because the growth was all prefill. A character budget would have been a
+    budget on the wrong quantity in both directions.
+    """
+    global _TOKENIZER
+    if _TOKENIZER is None:
+        from transformers import AutoTokenizer
+
+        _TOKENIZER = AutoTokenizer.from_pretrained(str(model))
+    return len(_TOKENIZER.encode(text))
+
+
+# The trim ladder, in the order rev 2 fixes: the episode's diff span first, then the matched
+# contrasts (down to one per outcome class), then the entity table's columns. Blocks 3 and 5 —
+# the completion exhibit and the alias exhibit — are NEVER on it. Block 3 is the priority
+# exhibit and the only solved board this project holds; block 5 is two exhibits on one game,
+# so trimming it means deleting it.
+TRIM_LADDER = (
+    {},
+    {"episode_steps": 45},
+    {"episode_steps": 30},
+    {"episode_steps": 20, "diff_cells": 6},
+    {"episode_steps": 12, "diff_cells": 6},
+    {"episode_steps": 12, "diff_cells": 6, "gallery_examples": 1},
+    {"episode_steps": 12, "diff_cells": 6, "gallery_examples": 1, "key_examples": 1},
+    {
+        "episode_steps": 12, "diff_cells": 6, "gallery_examples": 1, "key_examples": 1,
+        "entity_columns": "compact",
+    },
+    {
+        "episode_steps": 12, "diff_cells": 6, "gallery_examples": 1, "key_examples": 1,
+        "entity_columns": "compact", "gallery_keys": 5,
+    },
+    # Below here the record is genuinely thinner, and a run that reaches these steps says so
+    # in its output. The order still respects rev 2: the episode's own snapshots and the
+    # matched contrasts go before anything else, and blocks 3 and 5 are never touched.
+    {
+        "episode_steps": 12, "diff_cells": 6, "gallery_examples": 1, "key_examples": 1,
+        "entity_columns": "compact", "gallery_keys": 5, "snapshots": 1, "global_examples": 1,
+    },
+    {
+        "episode_steps": 12, "diff_cells": 6, "gallery_examples": 1, "key_examples": 1,
+        "entity_columns": "compact", "gallery_keys": 5, "snapshots": 0, "global_examples": 1,
+        "unresolved_keys": 6,
+    },
+    {
+        "episode_steps": 12, "diff_cells": 6, "gallery_examples": 1, "key_examples": 1,
+        "entity_columns": "compact", "gallery_keys": 4, "snapshots": 0, "global_examples": 1,
+        "unresolved_keys": 3,
+    },
+)
+
+
+def fit_caps(
+    game: str,
+    dose: int | None,
+    budget: int,
+    model: Path = MODEL,
+    fb_budget: int = FB_TOKEN_BUDGET,
+) -> tuple[frames.FrameCaps, dict[str, Any]]:
+    """The loosest caps satisfying BOTH ceilings, and what it cost.
+
+    Every trial is reported, and a game that fits none of them is reported OVER BUDGET with
+    its measured count rather than trimmed further in silence. A cap that quietly drops
+    evidence is the failure mode slice 1.1 paid for: the digest asserted complete value sets
+    while showing six features, and 21 of 24 traces then reasoned from the omission.
+    """
+    trials: list[dict[str, Any]] = []
+    chosen = None
+    for step, overrides in enumerate(TRIM_LADDER):
+        caps = frames.FrameCaps(**overrides)
+        digest = build_digest(game, dose, with_frames=True, caps=caps)
+        prompt = build_prompt(digest)
+        f_tokens = token_count(prompt, model)
+        # The FB chat is the binding one. Measured, not assumed: the counterexample renders a
+        # full board of THIS game, and the chat template's own turn scaffolding is applied by
+        # counting the assembled three-message conversation rather than summing the parts.
+        fb_tokens = token_count(
+            prompt + REVISE.format(counterexample=worst_counterexample(game)), model
+        ) + FB_ANSWER_ALLOWANCE
+        trials.append(
+            {
+                "step": step,
+                "overrides": overrides,
+                "f_prompt_tokens": f_tokens,
+                "fb_chat_tokens": fb_tokens,
+            }
+        )
+        if f_tokens <= budget and fb_tokens <= fb_budget:
+            chosen = (caps, step, f_tokens, fb_tokens)
+            break
+    if chosen is None:
+        caps = frames.FrameCaps(**TRIM_LADDER[-1])
+        chosen = (
+            caps,
+            len(TRIM_LADDER) - 1,
+            trials[-1]["f_prompt_tokens"],
+            trials[-1]["fb_chat_tokens"],
+        )
+    caps, step, f_tokens, fb_tokens = chosen
+    return caps, {
+        "f_budget": budget,
+        "fb_budget": fb_budget,
+        "f_prompt_tokens": f_tokens,
+        "fb_chat_tokens": fb_tokens,
+        "f_within_budget": f_tokens <= budget,
+        "fb_within_budget": fb_tokens <= fb_budget,
+        "within_budget": f_tokens <= budget and fb_tokens <= fb_budget,
+        # Rev 2.1: a cell whose FB chat will not fit even after the full trim runs F ONLY.
+        # Recorded here so the readout reports it as a cell that had no feedback turn, rather
+        # than as a cell whose feedback turn found nothing to say.
+        "feedback_possible": fb_tokens <= fb_budget,
+        "trim_step": step,
+        "trimmed": step > 0,
+        "caps": caps.__dict__.copy(),
+        "trials": trials,
+    }
+
+
+def worst_counterexample(game: str) -> str:
+    """The largest counterexample the FB turn could render for this game.
+
+    A full board plus the prose around it. This is an upper bound by construction: the
+    false-negative branch renders no board at all, and the false-positive branch renders
+    exactly one, so nothing the arm can produce is larger than this.
+    """
+    store = store_for(game)
+    if not store:
+        return ""
+    return "\n".join(
+        [
+            "YOUR CONDITION, AS WRITTEN: " + "x" * 120,
+            "At step 99999 of this run it was TRUE of the board — and the level did NOT "
+            "advance. A condition the board satisfies while nothing happens is not this "
+            "level's completion condition. It survived 9999 earlier boards before this one "
+            "refuted it.",
+            "THE BOARD THAT REFUTED IT, in full, at that step:",
+            *frames.render_grid(store[0].pre),
+        ]
+    )
+
+
+def build_prompt(digest: dict[str, Any]) -> str:
+    """The phase-1 prompt. Without frames this is slice 2's prompt, character for character.
+
+    `frames_preamble` is the only slot that differs, and it is empty for a v3 digest — the
+    template's own blank line does the spacing, so an unframed slice-3 run reproduces a
+    slice-2 cell exactly. That equivalence is the point of the flag: the two slices are meant
+    to differ by CONTEXT alone, and a prompt that drifted by a newline would make the
+    slice-2-vs-slice-3 comparison an uncontrolled one.
+    """
+    if not digest["frames"].get("rendered"):
+        return PROMPT.format(
+            digest=digest["text"],
+            predicate_grammar=dsl.PREDICATE_GRAMMAR_TEXT,
+            counter_grammar=dsl.COUNTER_GRAMMAR_TEXT,
+        )
+    return PROMPT_V4.format(
+        digest=digest["text"],
+        predicate_grammar=dsl.PREDICATE_GRAMMAR_TEXT,
+        counter_grammar=dsl.COUNTER_GRAMMAR_TEXT,
+        latents_request=(
+            LATENTS_REQUEST if has_alias_exhibit(digest["game"]) else LATENTS_SUPPRESSED
+        ),
+    )
+
+
+def extract_payload(
+    qwen: Qwen, answer: str, tag: str, seed: int, template: str = EXTRACT
+) -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
+    """Phase 2: a separate mechanical transcription call over phase 1's own answer text.
+
+    Thinking off by design — it re-reads, it does not reason — and greedy, because a sampled
+    transcription can lose a proposal the analysis actually made and a parse failure costs
+    the whole cell.
+    """
+    attempts: list[dict[str, Any]] = []
+    payload = None
+    for attempt in range(2):
+        # Greedy decoding makes a bare retry a no-op — attempt 1 would reproduce attempt 0
+        # byte for byte. The second attempt therefore changes the PROMPT, not the sampler,
+        # so the retry can actually pay out while staying deterministic given the transcript.
+        content = template.format(answer=answer)
+        if attempt:
+            content = (
+                "Your previous reply was not valid JSON. Emit the JSON object only — no "
+                "prose, no code fence, no trailing text.\n\n" + content
+            )
+        extract = qwen.generate(
+            [{"role": "user", "content": content}],
+            max_tokens=EXTRACT_BUDGET,
+            thinking=False,
+            temp=0.0,
+            seed=seed + attempt,
+        )
+        attempts.append(extract)
+        (TRACES / f"{tag}.extract{attempt}.json").write_text(json.dumps(extract, indent=2))
+        payload = parse_json(extract["answer"])
+        if payload is not None:
+            break
+    return payload, attempts
 
 
 def parse_json(text: str) -> dict[str, Any] | None:
@@ -1075,6 +1526,159 @@ def channel_a(
     return out
 
 
+_COMPLETION_CACHE: dict[str, Any] = {}
+_ALIAS_CACHE: dict[str, Any] = {}
+
+EVIDENCE_ID = re.compile(
+    r"^(?:step\s*#?(?P<step>\d+)"
+    r"|entity\s*#?(?P<entity>\d+)"
+    r"|(?P<frame>initial board|solved board|next level board))$",
+    re.I,
+)
+
+
+def load_completion(game: str) -> dict[str, Any] | None:
+    """The captured completion (`e3_completion_capture.py`), or None.
+
+    Only sp80 and lf52 of the protocol set have one. Absent is a normal state and is
+    reported as absent — a game with no captured completion gets a block that says the
+    record contains no solved board, not a block quietly missing.
+    """
+    if game not in _COMPLETION_CACHE:
+        path = ROOT / f"logs/e1_completions/{game}.json"
+        _COMPLETION_CACHE[game] = json.loads(path.read_text()) if path.is_file() else None
+    return _COMPLETION_CACHE[game]
+
+
+def load_alias_probe(game: str) -> dict[str, Any] | None:
+    """The dual-history probe result (`e2_alias_probe.py`), or None."""
+    if game not in _ALIAS_CACHE:
+        path = ROOT / f"logs/e1_alias_probe/{game}.json"
+        _ALIAS_CACHE[game] = json.loads(path.read_text()) if path.is_file() else None
+    return _ALIAS_CACHE[game]
+
+
+def has_alias_exhibit(game: str) -> bool:
+    probe = load_alias_probe(game)
+    return any(
+        row.get("probed") and row.get("outcomes_differ")
+        for row in ((probe or {}).get("probes") or [])
+    )
+
+
+class _CompletionTransition:
+    """The completing action as an evaluable transition, from the capture.
+
+    The frozen store cannot supply this: the explorer hashed the level-advance frame and
+    never added it to `states.json`, so `e2_dose.load_store` substitutes the PRE frame and
+    every consumer that reads `.post` has to skip the row. That is why `positives_evaluable`
+    is 0 on all eight games and why slice 2's channel A was decided on negative evidence
+    alone. `e3_completion_capture.py` re-executed the verified route and kept the frames, so
+    the positive half of clause 1 is measurable here for the first time — on the two games
+    that have a completion at all.
+    """
+
+    def __init__(self, capture: dict[str, Any]):
+        roles = capture["completion"]["roles"] or []
+        terminal = next(
+            (frame for frame, role in zip(capture["frames"], roles) if role == "solved_terminal"),
+            None,
+        )
+        self.pre = capture["last_incomplete_frame"]
+        self.post = terminal
+        self.completed = True
+        self.step = capture["store"]["step"]
+        self.usable = terminal is not None
+
+
+def falsification(
+    node: dict[str, Any], usable: list, contexts: list, capture: dict[str, Any] | None
+) -> dict[str, Any]:
+    """What refutes a completion condition, computed from the record instead of claimed.
+
+    Rev 2 removed the refuter field; this is what replaces it. Two, and only two, things
+    falsify a condition G:
+
+      FALSE POSITIVE   G was true of a stored board and the level did not advance.
+      FALSE NEGATIVE   the level completed and G was false of the solved board.
+
+    The first is what row-C survivorship already measures. The second was unmeasurable in
+    every previous slice and is measurable now, on the games with a captured completion.
+    Both are counted; neither is asked for.
+    """
+    false_positives = []
+    for transition, context in zip(usable, contexts, strict=True):
+        if transition.completed:
+            continue
+        if dsl.evaluate(node, context) == dsl.TRUE:
+            false_positives.append(transition.step)
+    out: dict[str, Any] = {
+        "false_positives": len(false_positives),
+        "false_positive_steps": false_positives[:10],
+        "negative_transitions": len(usable),
+    }
+    if capture is None or not capture.get("captured"):
+        out["false_negative"] = None
+        out["positive_evaluable"] = False
+        out["positive_note"] = "no captured completion for this game"
+        return out
+    completion = _CompletionTransition(capture)
+    if not completion.usable:
+        out["false_negative"] = None
+        out["positive_evaluable"] = False
+        out["positive_note"] = "the capture holds no solved-terminal frame"
+        return out
+    context = dsl.transition_contexts([completion])[0]
+    value = dsl.evaluate(node, context)
+    out.update(
+        {
+            "positive_evaluable": True,
+            "value_on_solved_board": value,
+            # UNKNOWN is not a false negative: the three-valued grammar's `unknown` neither
+            # confirms nor eliminates, and collapsing it into failure here would punish a
+            # predicate the evidence simply cannot evaluate.
+            "false_negative": value == dsl.FALSE,
+            "completion_step": completion.step,
+        }
+    )
+    return out
+
+
+def evidence_validity(ids: Any, steps: set[int], entities: set[int]) -> dict[str, Any]:
+    """Do the cited ids exist in the record? Computed, never counted from prose.
+
+    A citation that names a step this run never took, or an entity the map does not list, is
+    not grounding — it is the shape of grounding. The check is deliberately shallow: it
+    verifies that the referent EXISTS, not that it supports the claim, and it says so.
+    """
+    if not isinstance(ids, list):
+        return {"cited": 0, "resolvable": 0, "unresolvable": [], "malformed": ids is not None}
+    resolvable = 0
+    unresolvable: list[str] = []
+    for item in ids:
+        text = str(item).strip()
+        match = EVIDENCE_ID.match(text)
+        ok = False
+        if match:
+            if match.group("step") is not None:
+                ok = int(match.group("step")) in steps
+            elif match.group("entity") is not None:
+                ok = int(match.group("entity")) in entities
+            else:
+                ok = True
+        if ok:
+            resolvable += 1
+        else:
+            unresolvable.append(text)
+    return {
+        "cited": len(ids),
+        "resolvable": resolvable,
+        "unresolvable": unresolvable[:10],
+        "malformed": False,
+        "checks": "the referent exists in the record; NOT that it supports the claim",
+    }
+
+
 def _test_action(action: Any, vocabulary: set[str]) -> dict[str, Any]:
     """WELL-FORMEDNESS only. Executability is the probe executor's job, at scoring time.
 
@@ -1108,6 +1712,89 @@ def _test_action(action: Any, vocabulary: set[str]) -> dict[str, Any]:
         "click_colour": colour,
         "precondition": precondition,
         "executability": "not tested — slice 2 executes no probes (notes/e2-slice2.md)",
+    }
+
+
+def channel_a_v4(
+    payload: dict[str, Any],
+    game: str,
+    used: list,
+    post_missing: set[int],
+    vocabulary: set[str],
+    entity_ids: set[int],
+) -> dict[str, Any]:
+    """Slice 3's channel A. Same clause 1, no refuter, plus three new fields.
+
+    Everything clause 1 rests on is unchanged and shares code with `channel_a`: the parse,
+    row-C survivorship over the store, the prior-library novelty comparison and the
+    test-action form check. Those are the pre-committed comparison and they must not drift.
+
+    What changes is what is asked and what is derived. The refuter is gone and FALSIFICATION
+    is computed. `evidence_ids` is checked against the record. The free-form condition is
+    recorded and scored NOWHERE here — it is adjudicated by source read, on its own line,
+    and it is never a win against the prior library, which has no free-form output.
+    """
+    goal = payload.get("goal")
+    if not isinstance(goal, dict):
+        return {"status": "absent", "raw": goal}
+
+    out: dict[str, Any] = {}
+    predicate = dsl.classify_predicate(goal.get("predicate"))
+    out["predicate"] = {k: v for k, v in predicate.items() if k != "ast"}
+    if predicate["status"] != "parsed":
+        out["status"] = "prose_rejected"
+        # The free-form slot is recorded even when the DSL predicate fails to parse — it is
+        # a separate measurement of understanding and does not depend on the grammar.
+        out["free_form"] = _free_form(goal)
+        return out
+
+    usable = [t for t in used if t.step not in post_missing]
+    contexts = dsl.transition_contexts(usable)
+    out["store_consistency"] = dsl.consistent_with(predicate["ast"], usable, contexts=contexts)
+    out["store_consistency"]["negative_transitions"] = len(usable)
+    out["store_consistency"]["positives_evaluable"] = sum(1 for t in usable if t.completed)
+    out["falsification"] = falsification(
+        predicate["ast"], usable, contexts, load_completion(game)
+    )
+    out["evidence"] = evidence_validity(
+        goal.get("evidence_ids"), {t.step for t in used}, entity_ids
+    )
+    out["free_form"] = _free_form(goal)
+
+    library = prior_library(game)
+    if library is None:
+        out["novelty"] = {
+            "computed": False,
+            "reason": f"{PRIOR_LIBRARY.name} absent or has no row for {game}",
+        }
+    else:
+        canonical_set, skeleton_set = library
+        out["novelty"] = {
+            "computed": True,
+            "in_prior_library": predicate["canonical"] in canonical_set,
+            "library_size": len(canonical_set),
+            "in_prior_shape_space": dsl.skeleton(predicate["ast"]) in skeleton_set,
+            "skeleton": dsl.skeleton(predicate["ast"]),
+            "library_skeletons": len(skeleton_set),
+            "novel_shape": dsl.skeleton(predicate["ast"]) not in skeleton_set,
+        }
+
+    out["test_action"] = _test_action(goal.get("test_action"), vocabulary)
+    out["status"] = "parsed"
+    return out
+
+
+def _free_form(goal: dict[str, Any]) -> dict[str, Any]:
+    text = goal.get("free_form")
+    text = text.strip() if isinstance(text, str) else ""
+    return {
+        "given": bool(text),
+        "text": text,
+        "verdict": (
+            "NOT SCORED HERE — adjudicated by source read, reported on its own line, and "
+            "never counted as a win against the prior-library control, which produces no "
+            "free-form output and so cannot be compared with one"
+        ),
     }
 
 
@@ -1182,14 +1869,92 @@ def channel_c(payload: dict[str, Any], pending: list[tuple]) -> dict[str, Any]:
     }
 
 
+REVISE = """Your answer to A was checked mechanically against this run's own stored evidence,
+before you were asked anything else. It does not survive that check. The counterexample is
+below, from the same evidence you were given.
+
+{counterexample}
+
+Re-specify. Give a REVISED answer to A only — one predicate, its refuter, and one test
+action, in the same grammar as before. B and C are not asked again and anything you write
+about them is discarded unread.
+
+You may keep your predicate only if you can say why the counterexample does not refute it;
+otherwise change it. A predicate that fails the same way twice is worth nothing.
+"""
+
+
+def feedback_counterexample(
+    scored: dict[str, Any], used: list, post_missing: set[int], with_frames: bool
+) -> dict[str, Any] | None:
+    """The concrete refutation of a failed channel-A answer, rendered.
+
+    Arm FB, `notes/e2-slice3.md`. The S1 corpus is the reason this arm exists at all: what
+    separated the reference's L2 recoveries from its L2 deaths was re-specification UNDER
+    CONTRADICTION — ft09 recovered by taking "my decoded pattern is satisfied and the level
+    did not advance" as evidence against its own decoding, while sb26 never re-specified and
+    spent its whole budget enumerating inside a stale schema.
+
+    Rev 2 removed the refuter, so the two things fed back are the two things that actually
+    falsify a completion condition, both DERIVED from the record rather than claimed:
+
+      false positive   the predicate was true of a stored board and the level did not
+                       advance. That board is the counterexample, rendered in full.
+      false negative   the level completed and the predicate was false of the solved board.
+                       Measurable for the first time here, from the completion capture — and
+                       it is the sharper of the two, because the solved board is the one
+                       thing the condition must be true of.
+
+    Returns None when the answer failed in neither way; the arm never invents a grievance.
+    """
+    consistency = scored.get("store_consistency") or {}
+    checks = scored.get("falsification") or {}
+    usable = [t for t in used if t.step not in post_missing]
+    parts: list[str] = []
+    kinds: list[str] = []
+
+    index = consistency.get("contradicted_at")
+    if consistency.get("outcome") == "falsified" and index is not None and index < len(usable):
+        transition = usable[index]
+        kinds.append("false_positive")
+        parts.append(
+            f"YOUR CONDITION, AS WRITTEN: {scored['predicate']['canonical']}\n"
+            f"At step {transition.step} of this run it was TRUE of the board — and the level "
+            f"did NOT advance. A condition the board satisfies while nothing happens is not "
+            f"this level's completion condition. It survived "
+            f"{consistency.get('definite_correct', 0)} earlier boards before this one "
+            f"refuted it."
+        )
+        if with_frames:
+            parts.append("THE BOARD THAT REFUTED IT, in full, at that step:")
+            parts.append("\n".join(frames.render_grid(transition.pre)))
+
+    if checks.get("false_negative"):
+        kinds.append("false_negative")
+        parts.append(
+            f"YOUR CONDITION, AS WRITTEN: {scored['predicate']['canonical']}\n"
+            f"The level was completed at step {checks.get('completion_step')} of this run, "
+            f"and your condition is FALSE of the board that completed it. Whatever the "
+            f"completion condition is, it is true of that board — the solved board shown in "
+            f"the record above — so it is not this."
+        )
+    if not parts:
+        return None
+    return {"kinds": kinds, "text": "\n\n".join(parts)}
+
+
 def run_cell(
     game: str,
     dose: int | None,
     qwen: Qwen | None,
     human: dict[str, list],
     seed: int = SEED,
+    *,
+    with_frames: bool = False,
+    caps: Any = None,
+    feedback: bool = False,
 ) -> dict[str, Any]:
-    digest = build_digest(game, dose)
+    digest = build_digest(game, dose, with_frames=with_frames, caps=caps)
     used, baseline_rules, _ = mined(game, dose)
     pending = unresolved_keys(baseline_rules)
     vocabulary = {name for t in used for name in t.guards}
@@ -1208,17 +1973,15 @@ def run_cell(
         "inert_objects": digest["inert_objects"],
         "observed_invariants": digest["observed_invariants"],
         "negative_evidence": digest["negative_evidence"],
+        "frames": digest["frames"],
         "floor": floor,
     }
     if qwen is None:
         cell["skipped"] = "dry-run"
+        cell["prompt_chars"] = len(build_prompt(digest))
         return cell
 
-    prompt = PROMPT.format(
-        digest=digest["text"],
-        predicate_grammar=dsl.PREDICATE_GRAMMAR_TEXT,
-        counter_grammar=dsl.COUNTER_GRAMMAR_TEXT,
-    )
+    prompt = build_prompt(digest)
     cell["prompt_chars"] = len(prompt)
     think = qwen.generate(
         [{"role": "user", "content": prompt}],
@@ -1237,7 +2000,13 @@ def run_cell(
     # class as the `--out` default that already ate the slice-1.1 result file once today.
     # `_s2r{seed}` is the tag `notes/e2-slice2-run.md` names; FORMAT_VERSION distinguishes the
     # result files, and this distinguishes the traces.
-    tag = f"{game}_{'full' if dose is None else dose}_s2r{seed}"
+    #
+    # SLICE 3 (2026-08-05): the same argument one generation on. Slice 3 runs the same eight
+    # games on the same two seeds, so `_s2r1` would collide with slice 2's sixteen committed
+    # traces from last night. `--frames` is what makes a cell a slice-3 cell, and it is what
+    # switches the tag.
+    generation = "s3r" if with_frames else "s2r"
+    tag = f"{game}_{'full' if dose is None else dose}_{generation}{seed}"
     (TRACES / f"{tag}.think.json").write_text(
         json.dumps({"prompt": prompt, **think, "verdict": verdict}, indent=2)
     )
@@ -1247,47 +2016,127 @@ def run_cell(
         cell["outcome"] = "VOID — thinking check failed"
         return cell
 
-    payload = None
-    attempts = []
-    for attempt in range(2):
-        # Greedy decoding makes a bare retry a no-op — attempt 1 would reproduce attempt 0
-        # byte for byte. The second attempt therefore changes the PROMPT, not the sampler,
-        # so the retry can actually pay out while staying deterministic given the transcript.
-        content = EXTRACT.format(answer=think["answer"])
-        if attempt:
-            content = (
-                "Your previous reply was not valid JSON. Emit the JSON object only — no "
-                "prose, no code fence, no trailing text.\n\n" + content
-            )
-        extract = qwen.generate(
-            [{"role": "user", "content": content}],
-            max_tokens=EXTRACT_BUDGET,
-            thinking=False,
-            temp=0.0,
-            seed=seed + attempt,
-        )
-        attempts.append(extract)
-        (TRACES / f"{tag}.extract{attempt}.json").write_text(json.dumps(extract, indent=2))
-        payload = parse_json(extract["answer"])
-        if payload is not None:
-            break
+    template = EXTRACT_V4 if with_frames else EXTRACT
+    payload, attempts = extract_payload(qwen, think["answer"], tag, seed, template)
     cell["extract_attempts"] = len(attempts)
+    wall = think["wall_seconds"] + sum(a["wall_seconds"] for a in attempts)
     if payload is None:
         cell["outcome"] = "unparsed extraction"
-        cell["wall_seconds"] = think["wall_seconds"] + sum(a["wall_seconds"] for a in attempts)
+        cell["wall_seconds"] = wall
         return cell
 
     _, post_missing = store_with_gaps(game)
+    entity_ids: set[int] = set()
+    if with_frames:
+        entity_ids = set(
+            ((digest["frames"].get("blocks") or {}).get("scene") or {}).get("entity_ids") or []
+        )
+        scored_a = channel_a_v4(payload, game, used, post_missing, vocabulary, entity_ids)
+        # Channel B is suppressed on games with no alias exhibit; the prompt says so and the
+        # scorer records the suppression rather than reporting an empty channel as a failure.
+        scored_b = (
+            channel_b(payload, game)
+            if has_alias_exhibit(game)
+            else {
+                "status": "not_asked",
+                "reason": "no alias exhibit in this game's record — the request was suppressed",
+                "parsed": [],
+                "prose_rejected": [],
+            }
+        )
+    else:
+        scored_a = channel_a(payload, game, used, post_missing, vocabulary)
+        scored_b = channel_b(payload, game)
     cell.update(
         {
             "outcome": "scored",
-            "channel_a": channel_a(payload, game, used, post_missing, vocabulary),
-            "channel_b": channel_b(payload, game),
+            "channel_a": scored_a,
+            "channel_b": scored_b,
             "channel_c": channel_c(payload, pending),
             "payload": payload,
-            "wall_seconds": think["wall_seconds"] + sum(a["wall_seconds"] for a in attempts),
+            "wall_seconds": wall,
         }
     )
+
+    # ---- arm FB: one contradiction-feedback turn -------------------------------------
+    # Within-night attribution, so it is the SAME cell continued rather than a new one: the
+    # revision sees its own analysis and its own refutation in one conversation.
+    if not feedback or scored_a.get("status") != "parsed":
+        return cell
+    counterexample = feedback_counterexample(scored_a, used, post_missing, with_frames)
+    if counterexample is None:
+        cell["feedback"] = {"attempted": False, "reason": "answer passed both checks"}
+        return cell
+
+    revision_prompt = REVISE.format(counterexample=counterexample["text"])
+    revised_think = qwen.generate(
+        [
+            {"role": "user", "content": prompt},
+            {"role": "assistant", "content": think["answer"]},
+            {"role": "user", "content": revision_prompt},
+        ],
+        max_tokens=THINK_BUDGET,
+        thinking=True,
+        seed=seed,
+    )
+    revised_verdict = thinking_verdict(revised_think)
+    (TRACES / f"{tag}.fb.think.json").write_text(
+        json.dumps(
+            {"prompt": revision_prompt, **revised_think, "verdict": revised_verdict}, indent=2
+        )
+    )
+    block: dict[str, Any] = {
+        "attempted": True,
+        "kinds": counterexample["kinds"],
+        "counterexample_chars": len(counterexample["text"]),
+        "thinking": {k: v for k, v in revised_think.items() if k not in ("raw", "answer")},
+        "thinking_verdict": revised_verdict,
+    }
+    cell["feedback"] = block
+    if not all(revised_verdict.values()):
+        block["outcome"] = "VOID — thinking check failed"
+        cell["wall_seconds"] = wall + revised_think["wall_seconds"]
+        return cell
+
+    revised_payload, revised_attempts = extract_payload(
+        qwen, revised_think["answer"], f"{tag}.fb", seed, template
+    )
+    block["extract_attempts"] = len(revised_attempts)
+    wall += revised_think["wall_seconds"] + sum(a["wall_seconds"] for a in revised_attempts)
+    cell["wall_seconds"] = wall
+    if revised_payload is None:
+        block["outcome"] = "unparsed extraction"
+        return cell
+    # Scored through the identical machinery, so "repaired" means the same thing before and
+    # after. B and C are NOT rescored: the revision was not asked for them, and scoring a
+    # section the prompt told the model to skip would report its silence as a failure.
+    block["outcome"] = "scored"
+    block["channel_a"] = (
+        channel_a_v4(revised_payload, game, used, post_missing, vocabulary, entity_ids)
+        if with_frames
+        else channel_a(revised_payload, game, used, post_missing, vocabulary)
+    )
+    block["payload"] = revised_payload
+    before = (scored_a.get("store_consistency") or {}).get("outcome")
+    after = (block["channel_a"].get("store_consistency") or {}).get("outcome")
+    checks_before = scored_a.get("falsification") or {}
+    checks_after = block["channel_a"].get("falsification") or {}
+    block["repair"] = {
+        "outcome_before": before,
+        "outcome_after": after,
+        "false_positives_before": checks_before.get("false_positives"),
+        "false_positives_after": checks_after.get("false_positives"),
+        "false_negative_before": checks_before.get("false_negative"),
+        "false_negative_after": checks_after.get("false_negative"),
+        "predicate_changed": (
+            (block["channel_a"].get("predicate") or {}).get("canonical")
+            != (scored_a.get("predicate") or {}).get("canonical")
+        ),
+        # The readout's repair-rate line. "Repaired" is the MECHANICAL bar only: it survives
+        # the store and is not false of a solved board this record actually holds. Whether it
+        # is CORRECT is adjudication, and adjudication is not done here.
+        "repaired": after == "survived" and not checks_after.get("false_negative"),
+    }
     return cell
 
 
@@ -1312,6 +2161,28 @@ def main() -> int:
         default=None,
         help="write channel B's parsed latents as an e2_latent_verify.py spec file",
     )
+    parser.add_argument(
+        "--frames",
+        action="store_true",
+        help="digest v4: append the rendered boards (slice 3, notes/e2-slice3.md)",
+    )
+    parser.add_argument(
+        "--feedback",
+        action="store_true",
+        help="arm FB: one contradiction-feedback revision turn per failed channel-A answer",
+    )
+    parser.add_argument(
+        "--token-budget",
+        type=int,
+        default=TOKEN_BUDGET,
+        help="F-prompt token ceiling; the record is trimmed until it fits",
+    )
+    parser.add_argument(
+        "--fb-token-budget",
+        type=int,
+        default=FB_TOKEN_BUDGET,
+        help="FB-chat token ceiling (F + answer + counterexample); breaching it also trims",
+    )
     parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args()
     # `logs/e2_slice_seed{seed}.json` is SLICE 1.1's committed results file (format_version
@@ -1319,10 +2190,16 @@ def main() -> int:
     # SEEDS 1 AND 2 — so the old default path put a night run on a collision course with
     # committed measurement data, and a stray `--seed 1 --dry-run` already overwrote it once
     # on 2026-08-05 (recovered from git). Different experiment, different file.
-    out = args.out or (ROOT / f"logs/e2_slice2_seed{args.seed}.json")
+    #
+    # Slice 3 is the same trap one generation on: it runs the same games on the same seeds,
+    # so its default must not be slice 2's committed path either. `--frames` is what makes a
+    # run a slice-3 run, and it moves the default with it. Always pass `--out` anyway.
+    slice_number = 3 if args.frames else 2
+    out = args.out or (ROOT / f"logs/e2_slice{slice_number}_seed{args.seed}.json")
 
     if args.print_digest:
-        print(build_digest(args.print_digest, None)["text"])
+        caps = fit_caps(args.print_digest, None, args.token_budget) if args.frames else None
+        print(build_digest(args.print_digest, None, with_frames=args.frames, caps=caps)["text"])
         return 0
 
     doses = tuple(args.doses) if args.doses else DOSES
@@ -1343,7 +2220,41 @@ def main() -> int:
         for dose in doses:
             label = f"{game} dose={'full' if dose is None else dose}"
             print(f"\n=== {label} ===", flush=True)
-            cell = run_cell(game, dose, qwen, human, seed=args.seed)
+            caps = fit_report = None
+            if args.frames:
+                caps, fit_report = fit_caps(
+                    game, dose, args.token_budget, args.model, args.fb_token_budget
+                )
+                print(
+                    f"{label}: F {fit_report['f_prompt_tokens']} tok "
+                    f"(cap {args.token_budget}), FB chat {fit_report['fb_chat_tokens']} tok "
+                    f"(cap {args.fb_token_budget})"
+                    + (
+                        f" — TRIMMED at ladder step {fit_report['trim_step']}: "
+                        f"{fit_report['caps']}"
+                        if fit_report["trimmed"]
+                        else " — no trimming needed"
+                    )
+                    + ("" if fit_report["f_within_budget"] else "  *** F OVER CAP ***")
+                    + (
+                        ""
+                        if fit_report["fb_within_budget"]
+                        else "  *** FB CHAT OVER CAP — this cell runs F ONLY ***"
+                    ),
+                    flush=True,
+                )
+            cell = run_cell(
+                game,
+                dose,
+                qwen,
+                human,
+                seed=args.seed,
+                with_frames=args.frames,
+                caps=caps,
+                feedback=args.feedback,
+            )
+            if fit_report is not None:
+                cell["prompt_fit"] = fit_report
             cells.append(cell)
             if cell.get("outcome") == "scored":
                 a, b, c = cell["channel_a"], cell["channel_b"], cell["channel_c"]
@@ -1366,6 +2277,21 @@ def main() -> int:
                     f"{cell['wall_seconds']:.0f}s",
                     flush=True,
                 )
+                fb = cell.get("feedback")
+                if fb and fb.get("attempted"):
+                    repair = fb.get("repair") or {}
+                    print(
+                        f"{label}: FB {'/'.join(fb['kinds'])} -> {fb.get('outcome')}"
+                        + (
+                            f" | {repair.get('outcome_before')} -> "
+                            f"{repair.get('outcome_after')}"
+                            f"{' REPAIRED' if repair.get('repaired') else ''}"
+                            f"{'' if repair.get('predicate_changed') else ' (predicate unchanged)'}"
+                            if repair
+                            else ""
+                        ),
+                        flush=True,
+                    )
             elif cell.get("skipped") == "dry-run":
                 print(
                     f"{label}: digest {cell['digest_chars']} chars, "
@@ -1382,12 +2308,20 @@ def main() -> int:
             out.write_text(
                 json.dumps(
                     {
-                        "format_version": FORMAT_VERSION,
+                        "format_version": (
+                            FRAMES_FORMAT_VERSION if args.frames else FORMAT_VERSION
+                        ),
                         "model": str(args.model),
                         "mode": MODE,
                         "seed": args.seed,
                         "doses": [d if d is not None else "full" for d in doses],
-                        "budgets": {"think": THINK_BUDGET, "extract": EXTRACT_BUDGET},
+                        "budgets": {
+                            "think": THINK_BUDGET,
+                            "extract": EXTRACT_BUDGET,
+                            "f_prompt_tokens": args.token_budget if args.frames else None,
+                            "fb_chat_tokens": args.fb_token_budget if args.frames else None,
+                        },
+                        "arms": {"frames": args.frames, "feedback": args.feedback},
                         "cells": cells,
                     },
                     indent=2,
