@@ -296,6 +296,16 @@ those cells. Re-render all 8 immediately before launch and confirm the same trim
 steps as the table above; a changed step means the prompt moved and the cell is no
 longer the one reviewed.
 
+> **EXECUTED 2026-08-05 21:3x — PASSED.** All 8 cells reproduce the table exactly: same
+> F tokens, same FB-chat tokens, same ladder steps. Parse and `--help` clean.
+>
+> **And it caught a real one.** The implementation was **uncommitted** — 283 lines
+> across `e2_slice.py`, `e2_frames.py`, `e2_entities.py` sitting on top of the build
+> commit `ad540a9`. `git worktree add <commit>` would have pinned `ad540a9` and run code
+> that was never reviewed, silently. The verified state is now committed as **`1f76bbc`**
+> — **pin the worktree at that hash**, and re-run the assertion inside the worktree
+> before launching, so the pin is confirmed rather than assumed.
+
 ## Readout
 
 Slice 2's structure verbatim — channel A clause 1 (store-consistent ∧ source-correct ∧
@@ -404,7 +414,12 @@ the refuted condition names.
 ## Item 3 — digest v4 behind `--frames` ✅
 
 **Regression gate: all 8 slice-2 prompts reproduce byte-for-byte** without the flag,
-asserted against last night's committed traces. The v3 evidence is unchanged; its section
+asserted against last night's committed traces. *(Recorded honestly: this held when first
+measured, then a later edit in the same build — splitting `PROMPT_V4` out — left a stale
+`{frames_preamble}` slot in the v3 template and broke the unframed path outright. I did not
+re-run the gate before committing `ad540a9`. The review round below re-ran it, it failed
+loudly, and it is 8/8 again. The lesson is the gate's, not the code's: a regression gate
+run once at the start of a build is a gate run at the wrong time.)* The v3 evidence is unchanged; its section
 headers gain provenance tags (`OBSERVED` / `REPLAY-VERIFIED` / `MINER-INFERRED`) only in
 the v4 path. Traces are tagged `_s3r{seed}`, and `.gitignore` now excludes them —
 slice-3 prompts and traces embed rendered boards, and git history counts as
@@ -425,20 +440,12 @@ F ≤ 40,000 and FB chat ≤ 45,000, tokenizer with the chat template applied, F
 the assembled chat plus a **measured** worst-case counterexample plus a 1,000-token answer
 allowance (measured: slice 2's sixteen answers were 151–289 tokens).
 
-| game | F | FB chat | trim step |
-|---|---:|---:|---:|
-| dc22 | 38,715 | 41,871 | 9 |
-| ft09 | 28,074 | 31,169 | 0 |
-| ls20 | 37,952 | 41,008 | 0 |
-| m0r0 | 38,315 | 41,510 | 9 |
-| tu93 | 34,546 | 37,505 | 0 |
-| vc33 | 38,807 | 42,501 | 0 |
-| sp80 | 34,874 | 38,549 | 10 |
-| lf52 | 37,580 | 41,316 | 10 |
+**Superseded by the review round below** — these counts predate the wrong-frame fix and
+the chat-template accounting. See the REVIEW ROUND 1 table for the numbers of record.
 
-**All eight fit both caps; none runs F-only.** Four need no trimming at all. The ladder
-runs episode span → matched contrasts → entity-table columns → episode snapshots →
-unresolved-key count; blocks 3 and 5 are never on it.
+**All eight fit both caps; none runs F-only.** The ladder runs episode span → matched
+contrasts → entity-table columns → episode snapshots → unresolved-key count; blocks 3 and
+5 are never on it.
 
 ## Item 6 — gates ✅
 
@@ -509,3 +516,85 @@ rendered prompts.
   post-night work, as in slice 2.
 - The optional dual-history probes for games with no flags at all were not attempted:
   every non-m0r0 protocol game has zero flagged pairs, so there is nothing to probe.
+
+---
+
+## REVIEW ROUND 1 — 2026-08-05, five findings, all fixed and re-gated
+
+All five reproduced before being fixed. The build ran again from the gates afterwards.
+
+### [P1] Refutation exhibits rendered the wrong board — confirmed, and it was the serious one
+
+`dsl.transition_contexts` builds `context["objects"]` from the **post** frame, so a
+condition is evaluated on the board an action PRODUCED. Block 3b and the FB counterexample
+both rendered `transition.pre`. Reproduced exactly as reported:
+
+| game | step | condition | on the rendered pre | on the post |
+|---|---:|---|---|---|
+| dc22 | 1606 | `all x in c14: exists y in c11: adjacent(x, y)` | **false** | true |
+| dc22 | 1606 | `all x in c14: exists y in c11: bbox_contains(x, y)` | **false** | true |
+| ft09 | 305 | `appears(c9)` | **false** | true |
+| ft09 | 305 | `disappears(c8)` | **false** | true |
+
+Every displayed refutation would have shown the model a board and asserted a condition that
+is visibly false on it — worse than showing nothing. Both sites now render the post board
+and name it as the board *after* the action. Because `appears`/`disappears`/`changes`/
+`persists` are about the TRANSITION rather than a single state, each exhibit also carries a
+one-line cell diff from the previous board, which costs a line instead of a second board.
+
+### [P1] The FB prompt asked for the deleted refuter — confirmed
+
+`REVISE` still said "one predicate, its refuter, and one test action" while `PROMPT_V4` and
+`EXTRACT_V4` had replaced it with `evidence_ids` and `free_form`. The cell's one revision
+turn would have been spent partly on a field the extractor discards, and the arm would have
+measured a schema mismatch instead of re-specification under contradiction. Added
+`REVISE_V4`, matching the v4 schema; slice 2's `REVISE` is untouched for the unframed path.
+
+### [P2] The ceilings were reported, not enforced — confirmed, now enforced at both ends
+
+- `feedback_possible` is now consumed: a cell whose FB chat will not fit runs **F only**, and
+  the reason is recorded on the cell.
+- A cell whose **F** prompt is still over cap after the full ladder is **skipped** and
+  recorded as skipped, with `--allow-over-cap` as the explicit override. A hard cap that
+  runs anyway is not a cap.
+- Accounting now counts the **assembled chat**, not concatenated text: `chat_tokens()`
+  applies the chat template, the same call `Qwen.generate` makes.
+- The FB chat is **re-counted for real** inside the cell, once the answer and the actual
+  counterexample exist, and the turn is refused if it exceeds the ceiling. That is the only
+  point at which the FB chat's true size exists.
+
+### [P2] Entity ids claimed continuity the tracker could not support — confirmed, tightened
+
+The matcher scored area and proximity and could keep an id across a change of shape, while
+the prompt told the model an id denotes the same entity. Rather than expose a confidence the
+model would have to weigh, ids are now kept **only on exact evidence** — identical cell set,
+or identical normalized shape in the same colour (a rigid translation, whose vector is
+reported). Everything else gets a **fresh id**, and the episode prints a `lineage:` line
+naming the plausible partner and explicitly declining to assert it:
+
+> `#1 is gone and #57 is new — same colour c1, 60 cells then 61 now, nearby. POSSIBLY the
+> same thing changing shape; NOT asserted, which is why it has a new id`
+
+Two ids may name one thing; one id never silently names two. The prompt's identity paragraph
+now says exactly this.
+
+### [P3] `--print-digest --frames` passed the `(caps, report)` tuple — confirmed, unpacked
+
+### Re-gated after the fixes
+
+| game | F ≤ 40,000 | FB chat ≤ 45,000 | trim step |
+|---|---:|---:|---:|
+| dc22 | 39,617 | 42,786 | 9 |
+| ft09 | 28,574 | 31,682 | 0 |
+| ls20 | 38,622 | 41,691 | 1 |
+| m0r0 | 39,288 | 42,496 | 9 |
+| tu93 | 39,929 | 42,901 | 1 |
+| vc33 | 38,811 | 42,518 | 3 |
+| sp80 | 37,571 | 41,259 | 11 |
+| lf52 | 39,018 | 42,767 | 10 |
+
+**All eight fit both ceilings and all eight can run FB.** The margins are thinner than
+before — tu93 has 71 tokens of headroom — because the lineage lines and the change summaries
+are real additions, and because the chat template is now counted rather than approximated.
+
+Slice-2 prompt reproduction **8/8 byte-for-byte**. Contamination **0 hits across 8 prompts**.
