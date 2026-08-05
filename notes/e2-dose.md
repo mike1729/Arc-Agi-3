@@ -129,3 +129,13 @@ exercises the feature far harder than human play does.
 Census-scoped firing (mechanism 2 of the same note) was **rejected** and changes no floor:
 on the explorer store it leaves on-human-L1 coverage near-intact (−0.046 median) while
 collapsing on-human-L2 coverage by 0.780. `logs/e2_dose_scoped.json` records it.
+
+---
+
+## Addendum 2026-08-05 — model horizon: Qwen3.8-27B expected ~08-12 (w) [verify]
+
+The 8bit pin above and **every model-bound number and verdict in this note are claims
+about Qwen3.6**, not about "the model". When 3.8 lands: bring-up gate first (new chat
+template — re-verify thinking; re-measure budget/speeds; re-pin quantization), then the
+pre-planned reruns — **`notes/qwen-3.8-upgrade.md`**. Zero-model floors and curves here
+are model-free and stand.
