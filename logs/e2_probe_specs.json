@@ -1,0 +1,1662 @@
+{
+  "caps": {
+    "control_replicates": 5,
+    "control_seeds": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "states_per_arm": 12,
+    "transitions_per_spec": 8
+  },
+  "duplicates": [
+    "m0r0_full_s2"
+  ],
+  "format_version": 1,
+  "nl_classes": {
+    "executable-as-stated": 31,
+    "out-of-band": 2,
+    "untranslatable": 3
+  },
+  "note": "notes/e2-probe-channel.md step 1 \u2014 the pre-registration. Committed before any probe was executed.",
+  "probes": 36,
+  "specs": [
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "adj:13:left",
+              "eq",
+              8
+            ],
+            [
+              "count:0",
+              "eq",
+              14
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 8,
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "single_outcome",
+      "dose": 125,
+      "game": "dc22",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "one of: the appear(4)x5+disappear chain / a hidden-toggle flip / no change",
+      "probe_id": "dc22_125_s0",
+      "seed": 20260804,
+      "targeted": [
+        [
+          "A6",
+          8
+        ]
+      ],
+      "verbatim": "Execute ACTION6 on colour 8 in a state where adj:13:left=8 and count:0=14 to observe whether it triggers the appear(4)x5 + disappear(...) chain, flips the hidden toggle, or does nothing."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "count3=1",
+          "precondition": [
+            [
+              "count:3",
+              "eq",
+              1
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 0,
+              "t": "click"
+            }
+          ]
+        },
+        {
+          "arm_id": "count3=2",
+          "precondition": [
+            [
+              "count:3",
+              "eq",
+              2
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 0,
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_arms",
+      "dose": null,
+      "game": "dc22",
+      "match_on": "adj",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "the two count:3 values give different effects, with every adj:* feature held equal",
+      "probe_id": "dc22_full_s0",
+      "seed": 20260804,
+      "targeted": [
+        [
+          "A6",
+          0
+        ]
+      ],
+      "verbatim": "Execute ACTION6 on colour 0 in two carefully constructed states that are identical in all adj:* features but differ in count:3 (specifically, one state with count:3=1 and one with count:3=2)."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "touching12",
+          "precondition": [],
+          "steps": [
+            {
+              "colour": 9,
+              "t": "click",
+              "touching": 12
+            }
+          ]
+        },
+        {
+          "arm_id": "not_touching12",
+          "precondition": [],
+          "steps": [
+            {
+              "colour": 9,
+              "not_touching": 12,
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_arms",
+      "dose": 125,
+      "game": "ft09",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "a colour-9 component touching colour 12 behaves differently from one that does not",
+      "probe_id": "ft09_125_s0",
+      "same_state": true,
+      "seed": 20260804,
+      "targeted": [
+        [
+          "A6",
+          9
+        ]
+      ],
+      "verbatim": "Perform ACTION6 on two carefully chosen colour-9 components in a fresh state: one that is directly adjacent (orthogonally) to the colour-12 object, and one that is not adjacent to colour 12 (e.g., isolated or touching only background/other colours)."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "count:8",
+              "eq",
+              16
+            ],
+            [
+              "present:11",
+              "eq",
+              true
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 9,
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "single_outcome",
+      "dose": null,
+      "game": "ft09",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "none stated \u2014 the probe names a condition and asks for the outcome",
+      "probe_id": "ft09_full_s0",
+      "seed": 20260804,
+      "targeted": [
+        [
+          "A6",
+          9
+        ]
+      ],
+      "verbatim": "ACTION6 on colour 9 when count:8 == 16 and present:11 == True."
+    },
+    {
+      "arms": [],
+      "contrast": "none",
+      "dose": 125,
+      "game": "ls20",
+      "missing_piece": "no game action is requested \u2014 this asks the harness to log coordinates and a step counter",
+      "nl_class": "out-of-band",
+      "probe_id": "ls20_125_s0",
+      "seed": 20260804,
+      "targeted": [],
+      "verbatim": "Record the exact grid coordinates of objects 11 and 12 before each transition, and log the global step count."
+    },
+    {
+      "arms": [],
+      "contrast": "none",
+      "dose": null,
+      "game": "ls20",
+      "missing_piece": "a primitive that PLACES an object at a chosen coordinate. The action set has none, and the probe names no action sequence that would reach such a configuration.",
+      "nl_class": "untranslatable",
+      "probe_id": "ls20_full_s0",
+      "seed": 20260804,
+      "targeted": [],
+      "verbatim": "Execute a controlled positional test: Reset to a known state, place colours 9 and 12 at a fixed coordinate, and systematically press each action while varying their distance to the nearest grid edge and adjacent obstacles."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [],
+          "start": "origin",
+          "steps": [
+            {
+              "id": 2,
+              "t": "press"
+            },
+            {
+              "colour": 11,
+              "require": [
+                [
+                  "adj:12:left",
+                  "eq",
+                  11
+                ]
+              ],
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "single_outcome",
+      "dose": 125,
+      "game": "m0r0",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "none stated",
+      "probe_id": "m0r0_125_s0",
+      "seed": 20260804,
+      "targeted": [
+        [
+          "A6",
+          11
+        ]
+      ],
+      "verbatim": "Execute ACTION2 from the initial state, then immediately perform ACTION6 on colour 11 when adj:12:left == 11."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [],
+          "start": "origin",
+          "steps": [
+            {
+              "id": 5,
+              "repeat": 8,
+              "t": "press"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_repetitions",
+      "dose": null,
+      "game": "m0r0",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "successive ACTION5 presses alternate between no-change and reshape(0)",
+      "probe_id": "m0r0_full_s0",
+      "seed": 20260804,
+      "targeted": [
+        [
+          "A",
+          5
+        ]
+      ],
+      "translation_note": "the text fixes no particular state; the origin is used, deterministically",
+      "verbatim": "Execute ACTION5 repeatedly from a single, fixed visual state to see if results strictly alternate between no-change and reshape(0)."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "right4_then_A1",
+          "precondition": [
+            [
+              "adj:9:right",
+              "eq",
+              4
+            ]
+          ],
+          "steps": [
+            {
+              "id": 2,
+              "t": "press"
+            },
+            {
+              "id": 1,
+              "t": "press"
+            }
+          ]
+        },
+        {
+          "arm_id": "right4_then_A4",
+          "precondition": [
+            [
+              "adj:9:right",
+              "eq",
+              4
+            ]
+          ],
+          "steps": [
+            {
+              "id": 2,
+              "t": "press"
+            },
+            {
+              "id": 4,
+              "t": "press"
+            }
+          ]
+        },
+        {
+          "arm_id": "left2_then_A1",
+          "precondition": [
+            [
+              "adj:9:left",
+              "eq",
+              2
+            ]
+          ],
+          "steps": [
+            {
+              "id": 2,
+              "t": "press"
+            },
+            {
+              "id": 1,
+              "t": "press"
+            }
+          ]
+        },
+        {
+          "arm_id": "left2_then_A4",
+          "precondition": [
+            [
+              "adj:9:left",
+              "eq",
+              2
+            ]
+          ],
+          "steps": [
+            {
+              "id": 2,
+              "t": "press"
+            },
+            {
+              "id": 4,
+              "t": "press"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_arms",
+      "dose": 125,
+      "game": "tu93",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "the follow-up action shifts the swapped 4/9 pair; which of ACTION1/ACTION4 does so is what the arms separate",
+      "probe_id": "tu93_125_s0",
+      "seed": 20260804,
+      "targeted": [
+        [
+          "A",
+          1
+        ],
+        [
+          "A",
+          4
+        ]
+      ],
+      "translation_note": "'toward the color 14 tile' names no action-to-direction mapping, so both stated follow-ups are executed rather than one being chosen",
+      "verbatim": "Execute ACTION2 in a state where adj:9:right=4 (or adj:9:left=2), then immediately follow with ACTION1 or ACTION4 to shift the swapped 4/9 pair toward the color 14 tile."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "A1",
+          "precondition": [
+            [
+              "adj:4:*",
+              "eq",
+              14
+            ]
+          ],
+          "steps": [
+            {
+              "id": 1,
+              "t": "press"
+            }
+          ]
+        },
+        {
+          "arm_id": "A2",
+          "precondition": [
+            [
+              "adj:4:*",
+              "eq",
+              14
+            ]
+          ],
+          "steps": [
+            {
+              "id": 2,
+              "t": "press"
+            }
+          ]
+        },
+        {
+          "arm_id": "A3",
+          "precondition": [
+            [
+              "adj:4:*",
+              "eq",
+              14
+            ]
+          ],
+          "steps": [
+            {
+              "id": 3,
+              "t": "press"
+            }
+          ]
+        },
+        {
+          "arm_id": "A4",
+          "precondition": [
+            [
+              "adj:4:*",
+              "eq",
+              14
+            ]
+          ],
+          "steps": [
+            {
+              "id": 4,
+              "t": "press"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_arms",
+      "dose": null,
+      "game": "tu93",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "the four actions differ when object 4 abuts colour 14",
+      "probe_id": "tu93_full_s0",
+      "seed": 20260804,
+      "targeted": [
+        [
+          "A",
+          1
+        ],
+        [
+          "A",
+          2
+        ],
+        [
+          "A",
+          3
+        ],
+        [
+          "A",
+          4
+        ]
+      ],
+      "translation_note": "'in the direction of 14' names no action-to-direction mapping; all four stated actions are executed under adj:4:<any>=14",
+      "verbatim": "Execute ACTION1/2/3/4 when object 4 is directly adjacent to color 14 in the direction of 14."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "click0",
+          "precondition": [
+            [
+              "adj:7:down",
+              "eq",
+              0
+            ],
+            [
+              "count:0",
+              "eq",
+              1
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 0,
+              "t": "click"
+            }
+          ]
+        },
+        {
+          "arm_id": "click5",
+          "precondition": [
+            [
+              "adj:7:down",
+              "eq",
+              0
+            ],
+            [
+              "count:0",
+              "eq",
+              1
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 5,
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_arms",
+      "dose": 125,
+      "dropped_arms": [
+        "'(or vice versa)' \u2014 the swapped condition names no literal value for count:0, and a guard tests feature = one literal value"
+      ],
+      "game": "vc33",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "clicking colour 0 and colour 5 under a correlation-breaking state separates a spatial guard from a numerical one",
+      "probe_id": "vc33_125_s0",
+      "seed": 20260804,
+      "targeted": [
+        [
+          "A6",
+          0
+        ],
+        [
+          "A6",
+          5
+        ]
+      ],
+      "verbatim": "Execute ACTION6 on colour 0 (or 5) in a state where adj:7:down == 0 but count:0 == 1 (or vice versa) to break the perfect correlation and reveal whether the true causal guard is spatial or numerical."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "count:0",
+              "eq",
+              1
+            ],
+            [
+              "count:4",
+              "eq",
+              1
+            ]
+          ],
+          "steps": [
+            {
+              "any_present_colour": true,
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "single_outcome",
+      "dose": null,
+      "game": "vc33",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "none stated",
+      "probe_id": "vc33_full_s0",
+      "seed": 20260804,
+      "targeted": "executed",
+      "verbatim": "Execute ACTION6 on any colour in a state where count:0 == 1 AND count:4 == 1."
+    },
+    {
+      "arms": [],
+      "contrast": "none",
+      "dose": 125,
+      "game": "dc22",
+      "missing_piece": "the click target. ACTION6 needs a cell and the probe names no colour, component or coordinate to click.",
+      "nl_class": "untranslatable",
+      "probe_id": "dc22_125_s1",
+      "seed": 1,
+      "targeted": [],
+      "verbatim": "Probe the compound condition for ACTION6 validity by constructing a state where adj:13:down=4 but varying adj:14:left systematically."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "adj:13:down",
+              "eq",
+              4
+            ],
+            [
+              "adj:14:left",
+              "eq",
+              2
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 2,
+              "t": "click"
+            },
+            {
+              "t": "repeat"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_repetitions",
+      "dose": null,
+      "game": "dc22",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "the second identical click differs from the first",
+      "probe_id": "dc22_full_s1",
+      "seed": 1,
+      "targeted": [
+        [
+          "A6",
+          2
+        ]
+      ],
+      "verbatim": "Execute ACTION6 on colour 2 from a state where adj:13:down=4 and adj:14:left=2, then immediately repeat the exact same action without moving."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "count:8",
+              "eq",
+              16
+            ],
+            [
+              "count:9",
+              "eq",
+              20
+            ],
+            [
+              "adj:12:right",
+              "eq",
+              "edge"
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 9,
+              "novel_offset_to": 12,
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "single_outcome",
+      "dose": 125,
+      "game": "ft09",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "an unseen clicked-component offset from colour 12 fails to reproduce the successful outcome",
+      "probe_id": "ft09_125_s1",
+      "seed": 1,
+      "targeted": [
+        [
+          "A6",
+          9
+        ]
+      ],
+      "translation_note": "'a different offset from colour 12' is resolved as: the top-left cell of the clicked colour-9 component minus the top-left cell of colour 12's object, a vector not taken by any stored transition of this key. Selecting an existing component is reading; 'place' is not executable and is not attempted.",
+      "verbatim": "Perform ACTION6 on colour 9 when count:8=16, count:9=20, and adj:12:right=edge, but deliberately place the clicked colour 9 at a different relative distance or offset from colour 12 than in the four successful transitions."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "edge",
+          "precondition": [
+            [
+              "count:8",
+              "eq",
+              17
+            ],
+            [
+              "count:9",
+              "eq",
+              19
+            ],
+            [
+              "adj:12:right",
+              "eq",
+              "edge"
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 8,
+              "t": "click"
+            }
+          ]
+        },
+        {
+          "arm_id": "not11",
+          "precondition": [
+            [
+              "count:8",
+              "eq",
+              17
+            ],
+            [
+              "count:9",
+              "eq",
+              19
+            ],
+            [
+              "adj:12:right",
+              "not_in",
+              [
+                11,
+                "edge"
+              ]
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 8,
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_arms",
+      "dose": null,
+      "game": "ft09",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "adj:12:right away from 11 changes the outcome",
+      "probe_id": "ft09_full_s1",
+      "seed": 1,
+      "targeted": [
+        [
+          "A6",
+          8
+        ]
+      ],
+      "verbatim": "Execute ACTION6 on colour 8 at a location where count:8 = 17 and count:9 = 19, but adj:12:right = edge (or any value other than 11)."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "adj:12:right",
+              "eq",
+              3
+            ],
+            [
+              "adj:12:left",
+              "ne",
+              3
+            ],
+            [
+              "adj:12:up",
+              "ne",
+              3
+            ],
+            [
+              "adj:12:down",
+              "ne",
+              3
+            ]
+          ],
+          "steps": [
+            {
+              "id": 2,
+              "t": "press"
+            }
+          ]
+        }
+      ],
+      "contrast": "single_outcome",
+      "dose": 125,
+      "game": "ls20",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "none stated \u2014 a directional adjacency condition and one action",
+      "probe_id": "ls20_125_s1",
+      "seed": 1,
+      "targeted": [
+        [
+          "A",
+          2
+        ]
+      ],
+      "verbatim": "Construct a state where color 12 has a color 3 directly to its right, but no color 3 to its left, up, or down, then press ACTION2."
+    },
+    {
+      "arms": [],
+      "contrast": "none",
+      "dose": null,
+      "game": "ls20",
+      "missing_piece": "asks for logging, and for a feature the miner already has: click_colour and click_on_background are in the v1 vocabulary and were in the digest the probe was written from",
+      "nl_class": "out-of-band",
+      "probe_id": "ls20_full_s1",
+      "seed": 1,
+      "targeted": [],
+      "verbatim": "The single most informative test is to log target_cell_colour for every transition, then replay a controlled sequence to confirm if the condition is target_cell_empty."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [],
+          "start": "origin",
+          "steps": [
+            {
+              "colour": 5,
+              "t": "click"
+            },
+            {
+              "t": "repeat"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_repetitions",
+      "dose": 125,
+      "game": "m0r0",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "the second identical click differs from the first",
+      "probe_id": "m0r0_125_s1",
+      "seed": 1,
+      "targeted": [
+        [
+          "A6",
+          5
+        ]
+      ],
+      "verbatim": "Execute ACTION6 on colour 5 twice in immediate succession from the exact initial state (e3fc5841)."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [],
+          "start": "origin",
+          "steps": [
+            {
+              "id": 1,
+              "repeat": 8,
+              "t": "press"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_repetitions",
+      "dose": null,
+      "game": "m0r0",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "repeated ACTION1 from a fixed state cycles deterministically",
+      "probe_id": "m0r0_full_s1",
+      "seed": 1,
+      "targeted": [
+        [
+          "A",
+          1
+        ]
+      ],
+      "verbatim": "Replay the exact initial state (e3fc5841) and execute ACTION1 repeatedly in a tight loop, logging the outcome of each press to confirm deterministic cycling or isolate RNG state."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "left2_A1",
+          "precondition": [
+            [
+              "adj:9:left",
+              "eq",
+              2
+            ]
+          ],
+          "steps": [
+            {
+              "id": 1,
+              "t": "press"
+            }
+          ]
+        },
+        {
+          "arm_id": "left2_A2",
+          "precondition": [
+            [
+              "adj:9:left",
+              "eq",
+              2
+            ]
+          ],
+          "steps": [
+            {
+              "id": 2,
+              "t": "press"
+            }
+          ]
+        },
+        {
+          "arm_id": "left2_A4",
+          "precondition": [
+            [
+              "adj:9:left",
+              "eq",
+              2
+            ]
+          ],
+          "steps": [
+            {
+              "id": 4,
+              "t": "press"
+            }
+          ]
+        },
+        {
+          "arm_id": "left4_A1",
+          "precondition": [
+            [
+              "adj:9:left",
+              "eq",
+              4
+            ]
+          ],
+          "steps": [
+            {
+              "id": 1,
+              "t": "press"
+            }
+          ]
+        },
+        {
+          "arm_id": "left4_A2",
+          "precondition": [
+            [
+              "adj:9:left",
+              "eq",
+              4
+            ]
+          ],
+          "steps": [
+            {
+              "id": 2,
+              "t": "press"
+            }
+          ]
+        },
+        {
+          "arm_id": "left4_A4",
+          "precondition": [
+            [
+              "adj:9:left",
+              "eq",
+              4
+            ]
+          ],
+          "steps": [
+            {
+              "id": 4,
+              "t": "press"
+            }
+          ]
+        },
+        {
+          "arm_id": "leftNone_A1",
+          "precondition": [
+            [
+              "adj:9:left",
+              "eq",
+              null
+            ]
+          ],
+          "steps": [
+            {
+              "id": 1,
+              "t": "press"
+            }
+          ]
+        },
+        {
+          "arm_id": "leftNone_A2",
+          "precondition": [
+            [
+              "adj:9:left",
+              "eq",
+              null
+            ]
+          ],
+          "steps": [
+            {
+              "id": 2,
+              "t": "press"
+            }
+          ]
+        },
+        {
+          "arm_id": "leftNone_A4",
+          "precondition": [
+            [
+              "adj:9:left",
+              "eq",
+              null
+            ]
+          ],
+          "steps": [
+            {
+              "id": 4,
+              "t": "press"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_arms",
+      "dose": 125,
+      "game": "tu93",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "adj:9:left in {2, 4, empty} separates the three actions' outcomes",
+      "probe_id": "tu93_125_s1",
+      "seed": 1,
+      "targeted": [
+        [
+          "A",
+          1
+        ],
+        [
+          "A",
+          2
+        ],
+        [
+          "A",
+          4
+        ]
+      ],
+      "translation_note": "'manipulating until' is executed as finding a stored state with that adjacency; the store is searched, nothing is placed",
+      "verbatim": "Explicitly test adj:9:left for ACTION1, ACTION2, and ACTION4 by manipulating object 9's position until a 2, 4, or empty cell is directly to its left, then pressing the action."
+    },
+    {
+      "arms": [],
+      "contrast": "none",
+      "dose": null,
+      "game": "tu93",
+      "missing_piece": "the action. 'the click direction' presupposes a click the probe never specifies, and no ACTION is named anywhere in the text.",
+      "nl_class": "untranslatable",
+      "probe_id": "tu93_full_s1",
+      "seed": 1,
+      "targeted": [],
+      "verbatim": "Run a focused exploration that deliberately places the colour-4 object directly adjacent to the colour-9 object in the click direction while holding all other adjacencies constant to observe whether this yields the toggle effect or the reshape-only effect."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "adj:7:down",
+              "eq",
+              null
+            ],
+            [
+              "count:0",
+              "eq",
+              1
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 0,
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_arms",
+      "dose": 125,
+      "game": "vc33",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "varying adj:0:right under a fixed adj:7:down/count:0 changes the outcome iff object-to-object adjacency is the real guard",
+      "probe_id": "vc33_125_s1",
+      "seed": 1,
+      "stratify": {
+        "kind": "feature",
+        "name": "adj:0:right"
+      },
+      "targeted": [
+        [
+          "A6",
+          0
+        ]
+      ],
+      "verbatim": "Execute ACTION6 on colour 0 in a state where adj:7:down=None and count:0=1, but systematically vary the untracked adjacency adj:0:right (or adj:0:down) to determine if direct object-to-object adjacency is the true condition."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "adj:7:right",
+              "eq",
+              4
+            ],
+            [
+              "adj:7:down",
+              "eq",
+              null
+            ],
+            [
+              "count:0",
+              "eq",
+              1
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 3,
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "single_outcome",
+      "dose": null,
+      "game": "vc33",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "none stated",
+      "probe_id": "vc33_full_s1",
+      "seed": 1,
+      "targeted": [
+        [
+          "A6",
+          3
+        ]
+      ],
+      "verbatim": "Deliberately construct a state where adj:7:right = 4, adj:7:down = None, and count:0 = 1, then execute ACTION6 on colour 3 (or any neutral colour)."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "bg_at:0:0",
+              "eq",
+              false
+            ]
+          ],
+          "steps": [
+            {
+              "cell": [
+                0,
+                0
+              ],
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "single_outcome",
+      "dose": 125,
+      "game": "dc22",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "none stated",
+      "probe_id": "dc22_125_s2",
+      "seed": 2,
+      "targeted": "executed",
+      "translation_note": "'placed at the top-left corner' is executed as clicking cell (0,0) in a state where that cell is not background",
+      "unenforced_clauses": [
+        "the logging clause (click_row, click_col, adj:CLICKED:direction) is instrumentation, not an action; the executed transitions carry all three anyway"
+      ],
+      "verbatim": "Execute ACTION6 on a colour instance explicitly placed at the top-left board corner (guaranteeing adj:CLICKED:up=None and adj:CLICKED:left=None), while logging click_row, click_col, and adj:CLICKED:direction."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "present:2",
+              "eq",
+              true
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 2,
+              "t": "click"
+            },
+            {
+              "t": "repeat"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_repetitions",
+      "dose": null,
+      "game": "dc22",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "the second identical click differs from the first",
+      "probe_id": "dc22_full_s2",
+      "seed": 2,
+      "targeted": [
+        [
+          "A6",
+          2
+        ]
+      ],
+      "verbatim": "Execute ACTION6 on colour 2 twice consecutively on the exact same object and log the exact pixel boundary of colour 0 before and after each click to map the reshape effect to a deterministic state machine."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "count:9",
+              "eq",
+              20
+            ],
+            [
+              "adj:12:right",
+              "eq",
+              "edge"
+            ],
+            [
+              "count:8",
+              "eq",
+              17
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 9,
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "single_outcome",
+      "dose": 125,
+      "game": "ft09",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "none stated",
+      "probe_id": "ft09_125_s2",
+      "seed": 2,
+      "targeted": [
+        [
+          "A6",
+          9
+        ]
+      ],
+      "verbatim": "Execute ACTION6 on colour 9 when count:9=20, adj:12:right=edge, but deliberately ensure count:8=17."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "count9=20",
+          "precondition": [
+            [
+              "count:8",
+              "eq",
+              17
+            ],
+            [
+              "count:9",
+              "eq",
+              20
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 8,
+              "t": "click"
+            }
+          ]
+        },
+        {
+          "arm_id": "count9=18",
+          "precondition": [
+            [
+              "count:8",
+              "eq",
+              17
+            ],
+            [
+              "count:9",
+              "eq",
+              18
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 8,
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_arms",
+      "dose": null,
+      "game": "ft09",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "count:9 off 19 suppresses the trigger, in both directions",
+      "probe_id": "ft09_full_s2",
+      "seed": 2,
+      "targeted": [
+        [
+          "A6",
+          8
+        ]
+      ],
+      "verbatim": "Click ACTION6 on colour 8 when count:8 = 17 but count:9 = 20 (or 18) to confirm the trigger strictly requires the conjunction count:8=17 AND count:9=19."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "adj:12:down",
+              "eq",
+              3
+            ]
+          ],
+          "steps": [
+            {
+              "id": 2,
+              "t": "press"
+            }
+          ]
+        }
+      ],
+      "contrast": "single_outcome",
+      "dose": 125,
+      "game": "ls20",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "none stated",
+      "probe_id": "ls20_125_s2",
+      "seed": 2,
+      "targeted": [
+        [
+          "A",
+          2
+        ]
+      ],
+      "verbatim": "Test ACTION2 with a controlled adj:12:down condition by placing a 3 directly below object 12 and pressing ACTION2 to confirm the directional adjacency rule."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "adj:12:up",
+              "eq",
+              3
+            ]
+          ],
+          "steps": [
+            {
+              "id": 1,
+              "t": "press"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_arms",
+      "dose": null,
+      "dropped_arms": [
+        "'or the shape/orientation of object 3 differs' \u2014 shape is not a guard feature and the probe names no shape to hold or vary"
+      ],
+      "game": "ls20",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "count:3 changes the outcome at fixed adj:12:up=3",
+      "probe_id": "ls20_full_s2",
+      "seed": 2,
+      "stratify": {
+        "kind": "feature",
+        "name": "count:3"
+      },
+      "targeted": [
+        [
+          "A",
+          1
+        ]
+      ],
+      "verbatim": "Execute ACTION1 in two carefully constructed states where adj:12:up = 3 is true in both, but count:3 differs or the shape/orientation of object 3 differs."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [],
+          "start": "origin",
+          "steps": [
+            {
+              "colour": 11,
+              "t": "click"
+            },
+            {
+              "t": "repeat"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_repetitions",
+      "dose": 125,
+      "game": "m0r0",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "the second identical click differs from the first",
+      "probe_id": "m0r0_125_s2",
+      "seed": 2,
+      "targeted": [
+        [
+          "A6",
+          11
+        ]
+      ],
+      "verbatim": "Execute ACTION6 on colour 11 twice consecutively from the initial state (e3fc5841)."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [],
+          "start": "origin",
+          "steps": [
+            {
+              "id": 1,
+              "repeat": 8,
+              "t": "press"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_repetitions",
+      "dose": null,
+      "duplicate_of": "m0r0_full_s1",
+      "game": "m0r0",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "repeated ACTION1 from a fixed state reveals a phase cycle",
+      "probe_id": "m0r0_full_s2",
+      "seed": 2,
+      "targeted": [
+        [
+          "A",
+          1
+        ]
+      ],
+      "verbatim": "Execute ACTION1 repeatedly from the initial state for 6-8 turns, logging the exact effect each time to reveal the hidden phase update rule."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "adj:4:up",
+              "eq",
+              2
+            ],
+            [
+              "adj:9:down",
+              "eq",
+              4
+            ]
+          ],
+          "steps": [
+            {
+              "id": 1,
+              "t": "press"
+            }
+          ]
+        }
+      ],
+      "contrast": "single_outcome",
+      "dose": 125,
+      "game": "tu93",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "none stated beyond the named adjacency conjunction",
+      "probe_id": "tu93_125_s2",
+      "seed": 2,
+      "targeted": [
+        [
+          "A",
+          1
+        ]
+      ],
+      "unenforced_clauses": [
+        "'holding all other tracked adjacencies constant to the reshape group's values' \u2014 the probe names neither the group nor the values, so the conjunction is executed without it"
+      ],
+      "verbatim": "Construct a controlled test state where adj:4:up=2 and adj:9:down=4 while holding all other tracked adjacencies constant to the reshape group's values and apply ACTION1."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "adj:6:right",
+              "eq",
+              0
+            ],
+            [
+              "adj:4:down",
+              "eq",
+              9
+            ]
+          ],
+          "steps": [
+            {
+              "id": 1,
+              "t": "press"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_arms",
+      "dose": null,
+      "dropped_arms": [
+        "'vary the clicked cell coordinates' \u2014 ACTION1 has no clicked cell"
+      ],
+      "game": "tu93",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "count:0 changes the outcome at fixed adj:6:right/adj:4:down",
+      "probe_id": "tu93_full_s2",
+      "seed": 2,
+      "stratify": {
+        "kind": "feature",
+        "name": "count:0"
+      },
+      "targeted": [
+        [
+          "A",
+          1
+        ]
+      ],
+      "unenforced_clauses": [
+        "'holding all adjacency relations constant' \u2014 no values named"
+      ],
+      "verbatim": "Execute ACTION1 in a state where adj:6:right=0 and adj:4:down=9, then systematically vary the clicked cell coordinates or force a change in count:0 while holding all adjacency relations constant."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "count:0",
+              "eq",
+              2
+            ],
+            [
+              "adj:7:down",
+              "eq",
+              0
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 9,
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_arms",
+      "dose": 125,
+      "game": "vc33",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "the horizontal gap between the two colour-0 objects changes the outcome",
+      "probe_id": "vc33_125_s2",
+      "seed": 2,
+      "stratify": {
+        "colour": 0,
+        "kind": "hgap"
+      },
+      "targeted": [
+        [
+          "A6",
+          9
+        ]
+      ],
+      "translation_note": "'horizontal distance between the two 0 objects' is the minimum column gap between their cell sets; states are searched, nothing is placed",
+      "verbatim": "ACTION6 on colour 9 when count:0=2 and adj:7:down=0, but manipulate the horizontal distance between the two 0 objects (e.g., place them adjacent vs. separated by 1+ background cells)."
+    },
+    {
+      "arms": [
+        {
+          "arm_id": "a",
+          "precondition": [
+            [
+              "count:0",
+              "eq",
+              1
+            ],
+            [
+              "count:4",
+              "eq",
+              2
+            ],
+            [
+              "adj:7:right",
+              "eq",
+              4
+            ]
+          ],
+          "steps": [
+            {
+              "colour": 0,
+              "t": "click"
+            }
+          ]
+        }
+      ],
+      "contrast": "across_arms",
+      "dose": null,
+      "game": "vc33",
+      "nl_class": "executable-as-stated",
+      "predicted_contrast": "whether colour 0 touches colour 4 changes the outcome",
+      "probe_id": "vc33_full_s2",
+      "seed": 2,
+      "stratify": {
+        "colour": 0,
+        "kind": "touch",
+        "other": 4
+      },
+      "targeted": [
+        [
+          "A6",
+          0
+        ]
+      ],
+      "verbatim": "Execute ACTION6 on colour 0 in a controlled state where count:0=1, count:4=2, and adj:7:right=4, but deliberately vary the adjacency of colour 0 to colour 4."
+    }
+  ],
+  "vocabulary": "v1 (the digests the probes were written from)",
+  "vocabulary_check": {
+    "conclusion": "v1",
+    "traces": 36,
+    "with_v2_feature": 0
+  }
+}
