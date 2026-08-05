@@ -1,0 +1,740 @@
+{
+  "format_version": 1,
+  "games": {
+    "ar25": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": 1.0,
+      "determinism_observation_weighted": 1.0,
+      "deterministic_groups": 2,
+      "distinct_pre_action_groups": 2972,
+      "game": "ar25",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2979,
+      "repeated_groups": 2,
+      "repeated_observations": 9,
+      "store_repeated_groups": 0
+    },
+    "bp35": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": 1.0,
+      "determinism_observation_weighted": 1.0,
+      "deterministic_groups": 5,
+      "distinct_pre_action_groups": 2873,
+      "game": "bp35",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2909,
+      "repeated_groups": 5,
+      "repeated_observations": 41,
+      "store_repeated_groups": 0
+    },
+    "cd82": {
+      "aliased_groups": 1,
+      "determinism_group_weighted": 0.75,
+      "determinism_observation_weighted": 0.8636,
+      "deterministic_groups": 3,
+      "distinct_pre_action_groups": 2923,
+      "game": "cd82",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 1,
+          "fraction": 1.0,
+          "fraction_nontrivial": 1.0,
+          "resolved": 1,
+          "resolved_with_a_supported_cell": 1
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 1,
+          "fraction": 1.0,
+          "fraction_nontrivial": 1.0,
+          "resolved": 1,
+          "resolved_with_a_supported_cell": 1
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2941,
+      "repeated_groups": 4,
+      "repeated_observations": 22,
+      "store_repeated_groups": 0
+    },
+    "cn04": {
+      "aliased_groups": 4,
+      "determinism_group_weighted": 0.5556,
+      "determinism_observation_weighted": 0.8261,
+      "deterministic_groups": 5,
+      "distinct_pre_action_groups": 2886,
+      "game": "cn04",
+      "is_counter_game": true,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 4,
+          "fraction": 1.0,
+          "fraction_nontrivial": 0.0,
+          "resolved": 4,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 4,
+          "fraction": 1.0,
+          "fraction_nontrivial": 0.0,
+          "resolved": 4,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2923,
+      "repeated_groups": 9,
+      "repeated_observations": 46,
+      "store_repeated_groups": 0
+    },
+    "dc22": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": 1.0,
+      "determinism_observation_weighted": 1.0,
+      "deterministic_groups": 2,
+      "distinct_pre_action_groups": 2939,
+      "game": "dc22",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2947,
+      "repeated_groups": 2,
+      "repeated_observations": 10,
+      "store_repeated_groups": 0
+    },
+    "ft09": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": 1.0,
+      "determinism_observation_weighted": 1.0,
+      "deterministic_groups": 36,
+      "distinct_pre_action_groups": 1265,
+      "game": "ft09",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 1401,
+      "performs_with_both_digests": 1400,
+      "repeated_groups": 36,
+      "repeated_observations": 171,
+      "store_repeated_groups": 0
+    },
+    "g50t": {
+      "aliased_groups": 43,
+      "determinism_group_weighted": 0.5169,
+      "determinism_observation_weighted": 0.5585,
+      "deterministic_groups": 46,
+      "distinct_pre_action_groups": 1477,
+      "game": "g50t",
+      "is_counter_game": true,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 43,
+          "fraction": 0.9302,
+          "fraction_nontrivial": 0.2326,
+          "resolved": 40,
+          "resolved_with_a_supported_cell": 10
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 43,
+          "fraction": 0.9302,
+          "fraction_nontrivial": 0.2326,
+          "resolved": 40,
+          "resolved_with_a_supported_cell": 10
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2985,
+      "repeated_groups": 89,
+      "repeated_observations": 1597,
+      "store_repeated_groups": 0
+    },
+    "ka59": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": 1.0,
+      "determinism_observation_weighted": 1.0,
+      "deterministic_groups": 4,
+      "distinct_pre_action_groups": 2923,
+      "game": "ka59",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2941,
+      "repeated_groups": 4,
+      "repeated_observations": 22,
+      "store_repeated_groups": 0
+    },
+    "lf52": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": null,
+      "determinism_observation_weighted": null,
+      "deterministic_groups": 0,
+      "distinct_pre_action_groups": 146,
+      "game": "lf52",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 149,
+      "performs_with_both_digests": 146,
+      "repeated_groups": 0,
+      "repeated_observations": 0,
+      "store_repeated_groups": 0
+    },
+    "lp85": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": null,
+      "determinism_observation_weighted": null,
+      "deterministic_groups": 0,
+      "distinct_pre_action_groups": 42,
+      "game": "lp85",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 43,
+      "performs_with_both_digests": 42,
+      "repeated_groups": 0,
+      "repeated_observations": 0,
+      "store_repeated_groups": 0
+    },
+    "ls20": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": 1.0,
+      "determinism_observation_weighted": 1.0,
+      "deterministic_groups": 24,
+      "distinct_pre_action_groups": 2877,
+      "game": "ls20",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2955,
+      "repeated_groups": 24,
+      "repeated_observations": 102,
+      "store_repeated_groups": 0
+    },
+    "m0r0": {
+      "aliased_groups": 3,
+      "determinism_group_weighted": 0.5,
+      "determinism_observation_weighted": 0.6957,
+      "deterministic_groups": 3,
+      "distinct_pre_action_groups": 2944,
+      "game": "m0r0",
+      "is_counter_game": true,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 3,
+          "fraction": 1.0,
+          "fraction_nontrivial": 0.3333,
+          "resolved": 3,
+          "resolved_with_a_supported_cell": 1
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 3,
+          "fraction": 0.6667,
+          "fraction_nontrivial": 0.3333,
+          "resolved": 2,
+          "resolved_with_a_supported_cell": 1
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2961,
+      "repeated_groups": 6,
+      "repeated_observations": 23,
+      "store_repeated_groups": 0
+    },
+    "r11l": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": null,
+      "determinism_observation_weighted": null,
+      "deterministic_groups": 0,
+      "distinct_pre_action_groups": 130,
+      "game": "r11l",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 135,
+      "performs_with_both_digests": 130,
+      "repeated_groups": 0,
+      "repeated_observations": 0,
+      "store_repeated_groups": 0
+    },
+    "re86": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": 1.0,
+      "determinism_observation_weighted": 1.0,
+      "deterministic_groups": 7,
+      "distinct_pre_action_groups": 2911,
+      "game": "re86",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2941,
+      "repeated_groups": 7,
+      "repeated_observations": 37,
+      "store_repeated_groups": 0
+    },
+    "sb26": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": 1.0,
+      "determinism_observation_weighted": 1.0,
+      "deterministic_groups": 2,
+      "distinct_pre_action_groups": 2986,
+      "game": "sb26",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2989,
+      "repeated_groups": 2,
+      "repeated_observations": 5,
+      "store_repeated_groups": 0
+    },
+    "sc25": {
+      "aliased_groups": 3,
+      "determinism_group_weighted": 0.25,
+      "determinism_observation_weighted": 0.492,
+      "deterministic_groups": 1,
+      "distinct_pre_action_groups": 1607,
+      "game": "sc25",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 3,
+          "fraction": 1.0,
+          "fraction_nontrivial": 1.0,
+          "resolved": 3,
+          "resolved_with_a_supported_cell": 3
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 3,
+          "fraction": 0.3333,
+          "fraction_nontrivial": 0.3333,
+          "resolved": 1,
+          "resolved_with_a_supported_cell": 1
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2973,
+      "repeated_groups": 4,
+      "repeated_observations": 1370,
+      "store_repeated_groups": 0
+    },
+    "sk48": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": null,
+      "determinism_observation_weighted": null,
+      "deterministic_groups": 0,
+      "distinct_pre_action_groups": 2995,
+      "game": "sk48",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2995,
+      "repeated_groups": 0,
+      "repeated_observations": 0,
+      "store_repeated_groups": 0
+    },
+    "sp80": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": 1.0,
+      "determinism_observation_weighted": 1.0,
+      "deterministic_groups": 3,
+      "distinct_pre_action_groups": 1014,
+      "game": "sp80",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 1106,
+      "performs_with_both_digests": 1037,
+      "repeated_groups": 3,
+      "repeated_observations": 26,
+      "store_repeated_groups": 0
+    },
+    "su15": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": 1.0,
+      "determinism_observation_weighted": 1.0,
+      "deterministic_groups": 16,
+      "distinct_pre_action_groups": 358,
+      "game": "su15",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 387,
+      "performs_with_both_digests": 374,
+      "repeated_groups": 16,
+      "repeated_observations": 32,
+      "store_repeated_groups": 0
+    },
+    "tn36": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": 1.0,
+      "determinism_observation_weighted": 1.0,
+      "deterministic_groups": 3,
+      "distinct_pre_action_groups": 2875,
+      "game": "tn36",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2905,
+      "repeated_groups": 3,
+      "repeated_observations": 33,
+      "store_repeated_groups": 0
+    },
+    "tr87": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": 1.0,
+      "determinism_observation_weighted": 1.0,
+      "deterministic_groups": 7,
+      "distinct_pre_action_groups": 2925,
+      "game": "tr87",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2953,
+      "repeated_groups": 7,
+      "repeated_observations": 35,
+      "store_repeated_groups": 0
+    },
+    "tu93": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": 1.0,
+      "determinism_observation_weighted": 1.0,
+      "deterministic_groups": 113,
+      "distinct_pre_action_groups": 2574,
+      "game": "tu93",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2887,
+      "repeated_groups": 113,
+      "repeated_observations": 426,
+      "store_repeated_groups": 0
+    },
+    "vc33": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": 1.0,
+      "determinism_observation_weighted": 1.0,
+      "deterministic_groups": 3,
+      "distinct_pre_action_groups": 804,
+      "game": "vc33",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 835,
+      "performs_with_both_digests": 812,
+      "repeated_groups": 3,
+      "repeated_observations": 11,
+      "store_repeated_groups": 0
+    },
+    "wa30": {
+      "aliased_groups": 0,
+      "determinism_group_weighted": 1.0,
+      "determinism_observation_weighted": 1.0,
+      "deterministic_groups": 3,
+      "distinct_pre_action_groups": 2960,
+      "game": "wa30",
+      "is_counter_game": false,
+      "latent_arms": {
+        "episode_count": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        },
+        "episode_parity": {
+          "aliased_groups_computable": 0,
+          "fraction": null,
+          "fraction_nontrivial": null,
+          "resolved": 0,
+          "resolved_with_a_supported_cell": 0
+        }
+      },
+      "performs": 3000,
+      "performs_with_both_digests": 2971,
+      "repeated_groups": 3,
+      "repeated_observations": 14,
+      "store_repeated_groups": 0
+    }
+  },
+  "rerun_census": "logs/e2_hidden_state_rerun",
+  "stage": "s1",
+  "store": "logs/e1_store_v2",
+  "wall_clock_seconds": 0.3,
+  "working_defaults": {
+    "human_sample_per_level": 400,
+    "r_cap": 8,
+    "s3_radii": [
+      1,
+      2,
+      3
+    ],
+    "train_fraction": 0.7,
+    "unchanged_sample_per_transition": 32
+  }
+}

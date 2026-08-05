@@ -1,0 +1,1533 @@
+{
+  "format_version": 1,
+  "games": {
+    "ar25": {
+      "game": "ar25",
+      "held_out_rows": 892,
+      "human_l1_rows": 335,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.994458,
+              "edges": 335,
+              "exact_all": 0.406,
+              "exact_state_changing": 0.3706,
+              "identity_floor_exact_all": 0.0657,
+              "memorizer_exact_all": 0.1045,
+              "memorizer_exact_state_changing": 0.0415,
+              "memorizer_hit_rate": 0.0388,
+              "state_changing_edges": 313,
+              "unseen_key_cells": 0.0425
+            },
+            "human_l2": {
+              "cell_accuracy": 0.954072,
+              "edges": 400,
+              "exact_all": 0.085,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.255,
+              "memorizer_exact_all": 0.255,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 298,
+              "unseen_key_cells": 0.3457
+            },
+            "rules": 36413,
+            "store_held_out": {
+              "cell_accuracy": 0.999186,
+              "edges": 892,
+              "exact_all": 0.9148,
+              "exact_state_changing": 0.8197,
+              "identity_floor_exact_all": 0.7265,
+              "memorizer_exact_all": 0.7265,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 244,
+              "unseen_key_cells": 0.0031
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.999606,
+              "edges": 2080,
+              "exact_all": 0.9293,
+              "exact_state_changing": 0.9358,
+              "identity_floor_exact_all": 0.7755,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 467,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 100.4,
+      "train_rows": 2080
+    },
+    "bp35": {
+      "game": "bp35",
+      "held_out_rows": 862,
+      "human_l1_rows": 299,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.950676,
+              "edges": 299,
+              "exact_all": 0.1973,
+              "exact_state_changing": 0.1973,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0936,
+              "memorizer_exact_state_changing": 0.0936,
+              "memorizer_hit_rate": 0.0936,
+              "state_changing_edges": 299,
+              "unseen_key_cells": 0.0943
+            },
+            "human_l2": {
+              "cell_accuracy": 0.905161,
+              "edges": 400,
+              "exact_all": 0.02,
+              "exact_state_changing": 0.02,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 400,
+              "unseen_key_cells": 0.4153
+            },
+            "rules": 61481,
+            "store_held_out": {
+              "cell_accuracy": 0.995913,
+              "edges": 862,
+              "exact_all": 0.8074,
+              "exact_state_changing": 0.8074,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 862,
+              "unseen_key_cells": 0.0034
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.99627,
+              "edges": 2011,
+              "exact_all": 0.8434,
+              "exact_state_changing": 0.8434,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 2011,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 145.5,
+      "train_rows": 2011
+    },
+    "cd82": {
+      "game": "cd82",
+      "held_out_rows": 877,
+      "human_l1_rows": 400,
+      "human_l2_rows": 157,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.991151,
+              "edges": 400,
+              "exact_all": 0.24,
+              "exact_state_changing": 0.2446,
+              "identity_floor_exact_all": 0.1825,
+              "memorizer_exact_all": 0.2325,
+              "memorizer_exact_state_changing": 0.0734,
+              "memorizer_hit_rate": 0.0975,
+              "state_changing_edges": 327,
+              "unseen_key_cells": 0.0324
+            },
+            "human_l2": {
+              "cell_accuracy": 0.977527,
+              "edges": 157,
+              "exact_all": 0.0892,
+              "exact_state_changing": 0.0616,
+              "identity_floor_exact_all": 0.0701,
+              "memorizer_exact_all": 0.0701,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 146,
+              "unseen_key_cells": 0.2181
+            },
+            "rules": 97161,
+            "store_held_out": {
+              "cell_accuracy": 0.996558,
+              "edges": 877,
+              "exact_all": 0.4937,
+              "exact_state_changing": 0.6439,
+              "identity_floor_exact_all": 0.2828,
+              "memorizer_exact_all": 0.2828,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 629,
+              "unseen_key_cells": 0.0114
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.996953,
+              "edges": 2045,
+              "exact_all": 0.4978,
+              "exact_state_changing": 0.6532,
+              "identity_floor_exact_all": 0.2866,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 1459,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 95.9,
+      "train_rows": 2045
+    },
+    "cn04": {
+      "game": "cn04",
+      "held_out_rows": 866,
+      "human_l1_rows": 400,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.981099,
+              "edges": 400,
+              "exact_all": 0.1375,
+              "exact_state_changing": 0.1058,
+              "identity_floor_exact_all": 0.055,
+              "memorizer_exact_all": 0.06,
+              "memorizer_exact_state_changing": 0.0053,
+              "memorizer_hit_rate": 0.0075,
+              "state_changing_edges": 378,
+              "unseen_key_cells": 0.0556
+            },
+            "human_l2": {
+              "cell_accuracy": 0.966618,
+              "edges": 400,
+              "exact_all": 0.0375,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.0375,
+              "memorizer_exact_all": 0.0375,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 385,
+              "unseen_key_cells": 1.0
+            },
+            "rules": 106142,
+            "store_held_out": {
+              "cell_accuracy": 0.988752,
+              "edges": 866,
+              "exact_all": 0.291,
+              "exact_state_changing": 0.1564,
+              "identity_floor_exact_all": 0.291,
+              "memorizer_exact_all": 0.291,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 614,
+              "unseen_key_cells": 0.0068
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.990288,
+              "edges": 2019,
+              "exact_all": 0.3601,
+              "exact_state_changing": 0.2218,
+              "identity_floor_exact_all": 0.3056,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 1402,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 106.0,
+      "train_rows": 2019
+    },
+    "dc22": {
+      "game": "dc22",
+      "held_out_rows": 882,
+      "human_l1_rows": 400,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.998124,
+              "edges": 400,
+              "exact_all": 0.2775,
+              "exact_state_changing": 0.2844,
+              "identity_floor_exact_all": 0.1825,
+              "memorizer_exact_all": 0.195,
+              "memorizer_exact_state_changing": 0.0153,
+              "memorizer_hit_rate": 0.0425,
+              "state_changing_edges": 327,
+              "unseen_key_cells": 0.0271
+            },
+            "human_l2": {
+              "cell_accuracy": 0.995342,
+              "edges": 400,
+              "exact_all": 0.045,
+              "exact_state_changing": 0.0241,
+              "identity_floor_exact_all": 0.065,
+              "memorizer_exact_all": 0.065,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 374,
+              "unseen_key_cells": 0.5112
+            },
+            "rules": 58087,
+            "store_held_out": {
+              "cell_accuracy": 0.998985,
+              "edges": 882,
+              "exact_all": 0.5023,
+              "exact_state_changing": 0.7263,
+              "identity_floor_exact_all": 0.3787,
+              "memorizer_exact_all": 0.3787,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 548,
+              "unseen_key_cells": 0.0012
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.999131,
+              "edges": 2057,
+              "exact_all": 0.5275,
+              "exact_state_changing": 0.7933,
+              "identity_floor_exact_all": 0.3792,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 1277,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 116.5,
+      "train_rows": 2057
+    },
+    "ft09": {
+      "game": "ft09",
+      "held_out_rows": 370,
+      "human_l1_rows": 400,
+      "human_l2_rows": 113,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.995356,
+              "edges": 400,
+              "exact_all": 0.255,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.255,
+              "memorizer_exact_all": 0.255,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0025,
+              "state_changing_edges": 298,
+              "unseen_key_cells": 0.4708
+            },
+            "human_l2": {
+              "cell_accuracy": 0.993052,
+              "edges": 113,
+              "exact_all": 0.0885,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.0885,
+              "memorizer_exact_all": 0.0885,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 103,
+              "unseen_key_cells": 0.9754
+            },
+            "rules": 24036,
+            "store_held_out": {
+              "cell_accuracy": 0.999732,
+              "edges": 370,
+              "exact_all": 0.9135,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.9135,
+              "memorizer_exact_all": 0.9135,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 32,
+              "unseen_key_cells": 0.0058
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.999968,
+              "edges": 861,
+              "exact_all": 0.935,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.935,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 56,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 48.1,
+      "train_rows": 861
+    },
+    "g50t": {
+      "game": "g50t",
+      "held_out_rows": 435,
+      "human_l1_rows": 400,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.992866,
+              "edges": 400,
+              "exact_all": 0.015,
+              "exact_state_changing": 0.0084,
+              "identity_floor_exact_all": 0.1025,
+              "memorizer_exact_all": 0.1675,
+              "memorizer_exact_state_changing": 0.0808,
+              "memorizer_hit_rate": 0.17,
+              "state_changing_edges": 359,
+              "unseen_key_cells": 0.0371
+            },
+            "human_l2": {
+              "cell_accuracy": 0.985352,
+              "edges": 400,
+              "exact_all": 0.0075,
+              "exact_state_changing": 0.0052,
+              "identity_floor_exact_all": 0.0475,
+              "memorizer_exact_all": 0.0475,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 381,
+              "unseen_key_cells": 0.539
+            },
+            "rules": 41255,
+            "store_held_out": {
+              "cell_accuracy": 0.997262,
+              "edges": 435,
+              "exact_all": 0.1241,
+              "exact_state_changing": 0.0516,
+              "identity_floor_exact_all": 0.1977,
+              "memorizer_exact_all": 0.1977,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 349,
+              "unseen_key_cells": 0.0067
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.998202,
+              "edges": 1013,
+              "exact_all": 0.1649,
+              "exact_state_changing": 0.0511,
+              "identity_floor_exact_all": 0.227,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 783,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 99.2,
+      "train_rows": 1013
+    },
+    "ka59": {
+      "game": "ka59",
+      "held_out_rows": 877,
+      "human_l1_rows": 400,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.999144,
+              "edges": 400,
+              "exact_all": 0.44,
+              "exact_state_changing": 0.4506,
+              "identity_floor_exact_all": 0.14,
+              "memorizer_exact_all": 0.1825,
+              "memorizer_exact_state_changing": 0.0494,
+              "memorizer_hit_rate": 0.045,
+              "state_changing_edges": 344,
+              "unseen_key_cells": 0.0326
+            },
+            "human_l2": {
+              "cell_accuracy": 0.994354,
+              "edges": 400,
+              "exact_all": 0.0825,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.0825,
+              "memorizer_exact_all": 0.0825,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 367,
+              "unseen_key_cells": 0.9104
+            },
+            "rules": 89782,
+            "store_held_out": {
+              "cell_accuracy": 0.999627,
+              "edges": 877,
+              "exact_all": 0.5405,
+              "exact_state_changing": 0.7049,
+              "identity_floor_exact_all": 0.2543,
+              "memorizer_exact_all": 0.2543,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 654,
+              "unseen_key_cells": 0.0136
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.999887,
+              "edges": 2046,
+              "exact_all": 0.5982,
+              "exact_state_changing": 0.7767,
+              "identity_floor_exact_all": 0.2537,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 1527,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 101.5,
+      "train_rows": 2046
+    },
+    "lf52": {
+      "game": "lf52",
+      "held_out_rows": 44,
+      "human_l1_rows": 312,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.994321,
+              "edges": 312,
+              "exact_all": 0.4263,
+              "exact_state_changing": 0.4263,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0128,
+              "memorizer_exact_state_changing": 0.0128,
+              "memorizer_hit_rate": 0.0128,
+              "state_changing_edges": 312,
+              "unseen_key_cells": 0.0657
+            },
+            "human_l2": {
+              "cell_accuracy": 0.984252,
+              "edges": 400,
+              "exact_all": 0.2475,
+              "exact_state_changing": 0.2475,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 400,
+              "unseen_key_cells": 0.5431
+            },
+            "rules": 16707,
+            "store_held_out": {
+              "cell_accuracy": 0.999495,
+              "edges": 44,
+              "exact_all": 0.7045,
+              "exact_state_changing": 0.7045,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 44,
+              "unseen_key_cells": 0.017
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.999265,
+              "edges": 101,
+              "exact_all": 0.7228,
+              "exact_state_changing": 0.7228,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 101,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 34.8,
+      "train_rows": 101
+    },
+    "lp85": {
+      "game": "lp85",
+      "held_out_rows": 13,
+      "human_l1_rows": 400,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.964476,
+              "edges": 400,
+              "exact_all": 0.2325,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.51,
+              "memorizer_exact_all": 0.5125,
+              "memorizer_exact_state_changing": 0.0051,
+              "memorizer_hit_rate": 0.005,
+              "state_changing_edges": 196,
+              "unseen_key_cells": 0.1255
+            },
+            "human_l2": {
+              "cell_accuracy": 0.985472,
+              "edges": 400,
+              "exact_all": 0.05,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.055,
+              "memorizer_exact_all": 0.055,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 378,
+              "unseen_key_cells": 0.5803
+            },
+            "rules": 8278,
+            "store_held_out": {
+              "cell_accuracy": 0.98877,
+              "edges": 13,
+              "exact_all": 0.6154,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.8462,
+              "memorizer_exact_all": 0.8462,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 2,
+              "unseen_key_cells": 0.2431
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.991446,
+              "edges": 28,
+              "exact_all": 0.8571,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.8571,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 4,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 71.5,
+      "train_rows": 28
+    },
+    "ls20": {
+      "game": "ls20",
+      "held_out_rows": 864,
+      "human_l1_rows": 400,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.998974,
+              "edges": 400,
+              "exact_all": 0.745,
+              "exact_state_changing": 0.7842,
+              "identity_floor_exact_all": 0.05,
+              "memorizer_exact_all": 0.16,
+              "memorizer_exact_state_changing": 0.1158,
+              "memorizer_hit_rate": 0.11,
+              "state_changing_edges": 380,
+              "unseen_key_cells": 0.0031
+            },
+            "human_l2": {
+              "cell_accuracy": 0.988455,
+              "edges": 400,
+              "exact_all": 0.0,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.01,
+              "memorizer_exact_all": 0.01,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 396,
+              "unseen_key_cells": 0.6077
+            },
+            "rules": 37296,
+            "store_held_out": {
+              "cell_accuracy": 0.999469,
+              "edges": 864,
+              "exact_all": 0.9641,
+              "exact_state_changing": 0.9675,
+              "identity_floor_exact_all": 0.0035,
+              "memorizer_exact_all": 0.0035,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 861,
+              "unseen_key_cells": 0.0001
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.999483,
+              "edges": 2013,
+              "exact_all": 0.9667,
+              "exact_state_changing": 0.9686,
+              "identity_floor_exact_all": 0.002,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 2009,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 125.4,
+      "train_rows": 2013
+    },
+    "m0r0": {
+      "game": "m0r0",
+      "held_out_rows": 883,
+      "human_l1_rows": 343,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.996822,
+              "edges": 343,
+              "exact_all": 0.3528,
+              "exact_state_changing": 0.3205,
+              "identity_floor_exact_all": 0.0904,
+              "memorizer_exact_all": 0.1166,
+              "memorizer_exact_state_changing": 0.0321,
+              "memorizer_hit_rate": 0.0671,
+              "state_changing_edges": 312,
+              "unseen_key_cells": 0.016
+            },
+            "human_l2": {
+              "cell_accuracy": 0.987688,
+              "edges": 400,
+              "exact_all": 0.08,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.08,
+              "memorizer_exact_all": 0.08,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 368,
+              "unseen_key_cells": 0.9653
+            },
+            "rules": 106333,
+            "store_held_out": {
+              "cell_accuracy": 0.999584,
+              "edges": 883,
+              "exact_all": 0.4292,
+              "exact_state_changing": 0.2948,
+              "identity_floor_exact_all": 0.4122,
+              "memorizer_exact_all": 0.4122,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 519,
+              "unseen_key_cells": 0.0026
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.999672,
+              "edges": 2060,
+              "exact_all": 0.5005,
+              "exact_state_changing": 0.3651,
+              "identity_floor_exact_all": 0.4189,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 1197,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 138.1,
+      "train_rows": 2060
+    },
+    "r11l": {
+      "game": "r11l",
+      "held_out_rows": 39,
+      "human_l1_rows": 175,
+      "human_l2_rows": 384,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.982658,
+              "edges": 175,
+              "exact_all": 0.1371,
+              "exact_state_changing": 0.1371,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 175,
+              "unseen_key_cells": 0.1481
+            },
+            "human_l2": {
+              "cell_accuracy": 0.986363,
+              "edges": 384,
+              "exact_all": 0.0391,
+              "exact_state_changing": 0.0391,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 384,
+              "unseen_key_cells": 0.842
+            },
+            "rules": 19115,
+            "store_held_out": {
+              "cell_accuracy": 0.996845,
+              "edges": 39,
+              "exact_all": 0.3077,
+              "exact_state_changing": 0.3077,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 39,
+              "unseen_key_cells": 0.0821
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.997569,
+              "edges": 90,
+              "exact_all": 0.5889,
+              "exact_state_changing": 0.5889,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 90,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 16.6,
+      "train_rows": 90
+    },
+    "re86": {
+      "game": "re86",
+      "held_out_rows": 874,
+      "human_l1_rows": 400,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.990916,
+              "edges": 400,
+              "exact_all": 0.0425,
+              "exact_state_changing": 0.0426,
+              "identity_floor_exact_all": 0.0025,
+              "memorizer_exact_all": 0.085,
+              "memorizer_exact_state_changing": 0.0827,
+              "memorizer_hit_rate": 0.0825,
+              "state_changing_edges": 399,
+              "unseen_key_cells": 0.0664
+            },
+            "human_l2": {
+              "cell_accuracy": 0.981013,
+              "edges": 400,
+              "exact_all": 0.0,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 400,
+              "unseen_key_cells": 0.4527
+            },
+            "rules": 280575,
+            "store_held_out": {
+              "cell_accuracy": 0.993323,
+              "edges": 874,
+              "exact_all": 0.1007,
+              "exact_state_changing": 0.1011,
+              "identity_floor_exact_all": 0.0046,
+              "memorizer_exact_all": 0.0046,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 870,
+              "unseen_key_cells": 0.0286
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.995165,
+              "edges": 2037,
+              "exact_all": 0.1556,
+              "exact_state_changing": 0.1558,
+              "identity_floor_exact_all": 0.001,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 2035,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 106.2,
+      "train_rows": 2037
+    },
+    "sb26": {
+      "game": "sb26",
+      "held_out_rows": 896,
+      "human_l1_rows": 400,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.995189,
+              "edges": 400,
+              "exact_all": 0.54,
+              "exact_state_changing": 0.2358,
+              "identity_floor_exact_all": 0.4275,
+              "memorizer_exact_all": 0.465,
+              "memorizer_exact_state_changing": 0.0655,
+              "memorizer_hit_rate": 0.0475,
+              "state_changing_edges": 229,
+              "unseen_key_cells": 0.0325
+            },
+            "human_l2": {
+              "cell_accuracy": 0.992111,
+              "edges": 400,
+              "exact_all": 0.2475,
+              "exact_state_changing": 0.0322,
+              "identity_floor_exact_all": 0.2225,
+              "memorizer_exact_all": 0.2225,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 311,
+              "unseen_key_cells": 0.5102
+            },
+            "rules": 78914,
+            "store_held_out": {
+              "cell_accuracy": 0.998916,
+              "edges": 896,
+              "exact_all": 0.7879,
+              "exact_state_changing": 0.4885,
+              "identity_floor_exact_all": 0.7098,
+              "memorizer_exact_all": 0.7098,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 260,
+              "unseen_key_cells": 0.0189
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.999393,
+              "edges": 2090,
+              "exact_all": 0.933,
+              "exact_state_changing": 0.7917,
+              "identity_floor_exact_all": 0.7014,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 624,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 110.3,
+      "train_rows": 2090
+    },
+    "sc25": {
+      "game": "sc25",
+      "held_out_rows": 482,
+      "human_l1_rows": 400,
+      "human_l2_rows": 112,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.997091,
+              "edges": 400,
+              "exact_all": 0.31,
+              "exact_state_changing": 0.2358,
+              "identity_floor_exact_all": 0.1625,
+              "memorizer_exact_all": 0.1775,
+              "memorizer_exact_state_changing": 0.0299,
+              "memorizer_hit_rate": 0.0575,
+              "state_changing_edges": 335,
+              "unseen_key_cells": 0.0516
+            },
+            "human_l2": {
+              "cell_accuracy": 0.994005,
+              "edges": 112,
+              "exact_all": 0.1518,
+              "exact_state_changing": 0.0952,
+              "identity_floor_exact_all": 0.0625,
+              "memorizer_exact_all": 0.0625,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 105,
+              "unseen_key_cells": 0.3001
+            },
+            "rules": 47089,
+            "store_held_out": {
+              "cell_accuracy": 0.999462,
+              "edges": 482,
+              "exact_all": 0.7303,
+              "exact_state_changing": 0.401,
+              "identity_floor_exact_all": 0.5913,
+              "memorizer_exact_all": 0.5913,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 197,
+              "unseen_key_cells": 0.0127
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.999776,
+              "edges": 1124,
+              "exact_all": 0.8149,
+              "exact_state_changing": 0.5774,
+              "identity_floor_exact_all": 0.6148,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 433,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 61.2,
+      "train_rows": 1124
+    },
+    "sk48": {
+      "game": "sk48",
+      "held_out_rows": 899,
+      "human_l1_rows": 400,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.990432,
+              "edges": 400,
+              "exact_all": 0.135,
+              "exact_state_changing": 0.0063,
+              "identity_floor_exact_all": 0.2,
+              "memorizer_exact_all": 0.225,
+              "memorizer_exact_state_changing": 0.0312,
+              "memorizer_hit_rate": 0.035,
+              "state_changing_edges": 320,
+              "unseen_key_cells": 0.129
+            },
+            "human_l2": {
+              "cell_accuracy": 0.989089,
+              "edges": 400,
+              "exact_all": 0.07,
+              "exact_state_changing": 0.0054,
+              "identity_floor_exact_all": 0.07,
+              "memorizer_exact_all": 0.07,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 372,
+              "unseen_key_cells": 0.4351
+            },
+            "rules": 42787,
+            "store_held_out": {
+              "cell_accuracy": 0.999576,
+              "edges": 899,
+              "exact_all": 0.812,
+              "exact_state_changing": 0.0426,
+              "identity_floor_exact_all": 0.8432,
+              "memorizer_exact_all": 0.8432,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 141,
+              "unseen_key_cells": 0.001
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.999734,
+              "edges": 2096,
+              "exact_all": 0.843,
+              "exact_state_changing": 0.0674,
+              "identity_floor_exact_all": 0.8726,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 267,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 149.5,
+      "train_rows": 2096
+    },
+    "sp80": {
+      "game": "sp80",
+      "held_out_rows": 304,
+      "human_l1_rows": 311,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.987623,
+              "edges": 311,
+              "exact_all": 0.5691,
+              "exact_state_changing": 0.5691,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.119,
+              "memorizer_exact_state_changing": 0.119,
+              "memorizer_hit_rate": 0.119,
+              "state_changing_edges": 311,
+              "unseen_key_cells": 0.0356
+            },
+            "human_l2": {
+              "cell_accuracy": 0.989849,
+              "edges": 400,
+              "exact_all": 0.0,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 400,
+              "unseen_key_cells": 0.498
+            },
+            "rules": 16177,
+            "store_held_out": {
+              "cell_accuracy": 0.998667,
+              "edges": 304,
+              "exact_all": 0.7993,
+              "exact_state_changing": 0.7993,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 304,
+              "unseen_key_cells": 0.0009
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.999247,
+              "edges": 709,
+              "exact_all": 0.8773,
+              "exact_state_changing": 0.8773,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 709,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 49.6,
+      "train_rows": 709
+    },
+    "su15": {
+      "game": "su15",
+      "held_out_rows": 108,
+      "human_l1_rows": 346,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.997331,
+              "edges": 346,
+              "exact_all": 0.4306,
+              "exact_state_changing": 0.4525,
+              "identity_floor_exact_all": 0.0867,
+              "memorizer_exact_all": 0.1214,
+              "memorizer_exact_state_changing": 0.038,
+              "memorizer_hit_rate": 0.0376,
+              "state_changing_edges": 316,
+              "unseen_key_cells": 0.0585
+            },
+            "human_l2": {
+              "cell_accuracy": 0.997708,
+              "edges": 400,
+              "exact_all": 0.16,
+              "exact_state_changing": 0.1803,
+              "identity_floor_exact_all": 0.1125,
+              "memorizer_exact_all": 0.1125,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 355,
+              "unseen_key_cells": 0.3007
+            },
+            "rules": 5362,
+            "store_held_out": {
+              "cell_accuracy": 0.999774,
+              "edges": 108,
+              "exact_all": 0.6389,
+              "exact_state_changing": 0.963,
+              "identity_floor_exact_all": 0.5,
+              "memorizer_exact_all": 0.5,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 54,
+              "unseen_key_cells": 0.0006
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.999787,
+              "edges": 250,
+              "exact_all": 0.656,
+              "exact_state_changing": 0.9441,
+              "identity_floor_exact_all": 0.428,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 143,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 30.7,
+      "train_rows": 250
+    },
+    "tn36": {
+      "game": "tn36",
+      "held_out_rows": 863,
+      "human_l1_rows": 400,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.999552,
+              "edges": 400,
+              "exact_all": 0.6675,
+              "exact_state_changing": 0.6675,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.025,
+              "memorizer_exact_state_changing": 0.025,
+              "memorizer_hit_rate": 0.025,
+              "state_changing_edges": 400,
+              "unseen_key_cells": 0.036
+            },
+            "human_l2": {
+              "cell_accuracy": 0.998045,
+              "edges": 400,
+              "exact_all": 0.0,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 400,
+              "unseen_key_cells": 0.9081
+            },
+            "rules": 25668,
+            "store_held_out": {
+              "cell_accuracy": 0.999991,
+              "edges": 863,
+              "exact_all": 0.9861,
+              "exact_state_changing": 0.9861,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 863,
+              "unseen_key_cells": 0.0005
+            },
+            "store_train_refit": {
+              "cell_accuracy": 1.0,
+              "edges": 2012,
+              "exact_all": 1.0,
+              "exact_state_changing": 1.0,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 2012,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 106.9,
+      "train_rows": 2012
+    },
+    "tr87": {
+      "game": "tr87",
+      "held_out_rows": 878,
+      "human_l1_rows": 400,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.997839,
+              "edges": 400,
+              "exact_all": 0.2,
+              "exact_state_changing": 0.2,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0475,
+              "memorizer_exact_state_changing": 0.0475,
+              "memorizer_hit_rate": 0.0625,
+              "state_changing_edges": 400,
+              "unseen_key_cells": 0.0259
+            },
+            "human_l2": {
+              "cell_accuracy": 0.99517,
+              "edges": 400,
+              "exact_all": 0.0,
+              "exact_state_changing": 0.0,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 400,
+              "unseen_key_cells": 0.8748
+            },
+            "rules": 256571,
+            "store_held_out": {
+              "cell_accuracy": 0.998025,
+              "edges": 878,
+              "exact_all": 0.1469,
+              "exact_state_changing": 0.1469,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 878,
+              "unseen_key_cells": 0.0214
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.999053,
+              "edges": 2047,
+              "exact_all": 0.2775,
+              "exact_state_changing": 0.2775,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 2047,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 115.3,
+      "train_rows": 2047
+    },
+    "tu93": {
+      "game": "tu93",
+      "held_out_rows": 772,
+      "human_l1_rows": 270,
+      "human_l2_rows": 267,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.997984,
+              "edges": 270,
+              "exact_all": 0.0593,
+              "exact_state_changing": 0.0593,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.3296,
+              "memorizer_exact_state_changing": 0.3296,
+              "memorizer_hit_rate": 0.3296,
+              "state_changing_edges": 270,
+              "unseen_key_cells": 0.0153
+            },
+            "human_l2": {
+              "cell_accuracy": 0.995796,
+              "edges": 267,
+              "exact_all": 0.0861,
+              "exact_state_changing": 0.0861,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 267,
+              "unseen_key_cells": 0.2178
+            },
+            "rules": 31163,
+            "store_held_out": {
+              "cell_accuracy": 0.999521,
+              "edges": 772,
+              "exact_all": 0.3523,
+              "exact_state_changing": 0.3523,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 772,
+              "unseen_key_cells": 0.0018
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.999569,
+              "edges": 1801,
+              "exact_all": 0.3731,
+              "exact_state_changing": 0.3731,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 1801,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 95.0,
+      "train_rows": 1801
+    },
+    "vc33": {
+      "game": "vc33",
+      "held_out_rows": 240,
+      "human_l1_rows": 137,
+      "human_l2_rows": 207,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.971361,
+              "edges": 137,
+              "exact_all": 0.4599,
+              "exact_state_changing": 0.4599,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0292,
+              "memorizer_exact_state_changing": 0.0292,
+              "memorizer_hit_rate": 0.0292,
+              "state_changing_edges": 137,
+              "unseen_key_cells": 0.029
+            },
+            "human_l2": {
+              "cell_accuracy": 0.971091,
+              "edges": 207,
+              "exact_all": 0.0966,
+              "exact_state_changing": 0.0966,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 207,
+              "unseen_key_cells": 0.4028
+            },
+            "rules": 6490,
+            "store_held_out": {
+              "cell_accuracy": 0.996804,
+              "edges": 240,
+              "exact_all": 0.7458,
+              "exact_state_changing": 0.7458,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 240,
+              "unseen_key_cells": 0.0003
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.996453,
+              "edges": 560,
+              "exact_all": 0.7536,
+              "exact_state_changing": 0.7536,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 560,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 30.0,
+      "train_rows": 560
+    },
+    "wa30": {
+      "game": "wa30",
+      "held_out_rows": 888,
+      "human_l1_rows": 400,
+      "human_l2_rows": 400,
+      "radii": {
+        "5": {
+          "local": {
+            "human_l1": {
+              "cell_accuracy": 0.995272,
+              "edges": 400,
+              "exact_all": 0.155,
+              "exact_state_changing": 0.084,
+              "identity_floor_exact_all": 0.1075,
+              "memorizer_exact_all": 0.1125,
+              "memorizer_exact_state_changing": 0.0056,
+              "memorizer_hit_rate": 0.0225,
+              "state_changing_edges": 357,
+              "unseen_key_cells": 0.0462
+            },
+            "human_l2": {
+              "cell_accuracy": 0.986426,
+              "edges": 400,
+              "exact_all": 0.0025,
+              "exact_state_changing": 0.0025,
+              "identity_floor_exact_all": 0.0,
+              "memorizer_exact_all": 0.0,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 400,
+              "unseen_key_cells": 0.1428
+            },
+            "rules": 84822,
+            "store_held_out": {
+              "cell_accuracy": 0.999287,
+              "edges": 888,
+              "exact_all": 0.5101,
+              "exact_state_changing": 0.4343,
+              "identity_floor_exact_all": 0.134,
+              "memorizer_exact_all": 0.134,
+              "memorizer_exact_state_changing": 0.0,
+              "memorizer_hit_rate": 0.0,
+              "state_changing_edges": 769,
+              "unseen_key_cells": 0.009
+            },
+            "store_train_refit": {
+              "cell_accuracy": 0.999905,
+              "edges": 2072,
+              "exact_all": 0.6839,
+              "exact_state_changing": 0.6401,
+              "identity_floor_exact_all": 0.1269,
+              "memorizer_exact_all": 1.0,
+              "memorizer_exact_state_changing": 1.0,
+              "memorizer_hit_rate": 1.0,
+              "state_changing_edges": 1809,
+              "unseen_key_cells": 0.0
+            }
+          }
+        }
+      },
+      "seconds": 106.0,
+      "train_rows": 2072
+    }
+  },
+  "rerun_census": "logs/e2_hidden_state_rerun",
+  "stage": "s3",
+  "store": "logs/e1_store_v2",
+  "wall_clock_seconds": 322.5,
+  "working_defaults": {
+    "human_sample_per_level": 400,
+    "r_cap": 8,
+    "s3_radii": [
+      5
+    ],
+    "s3_variants": [
+      "local"
+    ],
+    "train_fraction": 0.7,
+    "unchanged_sample_per_transition": 32
+  }
+}
