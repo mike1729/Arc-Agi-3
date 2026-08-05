@@ -257,36 +257,62 @@ before the clear), **ISSUER** (the turn whose tool call fired it; the action eve
 (how the model read the completion). All 42 ref first-clears and all 4 local clears were read.
 Quotes are from S1's own traces.
 
-> **Corrected 2026-08-05 after the full ft09/sb26 read (§6).** The first pass of this table
-> was produced with `clearctx`'s 1700-char cap applied to the *whole* turn, which truncated
-> the `[ASSISTANT]` block — the one place a turn states its World/Goal/Plan. **Five of 42
-> clears were misclassified as `accidental` because their goal statement was cut off**
-> (lp85/v2, re86/v2, m0r0/v3, r11l/v4 → `prior-match`; ft09/v3 → `evidence-derived`). The
-> script now prints `[ASSISTANT]` untruncated. Corrected counts below; the superseded row
-> is kept in the table.
+> **Corrected twice, 2026-08-05. Read the adjudication rule below before using these
+> numbers.** Pass 1 used `clearctx` with a 1700-char cap applied to the *whole* turn, which
+> truncated the `[ASSISTANT]` block — the one place a turn states its World/Goal/Plan. Pass 2
+> (after the full ft09/sb26 read, §6) reclassified 5. Pass 3 re-verified **all 40 remaining
+> clears** with the ISSUER turn untruncated **and the PRIOR turn's `[ASSISTANT]` block added**,
+> because a goal is often stated one turn before the batch that executes it; that reclassified
+> 6 more. Every correction moved in the same direction — `accidental` → deliberate. The cheap
+> three-turn read has a **systematic bias against detecting articulation**, and any label in
+> this table that has not survived pass 3 should be assumed to under-report it.
+
+**Adjudication rule** (needed once the boundary cases dominate; applied uniformly in pass 3):
+
+- `prior-match` — a goal was stated **before** the clearing action (in the ISSUER turn or an
+  earlier one), the clearing action was taken **in service of it**, and the goal shape is a
+  default prior. An inexact estimate of the *end state* does not disqualify: what matters is
+  that the action was goal-directed and the goal approximately right.
+- `evidence-derived` — as above, but the goal was inferred from in-context evidence rather
+  than supplied by the prior.
+- `accidental` — no goal stated, **or** the clearing action was an explicit probe ("let me
+  see what happens"), **or** the goal pursued was not the condition that actually fired.
 
 **Ref corpus, 42 first-clears (all L1):**
 
-| class | n | share | (first pass, superseded) |
-|---|---:|---:|---:|
-| `prior-match` | 21 | 50% | 17 |
-| `accidental` | 15 | 36% | 20 |
-| `evidence-derived` | 6 | 14% | 5 |
+| class | n | share | pass 2 | pass 1 |
+|---|---:|---:|---:|---:|
+| `prior-match` | 25 | 60% | 21 | 17 |
+| `accidental` | 11 | 26% | 15 | 20 |
+| `evidence-derived` | 6 | 14% | 6 | 5 |
 
-`accidental` — lf52/v2, r11l/v2, sp80/v2, vc33/v2, ar25/v3, bp35/v3, cd82/v3, lp85/v3,
-r11l/v3, s5i5/v3, ar25/v4, cd82/v4, lp85/v4, sp80/v4, tn36/v4.
-`prior-match` — bp35/v2, ka59/v2, **lp85/v2**, **re86/v2**, su15/v2, tu93/v2, ka59/v3,
-**m0r0/v3**, re86/v3, sp80/v3, su15/v3, tu93/v3, vc33/v3, bp35/v4, lf52/v4, re86/v4,
-**r11l/v4**, s5i5/v4, su15/v4, tu93/v4, vc33/v4.
-`evidence-derived` — ft09/v2, **ft09/v3**, ft09/v4, sb26/v2, sb26/v3, sb26/v4.
-(Bold = reclassified.)
+`accidental` — r11l/v2, sp80/v2, bp35/v3, cd82/v3, lp85/v3, r11l/v3, s5i5/v3, cd82/v4,
+lp85/v4, sp80/v4, tn36/v4.
+`prior-match` — bp35/v2, ka59/v2, lp85/v2, **lf52/v2**, re86/v2, su15/v2, tu93/v2, **vc33/v2**,
+**ar25/v3**, ka59/v3, m0r0/v3, re86/v3, sp80/v3, su15/v3, tu93/v3, vc33/v3, **ar25/v4**,
+bp35/v4, lf52/v4, re86/v4, r11l/v4, s5i5/v4, su15/v4, tu93/v4, vc33/v4.
+`evidence-derived` — ft09/v2, ft09/v3, ft09/v4, sb26/v2, sb26/v3, sb26/v4.
+(Bold = reclassified in pass 3; pass-2 reclassifications were lp85/v2, re86/v2, m0r0/v3,
+r11l/v4, ft09/v3.)
 
-**ft09 and sb26 are now 3/3 each** — every pass of both games reaches the goal by inference,
-with no exceptions. That is a much stronger result than the first pass reported, and it is
-what makes the two games worth the M-phase's attention.
+**ft09 and sb26 are 3/3 each** — every pass of both games reaches the goal by inference, with
+no exceptions. That is what makes the two games worth the M-phase's attention.
 
-**Local corpus, 4 clears:** vc33 `prior-match`; ar25, sp80, tn36 `accidental` (re-checked
-untruncated; unchanged).
+**Local corpus, 4 clears** (also re-verified in pass 3): ar25, vc33, sp80 `prior-match`;
+tn36 `accidental`. ar25 and sp80 were `accidental` before pass 3.
+
+**What pass 3 found, by case.** Two kinds of miss:
+
+- *Goal stated in the PRIOR turn, executed by the ISSUER.* **vc33/v2** — PRIOR: "The goal
+  likely involves positioning the shape to align with the yellow gap in the black bar (cols
+  38-39). Plan: Move the shape all the way left"; the ISSUER turn then only says "Let me check
+  the current state after 5 left clicks." Reading the ISSUER alone makes a deliberate clear
+  look blind. **lf52/v2** and **sp80/local** are the same shape.
+- *Computed multi-action plans that land exactly, invisible because the batch precedes its
+  own transcript.* **ar25/v4** derives two different mirror-sum formulas by fitting observed
+  face→P positions, solves for the face column that puts P on top of Γ, computes "move LEFT by
+  6", and clears on the 6th of 6. **ar25/local** derives that LEFT/RIGHT are inverted, computes
+  "6 LEFT + 10 DOWN", and clears on the 16th of 16. Both were filed `accidental`.
 
 ### `accidental` — the model did not know what it had done
 
@@ -301,19 +327,16 @@ and the REACT turn learns the outcome from the frame, not from a prediction:
 > "SPACE triggered a level transition! The scene completely changed. Level 1 was completed by
 > pressing SPACE."
 
-**ar25/kaggle_v3** shows the same thing with a *stated* goal attached, which is why the label
-matters. At a133 the model articulates a shape-overlap hypothesis and a 16-move plan —
-
-> "Maybe the goal is to have the F overlap with the yellow L. … After 16 LEFT: P at cols 3-11,
-> F at cols 51-59 (F overlaps with yellow L). … Plan: Move LEFT 16 times."
-
-— and the level completes on **move 1 of 16**. The REACT turn then rationalises it as success:
-
-> "LEVEL 1 COMPLETED! The key was to move the F to overlap with the yellow L."
-
-The stated mechanism cannot be what fired; the remaining 15 LEFTs ran on level 2. Post-hoc
-goal statements in REACT turns are unreliable across the corpus and were not counted as
-articulation anywhere in this table.
+> **ar25/kaggle_v3 was used here as a second example and is withdrawn (pass 3).** I wrote that
+> it "completes on move 1 of 16" of its stated plan, making the stated mechanism impossible.
+> That was a miscount: the batch ran a127–a133, i.e. it cleared on **move 7 of 16**, the batch
+> being cut short by the completion itself. The goal ("make the F overlap the yellow L") was
+> stated before the action, the LEFT moves were taken in service of it, and it advanced the
+> level — only the end-state estimate was long. Under the rule above that is `prior-match`,
+> and it has been moved. What survives is the narrower point that its REACT turn still
+> over-claims ("The key was to move the F to overlap with the yellow L" — the overlap was
+> never reached), which is why **REACT turns are not counted as articulation anywhere in this
+> table**.
 
 **cd82/kaggle_v4** is the same failure in the other direction: the plan was to stamp white over
 the top half to reproduce a half/half reference, and the stamp filled the *whole* block, which
@@ -544,22 +567,30 @@ Per-game support/refutation of "the cleared set is exactly the set where the def
 matches the true goal":
 
 - **Supports H** (cleared, prior-compatible, clear driven by that prior): bp35, ka59, re86,
-  s5i5, tu93, vc33, lf52 — 7 games.
+  s5i5, tu93, vc33, lf52, su15, m0r0 — 9 games.
 - **Refutes H, direction 1** (prior-compatible, never cleared, stall labelled `goal_unknown`):
   **dc22, sc25** — 2 games, 6 episodes. The prior applies and does not fire.
 - **Refutes H, direction 2** (not prior-compatible, cleared reliably): **sb26** (3/3, via
-  evidence-derived goal inference), and more weakly sp80, su15, ar25 (3/3, 3/3, 2/3, but by
-  accident or search, and their L1 instances may degenerate).
+  evidence-derived goal inference), and more weakly sp80, su15, ar25 (3/3, 3/3, 2/3 — but
+  after pass 3 most of those clears are deliberate rather than accidental, which *strengthens*
+  this direction; their L1 instances may still degenerate).
 - **Refutes the stronger claim inside H** ("the reference never discovers goals"): **ft09** and
   **sb26** contain genuine in-context goal discovery, reproducibly, across independent passes.
 - **Neither** (cleared by accident on prior-compatible games, i.e. the prior was not the
-  mechanism): lp85 2/3, r11l 2/3, cd82 2/3, tn36 1/3.
+  mechanism): cd82 2/2, lp85 2/3, r11l 2/3, tn36 1/1.
 
 The single-sentence verdict: **the reference does not "never discover goals, occasionally get
-one for free" — it does all three things (36% of its clears are accidental, 50% are the default
-prior firing correctly, 14% are real in-context goal discovery), and, decisively, the default
-prior fails to fire on the two games where it most obviously applies, so "where the prior
-fails" does not define the target set.**
+one for free" — it does all three things (60% of its clears are the default prior firing
+correctly, 26% are accidental, 14% are real in-context goal discovery), and, decisively, the
+default prior fails to fire on the two games where it most obviously applies, so "where the
+prior fails" does not define the target set.**
+
+> **The three classification passes moved the numbers a long way and only in one direction**
+> (accidental 20 → 15 → 11 of 42). H is refuted more firmly at each pass, because the
+> "occasionally gets one for free" half of it looks worse the more carefully the clears are
+> read: most clears are deliberate. But the direction-1 refutation — dc22 and sc25 — is the
+> load-bearing one and is untouched by any of this: it rests on stall labels and zero scores,
+> not on reading clears.
 
 ### The refuting mechanism (required subsection): ft09 and sb26
 
@@ -707,10 +738,13 @@ one produced wrong numbers that survived a commit.
    analysed rather than only `logs/runs/`. The ref corpus carries the analysis; the local split
    is reported and reproduces the note's numbers exactly.
 2. **Scope of step 1.** 42 ref clears + 4 local clears were read, not 4 — the positive set is
-   an order of magnitude larger on the correct corpus. For 40 of them only the clearing context
-   was read; **ft09 and sb26 were later read end-to-end (§6)**, which corrected 5 labels and
-   changed the mechanism account. The other 40 have not had that treatment and their labels
-   rest on the three diagnostic turns only.
+   an order of magnitude larger on the correct corpus. Three passes: (1) three diagnostic
+   turns, truncated; (2) ft09 and sb26 read end-to-end (§6), 5 labels corrected; (3) all 40
+   remaining clears re-verified with untruncated ISSUER **and** PRIOR `[ASSISTANT]` blocks,
+   6 more corrected. All 46 clears now rest on at least an untruncated PRIOR+ISSUER read;
+   only ft09 and sb26 have been read end-to-end. Since pass 3 still only sees two turns, its
+   labels remain a lower bound on articulation — the same bias that produced the first two
+   rounds of error could still be hiding goal statements set out three or more turns back.
 3. `logs/kaggle-reference` could not enter step 1 (no transcripts) and is reported for context
    only.
 4. Step 2 used the existing `s2_goal_predicates_labelled.json` extraction rather than re-reading
