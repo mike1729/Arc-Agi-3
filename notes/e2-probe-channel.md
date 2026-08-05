@@ -392,10 +392,19 @@ and unreachable-in-store classifications are transition lookups, and every store
 transition was really executed and observed; only navigation by composed prefix is
 unsound. Nothing mined here is retracted.
 
-**The recommendation against re-running dc22/m0r0 (§10) holds, with a caveat.** Their
-verified-reachable sets are at most 0.3375 and 0.2046 of stored states. But "reached by
-some walked path" is much larger than "own prefix verifies" (dc22 0.0206 → 0.3375, cd82
-0.0068 → 0.2775), so a re-derivation that searches over verified edges recovers far more
-than the verified column suggests. If dc22's corrected map lands near its 0.3375 ceiling
-it is worth one re-run of its three blocked probes; m0r0 is not worth it under either
-bound, and its defect class says re-derivation will not deliver one.
+**The recommendation against re-running dc22/m0r0 (§10) splits.** Their reachable sets are
+0.3375 and 0.2046 of stored states — much larger than the 0.0206 and 0.0097 that verify
+their own prefix, so a re-derivation must keep every state *any* walk reached rather than
+only self-verifying ones. It cannot do better than that: `reached` is a ceiling, since every
+walked edge's target is in it by construction.
+
+**dc22's corrected map now exists and meets the bar.** `logs/e1_store_v2_verified/` covers
+dc22 at 459/1360 = 0.3375, exactly the ceiling, and a 40-state sample of its prefixes
+replays 40/40. dc22 is also in the composition class (all 22 origin edges reproduce), so
+its graph is repairable in principle. **Its three gate-blocked probes are worth one re-run**
+against the corrected map, with the same random control — that would take the executed
+count from 1 to 4 and give §4's contrast something to stand on.
+
+**m0r0 stays out.** 274/1339 = 0.2046, single-edge failure class, and zero of its sampled
+store routes to lost states actually walked. Re-derivation cannot repair it and its six
+probes stay blocked.

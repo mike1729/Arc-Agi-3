@@ -39,7 +39,8 @@ through. Three quantities:
   not its own. Also sound, and strictly tighter: a state with a wrong prefix may still sit
   on another state's verified path.
 * **unreached** — neither. An **upper bound** on the drop rate; a re-derivation that
-  searches harder (BFS over verified edges) may recover some of these.
+  searches harder (BFS over verified edges) may recover some of these. **Wrong — corrected
+  in the addendum below. `reached` is a ceiling, not a floor, and it is already achieved.**
 
 `verified` decides on **grid equality**, not hash equality, so hashing conventions cannot
 affect it.
@@ -121,7 +122,9 @@ So there are **two distinct defects**, and they need different repairs:
 * **cd82, ka59, dc22, sk48, bp35, sp80** — every recorded edge out of the origin
   reproduces, yet the store still collapses by depth 2–3. Pure composition failure: the
   edges are real observations, the paths through them are not. Recoverable by
-  re-deriving prefixes with verified walks.
+  re-deriving prefixes with verified walks. *(ar25, re86 and tr87 join this class once the
+  check runs on every game rather than the 11 sampled here — see the addendum: composition
+  9, single-edge 5, clean 10.)*
 * **m0r0, sc25, cn04, g50t, wa30** — single edges out of the origin fail on their own.
   Something about the state is not in the settled frame at all, and no amount of
   re-derivation fixes it; these games need the latent variable identified before their
@@ -171,3 +174,74 @@ the probe-channel run of record used only sound prefixes.
 ```
 
 ~7 min wall-clock for the sweep (1.29M engine steps), seconds for the controls. No GPU.
+
+---
+
+## Addendum 2026-08-05 — independently replicated, and one claim above is wrong
+
+The re-derivation session (`agent/harness/e1_prefix_verify.py`, branch
+`claude/hopeful-ishizaka-3423e1`) wrote its sweep before seeing this one and reports
+**identical numbers**: 27,521 states, verified 0.5339, reached 0.6215, the same ten clean
+games, the same nine below 6%, per-game rows matching. Two implementations, one conclusion.
+
+### The `unreached` definition above is wrong
+
+It calls `unreached` an upper bound "a re-derivation that searches harder (BFS over
+verified edges) may recover some of". It cannot. **Every walked edge's target is already in
+`reached` by construction**, so a search over walked edges cannot leave the set `reached`
+already describes — `reached` is a **ceiling**, not a floor. The only search with headroom
+uses the *store's* edges, which is composition again and has to be walked to be believed.
+
+Measured, 10 (w) routes per game: 5,975 of the 10,418 lost states have a store route, and
+**29 of 110 sampled routes land on their state — all 29 in games that were barely broken**
+(ar25 10/10, sp80 9/10, bp35 6/10, wa30 4/10 of 13 candidates). **0 of 70 in the nine
+sub-6% games**, which hold 5,489 candidate routes between them. Search-based recovery is
+worth building for the mild class and returns nothing on the broken class — the two-class
+finding again, from a third direction.
+
+The operative half of the recommendation survives: a re-derivation must keep every state
+*any* walk reached, not only self-verifying ones. The corrected maps do exactly that and
+land on `reached` per game — verified here independently: `logs/e1_store_v2_verified/`
+covers dc22 459/1360 (0.3375), m0r0 274/1339 (0.2046), tu93 1202/1202, and a 40-state
+sample of the corrected dc22 and m0r0 prefixes replays **40/40** on each.
+
+### The two-class split is confirmed and extended
+
+The origin-edge stage was folded into their verifier and cross-checked against an
+independent signal (whether a stored prefix diverges on its *first* action after RESET).
+The two signals **agree on all 24 games**. Final classes: **clean 10 · composition 9 ·
+single-edge 5**. The composition class is the six named above **plus ar25, re86 and tr87**;
+the single-edge class is exactly m0r0, sc25, cn04, g50t, wa30. Of the 8 failing origin
+edges, 6 replay as *no change* where the store recorded one.
+
+### A better aliasing signal than `conflicted` exists
+
+Their walks, with no re-test policy at all, found **333 context-dependent edges** (same
+grid, same action, two outcomes in different walk contexts) against E1's 54 recorded
+`conflicted`: g50t 93, m0r0 59, sk48 59, cd82 37, dc22 25, ka59 25, cn04 17, wa30 11,
+sc25 6, re86 1. Replay is a cheaper and far more sensitive aliasing detector than the
+explorer's re-testing — this note's §"`conflicted` does not predict the defect" understated
+the case by treating the list only as insensitive.
+
+### `conflicted` is also contaminated, not just insensitive
+
+`e1_explorer` has been fixed (`bc1f03a`): `observe` no longer composes, `perform` maintains
+a trail of actions since the last RESET, and the composed form is unreachable. On an A/B at
+identical games, policy and budgets, prefixes that replay go 489/3422 → 3983/3983 and
+**alias conflicts go 1337 → 59**. Because routing *is* RESET + prefix replay, the old
+explorer was replaying paths nobody walked and conflicting the edges where those replays
+diverged. So a recorded conflict in the current store is often an artifact of the
+bookkeeping bug rather than evidence about the game — sc25 654 → 58 and g50t are the clear
+cases. Read `conflicted` in `logs/e1_store_v2/` as neither a lower bound nor a clean signal.
+
+**This does not disturb anything measured in this note.** The audit replays the store as it
+stands and reports what it finds; the fix changes what a *future* store would look like, not
+what this one does.
+
+### Consequence for the E2 probe channel
+
+dc22's corrected map lands at its 0.3375 ceiling and its prefixes replay, and dc22 is in the
+composition class — so the condition
+[`notes/e2-probe-channel.md`](e2-probe-channel.md) §11 set for re-running its three
+gate-blocked probes is now met. m0r0 is not: 0.2046 coverage, single-edge class, and zero of
+its sampled store routes walked.

@@ -23,8 +23,13 @@ THE THREE NUMBERS
     reached     the state is the endpoint of SOME walked prefix in this sweep, whether or
                 not it was its own. Also a sound lower bound, and a strictly tighter one:
                 a state whose own prefix is wrong may still sit on another state's path.
-    unreached   neither. An UPPER bound on the drop rate — a re-derivation that searches
-                harder (BFS over verified edges, alternative routes) may recover some.
+    unreached   neither, and — corrected 2026-08-05, see the note — this is not merely an
+                upper bound on the drop rate, it is the drop rate. `reached` is a CEILING,
+                not a floor: every walked edge's target is in `reached` by construction, so
+                no search over walked edges can leave the set. The only search with any
+                headroom uses the STORE's edges, which is composition again and has to be
+                walked to be believed. Measured on 110 such routes: 29 land, all of them in
+                barely-broken games, 0 of 70 in the nine sub-6% games.
 
 The audit never re-derives anything and never writes into `logs/e1_store_v2/`.
 

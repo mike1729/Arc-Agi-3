@@ -141,9 +141,8 @@ deterministic engine — and demotes the conflict list to the lower bound it alw
   therefore **exists**, and that a key it cannot separate may be unseparable for that reason
   — no guard over these frames would fix it;
 * no audit entry: says NOT MEASURED, in those words, rather than implying a clean store;
-* the conflict list is now labelled a lower bound in the prompt, and its `MAX_ALIAS_SHOWN`
-  truncation is marked `+N more not shown` (g50t: 43 pairs, 8 shown). That silent cap was
-  the same defect slice 1.1 fixed for the feature lists.
+* the conflict list is reduced to a parenthesised count with no pairs listed, because it
+  is unusable in **both** directions — see below.
 
 Prompt item 3 changed with it. It read "HIDDEN STATE — *if alias conflicts appear above*,
 what unobserved variable would explain them", which invites exactly the inference the empty
@@ -155,3 +154,20 @@ list.
 **This changes the digest, so any future slice is not prompt-identical to slice 1 or 1.1.**
 The stored traces in `logs/e2_slice_traces/` remain the record of what was actually run, and
 no result in this note is restated. Verified by `--dry-run` over all 12 cells.
+
+
+**Same-day correction to the above.** The first version of this block kept the pair listing
+and called the count a lower bound. It is not one. The re-derivation session's A/B on a
+fixed `e1_explorer` (`bc1f03a`, `observe` no longer composes) takes alias conflicts from
+**1337 to 59** at identical games, policy and budgets: because routing *is* RESET + prefix
+replay, the old explorer replayed paths nobody had walked and recorded the divergences as
+contradictions. So a flagged pair in `logs/e1_store_v2/` is often an artifact of the
+bookkeeping bug rather than a fact about the game — sc25 goes 654 → 58, g50t is the other
+clear case. The block now prints the bare count, lists no pairs, and says the count carries
+no information in either direction; the STATE IDENTITY measurement above it is the signal.
+
+A better replacement exists when it lands: walking the store with no re-test policy at all
+surfaces **333 context-dependent edges** (same grid, same action, two outcomes in different
+walk contexts) against E1's 54 recorded `conflicted` — g50t 93, m0r0 59, sk48 59, cd82 37,
+dc22 25, ka59 25, cn04 17, wa30 11, sc25 6, re86 1. That is a real per-game aliasing count
+and belongs in this block once it is on `main`.

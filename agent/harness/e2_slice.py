@@ -253,22 +253,14 @@ def state_identity(game: str) -> list[str]:
     if graph_path.is_file():
         graph = json.loads(graph_path.read_text())
         conflicted = graph.get("conflicted", [])
-        shown = conflicted[:MAX_ALIAS_SHOWN]
         lines.append(
-            f"  Directly caught contradicting themselves on re-test: {len(conflicted)} "
-            f"(state, action) pairs. This is a LOWER BOUND and nothing more — the "
-            f"explorer re-tested only a small, unrecorded fraction of pairs, so a pair "
-            f"missing from this list was probably never re-tested. Do not read a short "
-            f"list as a clean game."
+            f"  ({len(conflicted)} (state, action) pairs are flagged in the store as having "
+            f"contradicted themselves. That count is NOT usable as evidence in either "
+            f"direction and no pairs are listed: the explorer re-tested only a small "
+            f"unrecorded fraction of pairs, so absence means nothing, and its routing "
+            f"replayed paths that were never walked and flagged the divergences as "
+            f"contradictions, so presence is often an artifact. Use the measurement above.)"
         )
-        for source, action in shown:
-            prefix = len(graph.get("prefix", {}).get(source, []))
-            lines.append(
-                f"      state {source[:8]} (reached in {prefix} actions) + action {action}"
-                f" -> two different settled outcomes"
-            )
-        if len(conflicted) > len(shown):
-            lines.append(f"      +{len(conflicted) - len(shown)} more not shown")
     return lines
 
 
