@@ -1,16 +1,30 @@
 #!/usr/bin/env python3
 """E2 — the Qwen synthesis slice. The first model-bearing measurement of the line.
 
-`notes/e2-dose.md` establishes the zero-model floor: the E0 miner over E1-v2 explorer
-evidence recovers rules at median 0.938 of the human-replay ceiling, and the dose curve is
-FLAT in the median — more actions is not where synthesis is bottlenecked. What the miner
-cannot do is resolve the structure its own vocabulary lacks: census-separable and
-guard-fixable failure mass. That is this slice's brief.
+DIGEST v3 / SLICE 2 (2026-08-05, `notes/e2-slice2.md`; build order in
+`notes/e2-slice2-build.md` sub-task 4). Slices 1 and 1.1 asked the model to repair the
+miner's unresolved keys and it did not: 1/82 substantive proposals, then a repaired display
+and the same nothing. That channel is DEAD BY MEASUREMENT and is gone from this file — the
+rule request, `support_claim`, the per-rule `refuter` and `next_probe` are removed, not
+disabled. The probe/directive channel is gone for the same reason (26/31 arms already
+answered, 0/4 predictions realized).
 
-Per game x dose: an organized store digest -> Qwen thinking -> proposals -> machine
-verification -> scoring against the SAME held-out human targets the miner was scored on.
-The zero-model curve is the floor at every dose; a proposal set that does not beat it has
-measured nothing.
+What remains are the three channels still standing, each posed executably and each against a
+mechanical control that hardcodes the "no capability" hypothesis:
+
+  A  GOAL AS A FALSIFIABLE PREDICATE   a completion-condition predicate in the task-1 DSL,
+     its refuter, and one test action. Control: the prior library
+     (`e2_prior_library.py`) — the five default goal shapes the reference brings,
+     instantiated mechanically from the census. The prior fires on 50% of reference wins,
+     so matching the library is worth nothing.
+  B  LATENTS AS EXECUTABLE DEFINITIONS up to 3 counter expressions in the task-1 counter
+     grammar. Control: 5 seeded random features, verified by `e2_latent_verify.py`.
+  C  VOCABULARY CRITIC                 up to 2 proposals naming a missing feature. Control:
+     the measured failure typing. The one channel with a realized payoff (slice 1's ft09
+     output became `clicked_adjacent_to` and moved the floor 0.2522 -> 0.3017).
+
+Prose scores zero in A and B: a proposal that does not parse is recorded `prose_rejected`,
+counted, and never repaired — the same category slice 1's parse-rejected rules were kept in.
 
 INSTRUMENT RULES (the screens died on these; CLAUDE.md 2026-08-04)
 ------------------------------------------------------------------
@@ -25,24 +39,25 @@ INSTRUMENT RULES (the screens died on these; CLAUDE.md 2026-08-04)
   VOIDS the call — the result is discarded, not repaired.
 * Every call's raw trace is written to logs/e2_slice_traces/ before scoring.
 
-SCORING
--------
-Proposals are parsed into the miner's own `Rule` structure, so they are scored by exactly
-the code that scored the miner (`rs_e0.score`) on exactly its test sets (human L1, human L2).
+WHAT THIS FILE SCORES, AND WHAT IT LEAVES TO SCORING TIME
+---------------------------------------------------------
+Mechanical and in-cell, because all of it is deterministic and zero-model:
 
-  verification   each proposed rule is fired against the STORE transitions it was shown.
-                 A rule with zero support there was not read off the evidence; a rule with
-                 contradictions there is refuted by the evidence it was given. Only
-                 survivors are scored. This is the step that makes a fluent wrong answer
-                 cost nothing.
-  floor          the miner's own rules at the same game and dose, scored identically.
+  A  parse -> store consistency (row-C's own three-valued survivorship over every store
+     transition) · refuter validity (a refuter already satisfied by the store SELF-REFUTES
+     the proposal — the S1 finding was that unapplied falsifiers are this channel's failure
+     mode) · novelty against the prior library, by canonical predicate string · test-action
+     WELL-FORMEDNESS in the guard vocabulary
+  B  parse -> a spec file for `e2_latent_verify.py`, which runs the arms and the 5 controls
+  C  parse-free by design; each proposal's targeted keys are matched against the keys the
+     miner actually left unresolved. The note's targeting rate against the measured failure
+     TYPING is not computed here and not faked: the committed floors carry `failure_split`
+     per game and target, not per key, so that join happens at readout time
 
-Goal, hidden-state and next-probe answers are **logged verbatim and NOT scored in this
-slice**. The prompt asks for prose, extraction transcribes one sentence, and nothing
-evaluates it — there is no grammar-expressed goal channel here. Wiring proposals into the
-row-C universe so the frozen three-valued evaluator can falsify them is a real design task,
-not a bolt-on, and it is deliberately out of scope. The rule above applies to this file as
-much as to the model: an unscored proposal is reported as unscored, never as a pass.
+Deferred, and named rather than quietly skipped: source adjudication of A (labels only, the
+autopsy rubric, one pass over channel and control together), EXECUTION of the test action
+through the probe executor, and C's post-slice implementation queue. An unscored proposal is
+reported as unscored, never as a pass.
 
 Run:
   .venv/bin/python agent/harness/e2_slice.py --dry-run          # digests only, no model
@@ -67,16 +82,27 @@ HARNESS = Path(__file__).resolve().parent
 if str(HARNESS) not in sys.path:
     sys.path.insert(0, str(HARNESS))
 
+import e2_dsl as dsl  # noqa: E402
+import es_candidates as ec  # noqa: E402
 from e2_dose import load_store  # noqa: E402
+from e2_prior_library import inert_inventory, object_census  # noqa: E402
 from rs_e0 import Rule, abstract, mine, score  # noqa: E402
-from rs_transitions import ITERATION_GAMES, ROOT, load_game  # noqa: E402
+from rs_transitions import ROOT, load_game  # noqa: E402
 
 MODEL = Path.home() / "models/mlx/Qwen3.6-27B-8bit"  # PINNED — see notes/e2-dose.md
 OUTPUT = ROOT / "logs/e2_slice.json"
 TRACES = ROOT / "logs/e2_slice_traces"
-FORMAT_VERSION = 1
+PRIOR_LIBRARY = ROOT / "logs/e2_prior_library.json"
+FLOOR = ROOT / "logs/e2_dose_vocab_v2.json"
+FORMAT_VERSION = 2
 
-DOSES = (125, None)  # (w) endpoints only — licensed by the flat median dose curve
+# The slice-2 protocol set: the six iteration games plus the two E1-completed games, whose
+# stores hold channel A's only own-completion examples.
+SLICE2_GAMES = dsl.SLICE2_GAMES
+
+# Slice 2 runs the FULL store only. The dose axis was flat for rules across two slices and
+# none of the three channels has a dose hypothesis, so it buys nothing and costs half a night.
+DOSES = (None,)
 MODE = "full"  # the layer the miner is weakest on, and the one Qwen is being asked for
 THINK_BUDGET = 16384  # (w) >=16k; a 5k budget produced an unclosed block in bring-up
 EXTRACT_BUDGET = 4096
@@ -94,6 +120,11 @@ MAX_EVIDENCE_PER_KEY = 6
 MAX_FEATURES_PER_GROUP = None  # no cap — see notes/e2-variance-arm.md §2
 MAX_VALUES_PER_FEATURE = 4  # (w) truncation is marked "+N more" and declared in the prompt
 MAX_ALIAS_SHOWN = 8
+# digest v3 caps — every one of them is declared in the prompt where it can change a reading
+MAX_INERT_SHOWN = 24  # (w)
+MAX_REFUTED_GOALS_SHOWN = 10  # (w)
+MAX_STRATUM_VALUES = 4  # (w) a feature with more values than this has no useful stratum table
+MAX_INVARIANTS_SHOWN = 20  # (w)
 SEED = 20260804  # phase 1 is sampled; seeded and recorded so a cell is reproducible
 
 # The miner's actual guard vocabulary (rs_transitions.guard_features). A proposal naming a
@@ -110,13 +141,24 @@ def valid_guard(feature: str, vocabulary: set[str]) -> bool:
     )
 
 
-_STORE_CACHE: dict[str, list] = {}
+_STORE_CACHE: dict[str, tuple[list, set[int]]] = {}
 _MINE_CACHE: dict[tuple[str, Any], tuple] = {}
 
 
 def store_for(game: str) -> list:
+    return store_with_gaps(game)[0]
+
+
+def store_with_gaps(game: str) -> tuple[list, set[int]]:
+    """The store plus the steps whose POST frame it does not retain (completion rows).
+
+    Any consumer that reads `.post` directly — the goal grammar, and so the whole negative
+    evidence section below — must skip those rows: `e2_dose.load_store` substitutes the pre
+    frame as a placeholder there, and evaluating a completion against its own pre-state
+    would fabricate the store's only positive example.
+    """
     if game not in _STORE_CACHE:
-        _STORE_CACHE[game] = load_store(game)[0]
+        _STORE_CACHE[game] = load_store(game)
     return _STORE_CACHE[game]
 
 
@@ -264,6 +306,318 @@ def state_identity(game: str) -> list[str]:
     return lines
 
 
+def coverage_ledger(used: list, by_key: dict[tuple, list]) -> list[str]:
+    """What has been TRIED on each object, with the never-tried marks spelled out.
+
+    Two independent readouts demand exactly this section. The probe task found 26 of 31
+    proposed probe arms asking for evidence the store already held. The S1 end-to-end read
+    found what finally unblocked ft09: the model printed its own action history and read the
+    gap off it — "I have NOT tried clicking the blue cells". Neither is a reasoning failure
+    that more thinking fixes; both are a digest that never states what is absent.
+
+    ACTION6 is the only object-directed action in the vocabulary, so the per-object ledger is
+    a ledger of clicks: how many landed ON each colour, and how many landed on something
+    4-adjacent to it (`clicked_adjacent_to:C`, the v2 feature). The simple actions 1-5 are
+    global and are counted once, not per object — claiming ACTION3 was "tried on the red
+    block" would be an invented relation.
+    """
+    lines: list[str] = []
+    clicks_on: Counter = Counter()
+    adjacent_clicks: Counter = Counter()
+    click_rows = 0
+    for transition in used:
+        if transition.action_id != 6:
+            continue
+        click_rows += 1
+        colour = transition.guards.get("click_colour")
+        if colour is not None:
+            clicks_on[int(colour)] += 1
+        for name, value in transition.guards.items():
+            if name.startswith("clicked_adjacent_to:") and value:
+                adjacent_clicks[int(name.split(":")[1])] += 1
+
+    colours: set[int] = set()
+    for transition in used:
+        for name in transition.guards:
+            if name.startswith("count:"):
+                colours.add(int(name.split(":")[1]))
+    colours |= set(clicks_on) | set(adjacent_clicks)
+
+    simple = sorted(
+        {t.action_id for t in used if t.action_id != 6}
+    )
+    lines.append(
+        f"  Simple actions present in this evidence: "
+        f"{', '.join(f'ACTION{i}' for i in simple) if simple else 'none'}"
+        f"   (they are not aimed at an object, so they are counted once, not per colour)"
+    )
+    lines.append(f"  ACTION6 clicks in this evidence: {click_rows}")
+    for colour in sorted(colours):
+        on = clicks_on.get(colour, 0)
+        near = adjacent_clicks.get(colour, 0)
+        if on == 0 and near == 0:
+            mark = "NEVER CLICKED, and never clicked next to"
+        elif on == 0:
+            mark = f"NEVER CLICKED (but {near} clicks landed 4-adjacent to it)"
+        else:
+            mark = f"clicked {on}x; {near} clicks landed 4-adjacent to it"
+        lines.append(f"    colour {colour:<3d} {mark}")
+    return lines
+
+
+def stratum_lines(rows: list, varying: list[str]) -> list[str]:
+    """Per unresolved key: how many stored transitions sit in each value stratum.
+
+    The value SETS above say which values occur; this says how many transitions carry each,
+    which is what tells "already tested to death" apart from "one observation". Features with
+    more than MAX_STRATUM_VALUES distinct values are omitted with a count rather than
+    truncated: a stratum table over a high-cardinality feature is not a stratum table.
+    """
+    shown: list[str] = []
+    omitted = 0
+    for name in varying:
+        strata = Counter(_hv(row.guards.get(name)) for row in rows)
+        if len(strata) > MAX_STRATUM_VALUES:
+            omitted += 1
+            continue
+        cells = ", ".join(
+            f"{value}: {count}" for value, count in sorted(strata.items(), key=repr)
+        )
+        shown.append(f"            {name} strata — {cells}")
+    if omitted:
+        shown.append(
+            f"            ({omitted} further varying features take more than "
+            f"{MAX_STRATUM_VALUES} distinct values here; no stratum table is shown for them)"
+        )
+    return shown
+
+
+def inert_lines(census: dict[str, Any]) -> list[str]:
+    """Objects that appear in NO effect signature anywhere in the store.
+
+    Channel A's primary seed, and the one thing every other section of this digest
+    structurally hides: the rest of the digest is organized by what CHANGED, so an object
+    that never changes is invisible in it. Both reference discoveries read a STATIC object as
+    a specification — sb26 stated the correct goal from layout alone at analysis step 1,
+    before any action, and ft09's encoding hypothesis appears at step 5.
+    """
+    inventory = inert_inventory(census)
+    if not inventory:
+        return [
+            "  none — every colour present in this game's opening frame takes part in at "
+            "least one recorded effect. There is no static object to read as a specification."
+        ]
+    lines = []
+    for entry in inventory[:MAX_INERT_SHOWN]:
+        top, left, bottom, right = entry["bbox"]
+        lines.append(
+            f"    colour {entry['colour']:<3d} {entry['cells']:4d} cells, "
+            f"{entry['height']}x{entry['width']} box at rows {top}-{bottom}, "
+            f"cols {left}-{right}"
+            + (
+                f"   (one of {entry['objects_of_this_colour']} objects of this colour)"
+                if entry["objects_of_this_colour"] > 1
+                else ""
+            )
+        )
+    if len(inventory) > MAX_INERT_SHOWN:
+        lines.append(
+            f"    (+{len(inventory) - MAX_INERT_SHOWN} further inert objects not shown)"
+        )
+    return lines
+
+
+def observed_invariants(used: list) -> tuple[list[str], dict[str, Any]]:
+    """Joint constraints among the count features that hold in EVERY stored state.
+
+    `notes/e2-slice2.md` digest item 5, added after external review. Every other section
+    shows per-feature MARGINALS, and the probe task's impossible requests were reasonable
+    inferences from marginals alone — ft09's asked to move one of two counts whose sum is
+    fixed by the game. A marginal cannot show that; a joint constraint can, and it costs a
+    pass over the stored count vectors.
+
+    An absent `count:C` means the colour has no component in that state, so it enters as 0
+    — the miner omits the key rather than writing a zero, and reading the omission as
+    "unknown" would drop exactly the states an invariant has to hold in.
+
+    A pair whose two counts are BOTH individually constant is suppressed: its sum and
+    difference are constant trivially, and printing them would bury the informative
+    invariants under arithmetic.
+    """
+    colours = sorted(
+        {int(name.split(":")[1]) for t in used for name in t.guards if name.startswith("count:")}
+    )
+    if not colours:
+        return ["  none — this evidence has no count features"], {"invariants": 0}
+    vectors: list[tuple] = []
+    seen: set[tuple] = set()
+    for transition in used:
+        vector = tuple(int(transition.guards.get(f"count:{c}", 0)) for c in colours)
+        if vector not in seen:
+            seen.add(vector)
+            vectors.append(vector)
+
+    constant = {
+        index: vectors[0][index]
+        for index in range(len(colours))
+        if len({vector[index] for vector in vectors}) == 1
+    }
+    found: list[str] = []
+    for index, value in sorted(constant.items()):
+        found.append(f"count:{colours[index]} = {value} in every one of the {len(vectors)} "
+                     f"distinct count-states seen")
+    for i in range(len(colours)):
+        for j in range(i + 1, len(colours)):
+            if i in constant and j in constant:
+                continue
+            sums = {vector[i] + vector[j] for vector in vectors}
+            if len(sums) == 1:
+                found.append(
+                    f"count:{colours[i]} + count:{colours[j]} = {next(iter(sums))} always — "
+                    f"these two counts are complements; NOTHING can change one alone"
+                )
+                continue
+            differences = {vector[i] - vector[j] for vector in vectors}
+            if len(differences) == 1:
+                found.append(
+                    f"count:{colours[i]} - count:{colours[j]} = {next(iter(differences))} "
+                    f"always — these two counts move together, one for one"
+                )
+    lines = [f"    {text}" for text in found[:MAX_INVARIANTS_SHOWN]]
+    if len(found) > MAX_INVARIANTS_SHOWN:
+        lines.append(
+            f"    (+{len(found) - MAX_INVARIANTS_SHOWN} further invariants not shown)"
+        )
+    if not found:
+        lines = [
+            "    none — no count is constant and no pair of counts has a constant sum or "
+            "difference across the stored states"
+        ]
+    return lines, {
+        "invariants": len(found),
+        "distinct_count_states": len(vectors),
+        "constant_counts": {str(colours[i]): v for i, v in sorted(constant.items())},
+        "all": found,
+    }
+
+
+def null_effect_runs(used: list) -> dict[str, Any]:
+    """Consecutive stored actions that changed nothing at all. Counts only, no claim."""
+    runs: list[int] = []
+    current = 0
+    for transition in used:
+        if transition.effect:
+            if current:
+                runs.append(current)
+            current = 0
+        else:
+            current += 1
+    if current:
+        runs.append(current)
+    return {
+        "null_effect_transitions": sum(runs),
+        "runs": len(runs),
+        "longest_run": max(runs) if runs else 0,
+        "runs_of_5_or_more": sum(1 for run in runs if run >= 5),
+    }
+
+
+def refuted_goals(used: list, post_missing: set[int]) -> dict[str, Any]:
+    """Row-C candidates the store itself has already refuted, with the step that did it.
+
+    The `e2_dose.goal_curve` pattern, run for a different purpose. A candidate is refuted the
+    first time it is DEFINITELY TRUE at a transition that did not advance the level: the
+    board satisfied it and nothing happened, so it is not the completion condition. Those are
+    the re-specification events — ft09's L2 recoveries went through exactly this
+    contradiction ("matches my decoded pattern, but the level is not complete, so my decoding
+    is wrong") while sb26's L2 passes never re-specified and burned their whole budget
+    enumerating inside a stale schema.
+
+    SURVIVORS carry no such event by construction (a survivor is one nothing contradicted),
+    which is why the section renders the REFUTED candidates: they are where the store's
+    negative evidence about the goal actually lives.
+    """
+    usable = [t for t in used if t.step not in post_missing]
+    if not usable:
+        return {"skipped": "no transition with a real post frame"}
+    universe = ec.enumerate_universe(usable[0].pre)
+    if not universe["tractable"]:
+        return {"skipped": "row-C universe exceeded the frozen tractability limit"}
+    contexts = dsl.transition_contexts(usable)
+    alive = [(index, candidate) for index, candidate in enumerate(universe["universe"])]
+    events: list[dict[str, Any]] = []
+    for transition, context in zip(usable, contexts, strict=True):
+        if not alive:
+            break
+        still: list[tuple[int, dict]] = []
+        for index, candidate in alive:
+            value = ec.evaluate(candidate, context)
+            if value == "unknown":
+                still.append((index, candidate))
+                continue
+            truth = "true" if transition.completed else "false"
+            if value == truth:
+                still.append((index, candidate))
+                continue
+            events.append(
+                {
+                    "step": transition.step,
+                    "predicate": dsl.unparse(candidate),
+                    "completed": transition.completed,
+                }
+            )
+        alive = still
+    return {
+        "universe_size": universe["universe_size"],
+        "survivors": len(alive),
+        "refuted": len(events),
+        "satisfied_but_not_advanced": [e for e in events if not e["completed"]],
+        "surviving_predicates": sorted(dsl.unparse(c) for _, c in alive),
+    }
+
+
+def negative_evidence_lines(used: list, post_missing: set[int]) -> tuple[list[str], dict]:
+    nulls = null_effect_runs(used)
+    goals = refuted_goals(used, post_missing)
+    lines = [
+        f"  Null-effect actions: {nulls['null_effect_transitions']} of {len(used)} stored "
+        f"actions changed nothing at all, in {nulls['runs']} consecutive runs "
+        f"(longest {nulls['longest_run']}, {nulls['runs_of_5_or_more']} runs of 5 or more). "
+        f"This is data about where the evidence is thin, and nothing more is claimed from it.",
+    ]
+    if "skipped" in goals:
+        lines.append(f"  Refuted goal candidates: not computed ({goals['skipped']}).")
+        return lines, {"nulls": nulls, "goals": goals}
+    # Shown LATEST-refuted first, not earliest. The earliest refutations are the candidates
+    # that were trivially true on frame one — on m0r0 all ten of them are refuted at step 2
+    # and carry no information. The candidate that survived 800 steps before the board
+    # satisfied it and nothing happened is the re-specification event this section exists to
+    # supply, and it is the last one refuted, not the first.
+    satisfied = sorted(
+        goals["satisfied_but_not_advanced"],
+        key=lambda event: (-event["step"], event["predicate"]),
+    )
+    lines.append(
+        f"  Goal candidates this evidence has already REFUTED: {len(satisfied)} of "
+        f"{goals['universe_size']} mechanically enumerated candidates were SATISFIED by the "
+        f"board at some step at which the level did NOT advance. A predicate that is true "
+        f"while nothing happens is not this level's completion condition. "
+        f"{goals['survivors']} candidates are still standing."
+    )
+    for event in satisfied[:MAX_REFUTED_GOALS_SHOWN]:
+        lines.append(
+            f"    `{event['predicate']}` was satisfied at step {event['step']} — "
+            f"the level did not advance"
+        )
+    if len(satisfied) > MAX_REFUTED_GOALS_SHOWN:
+        lines.append(
+            f"    (+{len(satisfied) - MAX_REFUTED_GOALS_SHOWN} further refuted candidates "
+            f"not shown; the ones above are those that survived the most evidence before "
+            f"being refuted)"
+        )
+    return lines, {"nulls": nulls, "goals": goals}
+
+
 def build_digest(game: str, dose: int | None) -> dict[str, Any]:
     used, rules, _ = mined(game, dose)
 
@@ -320,6 +674,10 @@ def build_digest(game: str, dose: int | None) -> dict[str, Any]:
             unresolved_lines.append(f"      x{count:<4d} {_effect_text(effect)}")
             if parts:
                 unresolved_lines.append(f"            {'; '.join(parts)}")
+        # v3: the stratum counts. The value sets say WHICH values occur; these say how many
+        # transitions carry each, which is what separates "already tested to death" from
+        # "one observation" — the distinction 26 of 31 probe arms failed to make.
+        unresolved_lines.extend(stratum_lines(rows, varying))
         # Autopsy rec 2: the miner's assertion carries its own evidence — the best single
         # feature shown FAILING. 55 of 84 slice-1 proposals overrode the bare assertion.
         witness = _no_separation_witness(rows, varying)
@@ -332,6 +690,12 @@ def build_digest(game: str, dose: int | None) -> dict[str, Any]:
             )
 
     identity_lines = state_identity(game)
+    _, post_missing = store_with_gaps(game)
+    ledger_lines = coverage_ledger(used, by_key)
+    catalogue = object_census(used)
+    inert = inert_lines(catalogue)
+    negative_lines, negative_data = negative_evidence_lines(used, post_missing)
+    invariant_lines, invariant_data = observed_invariants(used)
 
     completion = next((t for t in used if t.completed), None)
     completion_line = (
@@ -382,6 +746,30 @@ KEYS THE MINER COULD NOT RESOLVE — the actual problem
 STATE IDENTITY — does the settled frame below fully identify the game's state?
 {chr(10).join(identity_lines)}
 
+COVERAGE LEDGER — what has and has NOT been tried
+  Read the never-tried marks as literally as the value sets. This evidence is one autonomous
+  run; an object nothing was ever aimed at is not an object shown to be inert, and the two
+  are told apart only by this section and the next one.
+{chr(10).join(ledger_lines)}
+
+INERT OBJECTS — present in the opening frame, never once changed
+  These objects appear in NO effect signature anywhere in the evidence: they never moved,
+  never changed shape, never appeared and never disappeared. Every other section of this
+  digest is organized by what CHANGED, so this is the only place they are visible. Positions
+  are from the opening frame; an inert object has no other.
+{chr(10).join(inert)}
+
+OBSERVED INVARIANTS — joint constraints the counts obey in EVERY stored state
+  The census above gives each count on its own. These are constraints BETWEEN counts that
+  held in every state this run visited. They bound what an action can possibly do: if two
+  counts always sum to a fixed number, no action changes one of them alone, and asking for
+  one is asking for something this game does not offer. A colour with no object in a state
+  counts as 0 there.
+{chr(10).join(invariant_lines)}
+
+NEGATIVE EVIDENCE — what this run has already ruled out
+{chr(10).join(negative_lines)}
+
 LEVEL COMPLETION
 {completion_line}
 """
@@ -393,6 +781,19 @@ LEVEL COMPLETION
         "miner_rules": len(rules),
         "unresolved_keys": len(pending),
         "unresolved_shown": min(len(pending), MAX_UNRESOLVED_SHOWN),
+        "inert_objects": len(inert_inventory(catalogue)),
+        "observed_invariants": invariant_data,
+        "negative_evidence": {
+            "null_effect_runs": negative_data["nulls"],
+            "row_c": {
+                key: value
+                for key, value in negative_data["goals"].items()
+                if key != "satisfied_but_not_advanced"
+            },
+            "satisfied_but_not_advanced": len(
+                negative_data["goals"].get("satisfied_but_not_advanced", [])
+            ),
+        },
         "chars": len(text),
     }
 
@@ -405,49 +806,58 @@ An object is a 4-connected same-colour component, measured against the state's b
 (its most common colour). An effect is position-free: move(colour,dr,dc), reshape(colour),
 appear(colour), disappear(colour), or no-change. A recolour appears as disappear+appear.
 
-Your job is the part the mechanical miner cannot do: explain the UNRESOLVED keys. For each
-one, work out what actually distinguishes the transitions that disagree. You may use any
-reasoning you like, but your final rules must be expressible as:
+Do NOT propose transition rules. The mechanical miner's unresolved keys were asked for twice
+and answered twice with nothing; that channel is closed and anything you write about it is
+discarded unread. Reason about the evidence as much as you like, then answer exactly three
+questions, A, B and C.
 
-    action (+ the colour clicked, for ACTION6)  [+ at most ONE guard]  ->  effect
+{predicate_grammar}
 
-A guard is exactly `feature = literal` — equality against ONE literal value that appears in
-the evidence. Negation ("not 11"), inequalities ("> 1"), and combined conditions cannot be
-expressed or tested; if the true condition needs them, name that as a vocabulary limit
-instead of forcing a rule.
+{counter_grammar}
 
-Think about whether the disagreement is caused by something the guard vocabulary can name.
-If it cannot, say so explicitly rather than inventing a rule that fits. The miner's
-no-separation claims above come with their witness counts — treat them as constraints your
-rule must survive, not as claims to argue with.
+A. GOAL — one falsifiable predicate, its refuter, and one test action.
+   * PREDICATE: what must be true of the board for this level to be complete, written in the
+     predicate grammar above. The NEGATIVE EVIDENCE section lists predicates this run has
+     already refuted: a predicate that was satisfied while the level did not advance is not
+     the completion condition, and re-proposing one of them is a wasted answer.
+   * REFUTER: a second predicate, in the same grammar — the single observation that would
+     falsify your predicate if it were seen. Check it against the evidence before you write
+     it: a refuter that the stored evidence already satisfies refutes your own proposal.
+   * TEST ACTION: one concrete action whose outcome bears on the predicate, as
+     (precondition, action id, click target). The precondition is one guard `feature=value`
+     from the vocabulary above, or `none`. The click target is a colour for ACTION6 and
+     `n/a` otherwise. A goal with no action attached to it is not yet usable: read the
+     COVERAGE LEDGER and prefer an action that has NOT been tried.
 
-Then answer, in plain prose:
-1. RULES — each as: action, optional guard (feature=value), the exact effect, the number of
-   shown transitions that support it, and the single observation that would refute it.
-2. GOAL — what you believe completing this level requires, and what evidence supports it.
-3. HIDDEN STATE — read the STATE IDENTITY section. If it reports states that do not replay
-   to themselves, a hidden variable EXISTS and your job is to name what it plausibly is, not
-   to decide whether there is one. If it reports that every state replays, say so and do not
-   invent one. Never infer "no hidden state" from a short conflict list.
-4. WHAT WOULD SETTLE IT — the single most informative action to try next, and where.
+B. LATENTS — at most 3 candidate hidden variables, each as `name: <counter expression>` in
+   the counter grammar above. Propose one only if the STATE IDENTITY section reports states
+   that do not replay to themselves; if every state replays, say so and propose none rather
+   than inventing one. Never infer "no hidden state" from a short conflict list.
+
+C. VOCABULARY — at most 2 proposals for a feature the guard vocabulary is MISSING. Each as:
+   a name, a definition sketch computable from the pre-action board and the action alone,
+   the unresolved keys above it should resolve, and the direction you expect it to move
+   them. This is the one channel that has already paid out: a previous slice named a missing
+   word that became `clicked_adjacent_to:C` and moved the mechanical floor by 0.05.
 """
 
 EXTRACT = """Below is an analysis of a grid game. Re-read it and transcribe its conclusions into JSON.
-Do not add, judge, or correct anything — transcribe only what is stated.
+Do not add, judge, or correct anything — transcribe only what is stated. Copy the predicate
+and counter expressions CHARACTER FOR CHARACTER; do not tidy, complete or reformat them.
 
 {answer}
 
 Emit ONLY a JSON object, no commentary:
-{{"rules": [{{"action_id": <int 1-7>, "click_colour": <int or null>,
-              "guard": null or {{"feature": "<e.g. adj:3:up or count:5>", "value": <int, string or null>}},
-              "effect": [["move", <colour>, <dr>, <dc>] or ["reshape", <colour>] or
-                         ["appear", <colour>] or ["disappear", <colour>]],
-              "support_claim": <int or null>, "refuter": "<one sentence or null>"}}],
- "goal": "<one sentence>",
- "hidden_state": "<one sentence or empty>",
- "next_probe": "<one sentence or empty>"}}
-An empty effect list means the action changes nothing. If the analysis states no rule in that
-form, return an empty rules list."""
+{{"goal": {{"predicate": "<expression, exactly as written>",
+           "refuter": "<expression, exactly as written, or empty>",
+           "test_action": {{"precondition": null or {{"feature": "<e.g. adj:3:up>", "value": <int, string or bool>}},
+                           "action_id": <int 1-7>, "click_colour": <int or null>}}}},
+ "latents": [{{"name": "<short name>", "definition": "<counter expression, exactly as written>"}}],
+ "vocabulary": [{{"name": "<short name>", "definition_sketch": "<one sentence>",
+                 "targeted_keys": ["<e.g. ACTION6 on colour 3>"],
+                 "expected_direction": "<one sentence>"}}]}}
+If the analysis states nothing for a section, return an empty list or null for it. Never
+invent an expression that the analysis does not contain."""
 
 
 # ======================================================================================
@@ -552,120 +962,193 @@ def parse_json(text: str) -> dict[str, Any] | None:
     return value if isinstance(value, dict) else None
 
 
-def _event(event: Any) -> tuple:
-    """Canonicalize one effect event, int-coercing numerics.
+def prior_library(game: str) -> set[str] | None:
+    """The control's surviving predicates for this game, as canonical strings.
 
-    JSON has no int/float distinction, so a transcribed `1.0` would never equal the
-    miner's `1` and the rule would silently score zero support instead of being read.
+    None means the library has not been built yet — the novelty check then reports itself
+    as not computed. Silently treating a missing control as an empty one would score every
+    proposal as novel, which is the direction that flatters the channel.
     """
-    out = []
-    for field in tuple(event):
-        if isinstance(field, bool):
-            out.append(field)
-        elif isinstance(field, float) and field.is_integer():
-            out.append(int(field))
-        else:
-            out.append(field)
-    return tuple(out)
+    if not PRIOR_LIBRARY.is_file():
+        return None
+    document = json.loads(PRIOR_LIBRARY.read_text())
+    row = document.get("games", {}).get(game)
+    if row is None or "shapes" not in row:
+        return None
+    return {
+        dsl.canonical(candidate["dsl"])
+        for shape in row["shapes"].values()
+        for candidate in shape["surviving"]
+    }
 
 
-def to_rules(
-    payload: dict[str, Any], vocabulary: set[str]
-) -> tuple[dict[str, Rule], list[str]]:
-    rules: dict[str, Rule] = {}
-    rejected: list[str] = []
-    for index, item in enumerate(payload.get("rules") or []):
-        try:
-            action_id = int(item["action_id"])
-            colour = item.get("click_colour")
-            key = ("A6", None if colour is None else int(colour)) if action_id == 6 else ("A", action_id)
-            guard_spec = item.get("guard")
-            guard = guard_value = None
-            if isinstance(guard_spec, dict) and guard_spec.get("feature"):
-                guard = str(guard_spec["feature"])
-                if not valid_guard(guard, vocabulary):
-                    rejected.append(f"rule {index}: guard '{guard}' is not in the vocabulary")
-                    continue
-                guard_value = guard_spec.get("value")
-                if isinstance(guard_value, float) and guard_value.is_integer():
-                    guard_value = int(guard_value)
-            effect = tuple(sorted(_event(event) for event in (item.get("effect") or [])))
-        except (KeyError, TypeError, ValueError) as error:
-            rejected.append(f"rule {index}: {type(error).__name__} {error}")
+def channel_a(
+    payload: dict[str, Any], game: str, used: list, post_missing: set[int], vocabulary: set[str]
+) -> dict[str, Any]:
+    """Parse, then the four mechanical scores. Adjudication against source is NOT here.
+
+    Clause 1 of the rubric (store consistency) is row C's own three-valued survivorship.
+    Clause 2 (refuter validity) is the S1 finding made mechanical: a refuter the stored
+    evidence ALREADY satisfies refutes the proposal it was supposed to protect, and the
+    reference's failure mode was exactly holding a falsifier and never applying it. Clause 4
+    (novelty) is a canonical-string comparison against the prior library. Clause 3
+    (correctness vs source) is deliberately absent — labels only, one adjudication pass over
+    channel and control together, at scoring time.
+    """
+    goal = payload.get("goal")
+    if not isinstance(goal, dict):
+        return {"status": "absent", "raw": goal}
+
+    out: dict[str, Any] = {}
+    predicate = dsl.classify_predicate(goal.get("predicate"))
+    out["predicate"] = {k: v for k, v in predicate.items() if k != "ast"}
+    if predicate["status"] != "parsed":
+        out["status"] = "prose_rejected"
+        return out
+
+    usable = [t for t in used if t.step not in post_missing]
+    contexts = dsl.transition_contexts(usable)
+    out["store_consistency"] = dsl.consistent_with(
+        predicate["ast"], usable, contexts=contexts
+    )
+    out["store_consistency"]["negative_transitions"] = len(usable)
+    # sp80 and lf52 are the two games whose store holds a completion, and in BOTH the
+    # explorer never retained that row's post frame, so the count below is 0 everywhere.
+    # Clause 1 of the rubric's own-completion-positive half is unmeasurable on the frozen
+    # v2 store — see the header of `e2_prior_library.py`.
+    out["store_consistency"]["positives_evaluable"] = sum(1 for t in usable if t.completed)
+
+    refuter = dsl.classify_predicate(goal.get("refuter"))
+    out["refuter"] = {k: v for k, v in refuter.items() if k != "ast"}
+    if refuter["status"] == "parsed":
+        satisfied = [
+            transition.step
+            for transition, context in zip(usable, contexts, strict=True)
+            if dsl.evaluate(refuter["ast"], context) == dsl.TRUE
+        ]
+        out["refuter"]["satisfied_by_store_at"] = satisfied[:10]
+        out["refuter"]["self_refuting"] = bool(satisfied)
+
+    library = prior_library(game)
+    out["novelty"] = (
+        {"computed": False, "reason": f"{PRIOR_LIBRARY.name} absent or has no row for {game}"}
+        if library is None
+        else {
+            "computed": True,
+            "in_prior_library": predicate["canonical"] in library,
+            "library_size": len(library),
+        }
+    )
+
+    action = goal.get("test_action")
+    out["test_action"] = _test_action(action, vocabulary)
+    out["status"] = "parsed"
+    return out
+
+
+def _test_action(action: Any, vocabulary: set[str]) -> dict[str, Any]:
+    """WELL-FORMEDNESS only. Executability is the probe executor's job, at scoring time.
+
+    ft09 held a fully solved goal for ten actions because nothing connected it to an untried
+    action, so the action is part of the schema; but slice 2 executes no probes, and a form
+    check reported as an execution check would be the same overclaim in a new place.
+    """
+    if not isinstance(action, dict):
+        return {"well_formed": False, "reason": "absent", "raw": action}
+    problems: list[str] = []
+    action_id = action.get("action_id")
+    if not isinstance(action_id, int) or not 1 <= action_id <= 7:
+        problems.append(f"action_id {action_id!r} is not an integer 1-7")
+    colour = action.get("click_colour")
+    if action_id == 6 and colour is None:
+        problems.append("ACTION6 without a click target colour")
+    if action_id != 6 and colour is not None:
+        problems.append(f"click target {colour!r} given for a non-click action")
+    precondition = action.get("precondition")
+    if precondition is not None:
+        if not isinstance(precondition, dict) or not precondition.get("feature"):
+            problems.append(f"precondition {precondition!r} is not a feature/value pair")
+        elif not valid_guard(str(precondition["feature"]), vocabulary):
+            problems.append(
+                f"precondition feature {precondition['feature']!r} is not in the vocabulary"
+            )
+    return {
+        "well_formed": not problems,
+        "problems": problems,
+        "action_id": action_id,
+        "click_colour": colour,
+        "precondition": precondition,
+        "executability": "not tested — slice 2 executes no probes (notes/e2-slice2.md)",
+    }
+
+
+def channel_b(payload: dict[str, Any], game: str) -> dict[str, Any]:
+    """Parse the latents into counter expressions and emit the verifier's spec rows."""
+    items = payload.get("latents")
+    if not isinstance(items, list):
+        return {"status": "absent", "raw": items, "parsed": [], "prose_rejected": []}
+    parsed: list[dict[str, Any]] = []
+    rejected: list[dict[str, Any]] = []
+    for index, item in enumerate(items[:3]):
+        if not isinstance(item, dict):
+            rejected.append({"index": index, "raw": item, "reason": "not an object"})
             continue
-        rule = Rule(
-            key=key,
-            guard=guard,
-            guard_value=guard_value,
-            effect=effect,
-            support=0,
-            supporters=[],
-            tier="proposed",
+        outcome = dsl.classify_counter(item.get("definition"))
+        name = str(item.get("name") or f"latent{index + 1}")
+        if outcome["status"] != "parsed":
+            rejected.append({"index": index, "name": name, **outcome})
+            continue
+        parsed.append(
+            {"game": game, "name": name, "definition": outcome["canonical"], "as_written": outcome["text"]}
         )
-        rules[f"p{index}:{rule.rid()}"] = rule
-    return rules, rejected
+    return {
+        "status": "parsed" if parsed else "prose_rejected" if rejected else "none_proposed",
+        "proposed": len(items),
+        "parsed": parsed,
+        "prose_rejected": rejected,
+        "over_the_cap": max(0, len(items) - 3),
+    }
 
 
-def verify(rules: dict[str, Rule], store: list) -> tuple[dict[str, Rule], list[dict[str, Any]]]:
-    """Fire each proposal against the evidence it was shown. Survivors only."""
-    report = []
-    survivors: dict[str, Rule] = {}
-    for name, rule in rules.items():
-        support = contradicted = 0
-        for index, transition in enumerate(store):
-            if transition.key() != rule.key:
-                continue
-            if rule.guard is not None:
-                value = transition.guards.get(rule.guard)
-                value = tuple(value) if isinstance(value, list) else value
-                if value != rule.guard_value:
-                    continue
-            if abstract(transition.effect, MODE) == rule.effect:
-                support += 1
-                rule.supporters.append(index)
-            else:
-                contradicted += 1
-        rule.support = support
-        kept = support > 0 and contradicted == 0
-        if kept:
-            survivors[name] = rule
-        report.append(
+def channel_c(payload: dict[str, Any], pending: list[tuple]) -> dict[str, Any]:
+    """Record the proposals and whether each names a key the miner actually failed on.
+
+    The note's in-slice score is targeting against the MEASURED failure typing. The committed
+    floors carry `failure_split` per game and target, NOT per key, so a per-key
+    guard-fixable/census-separable rate is not computable from them and is not invented here.
+    What is computable is whether the proposal points at a key the miner left unresolved at
+    all, which is the necessary condition; the rest is a readout-time join against a per-key
+    typing that does not yet exist.
+    """
+    items = payload.get("vocabulary")
+    if not isinstance(items, list):
+        return {"status": "absent", "raw": items}
+    keys = {_key_text(key) for key in pending}
+    rows = []
+    for index, item in enumerate(items[:2]):
+        if not isinstance(item, dict):
+            rows.append({"index": index, "raw": item, "malformed": True})
+            continue
+        targeted = [str(k) for k in (item.get("targeted_keys") or [])]
+        rows.append(
             {
-                "rule": rule.rid(),
-                "support_on_store": support,
-                "contradicted_on_store": contradicted,
-                "kept": kept,
+                "index": index,
+                "name": item.get("name"),
+                "definition_sketch": item.get("definition_sketch"),
+                "targeted_keys": targeted,
+                "expected_direction": item.get("expected_direction"),
+                "targets_an_unresolved_key": [key in keys for key in targeted],
             }
         )
-    return survivors, report
-
-
-def per_key_delta(
-    miner: dict[str, Rule],
-    union: dict[str, Rule],
-    train: list,
-    test: list,
-    keys: list[tuple],
-) -> dict[str, Any]:
-    """Accuracy on exactly the transitions whose key the miner could not resolve.
-
-    The headline contrast is diluted by every key the miner already got right; this is the
-    subset the slice is actually about.
-    """
-    target = [t for t in test if t.key() in set(keys)]
-    if not target:
-        return {"transitions": 0}
-    before = score(miner, train, target, MODE)
-    after = score(union, train, target, MODE)
     return {
-        "transitions": len(target),
-        "miner_accuracy_over_all": before["accuracy_over_all"],
-        "union_accuracy_over_all": after["accuracy_over_all"],
-        "delta": (
-            round(after["accuracy_over_all"] - before["accuracy_over_all"], 4)
-            if before["accuracy_over_all"] is not None
-            and after["accuracy_over_all"] is not None
-            else None
+        "status": "recorded",
+        "proposed": len(items),
+        "over_the_cap": max(0, len(items) - 2),
+        "unresolved_keys_available": sorted(keys),
+        "proposals": rows,
+        "targeting_rate": (
+            "not computable from the committed floors: `failure_split` is per game and "
+            "target, not per key. Joined at readout time."
         ),
     }
 
@@ -693,14 +1176,23 @@ def run_cell(
         "store_transitions": digest["store_transitions"],
         "miner_rules": digest["miner_rules"],
         "unresolved_keys": digest["unresolved_keys"],
+        "inert_objects": digest["inert_objects"],
+        "observed_invariants": digest["observed_invariants"],
+        "negative_evidence": digest["negative_evidence"],
         "floor": floor,
     }
     if qwen is None:
         cell["skipped"] = "dry-run"
         return cell
 
+    prompt = PROMPT.format(
+        digest=digest["text"],
+        predicate_grammar=dsl.PREDICATE_GRAMMAR_TEXT,
+        counter_grammar=dsl.COUNTER_GRAMMAR_TEXT,
+    )
+    cell["prompt_chars"] = len(prompt)
     think = qwen.generate(
-        [{"role": "user", "content": PROMPT.format(digest=digest["text"])}],
+        [{"role": "user", "content": prompt}],
         max_tokens=THINK_BUDGET,
         thinking=True,
         seed=seed,
@@ -710,7 +1202,7 @@ def run_cell(
     # seed-tagged so variance-arm reruns can never overwrite slice 1's committed traces
     tag = f"{game}_{'full' if dose is None else dose}_s{seed}"
     (TRACES / f"{tag}.think.json").write_text(
-        json.dumps({"prompt": digest["text"], **think, "verdict": verdict}, indent=2)
+        json.dumps({"prompt": prompt, **think, "verdict": verdict}, indent=2)
     )
     cell["thinking"] = {k: v for k, v in think.items() if k not in ("raw", "answer")}
     cell["thinking_verdict"] = verdict
@@ -748,38 +1240,14 @@ def run_cell(
         cell["wall_seconds"] = think["wall_seconds"] + sum(a["wall_seconds"] for a in attempts)
         return cell
 
-    proposed, rejected = to_rules(payload, vocabulary)
-    survivors, report = verify(proposed, used)
-
-    # Survivors FIRST: _fire prefers guarded rules by support and otherwise takes the first
-    # unguarded rule in insertion order, so this makes a verified proposal beat the miner's
-    # majority guess on the key it addresses — deterministically, not by dict luck.
-    union = {**survivors, **baseline_rules}
+    _, post_missing = store_with_gaps(game)
     cell.update(
         {
             "outcome": "scored",
-            "proposed": len(proposed),
-            "parse_rejected": rejected,
-            "verified": len(survivors),
-            "verification": report,
-            # Qwen's rules ALONE — narrow by construction, reported for completeness only.
-            # Nobody deploys Qwen-instead-of-miner; this is not the contrast.
-            "qwen_only": {
-                "human_l1": score(survivors, used, human["l1"], MODE) if survivors else None,
-                "human_l2": score(survivors, used, human["l2"], MODE) if survivors else None,
-            },
-            # THE HEADLINE: the miner repaired by verified proposals, against the same floor.
-            "union": {
-                "human_l1": score(union, used, human["l1"], MODE),
-                "human_l2": score(union, used, human["l2"], MODE),
-            },
-            "unresolved_delta": {
-                "human_l1": per_key_delta(baseline_rules, union, used, human["l1"], pending),
-                "human_l2": per_key_delta(baseline_rules, union, used, human["l2"], pending),
-            },
-            "goal": payload.get("goal"),
-            "hidden_state": payload.get("hidden_state"),
-            "next_probe": payload.get("next_probe"),
+            "channel_a": channel_a(payload, game, used, post_missing, vocabulary),
+            "channel_b": channel_b(payload, game),
+            "channel_c": channel_c(payload, pending),
+            "payload": payload,
             "wall_seconds": think["wall_seconds"] + sum(a["wall_seconds"] for a in attempts),
         }
     )
@@ -788,16 +1256,32 @@ def run_cell(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--games", nargs="*", default=list(ITERATION_GAMES))
+    parser.add_argument("--games", nargs="*", default=list(SLICE2_GAMES))
     parser.add_argument("--doses", type=int, nargs="*", default=None)
     parser.add_argument("--model", type=Path, default=MODEL)
     parser.add_argument("--dry-run", action="store_true", help="digests + floors, no model")
     parser.add_argument(
         "--seed", type=int, default=SEED, help="phase-1 sampling seed; tags traces and output"
     )
+    parser.add_argument(
+        "--print-digest",
+        metavar="GAME",
+        default=None,
+        help="print one game's full digest text and exit (no model, no output file)",
+    )
+    parser.add_argument(
+        "--latent-spec",
+        type=Path,
+        default=None,
+        help="write channel B's parsed latents as an e2_latent_verify.py spec file",
+    )
     parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args()
     out = args.out or (ROOT / f"logs/e2_slice_seed{args.seed}.json")
+
+    if args.print_digest:
+        print(build_digest(args.print_digest, None)["text"])
+        return 0
 
     doses = tuple(args.doses) if args.doses else DOSES
     qwen = None
@@ -820,19 +1304,33 @@ def main() -> int:
             cell = run_cell(game, dose, qwen, human, seed=args.seed)
             cells.append(cell)
             if cell.get("outcome") == "scored":
-                # accuracy_over_ALL with coverage beside it. accuracy_over_covered rewards a
-                # proposal set that claims three transitions and gets them right, which is
-                # exactly the artifact a narrow guarded proposal produces.
-                floor2, union2 = cell["floor"]["human_l2"], cell["union"]["human_l2"]
-                delta = cell["unresolved_delta"]["human_l2"]
+                a, b, c = cell["channel_a"], cell["channel_b"], cell["channel_c"]
+                consistency = a.get("store_consistency") or {}
+                novelty = a.get("novelty") or {}
                 print(
-                    f"{label}: proposed {cell['proposed']} verified {cell['verified']} | "
-                    f"L2 acc/all floor {floor2['accuracy_over_all']} "
-                    f"(cov {floor2['coverage']}) -> union {union2['accuracy_over_all']} "
-                    f"(cov {union2['coverage']}) | unresolved-key delta "
-                    f"{delta.get('delta')} on n={delta.get('transitions')} | "
-                    f"think {cell['thinking']['think_chars']} chars "
+                    f"{label}: A {a['status']}"
+                    + (
+                        f"/{consistency.get('outcome')}"
+                        f"{' /SELF-REFUTING' if (a.get('refuter') or {}).get('self_refuting') else ''}"
+                        f"{' /in-prior-library' if novelty.get('in_prior_library') else ''}"
+                        f"{' /test-action-malformed' if not (a.get('test_action') or {}).get('well_formed') else ''}"
+                        if a["status"] == "parsed"
+                        else ""
+                    )
+                    + f" | B {len(b['parsed'])} parsed, {len(b['prose_rejected'])} rejected"
+                    + f" | C {c.get('proposed', 0)} proposals"
+                    + f" | think {cell['thinking']['think_chars']} chars "
                     f"{cell['wall_seconds']:.0f}s",
+                    flush=True,
+                )
+            elif cell.get("skipped") == "dry-run":
+                print(
+                    f"{label}: digest {cell['digest_chars']} chars, "
+                    f"{cell['store_transitions']} transitions, "
+                    f"{cell['unresolved_keys']} unresolved keys, "
+                    f"{cell['inert_objects']} inert objects, "
+                    f"{cell['negative_evidence']['satisfied_but_not_advanced']} refuted goal "
+                    f"candidates",
                     flush=True,
                 )
             else:
@@ -854,6 +1352,25 @@ def main() -> int:
                 )
             )
     print(f"\nwrote {out}")
+
+    if args.latent_spec:
+        specs = [
+            spec
+            for cell in cells
+            for spec in (cell.get("channel_b") or {}).get("parsed", [])
+        ]
+        args.latent_spec.parent.mkdir(parents=True, exist_ok=True)
+        args.latent_spec.write_text(
+            json.dumps(
+                {
+                    "generated_by": f"agent/harness/e2_slice.py --seed {args.seed}",
+                    "specs": specs,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        print(f"wrote {args.latent_spec} ({len(specs)} latents for e2_latent_verify.py)")
     return 0
 
 
