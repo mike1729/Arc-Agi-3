@@ -371,7 +371,84 @@ m0r0's result (zero effect at full dose on every arm, and zero cross-game delta 
 feature. That cross-game zero is worth restating with §5 in view: g50t is the game where the
 counter demonstrably gates the environment, and injecting it *still* moved nothing.
 
-## 8. Verdict on the template
+## 8. Addendum — cn04 and sc25, the other two games with live aliasing
+
+Follow-up, same day, operator-requested. Numbers: `logs/e2_hidden_state_cn04.json`,
+`logs/e2_hidden_state_sc25.json`. Both reruns gated PASS. Both log-only censuses are **0
+repeated / 0 aliased**, as everywhere.
+
+### cn04 — a clean replication of m0r0
+
+Identical in every measured respect. Path band `[6, 7, 8]` (56 digests); **70/70** targets vary
+with the in-episode count; **0** same-length route disagreements over 582 executions; pattern
+`(6, 7) agree, 8 differs` on 70/70; parity falsifiable on 70/70 and explains **0**. P1: **0/15**
+vary with the count since environment creation. So cn04 carries the same latent as m0r0 — an
+in-episode counter, zeroed by RESET, whose effect is not `mod 2` — and `(board, count)` is the
+whole hidden state there, as on m0r0.
+
+Its passive census (n=4) remains worthless in the same way: `c2_episode` separates 4/4, and so
+does **`rand2`**.
+
+### sc25 — the counter is mostly absent, and its census is a trap
+
+sc25 is a different animal. The explorer stalled: 1380 routing vs 1619 test actions, **688
+RESETs**, and 674 of them return to the origin `940d8b01`. Its 683 logged "alias conflicts"
+are not distributed across the game — they concentrate on **three `(state, action)` pairs at
+that one state**, which is why 683 conflicts yield only 4 repeated groups.
+
+The probe says the counter mostly does not matter here: of 65 targets over 24 states and 1100
+executions, only **10 vary** with the in-episode count — 55 are invariant across as many as 11
+distinct counts. Parity is strongly falsifiable (65/65, bands up to `[0…10]`) and explains
+**0/65**; `mod 3` also explains 0. The content control fails on **7/65**. P1: **0/15** vary with
+the global count.
+
+**The trap, and it is the best single argument in this note for active probing.** The passive
+census at the origin looks like a textbook parity result:
+
+| action at `940d8b01` | n | in-episode counts sampled | outcome |
+|---|---:|---|---|
+| `ACTION3` | 151 | 0 ×146 | self-loop |
+| | | 1 ×5 | `10030ddf` |
+
+Perfect separation by episode parity, n = 151. It is not parity. The probe holds the board
+fixed and walks the count 0…10: count 0 gives the self-loop and **counts 1 through 10 all give
+`10030ddf`**. The real rule is a **threshold — "is this the first action since RESET"** — and
+the census only looked like parity because the explorer's RESET-heavy routing sampled almost
+nothing but counts 0 and 1, where "first action" and "even count" are the same predicate.
+
+The passive data even contained its own refutation: the `ACTION6(47,22)` group has one
+observation at count **2** (even) giving the non-self-loop outcome, which is why `c2_episode`
+scored only 1/3 on sc25's aliased groups while every random control scored 0/3. A census can be
+perfectly separated, at n = 151, by a feature that is not the mechanism.
+
+### One metric reading, so it is not mistaken for a bug
+
+On sc25 the conflicts remaining under `(digest, c1_global, action)` is **4**, above the
+unaugmented baseline of **3**. That is correct and meaningful: the number counts conflicting
+*cells*, and a feature that splits a conflicted group without separating it turns one
+conflicted state into two. An augmentation that raises this number is actively harmful, and
+the metric should be read that way.
+
+### The four games together
+
+| game | aliased groups | P2 targets varying with count | same-length disagreements | parity falsifiable | parity explains | shape |
+|---|---:|---:|---:|---:|---:|---|
+| m0r0 | 3 | 72/72 | 0 | 72/72 | **0** | `(6,7)` vs `8` |
+| cn04 | 4 | 70/70 | 0 | 70/70 | **0** | `(6,7)` vs `8` |
+| g50t | 43 | 48/48 | 5/48 | **0/48** | n/a | adjacent counts only |
+| sc25 | 3 | 10/65 | 7/65 | 65/65 | **0** | threshold at count 0 |
+
+An in-episode action counter, zeroed by RESET, is real in all four — the count since the last
+RESET changes what an action does at a fixed board, and the count since environment creation
+never does (0 varying across 81 P1 targets, four games). **Parity is refuted wherever it is
+testable and is nowhere confirmed.** The functional form is not even shared: m0r0 and cn04
+break between 7 and 8, sc25 breaks between 0 and 1. And `(board, in-episode count)` is the
+complete hidden state only on m0r0 and cn04; g50t and sc25 both carry residual path dependence.
+
+Half B is unchanged by any of this and was not re-run: §5 already injected `c2_episode` into
+all 24 games, and every delta — cn04's and sc25's rows included — is exactly 0.0000.
+
+## 9. Verdict on the template
 
 **The loop closes, and its value is in the disagreement.** "Model proposes latent → machinery
 encodes → measured acceptance" ran end to end and returned a verdict finer than the proposal:
