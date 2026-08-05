@@ -280,26 +280,65 @@ Quotes are from S1's own traces.
 
 **Ref corpus, 42 first-clears (all L1):**
 
-| class | n | share | pass 2 | pass 1 |
-|---|---:|---:|---:|---:|
-| `prior-match` | 25 | 60% | 21 | 17 |
-| `accidental` | 11 | 26% | 15 | 20 |
-| `evidence-derived` | 6 | 14% | 6 | 5 |
+| class | n | share | pass 3 | pass 2 | pass 1 |
+|---|---:|---:|---:|---:|---:|
+| `prior-match` | 26 | 62% | 25 | 21 | 17 |
+| `accidental` | 10 | 24% | 11 | 15 | 20 |
+| `evidence-derived` | 6 | 14% | 6 | 6 | 5 |
 
-`accidental` — r11l/v2, sp80/v2, bp35/v3, cd82/v3, lp85/v3, r11l/v3, s5i5/v3, cd82/v4,
+`accidental` — r11l/v2, sp80/v2, bp35/v3, cd82/v3, lp85/v3, r11l/v3, cd82/v4,
 lp85/v4, sp80/v4, tn36/v4.
-`prior-match` — bp35/v2, ka59/v2, lp85/v2, **lf52/v2**, re86/v2, su15/v2, tu93/v2, **vc33/v2**,
-**ar25/v3**, ka59/v3, m0r0/v3, re86/v3, sp80/v3, su15/v3, tu93/v3, vc33/v3, **ar25/v4**,
+`prior-match` — bp35/v2, ka59/v2, lp85/v2, lf52/v2, re86/v2, su15/v2, tu93/v2, vc33/v2,
+ar25/v3, ka59/v3, m0r0/v3, re86/v3, **s5i5/v3**, sp80/v3, su15/v3, tu93/v3, vc33/v3, ar25/v4,
 bp35/v4, lf52/v4, re86/v4, r11l/v4, s5i5/v4, su15/v4, tu93/v4, vc33/v4.
 `evidence-derived` — ft09/v2, ft09/v3, ft09/v4, sb26/v2, sb26/v3, sb26/v4.
-(Bold = reclassified in pass 3; pass-2 reclassifications were lp85/v2, re86/v2, m0r0/v3,
-r11l/v4, ft09/v3.)
+(Bold = reclassified in pass 4. Pass 3: lf52/v2, vc33/v2, ar25/v3, ar25/v4 + ar25/local,
+sp80/local. Pass 2: lp85/v2, re86/v2, m0r0/v3, r11l/v4, ft09/v3.)
 
 **ft09 and sb26 are 3/3 each** — every pass of both games reaches the goal by inference, with
 no exceptions. That is what makes the two games worth the M-phase's attention.
 
 **Local corpus, 4 clears** (also re-verified in pass 3): ar25, vc33, sp80 `prior-match`;
 tn36 `accidental`. ar25 and sp80 were `accidental` before pass 3.
+
+### Pass 4 — closing the "goal stated 3+ turns back" hole
+
+Pass 3 left one hole: it read only PRIOR+ISSUER, so a goal committed earlier and still in
+force at the clear would be invisible. Reading all 40 remaining clears end-to-end was not
+affordable (2.06M chars of model reasoning); what was done instead:
+
+1. **9 episodes read in full** — su15/v2, su15/v3, re86/v3, re86/v4, sp80/v4, vc33/v4,
+   tn36/local, r11l/v3, s5i5/v3. **Eight confirmed pass 3 unchanged; one changed.**
+2. **A complete mechanical scan of the hole across all 40** — every pre-clear turn *except*
+   the PRIOR turn, matched for goal-commitment language, then hand-read. This covers exactly
+   what pass 3 could not see, for every episode, with no sampling.
+
+The scan's main result is itself a finding: **early turns contain goal *questions*, not goal
+*commitments*.** The overwhelming majority of hits are "let me think about what the goal might
+be", "Goal model: Unknown", "maybe the goal is…" — the model reliably flags goal uncertainty
+and rarely commits early. Only two `accidental` episodes contained a committed early goal:
+
+- **r11l/v3 — confirmed `accidental`.** It does commit early ("Goal model: Navigate the agent
+  from the ring position to the dark gray square destination … by clicking on intermediate
+  waypoints") but then discovers the objects merely swap — "This is a loop! I'm going in
+  circles" — clicks the ring to reset the board, and restarts exploration from scratch. The
+  goal in force at the clear is not that one. **An abandoned goal does not count**, which is
+  the rule's intent and is now stated.
+- **s5i5/v3 — reclassified to `prior-match`.** This one is a real miss, and of the most
+  expensive kind: the model fits a linear model to observed states —
+  `tracker_col = 28 + (value-5)/3` — checks it against three measured bar values, solves it
+  for the red cross's column, gets a required bar value of 77, computes the click counts
+  ("Increase green from 32 to 77: 5 more clicks … yellow from 23 to 77: 6 more clicks … that's
+  11 clicks total. Let me batch them"), and clears on the last click of the batch. The ISSUER
+  turn opens with "Let me check if the green bar changed when clicking at max value", which is
+  why the cheap read filed it as a probe.
+
+Final counts are in the table above. **Coverage is not uniform and should not be reported as
+such:** 15 of 46 clears (ft09 ×3, sb26 ×3, plus the 9 above) have been read end-to-end; the
+other 31 rest on untruncated PRIOR+ISSUER plus the complete early-goal scan. The residual risk
+is now narrow — a goal committed early, never restated, and executed by a turn whose own text
+reads as a probe — and s5i5/v3 was exactly that case, so the risk is real but bounded to
+episodes the scan already cleared by hand.
 
 **What pass 3 found, by case.** Two kinds of miss:
 
@@ -580,13 +619,13 @@ matches the true goal":
   mechanism): cd82 2/2, lp85 2/3, r11l 2/3, tn36 1/1.
 
 The single-sentence verdict: **the reference does not "never discover goals, occasionally get
-one for free" — it does all three things (60% of its clears are the default prior firing
-correctly, 26% are accidental, 14% are real in-context goal discovery), and, decisively, the
+one for free" — it does all three things (62% of its clears are the default prior firing
+correctly, 24% are accidental, 14% are real in-context goal discovery), and, decisively, the
 default prior fails to fire on the two games where it most obviously applies, so "where the
 prior fails" does not define the target set.**
 
-> **The three classification passes moved the numbers a long way and only in one direction**
-> (accidental 20 → 15 → 11 of 42). H is refuted more firmly at each pass, because the
+> **The four classification passes moved the numbers a long way and only in one direction**
+> (accidental 20 → 15 → 11 → 10 of 42, converging). H is refuted more firmly at each pass, because the
 > "occasionally gets one for free" half of it looks worse the more carefully the clears are
 > read: most clears are deliberate. But the direction-1 refutation — dc22 and sc25 — is the
 > load-bearing one and is untouched by any of this: it rests on stall labels and zero scores,
@@ -738,13 +777,13 @@ one produced wrong numbers that survived a commit.
    analysed rather than only `logs/runs/`. The ref corpus carries the analysis; the local split
    is reported and reproduces the note's numbers exactly.
 2. **Scope of step 1.** 42 ref clears + 4 local clears were read, not 4 — the positive set is
-   an order of magnitude larger on the correct corpus. Three passes: (1) three diagnostic
+   an order of magnitude larger on the correct corpus. Four passes: (1) three diagnostic
    turns, truncated; (2) ft09 and sb26 read end-to-end (§6), 5 labels corrected; (3) all 40
    remaining clears re-verified with untruncated ISSUER **and** PRIOR `[ASSISTANT]` blocks,
-   6 more corrected. All 46 clears now rest on at least an untruncated PRIOR+ISSUER read;
-   only ft09 and sb26 have been read end-to-end. Since pass 3 still only sees two turns, its
-   labels remain a lower bound on articulation — the same bias that produced the first two
-   rounds of error could still be hiding goal statements set out three or more turns back.
+   6 more corrected; (4) 9 more read end-to-end, plus a complete mechanical scan of every
+   pre-clear turn in all 40 for committed early goals, 1 more corrected (§6, "Pass 4").
+   **15 of 46 clears have been read end-to-end; the other 31 rest on untruncated
+   PRIOR+ISSUER plus the pass-4 scan.** Do not describe the set as fully read.
 3. `logs/kaggle-reference` could not enter step 1 (no transcripts) and is reported for context
    only.
 4. Step 2 used the existing `s2_goal_predicates_labelled.json` extraction rather than re-reading
