@@ -90,6 +90,15 @@ dead by measurement. **Add**, per the slice-2 note:
    survivors against the store (the `e2_dose.goal_curve` machinery pattern) and render
    "candidate ⟨paraphrase⟩ satisfied at step t — level did not advance". These feed the
    contradiction-respect readout.
+3b. **Observed invariants** (added 2026-08-05 after external review — see the slice-2
+   note's digest item 5): joint constraints among count features holding in every stored
+   state (constant sums / differences / complements; mine mechanically, seconds). One
+   compact digest line per invariant.
+   ⚠ **Also check `notes/e2-regrade.md`'s result before implementing this sub-task**:
+   the preamble's "remove the rule-proposal request" is conditional on it — if the
+   re-grade moved floors, keep a rule request with repair-bar wording per the slice-2
+   note's channel D conditional; if it hasn't run yet when you get here, the default
+   (removed) stands and a positive result becomes an addendum later.
 4. **Three request schemas** in PROMPT and EXTRACT, exactly as the slice-2 note
    specifies: channel A `{predicate, refuter, test_action}` (test_action =
    precondition + action id + click-target rule, guard vocabulary); channel B ≤ 3

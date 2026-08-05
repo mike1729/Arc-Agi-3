@@ -22,8 +22,13 @@ M-phase and integrates with X.
 
 **Dropped, by measurement:** rule proposals in the miner vocabulary (slice 1: 1/82
 substantive; slice 1.1: repaired display, same nothing) · the probe/directive channel
-(26/31 arms already answered, 8 unreachable, 0/4 predictions realized). Neither
-returns in any form.
+(26/31 arms already answered, 8 unreachable, 0/4 predictions realized). The probe
+channel does not return in any form. The rule drop carries one conditional (added after
+external review): the **retroactive re-grade** (`notes/e2-regrade.md` — zero-model,
+runs before the night) re-scores the ~190 recorded proposals under repair semantics
+against a mechanical tolerance-mining control. Negative → the drop is final, with data.
+Positive → a repair-bar rule request returns as channel D, with the model-vs-mechanism
+credit question settled by the control.
 
 ## The three channels
 
@@ -103,6 +108,14 @@ v2 floor on human L1/L2, plus the ceiling arm).
 metric — the hidden-state task showed a random bit outperforming real-but-irrelevant
 latents, so this floor has teeth.
 
+**Optional half-A extension (w):** the prefix audit (`logs/e1_prefix_audit.json` +
+machinery) makes navigational value measurable beyond the census games — re-derive
+per-state verified/diverged labels and score whether the latent-augmented hash separates
+diverged from verified prefixes. A latent that *explains replay divergence* is
+navigationally load-bearing even if mining-inert; half B alone would miss it (m0r0's
+counter is exactly this case). Implement only if the verifier sub-task has room; report
+as its own column, never pooled with half A.
+
 ### C — Vocabulary critic (the promoted channel)
 
 The one channel with a realized payoff: slice 1's ft09 output named a missing word that
@@ -140,7 +153,13 @@ majority text) plus the lifted cap. Add:
 2. **Inert-object inventory** (channel A's raw material);
 3. **Negative-evidence section** (null-effect runs; satisfied-but-not-advanced events);
 4. The three **request schemas** above, replacing the rule-proposal request and the
-   `next_probe` field entirely.
+   `next_probe` field entirely;
+5. **Observed invariants** (added after external review) — joint constraints among
+   census features holding in every stored state (constant sums/differences/complements
+   of count features; minable in seconds). The digest shows per-feature *marginals*, and
+   the probe task's impossible requests (ft09: two counts whose sum is fixed) were
+   reasonable inferences from marginals alone — this line removes that failure mode and
+   feeds channel A's test-action executability.
 
 ## Protocol
 
