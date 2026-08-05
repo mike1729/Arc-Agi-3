@@ -65,9 +65,12 @@ and calibrating, not because anything downstream relies on it.
 from the reference's own wins (avatar→salient target · every X into/onto its Y ·
 clear/collect all X · copy the displayed template · align the two matching objects),
 instantiated *mechanically* on each game's census and filtered by the same store
-consistency check. The channel is alive only where the model's predicate is correct **and
-the prior library's is not** — the corrected S1 read (`aca2d47`) puts the prior firing at
-**50%** of reference wins (21/42), so matching the library is worth nothing.
+consistency check. The channel is alive only where the model's predicate is correct **and is
+not one the library also produced** — the corrected S1 read (`aca2d47`) puts the prior firing
+at **50%** of reference wins (21/42), so matching the library is worth nothing. *(This
+sentence read "and the prior library's is not" until 2026-08-05, which is not decidable
+against a set of 24–252 surviving candidates. The readout's amended clause 1 says what binds
+and why.)*
 
 **Scope guard: the library is a measurement control on public games, not a deployed
 strategy.** Its hidden-set hit rate is irrelevant to its role here (adjudication happens
@@ -182,16 +185,66 @@ majority text) plus the lifted cap. Add:
   decode, first token never constrained, `THINK_BUDGET = 16384` (re-verified against the
   larger digests today), per-call mechanical thinking verdict, unclosed think voids the
   cell.
+  ⚠ **The budget was re-verified against the v1.1 digests, not the v3 ones.** v3 grew them
+  by a median +51% (worst ft09, +129%) and the two grammars plus the three asks add a
+  further 5,536 chars of scaffold to every prompt — 5,111 before the argument-order widening
+  was printed on 2026-08-05, +425 for that line. A budget re-probe is a NAMED FOLLOW-UP that
+  has not run; if the night voids cells on unclosed think blocks, this is the first place to
+  look.
 
 ## Pre-committed readout (comparisons, not thresholds)
 
 Decided now, before any call runs; each is a direction, no invented numbers:
 
 1. **A**: count of games where the model's predicate is store-consistent ∧
-   source-correct ∧ the prior library's is not. Zero → channel dead. Also reported:
-   self-refuting-refuter count (the calibration read) · test-action executability count
-   (the joint goal+action read) · contradiction-respect count (predicates consistent
+   source-correct ∧ **not a member of the prior library's surviving set** (canonical-string
+   comparison, `e2_slice.channel_a`'s `in_prior_library`). Zero → channel dead. Also
+   reported: self-refuting-refuter count (the calibration read) · test-action executability
+   count (the joint goal+action read) · contradiction-respect count (predicates consistent
    with recorded satisfied-but-not-advanced events — the re-specification read).
+
+   ⚠ **Amended 2026-08-05, before any call ran — the original sentence read "and the prior
+   library's is not [correct]", which is not decidable.** The library is a SET, not a
+   prediction: the built control keeps 24 (m0r0) to 252 (dc22) surviving candidates per
+   game. Under the set reading the channel wins only where *no* library survivor is
+   source-correct, which on the five games with >100 survivors is near-impossible by
+   construction, and a "channel A dead" verdict would carry no information about the model.
+   The membership reading above is decidable mechanically, before any adjudication, and it
+   is the one that matches the S1 phenomenon: the reference brings ONE default guess per
+   game, so "matching a stock prior is worth nothing" is a statement about the proposal, not
+   about the library's exhaustive reach.
+
+   Measured today, so the reading is not taken on faith — of the store-consistent row-C
+   predicates per game, the fraction the library's surviving set already contains:
+   dc22 40/118 · ft09 14/48 · ls20 23/67 · m0r0 6/27 · tu93 31/77 · vc33 10/38 ·
+   sp80 44/123 · lf52 8/24. **20–36% covered; 16–79 consistent predicates per game sit
+   outside the control.** The membership test is a real test, not a formality.
+
+   **Two-level, because a novelty hit has two readings** (`in_prior_shape_space` /
+   `novel_shape`, `e2_dsl.skeleton`): a predicate outside the library by canonical string
+   may still be one of the five stock SHAPES under a colour binding the library did not
+   enumerate. That is a re-binding of a prior the reference already brings, not a goal
+   capability the prior vocabulary cannot reach. The headline count is the membership
+   criterion above; the shape split is reported beside it and a win carried entirely by
+   re-bindings is stated as such in the verdict sentence.
+
+   **How much this second level is worth, measured rather than assumed: little, and it is
+   kept as insurance.** Splitting the 522 store-consistent row-C predicates across the 8
+   games three ways — in-library / re-binding / novel-shape — gives **176 / 19 / 327**. The
+   re-binding band is 3.6% of the space and is EMPTY on four games (m0r0, tu93, sp80, lf52);
+   it is 11 predicates on dc22 and ≤4 elsewhere. So the string criterion and the shape
+   criterion almost always agree, the flag costs nothing to carry, and its whole job is to
+   stop a dc22-sized edge case being written up as new goal capability. It is not a
+   correction to the headline count and must not be presented as one.
+
+   **One asymmetry recorded, not acted on:** the library implements five shapes, but only
+   FOUR fire in the S1 evidence (`notes/s1-clear-vs-stall.md` §`prior-match` — avatar→salient
+   target, every X into/onto its Y, collect/remove all X, align two matching). *Copy the
+   displayed template* has no measured firing and contributes 0–40 survivors per game
+   (ft09 40, dc22 35, vc33 20, tu93 19, m0r0 10, and none on ls20/sp80/lf52). It widens the
+   control on five games beyond what S1 observed. It stays in — the shape list is the note's
+   own — but a channel-A loss decided only by `copy_the_template` collisions is not a loss to
+   a measured prior and must be reported separately.
 2. **B**: count of accepted latents (beats all 5 random controls on half B; half A where
    measurable). Zero → channel dead on 3.6; the template survives regardless.
    **Guard against grammar-artifact false negatives** (added after external review):

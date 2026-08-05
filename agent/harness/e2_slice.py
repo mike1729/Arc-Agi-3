@@ -962,8 +962,15 @@ def parse_json(text: str) -> dict[str, Any] | None:
     return value if isinstance(value, dict) else None
 
 
-def prior_library(game: str) -> set[str] | None:
-    """The control's surviving predicates for this game, as canonical strings.
+def prior_library(game: str) -> tuple[set[str], set[str]] | None:
+    """The control's surviving predicates: `(canonical strings, shape skeletons)`.
+
+    Two sets, because a novelty hit has two readings and the pre-committed readout scores
+    them differently (`notes/e2-slice2.md` §readout 1, amended 2026-08-05). The canonical
+    set answers "did the model write a predicate this control also wrote". The skeleton set
+    answers "did it write one of the five stock SHAPES at all" — a proposal that clears the
+    first test but not the second is a re-binding of a prior, not a goal the prior
+    vocabulary cannot reach.
 
     None means the library has not been built yet — the novelty check then reports itself
     as not computed. Silently treating a missing control as an empty one would score every
@@ -975,11 +982,13 @@ def prior_library(game: str) -> set[str] | None:
     row = document.get("games", {}).get(game)
     if row is None or "shapes" not in row:
         return None
-    return {
-        dsl.canonical(candidate["dsl"])
-        for shape in row["shapes"].values()
-        for candidate in shape["surviving"]
-    }
+    surviving = [
+        candidate["dsl"] for shape in row["shapes"].values() for candidate in shape["surviving"]
+    ]
+    return (
+        {dsl.canonical(text) for text in surviving},
+        {dsl.skeleton(text) for text in surviving},
+    )
 
 
 def channel_a(
@@ -1030,15 +1039,35 @@ def channel_a(
         out["refuter"]["self_refuting"] = bool(satisfied)
 
     library = prior_library(game)
-    out["novelty"] = (
-        {"computed": False, "reason": f"{PRIOR_LIBRARY.name} absent or has no row for {game}"}
-        if library is None
-        else {
-            "computed": True,
-            "in_prior_library": predicate["canonical"] in library,
-            "library_size": len(library),
+    if library is None:
+        out["novelty"] = {
+            "computed": False,
+            "reason": f"{PRIOR_LIBRARY.name} absent or has no row for {game}",
         }
-    )
+    else:
+        canonical_set, skeleton_set = library
+        in_library = predicate["canonical"] in canonical_set
+        in_shapes = dsl.skeleton(predicate["ast"]) in skeleton_set
+        out["novelty"] = {
+            "computed": True,
+            # readout clause 4, the binding verdict: this predicate is not one the control
+            # also produced. `library_size` travels with it because the strength of the
+            # claim depends on how wide the net was — 24 surviving candidates on m0r0
+            # against 252 on dc22.
+            "in_prior_library": in_library,
+            "library_size": len(canonical_set),
+            # the second reading: same stock shape, different colour binding. A proposal
+            # that is novel by string but not by shape is a re-binding of a prior the
+            # library already brings, and the readout does not count it as new goal
+            # capability.
+            "in_prior_shape_space": in_shapes,
+            "skeleton": dsl.skeleton(predicate["ast"]),
+            # distinct PREDICATE SKELETONS, not the five stock shapes: one shape generates
+            # several skeletons (`align_two_matching` alone yields row_aligned, col_aligned,
+            # bbox_overlap and exactly_one). lf52's 43 surviving candidates are 6 skeletons.
+            "library_skeletons": len(skeleton_set),
+            "novel_shape": not in_shapes,
+        }
 
     action = goal.get("test_action")
     out["test_action"] = _test_action(action, vocabulary)
@@ -1277,7 +1306,12 @@ def main() -> int:
     )
     parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args()
-    out = args.out or (ROOT / f"logs/e2_slice_seed{args.seed}.json")
+    # `logs/e2_slice_seed{seed}.json` is SLICE 1.1's committed results file (format_version
+    # 1, 12 scored cells on seed 1). Slice 2 writes format_version 2 and the protocol runs
+    # SEEDS 1 AND 2 — so the old default path put a night run on a collision course with
+    # committed measurement data, and a stray `--seed 1 --dry-run` already overwrote it once
+    # on 2026-08-05 (recovered from git). Different experiment, different file.
+    out = args.out or (ROOT / f"logs/e2_slice2_seed{args.seed}.json")
 
     if args.print_digest:
         print(build_digest(args.print_digest, None)["text"])
@@ -1313,6 +1347,7 @@ def main() -> int:
                         f"/{consistency.get('outcome')}"
                         f"{' /SELF-REFUTING' if (a.get('refuter') or {}).get('self_refuting') else ''}"
                         f"{' /in-prior-library' if novelty.get('in_prior_library') else ''}"
+                        f"{' /novel-shape' if novelty.get('novel_shape') else ''}"
                         f"{' /test-action-malformed' if not (a.get('test_action') or {}).get('well_formed') else ''}"
                         if a["status"] == "parsed"
                         else ""

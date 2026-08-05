@@ -384,6 +384,30 @@ def canonical(text_or_node: str | dict[str, Any]) -> str:
     return unparse(normalize(node))
 
 
+def skeleton(text_or_node: str | dict[str, Any]) -> str:
+    """The canonical form with the colour bindings erased — the predicate's SHAPE.
+
+    `canonical` separates `empty(c4)` from `empty(c7)`; this does not. It exists because a
+    novelty hit against the prior library has two readings that a canonical-string
+    comparison pools, and they are not the same result: the model proposed a STOCK SHAPE
+    the library happened not to bind that way, or it proposed something outside the prior
+    vocabulary altogether. Only the second is evidence of a goal capability the library
+    does not already carry.
+
+    Colours are renumbered by first appearance IN THE CANONICAL STRING, so the
+    equal/distinct pattern survives — `exists x in c3: exists y in c3: same_shape(x, y)`
+    (one colour, matching itself) does not collapse onto the two-colour form, which is a
+    different prior shape. Renumbering the canonical string rather than the AST makes the
+    order deterministic for free: `normalize` has already fixed it.
+    """
+    mapping: dict[str, int] = {}
+
+    def _renumber(match: re.Match) -> str:
+        return f"c{mapping.setdefault(match.group(0), len(mapping))}"
+
+    return re.sub(r"c\d+", _renumber, canonical(text_or_node))
+
+
 # ======================================================================================
 # Predicate evaluation — strong three-valued, agreeing with row-C where row-C speaks
 # ======================================================================================
@@ -792,6 +816,12 @@ R is one of: {', '.join(RELATIONS)}.
   row_aligned     their row intervals overlap; col_aligned likewise for columns
   same_shape      their cell sets are equal up to translation
 
+EITHER ARGUMENT ORDER IS LEGAL. `R(x, y)` and `R(y, x)` are both accepted, and for the
+asymmetric relations they say different things. This is how you write "every X is INSIDE
+some Y", which is not the same predicate as "every X CONTAINS some Y":
+  all x in c2: exists y in c9: bbox_contains(y, x)     every c2 object is inside some c9
+  all x in c2: exists y in c9: bbox_contains(x, y)     every c2 object contains some c9
+
 Examples of well-formed predicates:
   empty(c4)
   count(c7) = 3
@@ -1005,6 +1035,11 @@ def _selftest_rejection() -> dict[str, Any]:
         "persists(c1)",
         "all x in c2: exists y in c9: bbox_overlap(x, y)",
         "exists x in c3: exists y in c3: same_shape(x, y)",
+        # The reversed argument order, which the prompt now states is legal. The control
+        # writes `every X into its Y` this way (`e2_prior_library._bindings` shape 2), so a
+        # grammar text that omitted it gave the library an expressive reach the channel was
+        # never told it had.
+        "all x in c2: exists y in c9: bbox_contains(y, x)",
     ]
     counters_reject = [
         "a hidden counter whose parity drives a mode switch",
@@ -1036,9 +1071,23 @@ def _selftest_rejection() -> dict[str, Any]:
         outcome = classify_counter(text)
         if outcome["status"] != "parsed":
             wrong.append(f"counter wrongly rejected: {text!r} ({outcome['reason']})")
+    # The two argument orders of an ASYMMETRIC relation must stay two predicates: if
+    # `normalize` sorted their arguments the way it sorts a symmetric relation's, the
+    # widening the prompt now advertises would collapse and "inside" would canonicalize to
+    # "contains".
+    inside = "all x in c2: exists y in c9: bbox_contains(y, x)"
+    contains = "all x in c2: exists y in c9: bbox_contains(x, y)"
+    if canonical(inside) == canonical(contains):
+        wrong.append("the two argument orders of bbox_contains share a canonical form")
+    # ...and the two orders of a SYMMETRIC one must collapse, or the same predicate written
+    # two ways would count as two library entries and as a novelty hit against itself.
+    if canonical("exists x in c3: exists y in c5: adjacent(x, y)") != canonical(
+        "exists x in c3: exists y in c5: adjacent(y, x)"
+    ):
+        wrong.append("the two argument orders of adjacent do NOT share a canonical form")
     return {
         "passed": not wrong,
-        "checked": len(must_reject) + len(must_accept) + len(counters_reject) + len(counters_accept),
+        "checked": len(must_reject) + len(must_accept) + len(counters_reject) + len(counters_accept) + 2,
         "failures": wrong,
     }
 
