@@ -1,173 +1,213 @@
-# E2 slice 3 — the maximal-context night on 3.6: boards in the window
+# E2 slice 3 — the maximal-context 3.6 night: a deduplicated, object-linked causal record
 
-**2026-08-05. Design + build spec + run protocol in one note. One GPU night, operator-
-requested: the last 3.6 experiment.** The question, stated so either answer closes it:
-**given everything the system can put in context — including, for the first time in
-this line, actual rendered boards — do any of the three channels beat their controls
-on Qwen3.6?** Protocol, controls, scoring, and readout are slice 2's verbatim
-(`notes/e2-slice2.md`); only the context changes. If this loses too, "the games are
-too hard for 3.6" is accepted with receipts, and everything model-side waits for 3.8.
+**2026-08-05. Design + build spec + run protocol. One GPU night, operator-requested:
+the last 3.6 experiment. Revised after external review** (`f2564e6` → this) — the first
+draft spent its budget on repeated full frames and underspecified the two most
+diagnostic exhibits; the review's redesign is adopted almost entirely, with the token
+arithmetic corrected and one addition the review could not have known was needed.
 
-**Prompt target: ≤ 50k tokens** (operator direction) — 4× slice 2, 19% of the window.
-The budget is spent on the four things every prior digest destroyed, in priority order:
-**what the board looks like** (frames) · **how the board maps to the handles predicates
-must use** (segmentation join) · **what happened over time, including a win** (episode
-render) · **which mechanics are already solved** (action gallery), so the model spends
-its reasoning on what is unsolved rather than re-deriving what the miner knows. Nothing
-here is speculative context-stuffing: each item below is tied to a measured failure.
+The question, stated so either answer closes it: **given the best evidence record this
+system can assemble, do any of the three channels beat their controls on Qwen3.6?**
+Controls, scoring, and the pre-committed bar are slice 2's, unchanged.
 
-## Why boards, specifically (measured, not vibes)
+## What the review corrected, verified before adopting
 
-- In the entire E2 line the model has **never seen a grid** — digests are feature-space
-  summaries. Yet the only reproducible discovery mechanism ever observed (ft09/sb26,
-  3/3 each, S1 corpus) was the model **reading a rendered board** and treating a static
-  object as a specification. Our inert-object *inventory* was the textual proxy for
-  that; slice 2 measured the proxy dead. The real thing is untested.
-- The reference harness those discoveries happened in (inspected today,
-  `logs/kaggle_v4/prompts/`) used **letter-coded ascii boards** (ARC colour symbols)
-  with segmentation as the primary view — that rendering is *proven readable* by this
-  model family. Use it, don't invent one.
-- **Context is not a constraint: 262,144 tokens** (`text_config.max_position_embeddings`,
-  measured today). The costs are prefill wall (~400 tok/s measured) and attention
-  quality — so the design below is generous but not indiscriminate.
-- Measured render costs: full 64×64 frame ≈ **4,335 tokens** (hex; letter-coding
-  similar), 11×11 patch ≈ **131 tokens**. Worst-case v4 prompt (dc22): digest ~12.5k +
-  3 full frames ~13k + ~20 patches ~3k + scaffold ≈ **~30k tokens** → ~75–90 s prefill.
-  Fine.
-- ⚠ The model config carries a **vision tower**. It stays out of scope: the voided July
-  lineage ran through the vlm server, the verified instrument is text-only direct
-  `mlx_lm`, and a vision bring-up is its own gated project. Text rendering only.
+1. **Token arithmetic was wrong in the first draft.** I counted the digest (12.7k),
+   not the templated prompt. Measured today on the real slice-2 trace: **dc22's full
+   templated prompt = 19,396 tokens** (48,721 chars). The review's 19,405 is right.
+   The old plan's ~28k frame section would have landed at ~47.4k with ~2.6k of slack —
+   and the FB turn (prior answer + counterexample) does not fit in that.
+2. **"Full ascii boards are proven readable" was too strong.** The reference harness
+   (`logs/kaggle_v4/prompts/`) supplied an *image*, a segmentation object, and a Python
+   tool, and its own instructions say: *use segmentation as the primary view; use ascii
+   only to read a small specific region; never scan the whole board with it*. The
+   evidence supports **entity tables + targeted crops**, not three or four full 64×64
+   text renders. Adopted.
+3. **The refuter request is logically malformed** (`e2_slice.py` §A): it asks for "the
+   single observation that would falsify your predicate", and scoring counts a refuter
+   *already satisfied by the store* as self-refutation. For a completion condition G,
+   the discriminating observations are **G true ∧ level did not advance**, or
+   **completion ∧ G false** — a bare predicate being true somewhere refutes nothing.
+   So slice 2's "self-refuting 10/16" measured a broken instrument, not calibration.
+   **Recorded as a slice-2 erratum** below and fixed here.
+4. **The prompt anchors the vocabulary channel** — it names `clicked_adjacent_to:C` as
+   the previous success (`e2_slice.py:841`), and slice 2 duly re-proposed it. Removed.
+5. **`_Objects` has no persistent IDs, shape hashes, containment or tracking** —
+   verified: it is a per-grid colour→components cache with cells and bbox only. The
+   entity map therefore needs a **real tracking layer**, which is now a build item, not
+   an assumption.
 
-## Arm F — frames in the digest (all 16 cells), target ≤ 50k tokens/prompt
+**And the one the review could not know:** its highest-value item — a real completion
+transition with its animation frames and the next-level frame — **cannot be built from
+the frozen store.** Verified: sp80's and lf52's completing rows have no post frame in
+`states.json`, and the engine returned **20 and 27 frames** at the completing action of
+which only the *count* was kept. The system has never retained a single completion
+frame. It is recoverable, cheaply: the prefix repair gives verified walked routes for
+all 24 games and the engine is deterministic, so **re-executing the completion route
+live and capturing everything the engine returns** is a small day task (build item 0).
+Without it, slice 3 would again ask the model what winning looks like while never
+having looked itself.
 
-Digest v4 = digest v3 (unchanged) + a rendered section per cell, own-store data only
-(**no human-replay frames in context** — hidden games won't have them; human replays
-remain the external test). Each item names the measured failure it attacks:
+## Provenance discipline (applies to every section)
 
-1. **Initial frame**, full board, letter-coded, row/col rulers. *(~4.3k tok)*
-2. **Most-explored frame**, full board. *(~4.3k)*
-3. **Inert-object overlay**: the initial frame with every cell that ever changed
-   dimmed to `·`, so the static objects — the specification candidates — are visually
-   isolated. The ft09/sb26 mechanism handed over directly. *(~4.3k)*
-4. **Per-frame segmentation** for the frames above: object id · colour · bbox · area ·
-   adjacency, in the census vocabulary. This is the **binding bridge** — the join
-   between what the model sees and the handles its predicates must quantify over,
-   which nothing in any previous slice ever gave it. *(~1.5k × 3)*
-5. **One played episode, rendered temporally**: the walked route to the most-explored
-   state (for sp80/lf52: **the completion route, ending at the completing action** —
-   the closest thing to "watch me win" the system owns) as first frame full + per-step
-   diff lines (`step k: ACTION4 → cells (r,c) a→b, …`). Temporal/causal structure is
-   the one thing every digest destroyed. *(~6k: full frame + 40–60 diff steps)*
-6. **Action-effect gallery**: per action id (and per click-colour for A6), 2 example
-   before→after 11×11 patches **plus the miner's resolved rule where one exists** —
-   the solved mechanics shown, so the model spends its window on the unsolved ones.
-   *(~2.5k)*
-7. **Per unresolved key, 2 example transitions as patches** (11×11, before → after,
-   action labelled; r=5 covers the measured locality radius 2–3). *(~3k)*
-8. **Alias exhibit** (games with recorded conflicts — m0r0, g50t class): the same
-   (board, action) rendered twice with its two different outcomes, side by side. The
-   concrete evidence channel B's latents are supposed to explain. *(~0.5k)*
-9. **Think-scaffold headers** (instruction only, no examples): the reference harness's
-   world-model discipline — `World model / Goal model / Action model / Open questions`
-   — which structured its best recorded play. *(~0.2k)*
+Every block is tagged **OBSERVED** (recorded frames/actions), **REPLAY-VERIFIED**
+(re-executed today and confirmed), or **MINER-INFERRED** (rules, effect classes,
+failure typing). Slice 2 blurred these, so a mined majority rule read as ground truth.
+The prompt states the distinction once, in one sentence, and every section header
+carries its tag.
 
-**Worst-case arithmetic, measured on real grids today** (tokenizer, not estimated):
-dc22 full frame **4,335 tok**, 11×11 patch **131 tok**; dc22's digest v3 ≈ 12.7k tok.
-Frames section ≈ 28k → **dc22 total ≈ 41k tokens**, inside the 50k target with ~9k of
-headroom for the scaffold and the think-discipline headers. Sparse boards cost far
-less (sp80 full frame 1,552 tok → ~14k section, ~25k total), so the target binds only
-on the dense games. Prefill at ~400 tok/s ≈ **~2 min/cell**.
+## The record (arm F) — allocation to a ≤ 50k templated prompt
 
-**Contamination hard rule:** the prompt must never name the five stock goal shapes —
-they are the channel-A control, and showing them turns `in_prior_library` into
-compliance instead of convergence. The generic framing stays neutral ("the completion
-condition is some predicate over objects; it may or may not resemble anything you have
-seen"). Verify by grep before the night: no shape-list phrasing anywhere in the
-rendered prompts.
+Worst case is dc22; sparse games (sp80) land far lower. Budget from the measured 19.4k
+base, which the v3 digest already occupies:
 
-## Arm FB — one contradiction-feedback turn (seed 1 only)
+| block | tokens (w) | tag |
+|---|---:|---|
+| digest v3, unchanged | ~19.4k | mixed, tagged per section |
+| 1. initial scene + entity map | 6–7k | OBSERVED + MINER-INFERRED |
+| 2. causal episode | 5–7k | REPLAY-VERIFIED |
+| 3. completion & goal contrasts | 3k | OBSERVED (new capture) |
+| 4. matched action/unresolved contrasts | 7–9k | OBSERVED + MINER-INFERRED |
+| 5. alias exhibits with histories | 1–2k | OBSERVED |
+| 6. reasoning contract + index | <1k | instruction |
+| **total** | **42–48k** | |
 
-For seed-1 cells whose channel-A predicate **fails mechanical verification**
-(store-falsified or self-refuting): one revision turn — the concrete counterexample
-rendered (the falsifying transition's patches, or the completion frame where the
-predicate evaluated false/true wrongly), plus "your refuter was already satisfied at
-step t" where applicable — then fresh think + extract, same budget, same verdict
-machinery. **Within-night attribution**: F vs F+FB on the same cells; the S1 corpus
-says re-specification-under-contradiction is the capability that separated the
-reference's L2 recoveries from its L2 deaths. Scored: revised predicates through the
-identical pipeline; readout adds one line — repair rate (failed → survived/correct).
+**1. Initial scene + persistent entity map.** The initial board **once**, letter-coded
+with rulers, plus an explicit **numeric↔letter colour legend** (the DSL quantifies over
+`cN`; without the legend the board and the grammar are two disconnected worlds — this
+is the join slice 2 never had). Then a table over stable entity IDs: colour, bbox,
+area, normalized shape hash, containment/children, adjacency, and status
+(inert / touched / HUD-suspected). **Inert objects are a column, not a second full
+board render.**
 
-## What does NOT change
+**2. The causal episode.** Not "the deepest route": the verified walked route
+maximizing coverage of distinct `(action key, effect class)` pairs and structural state
+novelty. Rendered as per-step lines — action, clicked entity ID, gameplay changes by
+entity lineage, HUD-only changes flagged separately, completion flags — referencing the
+initial frame rather than repeating it, with a **full snapshot only when topology or
+scene phase changes**. Where the game has a completion route (sp80, lf52), that route
+is the episode.
 
-Channels, schemas, DSL, prior library, random controls, adjudication rubric, v2
-floors, seeds (1, 2 — never 20260804), temp 0.6, `THINK_BUDGET = 16384`, two-phase
-decode, first token never constrained, per-call mechanical verdicts, worktree pinning,
-explicit `--out`. The pre-committed comparisons are slice 2's, verbatim, plus the FB
-repair-rate line. Attribution: F effect = slice 3 vs slice 2 per cell; FB effect =
-within-night.
+**3. Completion and goal contrasts** — the priority exhibit, from the new capture:
+last incomplete state · the completing action and its target entity · **every returned
+intermediate/animation frame** · the `level_completed` metadata · the next-level frame,
+labelled unambiguously as a different level. Plus the negative half: stored states
+where a row-C candidate was **satisfied and the level did not advance**, rendered as
+crops. A positive/negative pair beats any static frame.
 
-## Build (day task, zero-model, ~4–6 h)
+**4. Matched contrasts, not arbitrary examples.** Per important action key: an
+**effect / no-effect pair** under otherwise similar visible conditions, or two different
+effects; one example per distinct effect class where feasible. Per unresolved key: the
+miner's **actual no-separation witness** — same recorded guard values, same action,
+different outcomes. Crops are **adaptive to the union of changed cells** (11×11 is wrong
+for global effects); a global effect gets a full snapshot and says so. Each pair carries
+the miner's resolved rule where one exists, tagged MINER-INFERRED, so the model spends
+its reasoning on what is unsolved.
 
-1. **Frame renderer** (`agent/harness/e2_frames.py`, new): letter-coded board with
-   rulers · dimmed inert overlay · 11×11 before/after patch pairs · per-step diff
-   lines for the episode render · per-frame segmentation listing (reuse `_Objects`;
-   ids consistent with the census vocabulary) · the alias exhibit. Unit-check against
-   3 stored grids by eye and by round-trip.
-2. **Digest v4 assembly** in `e2_slice.py` behind a flag (`--frames`), default off —
-   slice-2 behaviour is preserved bit-for-bit without the flag. Episode source: the
-   verified walked routes (`logs/e1_prefix_v2/`), completion route for sp80/lf52.
-3. **Feedback turn** machinery: in-loop verification (the slice-2 checker, run at
-   extract time), revision prompt template, second think+extract, both calls logged
-   with separate verdicts.
-4. **Render all 8 v4 digests**, record **token** counts (tokenizer, not chars) against
-   the ≤ 50k target; if a cell overshoots, trim item 5's diff span first, then item
-   6 — never items 3, 4, or 8 (the mechanism carriers).
-5. **Contamination grep** (the hard rule above) over all rendered prompts.
-6. **Budget probe, mandatory**: one call on the largest v4 prompt (protocol of
-   `notes/think-budget-recheck.md`). The prompt grows ~4× over slice 2; the probe
-   re-measures warm prefill tok/s at ~50k tokens (the wall estimate needs it) and
-   confirms think closure — if the block does not close at 16,384, stop and report;
-   no unilateral budget raise.
+**5. Alias exhibits with histories.** The board **once**, beside the two histories that
+reach it: reset boundary, action count since reset, per-action-type counts, recent
+action suffix, click-colour sequence — then the same next action and its two different
+outcomes. The suspected cause is the history, which the first draft omitted while
+rendering the identical board twice.
 
-## Run (night)
+**6. Reasoning contract.** Headers — World model / Goal candidates / Action model /
+Hidden state / Contradictions / Open questions — plus: generate several hypotheses
+internally, eliminate those contradicted by the supplied evidence, emit one; and
+**cite frame / entity / transition IDs for every conclusion** (citation rate is a
+mechanical diagnostic, never a verdict).
 
-16 F cells ≈ 6.5 h (measured decode ~15 min/cell + ~2 min prefill at 50k) + up to 8 FB
-turns ≈ 2–2.5 h → **~9 h**. That is the longest night this line has run; it fits an
-overnight window but leaves no slack, so: **seeds run sequentially, seed 1 first, and
-seed 1 must include the FB turns.** If the night is cut short, a complete seed 1 with
-both arms is the result; a half-finished seed 2 is not a loss. Outputs
-`logs/e2_slice3_seed{1,2}.json`, traces tagged distinctly; `nohup` + `caffeinate`;
-voids logged, never rerun mid-night. Morning readout = slice 2's structure + the FB
-repair-rate line, appended to this note.
+**Contamination rule, unchanged and hard:** the prompt must never name the five stock
+goal shapes — they are channel A's control. Grep-gated before the night.
 
-## Expectations, calibrated in advance
+## Frozen-interface fixes (a deliberate scope change — read this)
 
-The reference agent had ascii boards, segmentation, *and* a Python query tool over its
-own history — and still stalled goal-unknown on 76% of episodes. Boards are not magic;
-the test is whether frames + our verification scaffolding beat **our controls**, and
-the pre-registered bar is unchanged. Two specific sub-reads worth pre-naming: does
-channel A improve on the games whose boards carry visible specification objects
-(ft09's clue patterns, ls20's target shapes), and on the completion-route games
-(sp80, lf52)? Those are where the mechanism, if it exists at 3.6, must show first.
+The review's third point is decisive: with the elicitation defects frozen, a loss means
+only *"visual context did not rescue a defective interface."* Since this is the
+best-shot final 3.6 experiment, the defects are fixed:
 
-**One risk this arm adds, stated before it can be explained away.** Slice 2's failures
-were *ungrounded* but *disciplined*: 16/16 parsed, 0 prose. A 4×-longer, richer prompt
-can degrade that — more surface to pattern-match, more chances to describe the board
-instead of committing to a predicate. So the readout keeps three instrument counters
-alongside the channel verdicts (**parse rate · think length · verdict passes**), and a
-drop in any of them against slice 2 is reported as a *context-length cost*, not folded
-into the capability verdict. This is also the only quantitative check we will ever have
-on the "long context degrades this quantized deployment" hypothesis — slice 2 at ~12k
-tokens is its matched control, and the pair is worth reporting whichever way it lands.
+- **Refuter → discriminating observation.** Asked as: a stored or reachable situation
+  where **your predicate holds and the level does not advance**, or a **completion where
+  it fails**. Scored the same way — self-refutation now means the *correct* thing.
+- **One out-of-DSL goal slot.** The DSL cannot express ft09-class per-clue
+  match/differ constraints, so a model can read the board correctly and still be forced
+  into a wrong aggregate predicate. Slice 3 accepts **one additional free-form
+  completion condition** per cell, adjudicated by source read (labels only), reported
+  as its own line and **never mixed into clause 1's mechanical count**.
+- **Anchor removed**: no mention of `clicked_adjacent_to` or of any past channel-C win.
+
+**Attribution, stated honestly:** slice 3 is therefore *not* a single-variable contrast
+with slice 2. What is preserved is the thing that matters for the verdict — the
+**controls** (prior library, five random features, measured failure typing) and the
+pre-committed bar. A win would need a follow-up ablation on 3.8 to attribute; a loss is
+interpretable exactly as intended: best record, fixed interface, controls unchanged.
+
+## Build (day task, zero-model except item 0's live replay, ~6–8 h)
+
+0. **Completion capture** (`agent/harness/e3_completion_capture.py`, new): replay the
+   verified walked completion routes (`logs/e1_prefix_v2/`) for sp80 and lf52 — and
+   lp85, r11l for the record — capturing **every frame** the engine returns at the
+   completing action, the metadata, and the next-level frame. Store local-only
+   (`logs/e1_completions/`, gitignored). Gate: the route must reproduce its recorded
+   pre-state before the completing action.
+1. **Entity tracker** (`agent/harness/e2_entities.py`, new): stable IDs across frames
+   (match by colour + shape hash + bbox proximity + area), normalized shape hashes,
+   containment, adjacency, inert/touched status. `_Objects` supplies none of this.
+2. **Renderer** (`agent/harness/e2_frames.py`, new): letter board + legend + rulers ·
+   entity table · adaptive crops around changed-cell unions · per-step diff lines ·
+   alias history blocks.
+3. **Digest v4 assembly** behind `--frames` (default off; slice-2 behaviour bit-exact
+   without it), with the provenance tags and the episode-selection criterion.
+4. **Interface fixes** in the request text and extraction schema (three items above).
+5. **Token accounting on the templated prompt** (tokenizer, chat template applied — the
+   defect that caused the first draft's error). Trim order if a cell overshoots 50k:
+   episode diff span → matched contrasts (keep one per class) → entity-table columns.
+   **Never** trim blocks 3 or 5.
+6. **Contamination grep** + **budget probe** on the largest v4 prompt
+   (`notes/think-budget-recheck.md` protocol): confirm think closure at 16,384 and
+   measure warm prefill tok/s at ~50k, which the wall estimate needs. No unilateral
+   budget raise.
+
+## Run
+
+16 F cells ≈ 6.5–7 h (decode ~15 min + prefill ~2 min/cell) + up to 8 FB turns ≈ 2.5 h
+→ **~9 h**. Seeds sequential, **seed 1 first and complete, including its FB turns** —
+if the window runs out, a complete seed 1 with both arms is a result; a truncated seed 2
+is not a loss. `nohup` + `caffeinate`; voids logged, never rerun mid-night.
+
+**Arm FB** (seed 1, cells whose predicate fails verification): one revision turn with
+the concrete counterexample rendered — the falsifying transition, or the completion
+frame where the predicate evaluated wrongly — then fresh think + extract, same budget,
+same machinery. Readout adds the repair rate (failed → survived/correct).
+
+## Readout
+
+Slice 2's structure verbatim — channel A clause 1 (store-consistent ∧ source-correct ∧
+outside the prior library), channel B (beats all five random controls), channel C
+(targeting + implementation queue) — plus four slice-3 lines: **FB repair rate** ·
+**out-of-DSL goal verdicts** (separate) · **citation rate** · and the three instrument
+counters (**parse rate · think length · verdict passes**) reported as a possible
+**context-length cost** against slice 2's ~19.4k matched control, never folded into the
+capability verdict.
 
 ## Cautions
 
-- PUBLISHING.md: rendered frames of competition games in *local* logs and prompts are
-  fine; **no frame renders in committed artifacts** — the committed JSONs carry
-  hashes, counts, and verdicts, never grids. Check before commit.
-- Concurrent agents: build in new files + the flagged `e2_slice.py` section; stage own
-  files only; `git status` first.
-- No invented numbers; render/token costs above are measured today; wall estimates (w).
-- The 3.8 plan is unchanged (`notes/qwen-3.8-upgrade.md`): whatever tonight says,
-  slice 3 reruns there as the generation contrast — tonight's run doubles as its 3.6
-  baseline.
+- **PUBLISHING.md, tightened for this slice:** prompts and think-traces will contain
+  rendered boards. Frames live in local logs only — **traces from this night are not
+  committed** (commit the scored JSONs, verdicts, counts; keep raw traces local, or
+  scrub grids before committing). Check the diff before pushing; git history counts as
+  redistribution.
+- Vision tower stays out of scope: text rendering only, direct `mlx_lm`, the verified
+  instrument.
+- Concurrent agents: new files plus the flagged section; stage own files; `git status`
+  first.
+- Working numbers labelled (w); the 19.4k base and frame/patch costs are measured.
+- Whatever tonight says, this protocol reruns on 3.8 as the generation contrast
+  (`notes/qwen-3.8-upgrade.md`); tonight is its 3.6 baseline.
+
+## Slice-2 erratum (filed here, referenced from the slice-2 note)
+
+The **self-refuting refuter diagnostic (10/16) is withdrawn**: the request asked for a
+predicate whose truth anywhere in the store counted as self-refutation, which is not
+what refutes a completion condition. The channel-A verdict does not depend on it —
+clause 1 was 0/8 on store-consistency, source-correctness and novelty independently —
+but the diagnostic itself must not be cited.

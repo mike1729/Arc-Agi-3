@@ -377,9 +377,20 @@ differ ones.
 outside the prior library. The one predicate that is exactly correct is one the mechanical
 control produces by itself.
 
-Diagnostics (never the verdict): **self-refuting refuters 10/16** · malformed test actions
-5/16 · re-proposed a digest-refuted candidate 1/16 · in prior library 4/16 · novel shape
-7/16 · **seeds agreed on the store outcome in only 5 of 8 games**.
+Diagnostics (never the verdict): ~~self-refuting refuters 10/16~~ **WITHDRAWN — see the
+erratum below** · malformed test actions 5/16 · re-proposed a digest-refuted candidate
+1/16 · in prior library 4/16 · novel shape 7/16 · **seeds agreed on the store outcome in
+only 5 of 8 games**.
+
+> **Erratum 2026-08-05 (external review, verified): the self-refuting-refuter diagnostic
+> is withdrawn.** The request asked for "the single observation that would falsify your
+> predicate", and scoring counted a refuter *already satisfied anywhere in the store* as
+> self-refutation. For a completion condition G that is not a refutation: the
+> discriminating observations are **G true ∧ level did not advance** or **completion ∧ G
+> false**. The 10/16 therefore measures a malformed request, not the model's
+> calibration, and must not be cited. **The channel-A verdict is unaffected** — clause 1
+> was 0/8 on store-consistency, source-correctness and novelty independently of any
+> refuter. Fixed in slice 3 (`notes/e2-slice3.md`, frozen-interface fixes).
 
 ## Channel B — latents as executable definitions
 
