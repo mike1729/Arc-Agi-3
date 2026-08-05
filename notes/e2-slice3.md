@@ -6,8 +6,7 @@ replaced repeated full frames with an object-linked causal record and fixed thre
 elicitation defects; **rev 2 (this) resolves the four remaining blockers**: the
 completion block renders three full frames plus compressed intermediate diffs (not all
 20/27), the refuter field is **removed** in favour of mechanically derived
-falsification, the prompt cap drops to **45k measured on the FB chat as well as the F
-prompt**, and alias exhibits are held to strict identical-board semantics — which
+falsification, the caps become **F ≤ 40k / FB chat ≤ 45k with the reserve stated**, and alias exhibits are held to strict identical-board semantics — which
 leaves **3 of them, all on m0r0** (measured), so the block is absent on seven of eight
 games and says so. **The current implementation is superseded — see the stop-work
 section before running anything.**
@@ -62,7 +61,7 @@ failure typing). Slice 2 blurred these, so a mined majority rule read as ground 
 The prompt states the distinction once, in one sentence, and every section header
 carries its tag.
 
-## The record (arm F) — allocation to a ≤ 50k templated prompt
+## The record (arm F) — allocation to a ≤ 40k templated prompt (FB chat ≤ 45k)
 
 Worst case is dc22; sparse games (sp80) land far lower. Budget from the measured 19.4k
 base, which the v3 digest already occupies:
@@ -76,14 +75,17 @@ base, which the v3 digest already occupies:
 | 4. matched action/unresolved contrasts | 7–9k | OBSERVED + MINER-INFERRED |
 | 5. alias exhibits with histories — **m0r0 only** (see below) | 0–1.5k | OBSERVED |
 | 6. reasoning contract + index | <1k | instruction |
-| **F prompt total — HARD CAP 45k** | **40–45k** | |
+| **F prompt total — HARD CAP 40k** | **36–40k** | |
 
-**The cap is 45k, not 50k, and it is on the complete templated F prompt.** The FB turn
-appends the model's own answer plus a rendered counterexample to that same chat; at 48k
-the FB chat exceeds the window budget we set. Build item 5 measures **both** prompts
-(F, and F+answer+counterexample) with the chat template applied; whichever is larger
-governs the trim. Slack released by an absent block (below) is **not** re-spent —
-prompts get shorter, which is a fine outcome.
+**Two caps, with the reserve stated explicitly: F ≤ 40k, FB ≤ 45k.** A 45k F prompt
+cannot also yield a ≤45k FB chat — the FB turn appends the model's own answer (~4–6k
+at measured think/answer lengths) plus a rendered counterexample (~1–3k) to the *same*
+chat, so the reserve must exist before F is rendered, not after. **5k reserve** covers
+both. Build item 5 measures each prompt separately with the chat template applied: F
+against 40k, the full FB chat against 45k; **either breach triggers the trim order**,
+and a cell whose FB chat cannot fit after trimming runs F-only (recorded, not silently
+dropped). Slack released by an absent block (below) is **not** re-spent — prompts get
+shorter, which is a fine outcome.
 
 **1. Initial scene + entity map.** The initial board **once**, letter-coded with
 rulers, plus an explicit **numeric↔letter colour legend** (the DSL quantifies over
@@ -107,16 +109,32 @@ initial frame rather than repeating it, with a **full snapshot only when topolog
 scene phase changes**. Where the game has a completion route (sp80, lf52), that route
 is the episode.
 
-**3. Completion and goal contrasts** — the priority exhibit, from the new capture.
-**Three full frames only** (the capture keeps all 20/27 locally; rendering them all
-would blow the block): **pre-completion** · **solved terminal** (the last frame of the
-completing action's sequence) · **next-level frame**, labelled unambiguously as a
-different level. Every *unique* intermediate frame appears as a **compressed diff**
-against its predecessor (changed cells by entity, one line each) — the animation's
-information without its cost. Plus the completing action and its target entity, and
-the `level_completed` metadata verbatim. The negative half: stored states where a row-C
-candidate was **satisfied and the level did not advance**, as crops. A positive/negative
-pair beats any static frame.
+**3. Completion and goal contrasts** — the priority exhibit, from the capture
+(`logs/e1_completions/`, all four games passed their gates).
+
+**Three full frames only** (the capture keeps every frame locally; rendering them all
+would blow the block), taken by the capture's own **role labels — never by position**:
+
+- **`last_incomplete_frame`** — the board before the completing action;
+- **`solved_terminal`** — the frame where the level is solved. For a non-WIN completion
+  this is the **penultimate** returned frame, not the last: the engine advances within
+  the same response, so the final frame already belongs to the next level. Measured:
+  sp80 roles `[…×18, solved_terminal, next_level_initial]` of 20; lf52 `[…×25,
+  solved_terminal, next_level_initial]` of 27; r11l 23; lp85 just `[solved_terminal,
+  next_level_initial]`. Reading "the last frame" as solved would have shown the model
+  **the wrong level's board as the winning state** on all four games — the single most
+  corrupting error available in this block.
+- **`next_level_initial`** — labelled unambiguously as a *different level*.
+
+Every *unique* intermediate frame appears as a **compressed diff** against its
+predecessor (changed cells by entity, one line each). Plus the completing action and
+its target entity, and the completion metadata verbatim (`levels_completed`, `state`,
+and the run's `win_levels` total, so "level solved" is never confused with "game won").
+The negative half: stored states where a row-C candidate was **satisfied and the level
+did not advance**, as crops. A positive/negative pair beats any static frame.
+
+**Renderer contract:** consume `completion.roles` from the capture JSON and fail loudly
+if the expected roles are absent (`role_error` non-null) — never fall back to indexing.
 
 **4. Matched contrasts, not arbitrary examples.** Per important action key: an
 **effect / no-effect pair** under otherwise similar visible conditions, or two different
@@ -225,13 +243,13 @@ in the header, not a diff against rev 1's prose.
 4. **Interface fixes** in the request text and extraction schema (three items above).
 5. **Token accounting on BOTH templated prompts** (tokenizer, chat template applied —
    the defect that caused the first draft's error): the F prompt, and the full FB chat
-   (F + the model's answer + the rendered counterexample). **Hard cap 45k on whichever
-   is larger.** Trim order if a cell overshoots: episode diff span → matched contrasts
+   (F + the model's answer + the rendered counterexample). **F ≤ 40k and FB chat ≤ 45k —
+   both checked, either breach triggers the trim.** Trim order if a cell overshoots: episode diff span → matched contrasts
    (keep one per effect class) → entity-table columns. **Never** trim block 3, and
    never trim block 5 (it is 3 exhibits on one game).
 6. **Contamination grep** + **budget probe** on the largest v4 prompt
    (`notes/think-budget-recheck.md` protocol): confirm think closure at 16,384 and
-   measure warm prefill tok/s at ~50k, which the wall estimate needs. No unilateral
+   measure warm prefill tok/s at ~40k, which the wall estimate needs. No unilateral
    budget raise.
 
 ## Run
