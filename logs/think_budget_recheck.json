@@ -1,0 +1,208 @@
+{
+  "calls": [
+    {
+      "answer_chars": 4295,
+      "budget": 16384,
+      "close_at_generation_token": 7444,
+      "digest_chars": 28742,
+      "dose": "full",
+      "game": "dc22",
+      "generation_tokens": 8560,
+      "generation_tps": 8.898904194722727,
+      "label": "dc22_full",
+      "prefilled_empty_think": false,
+      "prompt_chars": 30581,
+      "prompt_opens_think": true,
+      "prompt_tokens": 12524,
+      "prompt_tps": 371.507567638449,
+      "seed": 1,
+      "temp": 0.6,
+      "think_chars": 26884,
+      "think_closed": true,
+      "think_opened": true,
+      "think_tokens_encoded": 7443,
+      "tokens_remaining_at_close": 8940,
+      "top_p": 0.95,
+      "trace": "logs/e2_slice_traces/dc22_full_s1_b16384_tbcheck.think.json",
+      "verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "wall_seconds": 995.8
+    },
+    {
+      "answer_chars": 5149,
+      "budget": 16384,
+      "close_at_generation_token": 8010,
+      "digest_chars": 17741,
+      "dose": 125,
+      "game": "dc22",
+      "generation_tokens": 9676,
+      "generation_tps": 9.093241297219839,
+      "label": "dc22_125",
+      "prefilled_empty_think": false,
+      "prompt_chars": 19580,
+      "prompt_opens_think": true,
+      "prompt_tokens": 7140,
+      "prompt_tps": 334.2939843895496,
+      "seed": 1,
+      "temp": 0.6,
+      "think_chars": 25422,
+      "think_closed": true,
+      "think_opened": true,
+      "think_tokens_encoded": 8009,
+      "tokens_remaining_at_close": 8374,
+      "top_p": 0.95,
+      "trace": "logs/e2_slice_traces/dc22_125_s1_b16384_tbcheck.think.json",
+      "verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "wall_seconds": 1085.7
+    },
+    {
+      "answer_chars": 4765,
+      "budget": 16384,
+      "close_at_generation_token": 7097,
+      "digest_chars": 17196,
+      "dose": "full",
+      "game": "m0r0",
+      "generation_tokens": 8433,
+      "generation_tps": 9.096287287236514,
+      "label": "m0r0_full",
+      "prefilled_empty_think": false,
+      "prompt_chars": 19035,
+      "prompt_opens_think": true,
+      "prompt_tokens": 7395,
+      "prompt_tps": 424.80003068270724,
+      "seed": 1,
+      "temp": 0.6,
+      "think_chars": 25544,
+      "think_closed": true,
+      "think_opened": true,
+      "think_tokens_encoded": 7096,
+      "tokens_remaining_at_close": 9287,
+      "top_p": 0.95,
+      "trace": "logs/e2_slice_traces/m0r0_full_s1_b16384_tbcheck.think.json",
+      "verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "wall_seconds": 944.6
+    }
+  ],
+  "digest_lengths": [
+    {
+      "chars": 17741,
+      "dose": 125,
+      "game": "dc22",
+      "miner_rules": 19,
+      "store_transitions": 125,
+      "unresolved_keys": 10
+    },
+    {
+      "chars": 28742,
+      "dose": "full",
+      "game": "dc22",
+      "miner_rules": 14,
+      "store_transitions": 2939,
+      "unresolved_keys": 14
+    },
+    {
+      "chars": 3365,
+      "dose": 125,
+      "game": "ft09",
+      "miner_rules": 9,
+      "store_transitions": 125,
+      "unresolved_keys": 0
+    },
+    {
+      "chars": 4242,
+      "dose": "full",
+      "game": "ft09",
+      "miner_rules": 9,
+      "store_transitions": 1231,
+      "unresolved_keys": 1
+    },
+    {
+      "chars": 7769,
+      "dose": 125,
+      "game": "ls20",
+      "miner_rules": 4,
+      "store_transitions": 125,
+      "unresolved_keys": 4
+    },
+    {
+      "chars": 9759,
+      "dose": "full",
+      "game": "ls20",
+      "miner_rules": 4,
+      "store_transitions": 2877,
+      "unresolved_keys": 4
+    },
+    {
+      "chars": 11363,
+      "dose": 125,
+      "game": "m0r0",
+      "miner_rules": 10,
+      "store_transitions": 125,
+      "unresolved_keys": 9
+    },
+    {
+      "chars": 17196,
+      "dose": "full",
+      "game": "m0r0",
+      "miner_rules": 10,
+      "store_transitions": 2943,
+      "unresolved_keys": 10
+    },
+    {
+      "chars": 7066,
+      "dose": 125,
+      "game": "tu93",
+      "miner_rules": 6,
+      "store_transitions": 125,
+      "unresolved_keys": 3
+    },
+    {
+      "chars": 9927,
+      "dose": "full",
+      "game": "tu93",
+      "miner_rules": 4,
+      "store_transitions": 2573,
+      "unresolved_keys": 4
+    },
+    {
+      "chars": 5255,
+      "dose": 125,
+      "game": "vc33",
+      "miner_rules": 9,
+      "store_transitions": 125,
+      "unresolved_keys": 3
+    },
+    {
+      "chars": 9558,
+      "dose": "full",
+      "game": "vc33",
+      "miner_rules": 7,
+      "store_transitions": 800,
+      "unresolved_keys": 7
+    }
+  ],
+  "max_features_per_group": null,
+  "model": "/Users/michal/models/mlx/Qwen3.6-27B-8bit",
+  "note": "notes/think-budget-recheck.md",
+  "seed": 1,
+  "temp": 0.6,
+  "think_budget_under_test": 16384,
+  "top_p": 0.95
+}
