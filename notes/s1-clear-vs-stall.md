@@ -334,11 +334,46 @@ and rarely commits early. Only two `accidental` episodes contained a committed e
   why the cheap read filed it as a probe.
 
 Final counts are in the table above. **Coverage is not uniform and should not be reported as
-such:** 15 of 46 clears (ft09 ×3, sb26 ×3, plus the 9 above) have been read end-to-end; the
-other 31 rest on untruncated PRIOR+ISSUER plus the complete early-goal scan. The residual risk
-is now narrow — a goal committed early, never restated, and executed by a turn whose own text
-reads as a probe — and s5i5/v3 was exactly that case, so the risk is real but bounded to
-episodes the scan already cleared by hand.
+such.** The residual risk is narrow — a goal committed early, never restated, and executed by a
+turn whose own text reads as a probe — and s5i5/v3 was exactly that case, so the risk is real
+but bounded to episodes the scan already cleared by hand.
+
+### Pass 5 — full reads of the `accidental` set (in progress, 6 of 11 done)
+
+Reading all 31 remaining clears end-to-end is ~1.8M chars of model reasoning and does not fit
+one session. Prioritised by what can still move: **every correction across passes 1–4 turned an
+`accidental` into a deliberate label, never the reverse**, so `accidental` is the only class
+with meaningful flip risk, and it is being cleared first.
+
+| `accidental` episode | full read | verdict |
+|---|---|---|
+| sp80/v4 | ✅ | confirmed — "Let me try SPACE to see what it does" |
+| r11l/v3 | ✅ | confirmed — early goal **abandoned** after "I'm going in circles", board reset |
+| tn36/local | ✅ | confirmed — clearing click was a code-targeting fix, no goal |
+| bp35/v3 | ✅ | confirmed — LEFT batch's stated purpose was *respawning green blocks*; walked into the pink cross incidentally |
+| tn36/v4 | ✅ | confirmed — "Let me try clicking on the blue blob" after exhausting hypotheses |
+| lp85/v4 | ✅ | confirmed — "Goal model: Still unknown. Need to explore shift sequences" |
+| lp85/v3 | ⬜ 65k | pass-4 scan: no committed early goal |
+| cd82/v4 | ⬜ 72k | pass-4 scan: no committed early goal |
+| r11l/v2 | ⬜ 86k | pass-4 scan: no committed early goal |
+| sp80/v2 | ⬜ 114k | pass-4 scan: no committed early goal |
+| cd82/v3 | ⬜ 135k | pass-4 scan: no committed early goal |
+
+**6 of 11 `accidental` confirmed by full read, 0 changed.** Combined with pass 4's result that
+the other 5 contain no committed early goal, the `accidental` class is now the best-evidenced
+in the table — which is the opposite of its status three passes ago.
+
+**bp35/v3 is worth keeping as an exhibit** even though its label did not change: its one
+committed goal ("The goal is likely to collect all green blocks") was pursued to completion —
+all blocks collected, three separate rounds of them — and the level did **not** advance. It is
+the clearest case in the corpus of a confidently-held, internally-consistent, *wrong* goal
+model, and it cost the pass its whole budget.
+
+**Resumption state.** Per-episode reasoning traces for all 40 are generated at
+`scratchpad/full/*.txt` by the snippet in `s1_contrast.py`'s docstring (turns + actions, tool
+calls and result dumps stripped). Remaining: the 5 `accidental` above, then the 23
+`prior-match` episodes (~1.3M chars), where the open question is only `prior-match` vs
+`evidence-derived`, not deliberateness.
 
 **What pass 3 found, by case.** Two kinds of miss:
 
@@ -781,8 +816,9 @@ one produced wrong numbers that survived a commit.
    turns, truncated; (2) ft09 and sb26 read end-to-end (§6), 5 labels corrected; (3) all 40
    remaining clears re-verified with untruncated ISSUER **and** PRIOR `[ASSISTANT]` blocks,
    6 more corrected; (4) 9 more read end-to-end, plus a complete mechanical scan of every
-   pre-clear turn in all 40 for committed early goals, 1 more corrected (§6, "Pass 4").
-   **15 of 46 clears have been read end-to-end; the other 31 rest on untruncated
+   pre-clear turn in all 40 for committed early goals, 1 more corrected (§6, "Pass 4");
+   (5) full reads of the `accidental` set, 6 of 11 done, 0 changed (§6, "Pass 5").
+   **18 of 46 clears have been read end-to-end; the other 28 rest on untruncated
    PRIOR+ISSUER plus the pass-4 scan.** Do not describe the set as fully read.
 3. `logs/kaggle-reference` could not enter step 1 (no transcripts) and is reported for context
    only.
