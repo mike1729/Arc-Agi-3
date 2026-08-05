@@ -29,6 +29,12 @@ runs before the night) re-scores the ~190 recorded proposals under repair semant
 against a mechanical tolerance-mining control. Negative → the drop is final, with data.
 Positive → a repair-bar rule request returns as channel D, with the model-vs-mechanism
 credit question settled by the control.
+**RESOLVED 2026-08-05 — negative. The drop is FINAL and there is no channel D.** The
+re-grade ran (`logs/e2_regrade.json`): the mechanical control beats both model arms at
+every ε on every game, by 10–15×; tolerance moves the model arms by +0.011 total; only
+13 of 190 proposals sit in the near-miss band. The control's win is a zero-model miner
+improvement (partial tier 1), filed as its own follow-up — see the result section of
+`notes/e2-regrade.md`.
 
 ## The three channels
 

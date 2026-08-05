@@ -100,14 +100,16 @@ the 24 games. Route form is `new_game(); RESET; <actions>`; prefer `short` where
 (it is verified too), else `walked`. `logs/e1_store_v2/` is unchanged and its `graph.json`
 `prefix` map should no longer be used for routing on any game.
 
-### One claim in the audit that this narrows
+### One claim in the audit that this narrows — corrected in place
 
-`e1_prefix_audit.py`'s docstring says `unreached` "is not merely an upper bound on the drop
+`e1_prefix_audit.py`'s docstring said `unreached` "is not merely an upper bound on the drop
 rate, it is the drop rate", because every walked edge's target is in `reached` by
-construction. That holds **for searches built out of the store**, which was the audit's
-premise. The rerun's `performs` log is outside that premise — it is the execution record, not
-the store — and it recovers 100% where the audit's ceiling was 62.2%. The audit's sentence
-should be read as scoped to store-derived routes; it is not a general drop rate.
+construction. That holds **for routes re-derived from the store**, which was the audit's
+premise, and the flat phrasing was an overclaim. The rerun's `performs` log is outside that
+premise — it is the execution record, not the store — and it recovers 100% where the audit's
+ceiling was 62.2%. The audit's docstring is now scoped explicitly (same day, no numbers
+changed): its per-game measurements stand, and what they bound is the store rather than the
+recoverable truth.
 
 ### Limitations
 

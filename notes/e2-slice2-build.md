@@ -94,11 +94,11 @@ dead by measurement. **Add**, per the slice-2 note:
    note's digest item 5): joint constraints among count features holding in every stored
    state (constant sums / differences / complements; mine mechanically, seconds). One
    compact digest line per invariant.
-   ⚠ **Also check `notes/e2-regrade.md`'s result before implementing this sub-task**:
-   the preamble's "remove the rule-proposal request" is conditional on it — if the
-   re-grade moved floors, keep a rule request with repair-bar wording per the slice-2
-   note's channel D conditional; if it hasn't run yet when you get here, the default
-   (removed) stands and a positive result becomes an addendum later.
+   ⚠ **RESOLVED 2026-08-05 — the re-grade ran and is negative; the default stands.**
+   Remove the rule-proposal request, no repair-bar wording, no channel D. The model arms
+   were beaten 10–15× by the zero-model tolerance control at every ε
+   (`notes/e2-regrade.md` result section, `logs/e2_regrade.json`). Nothing further to
+   check here.
 4. **Three request schemas** in PROMPT and EXTRACT, exactly as the slice-2 note
    specifies: channel A `{predicate, refuter, test_action}` (test_action =
    precondition + action id + click-target rule, guard vocabulary); channel B ≤ 3

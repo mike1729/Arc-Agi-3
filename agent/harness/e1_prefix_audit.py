@@ -23,13 +23,25 @@ THE THREE NUMBERS
     reached     the state is the endpoint of SOME walked prefix in this sweep, whether or
                 not it was its own. Also a sound lower bound, and a strictly tighter one:
                 a state whose own prefix is wrong may still sit on another state's path.
-    unreached   neither, and — corrected 2026-08-05, see the note — this is not merely an
-                upper bound on the drop rate, it is the drop rate. `reached` is a CEILING,
-                not a floor: every walked edge's target is in `reached` by construction, so
-                no search over walked edges can leave the set. The only search with any
-                headroom uses the STORE's edges, which is composition again and has to be
-                walked to be believed. Measured on 110 such routes: 29 land, all of them in
-                barely-broken games, 0 of 70 in the nine sub-6% games.
+    unreached   neither. WITHIN THIS AUDIT'S PREMISE — routes re-derived from the STORE —
+                this is not merely an upper bound on the drop rate, it is the drop rate.
+                `reached` is a CEILING, not a floor: every walked edge's target is in
+                `reached` by construction, so no search over walked edges can leave the set.
+                The only search with any headroom uses the STORE's edges, which is
+                composition again and has to be walked to be believed. Measured on 110 such
+                routes: 29 land, all of them in barely-broken games, 0 of 70 in the nine
+                sub-6% games.
+
+                SCOPE, corrected 2026-08-05 (`notes/e1-prefix-repair.md`, second pass). Read
+                that as a statement about the store and nothing else. It is NOT a general
+                drop rate, and the earlier phrasing here — which asserted it flatly — was an
+                overclaim. The instrumented rerun's `performs` log lies outside the premise:
+                it is the EXECUTION record rather than the store, and the walked path to
+                every state is recoverable from it. Doing so routes 27,521 of 27,521 states
+                in all 24 games, every one verified by fresh replay, against this audit's
+                62.2% `reached` ceiling and 53.4% `verified`. The defect the audit measured
+                is real and its per-game numbers stand; what it bounds is the store, not the
+                recoverable truth.
 
 The audit never re-derives anything and never writes into `logs/e1_store_v2/`.
 
