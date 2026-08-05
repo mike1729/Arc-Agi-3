@@ -1,10 +1,16 @@
 # E2 slice 3 — the maximal-context 3.6 night: a deduplicated, object-linked causal record
 
 **2026-08-05. Design + build spec + run protocol. One GPU night, operator-requested:
-the last 3.6 experiment. Revised after external review** (`f2564e6` → this) — the first
-draft spent its budget on repeated full frames and underspecified the two most
-diagnostic exhibits; the review's redesign is adopted almost entirely, with the token
-arithmetic corrected and one addition the review could not have known was needed.
+the last 3.6 experiment. Revised twice after external review** — rev 1 (`f65729d`)
+replaced repeated full frames with an object-linked causal record and fixed three
+elicitation defects; **rev 2 (this) resolves the four remaining blockers**: the
+completion block renders three full frames plus compressed intermediate diffs (not all
+20/27), the refuter field is **removed** in favour of mechanically derived
+falsification, the prompt cap drops to **45k measured on the FB chat as well as the F
+prompt**, and alias exhibits are held to strict identical-board semantics — which
+leaves **3 of them, all on m0r0** (measured), so the block is absent on seven of eight
+games and says so. **The current implementation is superseded — see the stop-work
+section before running anything.**
 
 The question, stated so either answer closes it: **given the best evidence record this
 system can assemble, do any of the three channels beat their controls on Qwen3.6?**
@@ -63,22 +69,35 @@ base, which the v3 digest already occupies:
 
 | block | tokens (w) | tag |
 |---|---:|---|
-| digest v3, unchanged | ~19.4k | mixed, tagged per section |
+| digest v3 — **evidence content unchanged**, section headers gain provenance tags | ~19.4k | mixed, tagged per section |
 | 1. initial scene + entity map | 6–7k | OBSERVED + MINER-INFERRED |
 | 2. causal episode | 5–7k | REPLAY-VERIFIED |
-| 3. completion & goal contrasts | 3k | OBSERVED (new capture) |
+| 3. completion & goal contrasts | 3k | REPLAY-VERIFIED (new capture) |
 | 4. matched action/unresolved contrasts | 7–9k | OBSERVED + MINER-INFERRED |
-| 5. alias exhibits with histories | 1–2k | OBSERVED |
+| 5. alias exhibits with histories — **m0r0 only** (see below) | 0–1.5k | OBSERVED |
 | 6. reasoning contract + index | <1k | instruction |
-| **total** | **42–48k** | |
+| **F prompt total — HARD CAP 45k** | **40–45k** | |
 
-**1. Initial scene + persistent entity map.** The initial board **once**, letter-coded
-with rulers, plus an explicit **numeric↔letter colour legend** (the DSL quantifies over
+**The cap is 45k, not 50k, and it is on the complete templated F prompt.** The FB turn
+appends the model's own answer plus a rendered counterexample to that same chat; at 48k
+the FB chat exceeds the window budget we set. Build item 5 measures **both** prompts
+(F, and F+answer+counterexample) with the chat template applied; whichever is larger
+governs the trim. Slack released by an absent block (below) is **not** re-spent —
+prompts get shorter, which is a fine outcome.
+
+**1. Initial scene + entity map.** The initial board **once**, letter-coded with
+rulers, plus an explicit **numeric↔letter colour legend** (the DSL quantifies over
 `cN`; without the legend the board and the grammar are two disconnected worlds — this
-is the join slice 2 never had). Then a table over stable entity IDs: colour, bbox,
-area, normalized shape hash, containment/children, adjacency, and status
-(inert / touched / HUD-suspected). **Inert objects are a column, not a second full
-board render.**
+is the join slice 2 never had). Then a table: colour, bbox, area, normalized shape
+hash, containment/children, adjacency, status (inert / touched / HUD-suspected).
+**Inert objects are a column, not a second full board render.**
+
+**Identity scope (tightened per review): entity IDs are stable within one episode or
+one transition pair, never globally across unrelated store branches** — cross-branch
+matching by colour+shape+proximity fabricates identity where none is recorded. Where
+an entity's lineage changes (split / merge / recolour), the change is stated
+explicitly with a confidence tag; unmatched entities get fresh IDs rather than a
+speculative link.
 
 **2. The causal episode.** Not "the deepest route": the verified walked route
 maximizing coverage of distinct `(action key, effect class)` pairs and structural state
@@ -88,12 +107,16 @@ initial frame rather than repeating it, with a **full snapshot only when topolog
 scene phase changes**. Where the game has a completion route (sp80, lf52), that route
 is the episode.
 
-**3. Completion and goal contrasts** — the priority exhibit, from the new capture:
-last incomplete state · the completing action and its target entity · **every returned
-intermediate/animation frame** · the `level_completed` metadata · the next-level frame,
-labelled unambiguously as a different level. Plus the negative half: stored states
-where a row-C candidate was **satisfied and the level did not advance**, rendered as
-crops. A positive/negative pair beats any static frame.
+**3. Completion and goal contrasts** — the priority exhibit, from the new capture.
+**Three full frames only** (the capture keeps all 20/27 locally; rendering them all
+would blow the block): **pre-completion** · **solved terminal** (the last frame of the
+completing action's sequence) · **next-level frame**, labelled unambiguously as a
+different level. Every *unique* intermediate frame appears as a **compressed diff**
+against its predecessor (changed cells by entity, one line each) — the animation's
+information without its cost. Plus the completing action and its target entity, and
+the `level_completed` metadata verbatim. The negative half: stored states where a row-C
+candidate was **satisfied and the level did not advance**, as crops. A positive/negative
+pair beats any static frame.
 
 **4. Matched contrasts, not arbitrary examples.** Per important action key: an
 **effect / no-effect pair** under otherwise similar visible conditions, or two different
@@ -104,17 +127,37 @@ for global effects); a global effect gets a full snapshot and says so. Each pair
 the miner's resolved rule where one exists, tagged MINER-INFERRED, so the model spends
 its reasoning on what is unsolved.
 
-**5. Alias exhibits with histories.** The board **once**, beside the two histories that
-reach it: reset boundary, action count since reset, per-action-type counts, recent
-action suffix, click-colour sequence — then the same next action and its two different
-outcomes. The suspected cause is the history, which the first draft omitted while
-rendering the identical board twice.
+**5. Alias exhibits with histories — exactness is the whole point, and it makes the
+block nearly empty.** An exhibit qualifies only as **identical visible board + same
+action + different outcome**. Same action with matching *miner features* on *different
+boards* is a vocabulary gap (channel C's business), not evidence for a history latent,
+and must never appear here.
+
+**Measured availability across the eight slice-3 games (rerun census, today):
+m0r0 3 · dc22, ft09, ls20, tu93, vc33, sp80, lf52 — zero.** (For the record, the games
+that do have them are outside this set: g50t 43, cn04 4, sc25 3, cd82 1.) So the block
+renders **on m0r0 only**; on the other seven the prompt states *"no state in this store
+produced two different outcomes for the same action — this game shows no evidence of
+hidden state"*, and channel B's request is suppressed there rather than inviting
+invention. **Tokens are not reallocated** — those prompts are simply shorter.
+
+Where it renders: the board **once**, beside the two histories that reach it — reset
+boundary, action count since reset, per-action-type counts, recent action suffix,
+click-colour sequence — then the same next action and its two different outcomes. The
+suspected cause is the history; the first draft rendered the one part known to be
+identical and omitted it.
+
+*Optional, only if the day has room:* **controlled dual-history probes** — the P2
+method from `notes/e2-hidden-state.md` (execute distinct routes of different length to
+one digest, same next action) generates exhibits on demand for games that have none.
+This is live game contact and its own gated step; skip rather than rush it.
 
 **6. Reasoning contract.** Headers — World model / Goal candidates / Action model /
 Hidden state / Contradictions / Open questions — plus: generate several hypotheses
-internally, eliminate those contradicted by the supplied evidence, emit one; and
-**cite frame / entity / transition IDs for every conclusion** (citation rate is a
-mechanical diagnostic, never a verdict).
+internally, eliminate those contradicted by the supplied evidence, emit one. Grounding
+is captured **in the extraction schema as `evidence_ids`** (frame / entity / transition
+IDs per claim), **not scored from free-form thinking** — free-text citation counting is
+a text-matching exercise, while a schema field is checkable against the record.
 
 **Contamination rule, unchanged and hard:** the prompt must never name the five stock
 goal shapes — they are channel A's control. Grep-gated before the night.
@@ -125,14 +168,20 @@ The review's third point is decisive: with the elicitation defects frozen, a los
 only *"visual context did not rescue a defective interface."* Since this is the
 best-shot final 3.6 experiment, the defects are fixed:
 
-- **Refuter → discriminating observation.** Asked as: a stored or reachable situation
-  where **your predicate holds and the level does not advance**, or a **completion where
-  it fails**. Scored the same way — self-refutation now means the *correct* thing.
-- **One out-of-DSL goal slot.** The DSL cannot express ft09-class per-clue
-  match/differ constraints, so a model can read the board correctly and still be forced
-  into a wrong aggregate predicate. Slice 3 accepts **one additional free-form
-  completion condition** per cell, adjudicated by source read (labels only), reported
-  as its own line and **never mixed into clause 1's mechanical count**.
+- **The refuter field is removed entirely.** "Discriminating observation" was still
+  asking the model to invent a second predicate; there is no need. The model supplies
+  **`evidence_ids`** (the states/transitions it claims support the predicate) and its
+  **test action**; the checker derives falsification **mechanically** from the record —
+  false positives (predicate true, level did not advance) and false negatives
+  (completion occurred, predicate false). Slice 2's refuter diagnostic dies with the
+  field; what replaces it is computed, not claimed.
+- **One out-of-DSL goal slot, as an understanding diagnostic.** The DSL cannot express
+  ft09-class per-clue match/differ constraints, so a model can read the board correctly
+  and still be forced into a wrong aggregate predicate. Slice 3 accepts **one free-form
+  completion condition** per cell, adjudicated by source read (labels only). It is
+  reported on its own line and is **never a win against the prior-library control** —
+  that control has no free-form output, so the comparison would be unmatched. It
+  measures understanding, not channel-A victory.
 - **Anchor removed**: no mention of `clicked_adjacent_to` or of any past channel-C win.
 
 **Attribution, stated honestly:** slice 3 is therefore *not* a single-variable contrast
@@ -140,6 +189,22 @@ with slice 2. What is preserved is the thing that matters for the verdict — th
 **controls** (prior library, five random features, measured failure typing) and the
 pre-committed bar. A win would need a follow-up ablation on 3.8 to attribute; a loss is
 interpretable exactly as intended: best record, fixed interface, controls unchanged.
+
+## ⛔ STOP-WORK: the current implementation is the superseded draft
+
+**A build is already in progress against rev 1 — do not run it.** Audited 2026-08-05,
+19:30, re-checked while writing this section (the tree moved mid-audit):
+
+| file | state at audit | required by rev 2 |
+|---|---|---|
+| `e2_frames.py` (uncommitted) | builds the **most-explored frame**, the **full static inert overlay**, and **repeats the episode board** — all three deleted by this revision | rewrite against blocks 1–6 |
+| `e2_slice.py` (modified) | still requests the malformed **REFUTER** (`:895`, `:900`, schema `:954`, scoring `:1225`+) and still carries the **`clicked_adjacent_to:C` anchor** (`:917–918`) | delete the refuter field and its scoring; delete the anchor sentence; add `evidence_ids`; derive false positives/negatives mechanically; suppress channel B where no alias exhibit exists |
+| `e2_entities.py` | appeared mid-audit — **check against the identity-scope rule** (episode/pair-local IDs, explicit lineage, no global matching) | build item 1 |
+| `e3_completion_capture.py` | appeared mid-audit — capture all frames locally is right; **the prompt renders 3 + diffs** | build item 0 |
+
+Anything rendered before those land implements the design this note replaced. Whoever
+owns the build should re-read this note from the top: the deltas are the four blockers
+in the header, not a diff against rev 1's prose.
 
 ## Build (day task, zero-model except item 0's live replay, ~6–8 h)
 
@@ -158,10 +223,12 @@ interpretable exactly as intended: best record, fixed interface, controls unchan
 3. **Digest v4 assembly** behind `--frames` (default off; slice-2 behaviour bit-exact
    without it), with the provenance tags and the episode-selection criterion.
 4. **Interface fixes** in the request text and extraction schema (three items above).
-5. **Token accounting on the templated prompt** (tokenizer, chat template applied — the
-   defect that caused the first draft's error). Trim order if a cell overshoots 50k:
-   episode diff span → matched contrasts (keep one per class) → entity-table columns.
-   **Never** trim blocks 3 or 5.
+5. **Token accounting on BOTH templated prompts** (tokenizer, chat template applied —
+   the defect that caused the first draft's error): the F prompt, and the full FB chat
+   (F + the model's answer + the rendered counterexample). **Hard cap 45k on whichever
+   is larger.** Trim order if a cell overshoots: episode diff span → matched contrasts
+   (keep one per effect class) → entity-table columns. **Never** trim block 3, and
+   never trim block 5 (it is 3 exhibits on one game).
 6. **Contamination grep** + **budget probe** on the largest v4 prompt
    (`notes/think-budget-recheck.md` protocol): confirm think closure at 16,384 and
    measure warm prefill tok/s at ~50k, which the wall estimate needs. No unilateral
@@ -182,12 +249,16 @@ same machinery. Readout adds the repair rate (failed → survived/correct).
 ## Readout
 
 Slice 2's structure verbatim — channel A clause 1 (store-consistent ∧ source-correct ∧
-outside the prior library), channel B (beats all five random controls), channel C
-(targeting + implementation queue) — plus four slice-3 lines: **FB repair rate** ·
-**out-of-DSL goal verdicts** (separate) · **citation rate** · and the three instrument
-counters (**parse rate · think length · verdict passes**) reported as a possible
-**context-length cost** against slice 2's ~19.4k matched control, never folded into the
-capability verdict.
+outside the prior library), channel B (beats all five random controls; **on m0r0 only**,
+absence reported as absence elsewhere), channel C (targeting + implementation queue) —
+plus four slice-3 lines: **FB repair rate** · **out-of-DSL goal verdicts** (separate
+line, understanding diagnostic, never a control win) · **`evidence_ids` validity**
+(do the cited states/transitions exist and support the claim — computed, not counted
+from prose) · and the three instrument counters (**parse rate · think length · verdict
+passes**) reported as a possible **context-length cost** against slice 2's ~19.4k
+matched control, never folded into the capability verdict. Mechanical falsification
+(false positives / false negatives derived from the record) replaces the withdrawn
+refuter diagnostic.
 
 ## Cautions
 
