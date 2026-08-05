@@ -943,7 +943,9 @@ def _action_matches(step: dict, transition: Transition, grid: list) -> bool:
     return True
 
 
-def stored_answer(arm: dict, store: GameStore) -> list[Transition]:
+def stored_answer(
+    arm: dict, store: GameStore, rows: list[Transition] | None = None
+) -> list[Transition]:
     """Store transitions that already run this arm's FIRST step under its precondition.
 
     Multi-step arms are answered only when the whole chain exists; that is checked by the
@@ -952,8 +954,12 @@ def stored_answer(arm: dict, store: GameStore) -> list[Transition]:
     steps = arm["steps"]
     if len(steps) != 1 or steps[0].get("repeat"):
         return []
+    if steps[0].get("novel_offset_to"):
+        # `novel_offset_to` selects an offset NO stored transition takes; by construction
+        # the store cannot already answer it.
+        return []
     out = []
-    for transition in store.transitions:
+    for transition in (store.transitions if rows is None else rows):
         grid = transition.pre
         if not satisfies(arm["precondition"], grid, transition.guards):
             continue
@@ -968,11 +974,14 @@ def stored_answer(arm: dict, store: GameStore) -> list[Transition]:
 
 
 class Runner:
-    """One engine, replayed from RESET for every probe instance. No forking."""
+    """ONE engine per game, returned to the origin by RESET before each replay — exactly
+    how E1 routed (`e1_explorer.reset_route`). No forking, no second environment: a fresh
+    `new_game()` per instance would be a different execution path from the one that built
+    the store, and on a game with hidden state that difference is not neutral."""
 
     def __init__(self, game: str):
         self.driver = ReplayDriver(game)
-        self.engine = None
+        self.engine = ReplayDriver(game).new_game()
         self.level = 1
 
     def _perform(self, action_id: int, data: dict) -> dict:
@@ -986,7 +995,6 @@ class Runner:
         }
 
     def reset_to(self, prefix: list) -> dict:
-        self.engine = self.driver.new_game()
         result = self._perform(0, {})
         for action_id, row, col in prefix:
             result = self._perform(
@@ -1086,6 +1094,14 @@ def key_accuracy(rules: dict[str, Rule], train: list, test: list, key: tuple) ->
     return score(rules, train, target, MODE)["accuracy_over_all"]
 
 
+def _canon(effect: Any) -> tuple:
+    """An effect signature as a hashable value, whether it arrived as tuples or as the
+    JSON lists a stored/serialized row carries."""
+    if isinstance(effect, (list, tuple)):
+        return tuple(_canon(item) for item in effect)
+    return effect
+
+
 def discrimination(arm_effects: dict[str, list], contrast: str) -> dict[str, Any]:
     """realized / partial / not, mechanically.
 
@@ -1096,10 +1112,10 @@ def discrimination(arm_effects: dict[str, list], contrast: str) -> dict[str, Any
     """
     if contrast == "single_outcome" or contrast == "none":
         return {"verdict": "n/a", "reason": "the probe states no differential prediction"}
-    sets = {arm: {tuple(e) for e in effects} for arm, effects in arm_effects.items()
+    sets = {arm: {_canon(e) for e in effects} for arm, effects in arm_effects.items()
             if effects}
     if contrast == "across_repetitions":
-        effects = [tuple(e) for row in arm_effects.values() for e in row]
+        effects = [_canon(e) for row in arm_effects.values() for e in row]
         if len(effects) < 2:
             return {"verdict": "not-evaluable", "reason": "fewer than two executions"}
         return {
@@ -1179,11 +1195,29 @@ def determinism_gate(store: GameStore, runner: Runner) -> dict[str, Any]:
     picks = [ordered[0], ordered[len(ordered) // 2], ordered[-1]]
     rows = []
     for digest in picks:
-        result = runner.reset_to(store.prefix[digest])
+        prefix = store.prefix[digest]
+        result = runner.reset_to([])
+        current = _hash_state(1, result["grid"])
+        divergence = None
+        for index, action in enumerate(prefix):
+            action_id, click_row, click_col = action
+            result = runner._perform(
+                action_id, {} if click_row is None else {"y": click_row, "x": click_col}
+            )
+            if result["grid"] is None:
+                divergence = {"step": index, "action": action, "note": "no frame"}
+                break
+            reached = _hash_state(1, result["grid"])
+            expected = store.edges.get((current, tuple(action)))
+            if divergence is None and expected is not None and expected != reached:
+                divergence = {"step": index, "action": action, "from": current,
+                              "store_edge_to": expected, "replay_to": reached}
+            current = reached
         rows.append({
             "state": digest,
-            "prefix_actions": len(store.prefix[digest]),
+            "prefix_actions": len(prefix),
             "match": result["grid"] == store.states[digest],
+            "first_divergence": divergence,
         })
     return {
         "checked": len(rows),
@@ -1208,16 +1242,13 @@ def run_game(game: str, vocab: str) -> dict[str, Any]:
 
     results: list[dict[str, Any]] = []
     executed_rows: list[dict] = []
-    if not gate["ok"]:
-        return {
-            "game": game, "vocab": vocab, "gate": gate,
-            "store_transitions": len(store.transitions),
-            "stopped": "determinism gate failed — no probe executed on this game",
-            "probes": [], "seconds": round(time.monotonic() - started, 1),
-        }
-
+    # A failed gate stops EXECUTION on the game (notes/e2-probe-channel.md step 2), not
+    # classification: the funnel up to "would have executed" costs no game action and is
+    # the answer to question 2 whether or not the store's prefixes are replayable.
     for spec in [s for s in PROBES if s["game"] == game]:
-        row = run_spec(spec, store, runner, baseline_v1, executed_rows)
+        row = run_spec(
+            spec, store, runner, baseline_v1, executed_rows, blocked=not gate["ok"]
+        )
         results.append(row)
 
     # per-game union: store + every executed probe transition
@@ -1237,6 +1268,7 @@ def run_game(game: str, vocab: str) -> dict[str, Any]:
         "game": game,
         "vocab": vocab,
         "gate": gate,
+        "execution_blocked": not gate["ok"],
         "store_transitions": len(store.transitions),
         "store_states": len(store.states),
         "probe_transitions": len(probe_transitions),
@@ -1249,7 +1281,8 @@ def run_game(game: str, vocab: str) -> dict[str, Any]:
 
 
 def run_spec(
-    spec: dict, store: GameStore, runner: Runner, baseline: dict, sink: list
+    spec: dict, store: GameStore, runner: Runner, baseline: dict, sink: list,
+    blocked: bool = False,
 ) -> dict[str, Any]:
     probe_id = spec["probe_id"]
     row: dict[str, Any] = {
@@ -1263,6 +1296,10 @@ def run_spec(
         return row
 
     arms = expand_arms(spec, store)
+    if spec.get("stratify"):
+        # "systematically vary X" is only executable if X actually varies among the states
+        # the store can reach. One stratum means the requested variation does not exist.
+        row["strata_found"] = len(arms)
     key_offsets: set = set()
     for arm in arms:
         for step in arm["steps"]:
@@ -1278,7 +1315,7 @@ def run_spec(
         if arm.get("start") == "origin":
             digests = [store.origin]
         else:
-            digests = store.satisfying(arm["precondition"], MAX_STATES_PER_ARM)
+            digests = store.satisfying_all(arm["precondition"])
         entry["satisfying_states"] = len(digests)
         if not digests:
             entry["status"] = "unreachable-in-store"
@@ -1288,6 +1325,14 @@ def run_spec(
         if stored:
             entry["status"] = "already-answered"
             entry["stored_transitions"] = len(stored)
+            # ...and was it already answered by the evidence the MODEL was holding, i.e.
+            # inside the dose prefix it was shown? That is a stronger claim than "the
+            # explorer got there eventually" and the two are counted separately.
+            dose = spec["dose"]
+            entry["answered_at_dose"] = len(
+                stored_answer(arm, store, store.transitions[:dose] if dose else
+                              store.transitions)
+            )
             entry["effects"] = sorted({repr(t.effect) for t in stored})
             entry["effect_list"] = [list(t.effect) for t in stored]
             arm_rows.append(entry)
@@ -1326,8 +1371,13 @@ def run_spec(
             ):
                 entry["state"], entry["click"] = digest, list(click) if click else None
 
-    budget = TRANSITION_CAP
+    budget = TRANSITION_CAP if not blocked else 0
     cap_bound = False
+    if blocked:
+        for entry in arm_rows:
+            if entry["status"] == "planned":
+                entry["status"] = "blocked-by-determinism-gate"
+        planned = []
     for arm, digest, click in planned:
         if budget <= 0:
             cap_bound = True
@@ -1351,6 +1401,8 @@ def run_spec(
     statuses = {entry["status"] for entry in arm_rows}
     if "executed" in statuses:
         row["category"] = "executed"
+    elif "blocked-by-determinism-gate" in statuses:
+        row["category"] = "blocked-by-determinism-gate"
     elif statuses == {"already-answered"}:
         row["category"] = "already-answered"
     elif statuses <= {"unreachable-in-store"}:
@@ -1455,7 +1507,7 @@ def _match_adj(arms, store):
     buckets: list[dict] = []
     for arm in arms:
         found = {}
-        for digest in store.satisfying(arm["precondition"], 200):
+        for digest in store.satisfying(arm["precondition"], MAX_STATES_PER_ARM * 20):
             guards = store.guards(digest)
             signature = tuple(sorted(
                 (k, repr(v)) for k, v in guards.items() if k.startswith("adj:")
@@ -1616,6 +1668,11 @@ def main() -> int:
                 document["games"].setdefault(game, {})[vocab] = row
                 if "error" in row:
                     print(f"{game:5s} {vocab} ERROR {row['error']}", flush=True)
+                    continue
+                if "stopped" in row:
+                    print(f"{game:5s} {vocab} STOPPED gate="
+                          f"{row['gate']['passed']}/{row['gate']['checked']} "
+                          f"{row['stopped']}", flush=True)
                     continue
                 print(
                     f"{game:5s} {vocab} gate={row['gate']['passed']}/"
