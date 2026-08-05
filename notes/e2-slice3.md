@@ -8,6 +8,14 @@ on Qwen3.6?** Protocol, controls, scoring, and readout are slice 2's verbatim
 (`notes/e2-slice2.md`); only the context changes. If this loses too, "the games are
 too hard for 3.6" is accepted with receipts, and everything model-side waits for 3.8.
 
+**Prompt target: ≤ 50k tokens** (operator direction) — 4× slice 2, 19% of the window.
+The budget is spent on the four things every prior digest destroyed, in priority order:
+**what the board looks like** (frames) · **how the board maps to the handles predicates
+must use** (segmentation join) · **what happened over time, including a win** (episode
+render) · **which mechanics are already solved** (action gallery), so the model spends
+its reasoning on what is unsolved rather than re-deriving what the miner knows. Nothing
+here is speculative context-stuffing: each item below is tied to a measured failure.
+
 ## Why boards, specifically (measured, not vibes)
 
 - In the entire E2 line the model has **never seen a grid** — digests are feature-space
@@ -30,21 +38,52 @@ too hard for 3.6" is accepted with receipts, and everything model-side waits for
   lineage ran through the vlm server, the verified instrument is text-only direct
   `mlx_lm`, and a vision bring-up is its own gated project. Text rendering only.
 
-## Arm F — frames in the digest (all 16 cells)
+## Arm F — frames in the digest (all 16 cells), target ≤ 50k tokens/prompt
 
 Digest v4 = digest v3 (unchanged) + a rendered section per cell, own-store data only
 (**no human-replay frames in context** — hidden games won't have them; human replays
-remain the external test):
+remain the external test). Each item names the measured failure it attacks:
 
-1. **Initial frame**, full board, letter-coded, row/col rulers.
-2. **Most-explored frame** (the state with the most tested actions), full board.
-3. **Completion pre-frame** where the store holds one (sp80, lf52).
-4. **Inert-object overlay**: the initial frame re-rendered with non-inert cells dimmed
-   (e.g. lowercase/`·`), so the static objects — the specification candidates — are
-   visually isolated. This is the ft09/sb26 mechanism handed to the model directly.
-5. **Per unresolved key, 2 example transitions as local patches** (11×11 around the
-   change, before → after, action labelled) — r=5 covers the measured locality
-   (`notes/e3-grounded-delta.md`: median determining radius 2–3).
+1. **Initial frame**, full board, letter-coded, row/col rulers. *(~4.3k tok)*
+2. **Most-explored frame**, full board. *(~4.3k)*
+3. **Inert-object overlay**: the initial frame with every cell that ever changed
+   dimmed to `·`, so the static objects — the specification candidates — are visually
+   isolated. The ft09/sb26 mechanism handed over directly. *(~4.3k)*
+4. **Per-frame segmentation** for the frames above: object id · colour · bbox · area ·
+   adjacency, in the census vocabulary. This is the **binding bridge** — the join
+   between what the model sees and the handles its predicates must quantify over,
+   which nothing in any previous slice ever gave it. *(~1.5k × 3)*
+5. **One played episode, rendered temporally**: the walked route to the most-explored
+   state (for sp80/lf52: **the completion route, ending at the completing action** —
+   the closest thing to "watch me win" the system owns) as first frame full + per-step
+   diff lines (`step k: ACTION4 → cells (r,c) a→b, …`). Temporal/causal structure is
+   the one thing every digest destroyed. *(~6k: full frame + 40–60 diff steps)*
+6. **Action-effect gallery**: per action id (and per click-colour for A6), 2 example
+   before→after 11×11 patches **plus the miner's resolved rule where one exists** —
+   the solved mechanics shown, so the model spends its window on the unsolved ones.
+   *(~2.5k)*
+7. **Per unresolved key, 2 example transitions as patches** (11×11, before → after,
+   action labelled; r=5 covers the measured locality radius 2–3). *(~3k)*
+8. **Alias exhibit** (games with recorded conflicts — m0r0, g50t class): the same
+   (board, action) rendered twice with its two different outcomes, side by side. The
+   concrete evidence channel B's latents are supposed to explain. *(~0.5k)*
+9. **Think-scaffold headers** (instruction only, no examples): the reference harness's
+   world-model discipline — `World model / Goal model / Action model / Open questions`
+   — which structured its best recorded play. *(~0.2k)*
+
+**Worst-case arithmetic, measured on real grids today** (tokenizer, not estimated):
+dc22 full frame **4,335 tok**, 11×11 patch **131 tok**; dc22's digest v3 ≈ 12.7k tok.
+Frames section ≈ 28k → **dc22 total ≈ 41k tokens**, inside the 50k target with ~9k of
+headroom for the scaffold and the think-discipline headers. Sparse boards cost far
+less (sp80 full frame 1,552 tok → ~14k section, ~25k total), so the target binds only
+on the dense games. Prefill at ~400 tok/s ≈ **~2 min/cell**.
+
+**Contamination hard rule:** the prompt must never name the five stock goal shapes —
+they are the channel-A control, and showing them turns `in_prior_library` into
+compliance instead of convergence. The generic framing stays neutral ("the completion
+condition is some predicate over objects; it may or may not resemble anything you have
+seen"). Verify by grep before the night: no shape-list phrasing anywhere in the
+rendered prompts.
 
 ## Arm FB — one contradiction-feedback turn (seed 1 only)
 
@@ -70,24 +109,36 @@ within-night.
 ## Build (day task, zero-model, ~4–6 h)
 
 1. **Frame renderer** (`agent/harness/e2_frames.py`, new): letter-coded board with
-   rulers · dimmed inert overlay · 11×11 before/after patch pairs. Unit-check against
+   rulers · dimmed inert overlay · 11×11 before/after patch pairs · per-step diff
+   lines for the episode render · per-frame segmentation listing (reuse `_Objects`;
+   ids consistent with the census vocabulary) · the alias exhibit. Unit-check against
    3 stored grids by eye and by round-trip.
 2. **Digest v4 assembly** in `e2_slice.py` behind a flag (`--frames`), default off —
-   slice-2 behaviour is preserved bit-for-bit without the flag.
+   slice-2 behaviour is preserved bit-for-bit without the flag. Episode source: the
+   verified walked routes (`logs/e1_prefix_v2/`), completion route for sp80/lf52.
 3. **Feedback turn** machinery: in-loop verification (the slice-2 checker, run at
    extract time), revision prompt template, second think+extract, both calls logged
    with separate verdicts.
-4. **Render all 8 v4 digests**, record token counts (tokenizer, not chars).
-5. **Budget probe, mandatory**: one call on the largest v4 prompt (protocol of
-   `notes/think-budget-recheck.md`). The prompt roughly doubles; the probe also
-   re-measures warm prefill tok/s at ~30k tokens, which the wall estimate below needs.
+4. **Render all 8 v4 digests**, record **token** counts (tokenizer, not chars) against
+   the ≤ 50k target; if a cell overshoots, trim item 5's diff span first, then item
+   6 — never items 3, 4, or 8 (the mechanism carriers).
+5. **Contamination grep** (the hard rule above) over all rendered prompts.
+6. **Budget probe, mandatory**: one call on the largest v4 prompt (protocol of
+   `notes/think-budget-recheck.md`). The prompt grows ~4× over slice 2; the probe
+   re-measures warm prefill tok/s at ~50k tokens (the wall estimate needs it) and
+   confirms think closure — if the block does not close at 16,384, stop and report;
+   no unilateral budget raise.
 
 ## Run (night)
 
-16 F cells ≈ 5.5–6 h (prefill grows ~1–2 min/cell) + up to 8 FB turns ≈ 2 h →
-**~7.5–8 h**, slice-1.1-sized. Outputs `logs/e2_slice3_seed{1,2}.json`, traces tagged
-distinctly; `nohup` + `caffeinate`; voids logged, never rerun mid-night. Morning
-readout = slice 2's structure + the FB repair-rate line, appended to this note.
+16 F cells ≈ 6.5 h (measured decode ~15 min/cell + ~2 min prefill at 50k) + up to 8 FB
+turns ≈ 2–2.5 h → **~9 h**. That is the longest night this line has run; it fits an
+overnight window but leaves no slack, so: **seeds run sequentially, seed 1 first, and
+seed 1 must include the FB turns.** If the night is cut short, a complete seed 1 with
+both arms is the result; a half-finished seed 2 is not a loss. Outputs
+`logs/e2_slice3_seed{1,2}.json`, traces tagged distinctly; `nohup` + `caffeinate`;
+voids logged, never rerun mid-night. Morning readout = slice 2's structure + the FB
+repair-rate line, appended to this note.
 
 ## Expectations, calibrated in advance
 
@@ -96,8 +147,18 @@ own history — and still stalled goal-unknown on 76% of episodes. Boards are no
 the test is whether frames + our verification scaffolding beat **our controls**, and
 the pre-registered bar is unchanged. Two specific sub-reads worth pre-naming: does
 channel A improve on the games whose boards carry visible specification objects
-(ft09's clue patterns, ls20's target shapes), and on the completion-pre-frame games
+(ft09's clue patterns, ls20's target shapes), and on the completion-route games
 (sp80, lf52)? Those are where the mechanism, if it exists at 3.6, must show first.
+
+**One risk this arm adds, stated before it can be explained away.** Slice 2's failures
+were *ungrounded* but *disciplined*: 16/16 parsed, 0 prose. A 4×-longer, richer prompt
+can degrade that — more surface to pattern-match, more chances to describe the board
+instead of committing to a predicate. So the readout keeps three instrument counters
+alongside the channel verdicts (**parse rate · think length · verdict passes**), and a
+drop in any of them against slice 2 is reported as a *context-length cost*, not folded
+into the capability verdict. This is also the only quantitative check we will ever have
+on the "long context degrades this quantized deployment" hypothesis — slice 2 at ~12k
+tokens is its matched control, and the pair is worth reporting whichever way it lands.
 
 ## Cautions
 
