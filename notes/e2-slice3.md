@@ -264,6 +264,38 @@ the concrete counterexample rendered — the falsifying transition, or the compl
 frame where the predicate evaluated wrongly — then fresh think + extract, same budget,
 same machinery. Readout adds the repair rate (failed → survived/correct).
 
+## Measured cost of the caps (review, 2026-08-05 — carry into the readout)
+
+Dry-run of all 8 cells with `--frames --feedback`. **Every cell fits both caps**
+(F 28,574–39,929 of 40,000 · FB 31,682–42,901 of 45,000), and the unframed path was
+verified **byte-identical to slice 2** (dc22, 48,721 chars) — the context isolation is
+real. But 7 of 8 cells trim, four of them deep (ladder steps 9–11), and the cost is
+concentrated where it is least convenient:
+
+| game | F tok | unresolved keys shown | ex/key | episode steps |
+|---|---:|---|---:|---:|
+| ft09 | 28,574 | 1 of 1 | 2 | 60 |
+| sp80 | 37,571 | **3 of 12** | 1 | 12 |
+| vc33 | 38,811 | 7 of 7 | 2 | 20 |
+| ls20 | 38,622 | 4 of 4 | 2 | 45 |
+| m0r0 | 39,288 | 10 of 10 | 1 | 12 |
+| lf52 | 39,018 | 6 of 6 | 1 | 12 |
+| dc22 | 39,617 | 12 of 14 | 1 | 12 |
+| tu93 | **39,929** | 4 of 4 | 2 | 45 |
+
+**Readout caveat, pre-committed:** a null channel-C result on **sp80** is partly a
+budget artifact — it shows 3 of its 12 unresolved keys — and dc22 shows 12 of 14. Those
+two games' channel-C numbers are reported with the shown/total fraction attached and are
+**not** pooled with the games shown in full. Blocks 3 and 5 were never trimmed, as
+specified.
+
+**Pre-launch assertion (do this, it is 30 seconds):** tu93 sits **71 tokens** under the
+cap and m0r0 712. F counts are exact (chat template applied), so there is no runtime
+surprise — but any later edit to the shared preamble silently re-triggers trimming on
+those cells. Re-render all 8 immediately before launch and confirm the same trim ladder
+steps as the table above; a changed step means the prompt moved and the cell is no
+longer the one reviewed.
+
 ## Readout
 
 Slice 2's structure verbatim — channel A clause 1 (store-consistent ∧ source-correct ∧
