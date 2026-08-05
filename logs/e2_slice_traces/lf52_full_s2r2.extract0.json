@@ -1,0 +1,15 @@
+{
+  "prompt_chars": 1816,
+  "prefilled_empty_think": true,
+  "prompt_opens_think": false,
+  "think_opened": false,
+  "think_closed": false,
+  "think_chars": 0,
+  "answer": "{\n  \"goal\": {\n    \"predicate\": \"count(c14) = 2\",\n    \"refuter\": \"count(c14) = 3\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": 14\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"count_14_ge_3\",\n      \"definition_sketch\": \"boolean, true if the number of colour-14 objects is at least 3.\",\n      \"targeted_keys\": [\n        \"ACTION6 on 0\",\n        \"ACTION6 on 1\",\n        \"ACTION6 on 2\",\n        \"ACTION6 on 5\",\n        \"ACTION6 on 9\"\n      ],\n      \"expected_direction\": \"Expected to resolve ACTION6 on 0, 1, 2, 5, 9 by cleanly separating the dominant reshape(0)+reshape(1) effect from the special effects that cluster exclusively at count:14=2.\"\n    },\n    {\n      \"name\": \"is_click_isolated\",\n      \"definition_sketch\": \"boolean, true if the clicked cell has no 4-adjacent cells of the same colour.\",\n      \"targeted_keys\": [\n        \"ACTION6 keys where effects split based on whether the click targets a single-cell component versus a larger or interior component\"\n      ],\n      \"expected_direction\": \"Expected to resolve ACTION6 keys where effects split based on whether the click targets a single-cell component versus a larger or interior component.\"\n    }\n  ]\n}",
+  "raw": "{\n  \"goal\": {\n    \"predicate\": \"count(c14) = 2\",\n    \"refuter\": \"count(c14) = 3\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": 14\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"count_14_ge_3\",\n      \"definition_sketch\": \"boolean, true if the number of colour-14 objects is at least 3.\",\n      \"targeted_keys\": [\n        \"ACTION6 on 0\",\n        \"ACTION6 on 1\",\n        \"ACTION6 on 2\",\n        \"ACTION6 on 5\",\n        \"ACTION6 on 9\"\n      ],\n      \"expected_direction\": \"Expected to resolve ACTION6 on 0, 1, 2, 5, 9 by cleanly separating the dominant reshape(0)+reshape(1) effect from the special effects that cluster exclusively at count:14=2.\"\n    },\n    {\n      \"name\": \"is_click_isolated\",\n      \"definition_sketch\": \"boolean, true if the clicked cell has no 4-adjacent cells of the same colour.\",\n      \"targeted_keys\": [\n        \"ACTION6 keys where effects split based on whether the click targets a single-cell component versus a larger or interior component\"\n      ],\n      \"expected_direction\": \"Expected to resolve ACTION6 keys where effects split based on whether the click targets a single-cell component versus a larger or interior component.\"\n    }\n  ]\n}",
+  "wall_seconds": 41.0,
+  "prompt_tps": 348.4954730906354,
+  "generation_tps": 9.37411539703034,
+  "temp": 0.0,
+  "seed": 2
+}

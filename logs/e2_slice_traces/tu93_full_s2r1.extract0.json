@@ -1,0 +1,15 @@
+{
+  "prompt_chars": 1775,
+  "prefilled_empty_think": true,
+  "prompt_opens_think": false,
+  "think_opened": false,
+  "think_closed": false,
+  "think_chars": 0,
+  "answer": "{\n  \"goal\": {\n    \"predicate\": \"exists x in c6: exists y in c14: adjacent(x, y)\",\n    \"refuter\": \"count(c6) = 0\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": null,\n      \"click_colour\": null\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"parity_c0\",\n      \"definition_sketch\": \"count:0 mod 2.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"Should resolve ACTION1-4 by splitting the cyclic effect groups into even/odd phases. Expected to resolve the keys by halving the 5 effect groups into 2 deterministic paths.\"\n    },\n    {\n      \"name\": \"c6_col_parity\",\n      \"definition_sketch\": \"col_of(c6) mod 2.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"Should resolve ACTION1-4 by capturing horizontal position parity of the single c6 object. Expected to resolve the keys by separating left/right-dependent effects and collapsing the 5 groups into 2.\"\n    }\n  ]\n}",
+  "raw": "{\n  \"goal\": {\n    \"predicate\": \"exists x in c6: exists y in c14: adjacent(x, y)\",\n    \"refuter\": \"count(c6) = 0\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": null,\n      \"click_colour\": null\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"parity_c0\",\n      \"definition_sketch\": \"count:0 mod 2.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"Should resolve ACTION1-4 by splitting the cyclic effect groups into even/odd phases. Expected to resolve the keys by halving the 5 effect groups into 2 deterministic paths.\"\n    },\n    {\n      \"name\": \"c6_col_parity\",\n      \"definition_sketch\": \"col_of(c6) mod 2.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"Should resolve ACTION1-4 by capturing horizontal position parity of the single c6 object. Expected to resolve the keys by separating left/right-dependent effects and collapsing the 5 groups into 2.\"\n    }\n  ]\n}",
+  "wall_seconds": 32.9,
+  "prompt_tps": 341.6493641782217,
+  "generation_tps": 9.407969672104832,
+  "temp": 0.0,
+  "seed": 1
+}

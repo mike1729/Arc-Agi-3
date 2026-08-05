@@ -1228,8 +1228,16 @@ def run_cell(
     )
     verdict = thinking_verdict(think)
     TRACES.mkdir(parents=True, exist_ok=True)
-    # seed-tagged so variance-arm reruns can never overwrite slice 1's committed traces
-    tag = f"{game}_{'full' if dose is None else dose}_s{seed}"
+    # seed-tagged so variance-arm reruns can never overwrite slice 1's committed traces.
+    # SLICE-2 MARKER (2026-08-05, caught in the night's pre-flight): the seed tag alone is NOT
+    # enough across slice generations. Slice 2 runs seeds 1 and 2 on the full dose, so
+    # `{game}_full_s1` collides byte-for-byte with the twelve COMMITTED slice-1/1.1 trace names
+    # (dc22_full_s1.think.json and siblings) — a defaulted slice-2 run would silently overwrite
+    # the audit trail of a 3.5 h run that cannot be reproduced, only re-sampled. Same failure
+    # class as the `--out` default that already ate the slice-1.1 result file once today.
+    # `_s2r{seed}` is the tag `notes/e2-slice2-run.md` names; FORMAT_VERSION distinguishes the
+    # result files, and this distinguishes the traces.
+    tag = f"{game}_{'full' if dose is None else dose}_s2r{seed}"
     (TRACES / f"{tag}.think.json").write_text(
         json.dumps({"prompt": prompt, **think, "verdict": verdict}, indent=2)
     )

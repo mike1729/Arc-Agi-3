@@ -1,0 +1,15 @@
+{
+  "prompt_chars": 1807,
+  "prefilled_empty_think": true,
+  "prompt_opens_think": false,
+  "think_opened": false,
+  "think_closed": false,
+  "think_chars": 0,
+  "answer": "{\n  \"goal\": {\n    \"predicate\": \"empty(c14)\",\n    \"refuter\": \"nonempty(c14)\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": 14\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"dist_to:C\",\n      \"definition_sketch\": \"Manhattan distance from the single c6 object to the nearest object of colour C.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"expects to split effects currently conflated under adj:C:direction=0 into distance-banded groups.\"\n    },\n    {\n      \"name\": \"adj_count:C\",\n      \"definition_sketch\": \"Number of 4-connected neighbours of colour C adjacent to c6.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"expects to separate effects that share the same directional adj value but differ in local neighbourhood density.\"\n    }\n  ]\n}",
+  "raw": "{\n  \"goal\": {\n    \"predicate\": \"empty(c14)\",\n    \"refuter\": \"nonempty(c14)\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": 14\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"dist_to:C\",\n      \"definition_sketch\": \"Manhattan distance from the single c6 object to the nearest object of colour C.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"expects to split effects currently conflated under adj:C:direction=0 into distance-banded groups.\"\n    },\n    {\n      \"name\": \"adj_count:C\",\n      \"definition_sketch\": \"Number of 4-connected neighbours of colour C adjacent to c6.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"expects to separate effects that share the same directional adj value but differ in local neighbourhood density.\"\n    }\n  ]\n}",
+  "wall_seconds": 29.1,
+  "prompt_tps": 335.3275948936987,
+  "generation_tps": 9.355678866591909,
+  "temp": 0.0,
+  "seed": 2
+}

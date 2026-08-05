@@ -1,0 +1,15 @@
+{
+  "prompt_chars": 1792,
+  "prefilled_empty_think": true,
+  "prompt_opens_think": false,
+  "think_opened": false,
+  "think_closed": false,
+  "think_chars": 0,
+  "answer": "{\n  \"goal\": {\n    \"predicate\": \"count(c2) = 0\",\n    \"refuter\": \"nonempty(c2)\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": null,\n      \"click_colour\": null\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"adjacent_count:C\",\n      \"definition_sketch\": \"number of cells of colour C that are 4-adjacent to the clicked component\",\n      \"targeted_keys\": [\n        \"ACTION6 on c0\",\n        \"ACTION6 on c1\",\n        \"ACTION6 on c2\",\n        \"ACTION6 on c5\",\n        \"ACTION6 on c9\"\n      ],\n      \"expected_direction\": \"distinguishing contact magnitude, moving keys from multi-effect overlap to single-effect separation\"\n    },\n    {\n      \"name\": \"count_parity:C\",\n      \"definition_sketch\": \"count:C mod 2\",\n      \"targeted_keys\": [\n        \"ACTION7 on c0/c1/c9\",\n        \"ACTION6 on c0/c1/c9\"\n      ],\n      \"expected_direction\": \"splitting groups where counts vary by even/odd increments, moving them toward deterministic effect mapping\"\n    }\n  ]\n}",
+  "raw": "{\n  \"goal\": {\n    \"predicate\": \"count(c2) = 0\",\n    \"refuter\": \"nonempty(c2)\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": null,\n      \"click_colour\": null\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"adjacent_count:C\",\n      \"definition_sketch\": \"number of cells of colour C that are 4-adjacent to the clicked component\",\n      \"targeted_keys\": [\n        \"ACTION6 on c0\",\n        \"ACTION6 on c1\",\n        \"ACTION6 on c2\",\n        \"ACTION6 on c5\",\n        \"ACTION6 on c9\"\n      ],\n      \"expected_direction\": \"distinguishing contact magnitude, moving keys from multi-effect overlap to single-effect separation\"\n    },\n    {\n      \"name\": \"count_parity:C\",\n      \"definition_sketch\": \"count:C mod 2\",\n      \"targeted_keys\": [\n        \"ACTION7 on c0/c1/c9\",\n        \"ACTION6 on c0/c1/c9\"\n      ],\n      \"expected_direction\": \"splitting groups where counts vary by even/odd increments, moving them toward deterministic effect mapping\"\n    }\n  ]\n}",
+  "wall_seconds": 34.1,
+  "prompt_tps": 344.74148596810574,
+  "generation_tps": 9.375908626371263,
+  "temp": 0.0,
+  "seed": 1
+}

@@ -1,0 +1,15 @@
+{
+  "prompt_chars": 1728,
+  "prefilled_empty_think": true,
+  "prompt_opens_think": false,
+  "think_opened": false,
+  "think_closed": false,
+  "think_chars": 0,
+  "answer": "{\n  \"goal\": {\n    \"predicate\": \"empty(c5)\",\n    \"refuter\": \"nonempty(c5)\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": 5\n    }\n  },\n  \"latents\": [\n    {\n      \"name\": \"turn_parity\",\n      \"definition\": \"actions_since_reset[reset_excluded] mod 2\"\n    }\n  ],\n  \"vocabulary\": [\n    {\n      \"name\": \"row_of_click\",\n      \"definition_sketch\": \"the row index of the cell targeted by ACTION6\",\n      \"targeted_keys\": [\n        \"ACTION6\"\n      ],\n      \"expected_direction\": \"Expected to separate no-change from reshape/appear based on Y-coordinate.\"\n    },\n    {\n      \"name\": \"col_of_click\",\n      \"definition_sketch\": \"the column index of the cell targeted by ACTION6\",\n      \"targeted_keys\": [\n        \"ACTION6\"\n      ],\n      \"expected_direction\": \"Expected to separate no-change from reshape/appear based on X-coordinate.\"\n    }\n  ]\n}",
+  "raw": "{\n  \"goal\": {\n    \"predicate\": \"empty(c5)\",\n    \"refuter\": \"nonempty(c5)\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": 5\n    }\n  },\n  \"latents\": [\n    {\n      \"name\": \"turn_parity\",\n      \"definition\": \"actions_since_reset[reset_excluded] mod 2\"\n    }\n  ],\n  \"vocabulary\": [\n    {\n      \"name\": \"row_of_click\",\n      \"definition_sketch\": \"the row index of the cell targeted by ACTION6\",\n      \"targeted_keys\": [\n        \"ACTION6\"\n      ],\n      \"expected_direction\": \"Expected to separate no-change from reshape/appear based on Y-coordinate.\"\n    },\n    {\n      \"name\": \"col_of_click\",\n      \"definition_sketch\": \"the column index of the cell targeted by ACTION6\",\n      \"targeted_keys\": [\n        \"ACTION6\"\n      ],\n      \"expected_direction\": \"Expected to separate no-change from reshape/appear based on X-coordinate.\"\n    }\n  ]\n}",
+  "wall_seconds": 29.9,
+  "prompt_tps": 350.7164502147092,
+  "generation_tps": 9.463533989223203,
+  "temp": 0.0,
+  "seed": 1
+}

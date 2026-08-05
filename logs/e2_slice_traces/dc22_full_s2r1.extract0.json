@@ -1,0 +1,15 @@
+{
+  "prompt_chars": 1888,
+  "prefilled_empty_think": true,
+  "prompt_opens_think": false,
+  "think_opened": false,
+  "think_closed": false,
+  "think_chars": 0,
+  "answer": "{\n  \"goal\": {\n    \"predicate\": \"all x in c14: exists y in c2: adjacent(x, y)\",\n    \"refuter\": \"empty(c2)\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": 2\n    }\n  },\n  \"latents\": [\n    {\n      \"name\": \"turn_parity\",\n      \"definition\": \"actions_since_reset[reset_excluded] mod 2\"\n    },\n    {\n      \"name\": \"click_mod4\",\n      \"definition\": \"actions_of(6)_since_reset[reset_excluded] mod 4\"\n    },\n    {\n      \"name\": \"global_mod3\",\n      \"definition\": \"actions_total mod 3\"\n    }\n  ],\n  \"vocabulary\": [\n    {\n      \"name\": \"parity_c0\",\n      \"definition_sketch\": \"count(c0) % 2.\",\n      \"targeted_keys\": [\n        \"ACTION1/2/3/4 keys where count:0 strata {12,14} vs {11} correlate with effect splits\"\n      ],\n      \"expected_direction\": \"Expected to separate even/odd count transitions.\"\n    },\n    {\n      \"name\": \"adj_14_global\",\n      \"definition_sketch\": \"boolean true if clicked component has any 4-adjacent cell of colour 14.\",\n      \"targeted_keys\": [\n        \"ACTION6 keys where adj:14:direction varies across {2,4,9,None} but combined adjacency determines reshape vs no-change\"\n      ],\n      \"expected_direction\": \"Expected to unify directional strata into a single binary guard.\"\n    }\n  ]\n}",
+  "raw": "{\n  \"goal\": {\n    \"predicate\": \"all x in c14: exists y in c2: adjacent(x, y)\",\n    \"refuter\": \"empty(c2)\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": 2\n    }\n  },\n  \"latents\": [\n    {\n      \"name\": \"turn_parity\",\n      \"definition\": \"actions_since_reset[reset_excluded] mod 2\"\n    },\n    {\n      \"name\": \"click_mod4\",\n      \"definition\": \"actions_of(6)_since_reset[reset_excluded] mod 4\"\n    },\n    {\n      \"name\": \"global_mod3\",\n      \"definition\": \"actions_total mod 3\"\n    }\n  ],\n  \"vocabulary\": [\n    {\n      \"name\": \"parity_c0\",\n      \"definition_sketch\": \"count(c0) % 2.\",\n      \"targeted_keys\": [\n        \"ACTION1/2/3/4 keys where count:0 strata {12,14} vs {11} correlate with effect splits\"\n      ],\n      \"expected_direction\": \"Expected to separate even/odd count transitions.\"\n    },\n    {\n      \"name\": \"adj_14_global\",\n      \"definition_sketch\": \"boolean true if clicked component has any 4-adjacent cell of colour 14.\",\n      \"targeted_keys\": [\n        \"ACTION6 keys where adj:14:direction varies across {2,4,9,None} but combined adjacency determines reshape vs no-change\"\n      ],\n      \"expected_direction\": \"Expected to unify directional strata into a single binary guard.\"\n    }\n  ]\n}",
+  "wall_seconds": 43.7,
+  "prompt_tps": 367.64584894419494,
+  "generation_tps": 9.576793249176783,
+  "temp": 0.0,
+  "seed": 1
+}

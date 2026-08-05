@@ -1,0 +1,76 @@
+{
+ "specs": [
+  {
+   "game": "dc22",
+   "name": "turn_parity_s1",
+   "definition": "actions_since_reset[reset_excluded] mod 2",
+   "source": "slice-2 channel B, seed 1, as written"
+  },
+  {
+   "game": "dc22",
+   "name": "click_mod4_s1",
+   "definition": "actions_of(6)_since_reset[reset_excluded] mod 4",
+   "source": "slice-2 channel B, seed 1, as written"
+  },
+  {
+   "game": "dc22",
+   "name": "global_mod3_s1",
+   "definition": "actions_total mod 3",
+   "source": "slice-2 channel B, seed 1, as written"
+  },
+  {
+   "game": "m0r0",
+   "name": "turn_parity_s1",
+   "definition": "actions_since_reset[reset_excluded] mod 2",
+   "source": "slice-2 channel B, seed 1, as written"
+  },
+  {
+   "game": "sp80",
+   "name": "click_parity_s1",
+   "definition": "actions_of(6)_since_reset[reset_excluded] mod 2",
+   "source": "slice-2 channel B, seed 1, as written"
+  },
+  {
+   "game": "sp80",
+   "name": "total_parity_s1",
+   "definition": "actions_since_reset[reset_excluded] mod 3",
+   "source": "slice-2 channel B, seed 1, as written"
+  },
+  {
+   "game": "sp80",
+   "name": "submit_count_s1",
+   "definition": "actions_of(5)_since_reset[reset_excluded] >= 1",
+   "source": "slice-2 channel B, seed 1, as written"
+  },
+  {
+   "game": "dc22",
+   "name": "click_parity_s2",
+   "definition": "actions_of(6)_since_reset[reset_excluded] mod 2",
+   "source": "slice-2 channel B, seed 2, as written"
+  },
+  {
+   "game": "m0r0",
+   "name": "click_mod_s2",
+   "definition": "actions_of(6)_since_reset[reset_excluded] mod 3",
+   "source": "slice-2 channel B, seed 2, as written"
+  },
+  {
+   "game": "sp80",
+   "name": "parity_s2",
+   "definition": "actions_since_reset[reset_excluded] mod 2",
+   "source": "slice-2 channel B, seed 2, as written"
+  },
+  {
+   "game": "sp80",
+   "name": "click_cycle_s2",
+   "definition": "actions_of(6)_since_reset[reset_excluded] mod 3",
+   "source": "slice-2 channel B, seed 2, as written"
+  },
+  {
+   "game": "sp80",
+   "name": "step_mod4_s2",
+   "definition": "actions_total mod 4",
+   "source": "slice-2 channel B, seed 2, as written"
+  }
+ ]
+}

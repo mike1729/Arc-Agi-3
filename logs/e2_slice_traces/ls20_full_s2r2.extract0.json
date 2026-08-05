@@ -1,0 +1,15 @@
+{
+  "prompt_chars": 1981,
+  "prefilled_empty_think": true,
+  "prompt_opens_think": false,
+  "think_opened": false,
+  "think_closed": false,
+  "think_chars": 0,
+  "answer": "{\n  \"goal\": {\n    \"predicate\": \"empty(c11)\",\n    \"refuter\": \"nonempty(c11)\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": 11\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"same_shape:C1:C2\",\n      \"definition_sketch\": \"True if the set of relative coordinates of all cells in colour C1 matches that of C2 up to translation.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"Expected to move keys toward separation by revealing that reshape effects trigger only when components are geometrically identical.\"\n    },\n    {\n      \"name\": \"enclosed:C\",\n      \"definition_sketch\": \"True if every 4-neighbor of every cell of colour C is non-background.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"Expected to move keys by separating effects that depend on fully surrounded vs boundary-exposed conditions.\"\n    }\n  ]\n}",
+  "raw": "{\n  \"goal\": {\n    \"predicate\": \"empty(c11)\",\n    \"refuter\": \"nonempty(c11)\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": 11\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"same_shape:C1:C2\",\n      \"definition_sketch\": \"True if the set of relative coordinates of all cells in colour C1 matches that of C2 up to translation.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"Expected to move keys toward separation by revealing that reshape effects trigger only when components are geometrically identical.\"\n    },\n    {\n      \"name\": \"enclosed:C\",\n      \"definition_sketch\": \"True if every 4-neighbor of every cell of colour C is non-background.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"Expected to move keys by separating effects that depend on fully surrounded vs boundary-exposed conditions.\"\n    }\n  ]\n}",
+  "wall_seconds": 30.8,
+  "prompt_tps": 279.4023576557365,
+  "generation_tps": 9.366207691235426,
+  "temp": 0.0,
+  "seed": 2
+}

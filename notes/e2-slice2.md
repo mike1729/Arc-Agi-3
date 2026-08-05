@@ -284,3 +284,163 @@ soon as the build tasks land, and reruns on 3.8 under the upgrade note's P1.
 
 No rule proposals, no probe execution, no X-phase integration (that waits on X1/X2), no
 training, no submissions off this line before E3 reads out.
+
+---
+
+# RESULTS — 2026-08-05. **All three channels lose to their controls on Qwen3.6.**
+
+Run of record: `notes/e2-slice2-run.md`, executed same day. Machine records
+`logs/e2_slice2_seed{1,2}.json` (format_version 2), `logs/e2_slice2_latent_verify.json`,
+`logs/e2_slice2_latents.json`, `logs/e2_slice2_budget_probe.json`; traces
+`logs/e2_slice_traces/*_s2r{1,2}.{think,extract0}.json`. Zero model calls after the night.
+
+## Run log
+
+- **Pinned run commit `0dea91a`** in a throwaway worktree; `data/` and the gitignored
+  `logs/` directories symlinked from main. Main advanced twice during the run (concurrent
+  agents) — the pin is why that cost nothing.
+- **Digest re-render (zero model)** reproduced the recorded lengths exactly on all 8 games:
+  dc22 43,185 · m0r0 26,180 · lf52 21,441 · sp80 21,371 · tu93 18,906 · vc33 16,335 ·
+  ls20 15,870 · ft09 11,372 chars.
+- **Digest variant live: v3, rule request OUT, no channel D** — verified in the rendered
+  PROMPT text, not from a commit message. `notes/e2-regrade.md`'s negative result stands.
+- **THINK_BUDGET gate (required, dc22/full > 40k): PASS.** One probe call, seed 1:
+  prompt 48,778 chars / 19,405 tok, think 26,145 chars / 8,178 tok, `</think>` at
+  generation token 8,179, total generation **8,411 of 16,384 — 8,205 tokens spare**, wall
+  996.7 s, prefill 354.6 tok/s, decode 8.93 tok/s. Against the pre-v3 check on the same
+  cell (`notes/think-budget-recheck.md`): prompt +59%, think −3%, total generation −2%,
+  wall +0.9 s. **The v3 growth lands entirely in prefill; output length does not track
+  prompt length.** Budget unchanged at 16,384.
+- **One deviation, recorded**: `run_cell`'s trace tag was `{game}_{dose}_s{seed}`, which for
+  slice 2 at seed 1 collides byte-for-byte with twelve COMMITTED slice-1/1.1 trace names. Changed
+  to `_s2r{seed}` before launch (the tag the run note names). Same failure class as the
+  `--out` default that overwrote the slice-1.1 result file earlier the same day.
+- **One incident, verification-only**: the first latent-verifier reproduction gate FAILED
+  ("latent not computable on both sides") because the worktree lacked the gitignored
+  `logs/e2_hidden_state_rerun/`. Symlinked; the gate then reproduced the committed
+  `c2_episode` numbers exactly (L1 0.2624 / L2 0.3988, rejected). **The night itself never
+  reads that directory** — channel B only parses at run time — so no cell is affected.
+
+## Instrument
+
+**16/16 cells scored · 16/16 mechanical thinking verdicts passed · 0 voided · 0 unparsed
+extractions · 0 extraction retries.** Wall per cell min 739 s, mean 906 s, max 1,033 s;
+4.03 h of model wall for the night (11:33–15:48Z). Think blocks 19,607–27,604 chars
+(mean 24,703). No call approached the budget.
+
+## Channel A — goal as falsifiable predicate
+
+**16/16 parsed** in the predicate grammar; no prose. Store consistency (negatives only —
+see the limitation below): **7 survived · 8 falsified · 1 vacuous**.
+
+| game | seed 1 | seed 2 |
+|---|---|---|
+| dc22 | falsified | falsified |
+| ft09 | survived, in library | survived, outside library |
+| ls20 | survived, novel shape | falsified, **re-proposed a digest-refuted candidate** |
+| m0r0 | vacuous | survived, outside library |
+| tu93 | survived, in library | survived, in library |
+| vc33 | falsified | survived, in library |
+| sp80 | falsified | falsified |
+| lf52 | falsified | falsified |
+
+Of the 7 survivors, **4 are predicates the prior library also produces**, leaving three
+cells — ft09/s2, ls20/s1, m0r0/s2 — as the only candidates for clause 1.
+
+### Adjudication: an added mechanical instrument, then the source read
+
+The pre-registered clause 1 needs *source-correct*. The frozen v2 store cannot supply the
+positive half at all (`positives_evaluable = 0` on all 16 cells: both completion-carrying
+games lost the completing row's post frame), so **an addition to the pre-registered readout
+was made and is flagged as one**: every predicate was evaluated against the **human
+replays**, which do contain completions, on the same transition representation the floors
+are scored on. A completion condition must be TRUE at every completing transition and FALSE
+elsewhere. Verdicts over 8 games × 2 seeds × human L1 and L2:
+
+- **EXACT (true at every completion, false everywhere else): 1** — tu93/s2. **It is in the
+  prior library.**
+- **necessary but too weak** (true at every completion, also true at many non-completions):
+  4 — dc22/s1, vc33/s1, sp80/s1, sp80/s2.
+- **partial**: 1 — lf52/s1 (true at 9 of 10 L1 completions, 5 of 8 on L2).
+- **wrong** (false at every completion): 10 — including **all three** clause-1 candidates.
+
+A source read of those three (labels and paraphrases only, per PUBLISHING.md) agrees with
+the mechanical verdict in each case: ls20 completes on collecting every target, not on a
+colour count reaching one; m0r0 completes when every pair of matching objects has been
+brought together, not on a single object of one colour remaining; ft09 completes when a
+per-clue match/differ constraint is satisfied across the board — the model correctly
+identified the operative 36-object set (the digest's `count:8 + count:9 = 36` invariant) and
+then proposed making all of them one colour, which satisfies the match clues and violates the
+differ ones.
+
+**Headline (clause 1): 0 of 8 games.** No predicate is store-consistent ∧ source-correct ∧
+outside the prior library. The one predicate that is exactly correct is one the mechanical
+control produces by itself.
+
+Diagnostics (never the verdict): **self-refuting refuters 10/16** · malformed test actions
+5/16 · re-proposed a digest-refuted candidate 1/16 · in prior library 4/16 · novel shape
+7/16 · **seeds agreed on the store outcome in only 5 of 8 games**.
+
+## Channel B — latents as executable definitions
+
+**12 distinct latents** proposed on 3 games (dc22 4, m0r0 2, sp80 6); the other five games
+proposed none — correct behaviour, not silence: on those games every stored state replays to
+itself, and the prompt asks for none in that case. **`prose_rejected` = 0 across all 16
+cells**, so the grammar-artifact guard has nothing to adjudicate and the DSL is not hiding a
+reasoning result behind a parse failure.
+
+**Accepted: 0 of 12.** Every latent ties its five random controls to four decimal places on
+every arm (e.g. dc22 L1 0.2278 / L2 0.0552 for latent and all five controls), because the
+miner **never selects any of them** (`selected = 0` everywhere) — the mining outcome is the
+floor whatever is injected. Ties do not beat, so all 12 are rejected.
+
+Half A is measurable on m0r0 only (3 aliased groups; dc22 and sp80 have 0 — reported as
+absence of instrument, never as a separation rate of zero). There, the one computable latent
+separates 1 of 3 groups — **identical to all five random controls**. The optional
+prefix-divergence extension ran on all three games and shows no latent splitting verified
+from diverged prefixes better than the controls (e.g. sp80 `click_parity_s1`: 197/76 and
+161/64 verified/diverged across its two values — the same ratio twice).
+
+## Channel C — vocabulary critic
+
+**31 proposals, 29 distinct, 6 (19%) targeting a key the miner actually left unresolved** —
+ft09 4/4 across both seeds, sp80/s2 2/2, everything else 0. Two of ft09/s1's four are
+`clicked_adjacent_to:11` and `clicked_adjacent_to:12`: **features the v2 vocabulary already
+contains** — the one previous model suggestion that ever paid out, re-invented rather than
+read off the guard grammar printed in its own prompt.
+
+Implementation queue recorded for the follow-up task, ranked by targeting: the four ft09
+adjacency variants and sp80's `same_col:0:9` / `min_dist:0:9` first; then the geometry the
+vocabulary genuinely lacks — click row/column (m0r0/s1), clicked-component size (dc22/s2),
+bounding-box spans (vc33/s2), Manhattan distance between colour classes (tu93/s2),
+enclosure and same-shape (ls20/s2). C's final verdict lands only after those are implemented
+and measured as vocab v2 was.
+
+## Verdict sentences
+
+- **Channel A: dead against its control.** Zero games where the model's predicate is
+  store-consistent, source-correct, and outside the prior library; the single exactly-correct
+  predicate of the night (tu93/s2) is one the library also produces, and 10 of 16 refuters
+  were already satisfied by the evidence the model was shown.
+- **Channel B: dead against its control.** 0 of 12 latents beat their five random controls
+  on any arm, and none was ever selected by the miner. The executable template itself
+  survives — 0 prose-rejected — so the negative is about the proposals, not the grammar.
+- **Channel C: no in-slice win; verdict deferred by design.** 19% targeting, and the
+  highest-targeting cell re-proposed a feature the vocabulary already has. The queue is
+  recorded; only implementation can turn this channel positive.
+
+**Read together: on Qwen3.6 the M-phase is machinery-only, and the question re-opens on
+3.8** (`notes/qwen-3.8-upgrade.md`) — every verdict above is a (3.6) claim.
+
+## Limitations
+
+- `positives_evaluable = 0`: the store's completion half is unmeasurable, which is why the
+  human-replay test was added. That test is an addition to the pre-registered readout, made
+  after the night ran and before any adjudication label was assigned; it is mechanical and
+  reproducible, and the source read agrees with it on all three cells that decide clause 1.
+- Two seeds, one model, eight public games. Seeds disagreed on the store outcome in 3 of 8
+  games, so single-seed channel-A counts would mislead in either direction.
+- Public games are materially easier than hidden ones; nothing here is evidence about
+  hidden generalization.
+- Test-action executability was NOT executed (slice 2 runs no probes) — only
+  well-formedness is scored, as designed.

@@ -1,0 +1,15 @@
+{
+  "prompt_chars": 1890,
+  "prefilled_empty_think": true,
+  "prompt_opens_think": false,
+  "think_opened": false,
+  "think_closed": false,
+  "think_chars": 0,
+  "answer": "{\n  \"goal\": {\n    \"predicate\": \"empty(c4)\",\n    \"refuter\": \"nonempty(c4)\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": 4\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"bbox_height:7\",\n      \"definition_sketch\": \"vertical span (max_row - min_row + 1) of the single c7 object\u2019s bounding box.\",\n      \"targeted_keys\": [],\n      \"expected_direction\": \"Expected to resolve keys by splitting large effect groups based on c7\u2019s vertical extent, which likely governs reshape direction or disappearance thresholds.\"\n    },\n    {\n      \"name\": \"bbox_width:7\",\n      \"definition_sketch\": \"horizontal span (max_col - min_col + 1) of the single c7 object\u2019s bounding box.\",\n      \"targeted_keys\": [],\n      \"expected_direction\": \"Expected to resolve keys by splitting effect groups based on c7\u2019s horizontal extent, capturing lateral interaction constraints that `adj:7:right` alone cannot distinguish.\"\n    }\n  ]\n}",
+  "raw": "{\n  \"goal\": {\n    \"predicate\": \"empty(c4)\",\n    \"refuter\": \"nonempty(c4)\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": 4\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"bbox_height:7\",\n      \"definition_sketch\": \"vertical span (max_row - min_row + 1) of the single c7 object\u2019s bounding box.\",\n      \"targeted_keys\": [],\n      \"expected_direction\": \"Expected to resolve keys by splitting large effect groups based on c7\u2019s vertical extent, which likely governs reshape direction or disappearance thresholds.\"\n    },\n    {\n      \"name\": \"bbox_width:7\",\n      \"definition_sketch\": \"horizontal span (max_col - min_col + 1) of the single c7 object\u2019s bounding box.\",\n      \"targeted_keys\": [],\n      \"expected_direction\": \"Expected to resolve keys by splitting effect groups based on c7\u2019s horizontal extent, capturing lateral interaction constraints that `adj:7:right` alone cannot distinguish.\"\n    }\n  ]\n}",
+  "wall_seconds": 30.1,
+  "prompt_tps": 347.54057478728726,
+  "generation_tps": 9.40291825878531,
+  "temp": 0.0,
+  "seed": 2
+}

@@ -1,0 +1,15 @@
+{
+  "prompt_chars": 1681,
+  "prefilled_empty_think": true,
+  "prompt_opens_think": false,
+  "think_opened": false,
+  "think_closed": false,
+  "think_chars": 0,
+  "answer": "{\n  \"goal\": {\n    \"predicate\": \"count(c4) = 2\",\n    \"refuter\": \"empty(c4)\",\n    \"test_action\": {\n      \"precondition\": {\n        \"feature\": \"adj:7:right\",\n        \"value\": \"edge, 6, 4\"\n      },\n      \"action_id\": null,\n      \"click_colour\": null\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"adjacent:c4:c7\",\n      \"definition_sketch\": \"Boolean true if any cell of the c4 component is 4-adjacent to any cell of the c7 component.\",\n      \"targeted_keys\": [\n        \"ACTION6 on colour 0, 4, 7\"\n      ],\n      \"expected_direction\": \"True triggers `disappear(7)+reshape(4)`; False triggers `reshape(4)+reshape(7)`.\"\n    }\n  ]\n}",
+  "raw": "{\n  \"goal\": {\n    \"predicate\": \"count(c4) = 2\",\n    \"refuter\": \"empty(c4)\",\n    \"test_action\": {\n      \"precondition\": {\n        \"feature\": \"adj:7:right\",\n        \"value\": \"edge, 6, 4\"\n      },\n      \"action_id\": null,\n      \"click_colour\": null\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"adjacent:c4:c7\",\n      \"definition_sketch\": \"Boolean true if any cell of the c4 component is 4-adjacent to any cell of the c7 component.\",\n      \"targeted_keys\": [\n        \"ACTION6 on colour 0, 4, 7\"\n      ],\n      \"expected_direction\": \"True triggers `disappear(7)+reshape(4)`; False triggers `reshape(4)+reshape(7)`.\"\n    }\n  ]\n}",
+  "wall_seconds": 25.5,
+  "prompt_tps": 341.33500976942616,
+  "generation_tps": 9.416491235473384,
+  "temp": 0.0,
+  "seed": 1
+}

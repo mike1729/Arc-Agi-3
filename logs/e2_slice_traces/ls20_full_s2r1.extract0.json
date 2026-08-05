@@ -1,0 +1,15 @@
+{
+  "prompt_chars": 1944,
+  "prefilled_empty_think": true,
+  "prompt_opens_think": false,
+  "think_opened": false,
+  "think_closed": false,
+  "think_chars": 0,
+  "answer": "{\n  \"goal\": {\n    \"predicate\": \"count(c3) = 1\",\n    \"refuter\": \"count(c3) = 2\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": 3\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"adjacent(cA, cB)\",\n      \"definition_sketch\": \"boolean, true if any cell of an object in cA is 4-adjacent to any cell of an object in cB.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"Expected to split the large x500+ effect groups into contact-dependent and non-contact subgroups.\"\n    },\n    {\n      \"name\": \"count_parity(cN)\",\n      \"definition_sketch\": \"boolean, true if the number of objects of colour cN is odd.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"Expected to cleanly separate the top two effect groups in each key.\"\n    }\n  ]\n}",
+  "raw": "{\n  \"goal\": {\n    \"predicate\": \"count(c3) = 1\",\n    \"refuter\": \"count(c3) = 2\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": 3\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"adjacent(cA, cB)\",\n      \"definition_sketch\": \"boolean, true if any cell of an object in cA is 4-adjacent to any cell of an object in cB.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"Expected to split the large x500+ effect groups into contact-dependent and non-contact subgroups.\"\n    },\n    {\n      \"name\": \"count_parity(cN)\",\n      \"definition_sketch\": \"boolean, true if the number of objects of colour cN is odd.\",\n      \"targeted_keys\": [\n        \"ACTION1-4\"\n      ],\n      \"expected_direction\": \"Expected to cleanly separate the top two effect groups in each key.\"\n    }\n  ]\n}",
+  "wall_seconds": 30.8,
+  "prompt_tps": 361.6756144266724,
+  "generation_tps": 9.461530184663182,
+  "temp": 0.0,
+  "seed": 1
+}

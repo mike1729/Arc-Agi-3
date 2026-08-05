@@ -1,0 +1,15 @@
+{
+  "prompt_chars": 2058,
+  "prefilled_empty_think": true,
+  "prompt_opens_think": false,
+  "think_opened": false,
+  "think_closed": false,
+  "think_chars": 0,
+  "answer": "{\n  \"goal\": {\n    \"predicate\": \"count(c0) = 14\",\n    \"refuter\": \"count(c0) = 12\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": null\n    }\n  },\n  \"latents\": [\n    {\n      \"name\": \"turn_parity\",\n      \"definition\": \"actions_since_reset[reset_excluded] mod 2\"\n    },\n    {\n      \"name\": \"click_parity\",\n      \"definition\": \"actions_of(6)_since_reset[reset_excluded] mod 2\"\n    }\n  ],\n  \"vocabulary\": [\n    {\n      \"name\": \"click_on_grid_edge\",\n      \"definition_sketch\": \"boolean, true if the clicked cell's row or column index equals the grid boundary\",\n      \"targeted_keys\": [\n        \"ACTION6\"\n      ],\n      \"expected_direction\": \"expected to split the large no-change group from the reshape(0)+reshape(3) group by isolating boundary-triggered state flips\"\n    },\n    {\n      \"name\": \"clicked_component_size\",\n      \"definition_sketch\": \"integer, cardinality of the 4-connected same-colour component under the click\",\n      \"targeted_keys\": [\n        \"ACTION6\"\n      ],\n      \"expected_direction\": \"expected to separate the reshape(0) outcomes from the reshape(0)+reshape(3) outcomes by capturing mass-dependent reaction thresholds\"\n    }\n  ]\n}",
+  "raw": "{\n  \"goal\": {\n    \"predicate\": \"count(c0) = 14\",\n    \"refuter\": \"count(c0) = 12\",\n    \"test_action\": {\n      \"precondition\": null,\n      \"action_id\": 6,\n      \"click_colour\": null\n    }\n  },\n  \"latents\": [\n    {\n      \"name\": \"turn_parity\",\n      \"definition\": \"actions_since_reset[reset_excluded] mod 2\"\n    },\n    {\n      \"name\": \"click_parity\",\n      \"definition\": \"actions_of(6)_since_reset[reset_excluded] mod 2\"\n    }\n  ],\n  \"vocabulary\": [\n    {\n      \"name\": \"click_on_grid_edge\",\n      \"definition_sketch\": \"boolean, true if the clicked cell's row or column index equals the grid boundary\",\n      \"targeted_keys\": [\n        \"ACTION6\"\n      ],\n      \"expected_direction\": \"expected to split the large no-change group from the reshape(0)+reshape(3) group by isolating boundary-triggered state flips\"\n    },\n    {\n      \"name\": \"clicked_component_size\",\n      \"definition_sketch\": \"integer, cardinality of the 4-connected same-colour component under the click\",\n      \"targeted_keys\": [\n        \"ACTION6\"\n      ],\n      \"expected_direction\": \"expected to separate the reshape(0) outcomes from the reshape(0)+reshape(3) outcomes by capturing mass-dependent reaction thresholds\"\n    }\n  ]\n}",
+  "wall_seconds": 39.8,
+  "prompt_tps": 298.9868179501851,
+  "generation_tps": 9.368521774600847,
+  "temp": 0.0,
+  "seed": 2
+}

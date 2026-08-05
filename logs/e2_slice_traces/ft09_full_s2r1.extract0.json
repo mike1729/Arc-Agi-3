@@ -1,0 +1,15 @@
+{
+  "prompt_chars": 1953,
+  "prefilled_empty_think": true,
+  "prompt_opens_think": false,
+  "think_opened": false,
+  "think_closed": false,
+  "think_chars": 0,
+  "answer": "{\n  \"goal\": {\n    \"predicate\": \"empty(c9)\",\n    \"refuter\": \"count(c9) = 0\",\n    \"test_action\": {\n      \"precondition\": {\n        \"feature\": \"clicked_adjacent_to:4\",\n        \"value\": true\n      },\n      \"action_id\": 6,\n      \"click_colour\": 9\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"clicked_adjacent_to:11\",\n      \"definition_sketch\": \"Boolean indicating whether the clicked 4-connected component shares an edge with any cell of colour 11.\",\n      \"targeted_keys\": [\n        \"ACTION6 on colour 9\"\n      ],\n      \"expected_direction\": \"Expected to split the x63 and x16 effect groups, as the divergent outcomes on c11 (reshape vs appear) correlate with its proximity to the click target.\"\n    },\n    {\n      \"name\": \"clicked_adjacent_to:12\",\n      \"definition_sketch\": \"Boolean indicating whether the clicked component touches the single colour 12 object.\",\n      \"targeted_keys\": [\n        \"ACTION6 on colour 9\"\n      ],\n      \"expected_direction\": \"Expected to cleanly separate the adj:12:right strata (edge vs 11) into deterministic guards, partitioning the remaining mixed effects.\"\n    }\n  ]\n}",
+  "raw": "{\n  \"goal\": {\n    \"predicate\": \"empty(c9)\",\n    \"refuter\": \"count(c9) = 0\",\n    \"test_action\": {\n      \"precondition\": {\n        \"feature\": \"clicked_adjacent_to:4\",\n        \"value\": true\n      },\n      \"action_id\": 6,\n      \"click_colour\": 9\n    }\n  },\n  \"latents\": [],\n  \"vocabulary\": [\n    {\n      \"name\": \"clicked_adjacent_to:11\",\n      \"definition_sketch\": \"Boolean indicating whether the clicked 4-connected component shares an edge with any cell of colour 11.\",\n      \"targeted_keys\": [\n        \"ACTION6 on colour 9\"\n      ],\n      \"expected_direction\": \"Expected to split the x63 and x16 effect groups, as the divergent outcomes on c11 (reshape vs appear) correlate with its proximity to the click target.\"\n    },\n    {\n      \"name\": \"clicked_adjacent_to:12\",\n      \"definition_sketch\": \"Boolean indicating whether the clicked component touches the single colour 12 object.\",\n      \"targeted_keys\": [\n        \"ACTION6 on colour 9\"\n      ],\n      \"expected_direction\": \"Expected to cleanly separate the adj:12:right strata (edge vs 11) into deterministic guards, partitioning the remaining mixed effects.\"\n    }\n  ]\n}",
+  "wall_seconds": 36.0,
+  "prompt_tps": 359.43353623692843,
+  "generation_tps": 9.446753022035093,
+  "temp": 0.0,
+  "seed": 1
+}
