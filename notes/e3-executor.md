@@ -74,6 +74,16 @@ through a candidate that survived) is re-instantiated on L2's objects and tested
 **first**; fresh universe enumeration + active disambiguation is the fallback. Whether
 the goal family transfers is itself an E3 readout column.
 
+*Amendment 2026-08-05 (S1 end-to-end read, `aca2d47`): the carried schema is also a
+trap.* All three sb26 reference passes failed L2 (156/252/203 actions vs baseline 28) by
+enumerating variations **inside** the carried L1 schema; the ft09 passes that cleared L2
+did so by treating "predicate satisfied, level did not advance" as a contradiction that
+forces re-derivation, and the one pass that lost that thread brute-forced and timed out.
+Rule for X: the carried predicate is tested first and **abandoned on first
+contradiction** — the executor never enumerates within a contradicted schema;
+contradiction routes to fresh-universe re-derivation. Anchor-trap frequency (plans built
+inside a contradicted schema) is an E3 readout column.
+
 **7. taaf comparison harness.** Vendored taaf on the same games, same driver, same action
 accounting, same scorer arithmetic (`min(115, (baseline/actions)² × 100)`, level-position
 weights). Report per-game clears and actions side by side.

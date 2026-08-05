@@ -1,6 +1,8 @@
 # E2 slice 2 — design: three channels, each against a mechanical control
 
-**2026-08-05. Status: design, not run.** Synthesis of five readouts: slice 1
+**2026-08-05. Status: design, not run. Revised same day** after the S1 end-to-end
+correction (`aca2d47`): channel A's seeding rationale, schema (test action added),
+control percentage, and readout were updated — dated markers inline. Synthesis of five readouts: slice 1
 (`notes/e2-slice.md`), slice 1.1 + budget check (`notes/e2-variance-arm.md`,
 `notes/think-budget-recheck.md`), trace autopsy (`notes/e2-trace-autopsy.md`), probe
 channel (`notes/e2-probe-channel.md`), hidden-state loop closure
@@ -28,8 +30,14 @@ returns in any form.
 ### A — Goal as falsifiable predicate (redesigned per S1 contrast)
 
 **Output schema per game:** a completion-condition **predicate** (row-C grammar where
-expressible, else a short executable expression over census handles) **plus its
-refuter** — the single observation that would falsify it. Prose goals score zero.
+expressible, else a short executable expression over census handles), **its refuter** —
+the single observation that would falsify it — **and its test action**: one concrete
+(precondition, action) in the guard vocabulary whose outcome bears on the predicate.
+Prose goals score zero. The test action is the S1 end-to-end read's joint goal+action
+scoring (`aca2d47`): ft09 held a fully solved goal for ten actions because nothing
+connected it to an untried action; a predicate without its next action is not yet
+knowledge the system can use. Executability of the test action is scored mechanically
+through the probe-executor machinery, which exists and is otherwise idle.
 
 **Scoring (mechanical first, adjudication last):**
 1. consistency with every store transition (negatives; own completion positive where one
@@ -44,16 +52,24 @@ from the reference's own wins (avatar→salient target · every X into/onto its 
 clear/collect all X · copy the displayed template · align the two matching objects),
 instantiated *mechanically* on each game's census and filtered by the same store
 consistency check. The channel is alive only where the model's predicate is correct **and
-the prior library's is not** — S1 showed 40% of reference wins are the prior firing, so
-matching the library is worth nothing.
+the prior library's is not** — the corrected S1 read (`aca2d47`) puts the prior firing at
+**50%** of reference wins (21/42), so matching the library is worth nothing.
 
-**Trigger seeding (the ft09/sb26 mechanism, deliberately elicited):** the digest gains a
-**negative-evidence section** — runs of null-effect actions, and "candidate G satisfied
-at step t, level did not advance" events (evaluated against row-C survivors) — plus an
-**inert-object inventory**: objects that never changed across the entire store. Both
-reference discoveries began by re-reading an inert object as a *specification* under
-exactly that kind of negative evidence; the digest currently hides inert objects
-precisely because they never move.
+**Seeding (revised same day after the end-to-end S1 read, `aca2d47`):** the
+**inert-object inventory** — objects that never changed across the entire store — is the
+primary seed. Both reference discoveries read a *static* object as a specification: sb26
+stated the correct goal from layout alone at analysis step 1, before any action; ft09's
+encoding hypothesis appears at step 5. The digest currently hides inert objects precisely
+because they never move. The earlier claim that discovery is *triggered by accumulated
+negative evidence* is **refuted** by that read and is withdrawn as a design rationale.
+The **negative-evidence section** stays with a different job: its "candidate G satisfied
+at step t, level did not advance" lines (evaluated against row-C survivors) are the
+**re-specification test** — ft09's L2 recoveries went through exactly that contradiction
+("matches my decoded pattern, but the level is not complete — so my decoding is wrong")
+while sb26's L2 passes never re-specified and burned their whole budget enumerating
+inside the stale schema. Scoring counts whether the emitted predicate *respects the
+recorded contradictions* rather than re-proposing a refuted candidate. Null-effect-run
+lines are kept as data with no elicitation claim attached.
 
 ### B — Latents as executable definitions (per the validated template)
 
@@ -103,9 +119,12 @@ by implementation* adds capability. Both outcomes are recorded; only the second 
 Keep everything slice 1.1 added (complete value sets, witness, guard grammar, honest
 majority text) plus the lifted cap. Add:
 
-1. **Coverage channel** — per unresolved key and feature stratum: how many stored
-   transitions exercised it (the probe task's core recommendation; kills
-   "asked-for-what-it-had");
+1. **Coverage ledger** — per unresolved key and feature stratum, how many stored
+   transitions exercised it, and per object, which actions have been tried on it. Two
+   independent readouts demand exactly this: the probe task (26/31 probe arms asked for
+   evidence already held) and the S1 end-to-end read (what finally unblocked ft09 was
+   the model printing its own action history and reading off the gap — "I have NOT
+   tried clicking the blue cells");
 2. **Inert-object inventory** (channel A's raw material);
 3. **Negative-evidence section** (null-effect runs; satisfied-but-not-advanced events);
 4. The three **request schemas** above, replacing the rule-proposal request and the
@@ -133,7 +152,9 @@ Decided now, before any call runs; each is a direction, no invented numbers:
 
 1. **A**: count of games where the model's predicate is store-consistent ∧
    source-correct ∧ the prior library's is not. Zero → channel dead. Also reported:
-   self-refuting-refuter count (the calibration read).
+   self-refuting-refuter count (the calibration read) · test-action executability count
+   (the joint goal+action read) · contradiction-respect count (predicates consistent
+   with recorded satisfied-but-not-advanced events — the re-specification read).
 2. **B**: count of accepted latents (beats all 5 random controls on half B; half A where
    measurable). Zero → channel dead on 3.6; the template survives regardless.
 3. **C**: targeting rate vs the measured failure-typing, and the implementation queue.
