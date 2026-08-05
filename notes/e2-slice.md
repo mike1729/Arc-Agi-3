@@ -114,3 +114,44 @@ decoded token never constrained, raw trace written before any scoring.
 - `parse_rejected` counts vocabulary rejections separately from "no rules stated"; the run had
   2 of the former and 1 cell of the latter (ft09/125 is the same cell — its only two proposals
   were both rejected).
+
+---
+
+## Addendum 2026-08-05 — the digest's ALIAS CONFLICTS block is replaced
+
+`build_digest` printed a block headed **ALIAS CONFLICTS**, listing `graph.conflicted` and
+falling back to `"  none recorded"` when the list was empty. That fallback is a false
+negative and it fired on most games.
+
+[`notes/e1-prefix-audit.md`](e1-prefix-audit.md) measured what the list is worth. E1 flags a
+`(state, action)` pair only when routing happens to re-test it, and the v2 policy re-tests
+almost nothing — so the count tracks re-test frequency, not aliasing. **ka59, dc22, wa30 and
+sk48 all record zero conflicted edges while fewer than 6% of their stored states are reached
+by their own recorded prefix.** dc22's digest therefore asserted "none recorded" for a store
+whose settled frames do not identify its states at all, and that is the digest slice 1 and
+slice 1.1 both ran on.
+
+Replaced by a **STATE IDENTITY** block that leads with the measured quantity — the fraction
+of stored states whose recorded prefix replays to the grid the store claims, over a
+deterministic engine — and demotes the conflict list to the lower bound it always was:
+
+* clean game (tu93, 1202/1202): says every state replays and tells the model **not** to
+  invent a hidden variable;
+* defective game (dc22, 28/1360): says 97.9% of states do not replay, that a hidden variable
+  therefore **exists**, and that a key it cannot separate may be unseparable for that reason
+  — no guard over these frames would fix it;
+* no audit entry: says NOT MEASURED, in those words, rather than implying a clean store;
+* the conflict list is now labelled a lower bound in the prompt, and its `MAX_ALIAS_SHOWN`
+  truncation is marked `+N more not shown` (g50t: 43 pairs, 8 shown). That silent cap was
+  the same defect slice 1.1 fixed for the feature lists.
+
+Prompt item 3 changed with it. It read "HIDDEN STATE — *if alias conflicts appear above*,
+what unobserved variable would explain them", which invites exactly the inference the empty
+list licensed. It now directs the model to the STATE IDENTITY measurement, tells it that a
+non-replaying store means a hidden variable exists and its job is to name it rather than
+decide whether there is one, and forbids inferring "no hidden state" from a short conflict
+list.
+
+**This changes the digest, so any future slice is not prompt-identical to slice 1 or 1.1.**
+The stored traces in `logs/e2_slice_traces/` remain the record of what was actually run, and
+no result in this note is restated. Verified by `--dry-run` over all 12 cells.

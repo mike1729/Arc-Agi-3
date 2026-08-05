@@ -194,6 +194,84 @@ def unresolved_keys(rules: dict[str, Rule]) -> list[tuple]:
     return [rule.key for rule in rules.values() if rule.tier == "majority"]
 
 
+def state_identity(game: str) -> list[str]:
+    """The STATE IDENTITY block — replaces the old ALIAS CONFLICTS block.
+
+    The old block listed `graph.conflicted` and printed "none recorded" when it was empty.
+    That reads as "no aliasing here", and it is not: E1 flags a (state, action) pair only
+    when its routing happens to re-test the pair, and the v2 policy re-tests almost
+    nothing. `notes/e1-prefix-audit.md` measured what the list is worth — ka59, dc22, wa30
+    and sk48 all record ZERO conflicted edges while under 6% of their stored states are
+    reachable by their own recorded prefix. dc22's digest printed "none recorded" for a
+    store whose settled frames do not identify its states at all, and 21 of 24 slice
+    traces then reasoned from a clean state graph they were never given evidence for.
+
+    So the section now leads with the MEASURED quantity — the fraction of stored states
+    whose recorded prefix replays to the grid the store claims, over a deterministic engine
+    — and demotes the conflict list to the lower bound it always was. Absence of evidence
+    is stated as absence of evidence, in the prompt, in words.
+
+    Reads `logs/e1_prefix_audit.json` (`agent/harness/e1_prefix_audit.py`). If that file is
+    missing the block says the check has not been run rather than implying a clean store.
+    """
+    lines: list[str] = []
+    audit_path = ROOT / "logs/e1_prefix_audit.json"
+    audit = None
+    if audit_path.is_file():
+        audit = json.loads(audit_path.read_text()).get("games", {}).get(game)
+
+    if audit is None:
+        lines.append(
+            "  NOT MEASURED for this game. Whether the settled frame identifies the state "
+            "is unknown here, and unknown is not the same as clean — treat every rule "
+            "below as possibly conditioned on something these frames do not show."
+        )
+    else:
+        rate = audit["verified_rate"]
+        lines.append(
+            f"  Measured: {audit['verified']} of {audit['states']} stored states "
+            f"({rate:.1%}) are reached by replaying their own recorded action prefix from "
+            f"reset. The engine is deterministic, so where a replay lands elsewhere, two "
+            f"different histories produced the same settled frame."
+        )
+        if rate >= 0.999:
+            lines.append(
+                "  Every stored state replays. For this game the settled frame does "
+                "identify the state, and a rule conditioned only on what you see below "
+                "is not missing a hidden variable."
+            )
+        else:
+            lines.append(
+                f"  {1 - rate:.1%} of states do NOT replay to themselves. The settled "
+                f"frame does NOT fully identify this game's state: there is at least one "
+                f"hidden variable that no feature in the guard vocabulary can express. A "
+                f"key you cannot separate may be unseparable for that reason, and no "
+                f"guard over these frames would fix it."
+            )
+
+    graph_path = ROOT / "logs/e1_store_v2" / f"{game}.graph.json"
+    if graph_path.is_file():
+        graph = json.loads(graph_path.read_text())
+        conflicted = graph.get("conflicted", [])
+        shown = conflicted[:MAX_ALIAS_SHOWN]
+        lines.append(
+            f"  Directly caught contradicting themselves on re-test: {len(conflicted)} "
+            f"(state, action) pairs. This is a LOWER BOUND and nothing more — the "
+            f"explorer re-tested only a small, unrecorded fraction of pairs, so a pair "
+            f"missing from this list was probably never re-tested. Do not read a short "
+            f"list as a clean game."
+        )
+        for source, action in shown:
+            prefix = len(graph.get("prefix", {}).get(source, []))
+            lines.append(
+                f"      state {source[:8]} (reached in {prefix} actions) + action {action}"
+                f" -> two different settled outcomes"
+            )
+        if len(conflicted) > len(shown):
+            lines.append(f"      +{len(conflicted) - len(shown)} more not shown")
+    return lines
+
+
 def build_digest(game: str, dose: int | None) -> dict[str, Any]:
     used, rules, _ = mined(game, dose)
 
@@ -261,16 +339,7 @@ def build_digest(game: str, dose: int | None) -> dict[str, Any]:
                 f"x{n_b} gave {_effect_text(effect_b)}"
             )
 
-    graph_path = ROOT / "logs/e1_store_v2" / f"{game}.graph.json"
-    alias_lines = []
-    if graph_path.is_file():
-        graph = json.loads(graph_path.read_text())
-        for source, action in graph.get("conflicted", [])[:MAX_ALIAS_SHOWN]:
-            prefix = len(graph.get("prefix", {}).get(source, []))
-            alias_lines.append(
-                f"  state {source[:8]} (reached in {prefix} actions) + action {action} "
-                f"-> two different settled outcomes"
-            )
+    identity_lines = state_identity(game)
 
     completion = next((t for t in used if t.completed), None)
     completion_line = (
@@ -318,9 +387,8 @@ KEYS THE MINER COULD NOT RESOLVE — the actual problem
   separating the key means telling ALL of its effects apart.
 {chr(10).join(unresolved_lines) if unresolved_lines else "  none"}
 
-ALIAS CONFLICTS (same state hash + same action -> different outcome; replay is deterministic,
-so these prove the settled frame does not fully identify the state)
-{chr(10).join(alias_lines) if alias_lines else "  none recorded"}
+STATE IDENTITY — does the settled frame below fully identify the game's state?
+{chr(10).join(identity_lines)}
 
 LEVEL COMPLETION
 {completion_line}
@@ -365,7 +433,10 @@ Then answer, in plain prose:
 1. RULES — each as: action, optional guard (feature=value), the exact effect, the number of
    shown transitions that support it, and the single observation that would refute it.
 2. GOAL — what you believe completing this level requires, and what evidence supports it.
-3. HIDDEN STATE — if alias conflicts appear above, what unobserved variable would explain them.
+3. HIDDEN STATE — read the STATE IDENTITY section. If it reports states that do not replay
+   to themselves, a hidden variable EXISTS and your job is to name what it plausibly is, not
+   to decide whether there is one. If it reports that every state replays, say so and do not
+   invent one. Never infer "no hidden state" from a short conflict list.
 4. WHAT WOULD SETTLE IT — the single most informative action to try next, and where.
 """
 
