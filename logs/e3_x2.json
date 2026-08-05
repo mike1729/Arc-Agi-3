@@ -1,0 +1,206 @@
+{
+  "caps": {
+    "nodes": 400000,
+    "seconds": 600.0
+  },
+  "effect_mode": "full",
+  "format_version": 1,
+  "games": {
+    "lf52": {
+      "action_repertoire": 38,
+      "explorer_actions_to_completion": 149,
+      "game": "lf52",
+      "goal_action": [
+        6,
+        42,
+        42
+      ],
+      "goal_pre_state": "ba4fcb5a39e69c62",
+      "human_baseline_l1": 32,
+      "origin": "67a534d3951ea6fd",
+      "origin_forward_step_census": {
+        "confident/underdetermined": 6,
+        "weak/underdetermined": 32
+      },
+      "plan": null,
+      "prefix_verified_rate": 1.0,
+      "searches": {
+        "confident_only": {
+          "closed_set_states_not_in_store": 0,
+          "closed_set_touched_flagged_states": [],
+          "edges_by_class": {},
+          "found": false,
+          "hit_cap": null,
+          "max_depth_reached": 0,
+          "nodes_expanded": 1,
+          "seconds": 0.02,
+          "states_seen": 1
+        },
+        "confident_plus_weak": {
+          "closed_set_states_not_in_store": 0,
+          "closed_set_touched_flagged_states": [],
+          "edges_by_class": {},
+          "found": false,
+          "hit_cap": null,
+          "max_depth_reached": 0,
+          "nodes_expanded": 1,
+          "seconds": 0.02,
+          "states_seen": 1
+        }
+      },
+      "store_only_plan": {
+        "actions": 72,
+        "path_edges": 71
+      },
+      "store_states": 124
+    },
+    "lp85": {
+      "action_repertoire": 19,
+      "explorer_actions_to_completion": 43,
+      "game": "lp85",
+      "goal_action": [
+        6,
+        32,
+        5
+      ],
+      "goal_pre_state": "75434cd3bb306cf5",
+      "human_baseline_l1": 17,
+      "origin": "6e1a966a6a45d23a",
+      "origin_forward_step_census": {
+        "confident/self_loop": 16,
+        "confident/underdetermined": 1,
+        "uncovered/no_rule": 1,
+        "weak/underdetermined": 1
+      },
+      "plan": null,
+      "prefix_verified_rate": 1.0,
+      "searches": {
+        "confident_only": {
+          "closed_set_states_not_in_store": 0,
+          "closed_set_touched_flagged_states": [],
+          "edges_by_class": {},
+          "found": false,
+          "hit_cap": null,
+          "max_depth_reached": 0,
+          "nodes_expanded": 1,
+          "seconds": 0.02,
+          "states_seen": 1
+        },
+        "confident_plus_weak": {
+          "closed_set_states_not_in_store": 0,
+          "closed_set_touched_flagged_states": [],
+          "edges_by_class": {},
+          "found": false,
+          "hit_cap": null,
+          "max_depth_reached": 0,
+          "nodes_expanded": 1,
+          "seconds": 0.02,
+          "states_seen": 1
+        }
+      },
+      "store_only_plan": {
+        "actions": 7,
+        "path_edges": 6
+      },
+      "store_states": 7
+    },
+    "r11l": {
+      "action_repertoire": 66,
+      "explorer_actions_to_completion": 135,
+      "game": "r11l",
+      "goal_action": [
+        6,
+        28,
+        35
+      ],
+      "goal_pre_state": "e9232580237e513b",
+      "human_baseline_l1": 22,
+      "origin": "7db96fe47602c28a",
+      "origin_forward_step_census": {
+        "weak/underdetermined": 66
+      },
+      "plan": null,
+      "prefix_verified_rate": 1.0,
+      "searches": {
+        "confident_only": {
+          "closed_set_states_not_in_store": 0,
+          "closed_set_touched_flagged_states": [],
+          "edges_by_class": {},
+          "found": false,
+          "hit_cap": null,
+          "max_depth_reached": 0,
+          "nodes_expanded": 1,
+          "seconds": 0.1,
+          "states_seen": 1
+        },
+        "confident_plus_weak": {
+          "closed_set_states_not_in_store": 0,
+          "closed_set_touched_flagged_states": [],
+          "edges_by_class": {},
+          "found": false,
+          "hit_cap": null,
+          "max_depth_reached": 0,
+          "nodes_expanded": 1,
+          "seconds": 0.1,
+          "states_seen": 1
+        }
+      },
+      "store_only_plan": {
+        "actions": 10,
+        "path_edges": 9
+      },
+      "store_states": 130
+    },
+    "sp80": {
+      "action_repertoire": 80,
+      "explorer_actions_to_completion": 1106,
+      "game": "sp80",
+      "goal_action": [
+        5,
+        null,
+        null
+      ],
+      "goal_pre_state": "f03e7fd20f261b42",
+      "human_baseline_l1": 39,
+      "origin": "966e3e13c58d43c8",
+      "origin_forward_step_census": {
+        "confident/underdetermined": 46,
+        "weak/underdetermined": 34
+      },
+      "plan": null,
+      "prefix_verified_rate": 0.7189,
+      "searches": {
+        "confident_only": {
+          "closed_set_states_not_in_store": 0,
+          "closed_set_touched_flagged_states": [],
+          "edges_by_class": {},
+          "found": false,
+          "hit_cap": null,
+          "max_depth_reached": 0,
+          "nodes_expanded": 1,
+          "seconds": 0.07,
+          "states_seen": 1
+        },
+        "confident_plus_weak": {
+          "closed_set_states_not_in_store": 0,
+          "closed_set_touched_flagged_states": [],
+          "edges_by_class": {},
+          "found": false,
+          "hit_cap": null,
+          "max_depth_reached": 0,
+          "nodes_expanded": 1,
+          "seconds": 0.07,
+          "states_seen": 1
+        }
+      },
+      "store_only_plan": {
+        "actions": 17,
+        "path_edges": 16
+      },
+      "store_states": 498
+    }
+  },
+  "guard_vocabulary": "v2",
+  "stage": "x2",
+  "store": "logs/e1_store_v2"
+}

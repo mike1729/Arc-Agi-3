@@ -1,0 +1,3020 @@
+{
+  "caps": null,
+  "effect_mode": "full",
+  "format_version": 1,
+  "games": {
+    "ar25": {
+      "full": {
+        "coverage": {
+          "confident": 0.7217,
+          "uncovered": 0.0,
+          "weak": 0.2783
+        },
+        "edges": {
+          "confident": 2145,
+          "uncovered": 0,
+          "weak": 827
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.7304
+        },
+        "rule_tiers": {
+          "majority": 5,
+          "tier0": 6,
+          "tier1": 2
+        },
+        "rules": 13,
+        "unresolved_keys": 5
+      },
+      "game": "ar25",
+      "moveset": {
+        "coverage": {
+          "confident": 0.7217,
+          "uncovered": 0.0,
+          "weak": 0.2783
+        },
+        "edges": {
+          "confident": 2145,
+          "uncovered": 0,
+          "weak": 827
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.7582
+        },
+        "rule_tiers": {
+          "majority": 5,
+          "tier0": 6,
+          "tier1": 2
+        },
+        "rules": 13,
+        "unresolved_keys": 5
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 2972,
+          "determinate": 2261,
+          "determinate_rate": 0.7608,
+          "edges_with_post_frame": 2972,
+          "exact": 2261,
+          "exact_over_considered": 0.7608,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 711,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 674,
+            "assignment": 678,
+            "reshape": 667
+          },
+          "underdetermined_kinds": {
+            "appear|assignment": 44,
+            "appear|assignment|reshape": 629,
+            "appear|reshape": 1,
+            "assignment|reshape": 5,
+            "reshape": 32
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 2972,
+          "determinate": 2112,
+          "determinate_rate": 0.7106,
+          "edges_with_post_frame": 2972,
+          "exact": 2112,
+          "exact_over_considered": 0.7106,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 711,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 828,
+            "assignment": 827,
+            "over_assignment": 37,
+            "reshape": 812
+          },
+          "underdetermined_kinds": {
+            "appear|assignment": 45,
+            "appear|assignment|over_assignment": 3,
+            "appear|assignment|over_assignment|reshape": 34,
+            "appear|assignment|reshape": 745,
+            "appear|reshape": 1,
+            "reshape": 32
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 2112,
+            "exact": 2112,
+            "exact_over_determinate": 1.0,
+            "underdetermined": 33
+          },
+          "weak": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 827
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 2972
+    },
+    "bp35": {
+      "full": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2873
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.8441
+        },
+        "rule_tiers": {
+          "majority": 11
+        },
+        "rules": 11,
+        "unresolved_keys": 11
+      },
+      "game": "bp35",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2873
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.8521
+        },
+        "rule_tiers": {
+          "majority": 11
+        },
+        "rules": 11,
+        "unresolved_keys": 11
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 2873,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 2873,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2873,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 501,
+            "assignment": 312,
+            "reshape": 2873
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 142,
+            "appear|reshape": 359,
+            "assignment|reshape": 170,
+            "reshape": 2202
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 2873,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 2873,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2873,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 454,
+            "assignment": 221,
+            "reshape": 2873
+          },
+          "underdetermined_kinds": {
+            "appear|reshape": 454,
+            "assignment|reshape": 221,
+            "reshape": 2198
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 2873
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 2873
+    },
+    "cd82": {
+      "full": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2922
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.5106
+        },
+        "rule_tiers": {
+          "majority": 11
+        },
+        "rules": 11,
+        "unresolved_keys": 11
+      },
+      "game": "cd82",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2922
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.5106
+        },
+        "rule_tiers": {
+          "majority": 11
+        },
+        "rules": 11,
+        "unresolved_keys": 11
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 2922,
+          "determinate": 834,
+          "determinate_rate": 0.2854,
+          "edges_with_post_frame": 2922,
+          "exact": 834,
+          "exact_over_considered": 0.2854,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2088,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 229,
+            "assignment": 238,
+            "reshape": 2059
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 205,
+            "appear|reshape": 24,
+            "assignment": 29,
+            "assignment|reshape": 4,
+            "reshape": 1826
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 2922,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 2922,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2088,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "reshape": 2922
+          },
+          "underdetermined_kinds": {
+            "reshape": 2922
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 2922
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 2922
+    },
+    "cn04": {
+      "full": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2885
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.3678
+        },
+        "rule_tiers": {
+          "majority": 11
+        },
+        "rules": 11,
+        "unresolved_keys": 11
+      },
+      "game": "cn04",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2885
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.3678
+        },
+        "rule_tiers": {
+          "majority": 11
+        },
+        "rules": 11,
+        "unresolved_keys": 11
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 2885,
+          "determinate": 869,
+          "determinate_rate": 0.3012,
+          "edges_with_post_frame": 2885,
+          "exact": 869,
+          "exact_over_considered": 0.3012,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2016,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 1390,
+            "assignment": 1129,
+            "reshape": 1318
+          },
+          "underdetermined_kinds": {
+            "appear": 149,
+            "appear|assignment": 549,
+            "appear|assignment|reshape": 580,
+            "appear|reshape": 112,
+            "reshape": 626
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 2885,
+          "determinate": 1232,
+          "determinate_rate": 0.427,
+          "edges_with_post_frame": 2885,
+          "exact": 581,
+          "exact_over_considered": 0.2014,
+          "exact_over_determinate": 0.4716,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2016,
+            "determinate": 651,
+            "determinate_rate": 0.3229,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 651
+          },
+          "underdetermined_kind_edges": {
+            "appear": 1653,
+            "assignment": 1259,
+            "over_assignment": 5,
+            "reshape": 334
+          },
+          "underdetermined_kinds": {
+            "appear": 393,
+            "appear|assignment": 922,
+            "appear|assignment|over_assignment": 3,
+            "appear|assignment|over_assignment|reshape": 1,
+            "appear|assignment|reshape": 333,
+            "appear|over_assignment": 1
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 1232,
+            "exact": 581,
+            "exact_over_determinate": 0.4716,
+            "underdetermined": 1653
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 2885
+    },
+    "dc22": {
+      "full": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2939
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.4335
+        },
+        "rule_tiers": {
+          "majority": 14
+        },
+        "rules": 14,
+        "unresolved_keys": 14
+      },
+      "game": "dc22",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2939
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.4406
+        },
+        "rule_tiers": {
+          "majority": 14
+        },
+        "rules": 14,
+        "unresolved_keys": 14
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 2939,
+          "determinate": 1114,
+          "determinate_rate": 0.379,
+          "edges_with_post_frame": 2939,
+          "exact": 1114,
+          "exact_over_considered": 0.379,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 1825,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 644,
+            "assignment": 260,
+            "reshape": 1805
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 240,
+            "appear|reshape": 404,
+            "assignment": 20,
+            "reshape": 1161
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 2939,
+          "determinate": 835,
+          "determinate_rate": 0.2841,
+          "edges_with_post_frame": 2939,
+          "exact": 383,
+          "exact_over_considered": 0.1303,
+          "exact_over_determinate": 0.4587,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 1825,
+            "determinate": 452,
+            "determinate_rate": 0.2477,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 452
+          },
+          "underdetermined_kind_edges": {
+            "appear": 808,
+            "assignment": 281,
+            "reshape": 2104
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 281,
+            "appear|reshape": 527,
+            "reshape": 1296
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 835,
+            "exact": 383,
+            "exact_over_determinate": 0.4587,
+            "underdetermined": 2104
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 2939
+    },
+    "ft09": {
+      "full": {
+        "coverage": {
+          "confident": 0.8237,
+          "uncovered": 0.0,
+          "weak": 0.1763
+        },
+        "edges": {
+          "confident": 1014,
+          "uncovered": 0,
+          "weak": 217
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.6359
+        },
+        "rule_tiers": {
+          "majority": 1,
+          "tier0": 6,
+          "tier1": 2
+        },
+        "rules": 9,
+        "unresolved_keys": 1
+      },
+      "game": "ft09",
+      "moveset": {
+        "coverage": {
+          "confident": 0.8237,
+          "uncovered": 0.0,
+          "weak": 0.1763
+        },
+        "edges": {
+          "confident": 1014,
+          "uncovered": 0,
+          "weak": 217
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.6359
+        },
+        "rule_tiers": {
+          "majority": 1,
+          "tier0": 6,
+          "tier1": 2
+        },
+        "rules": 9,
+        "unresolved_keys": 1
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 1231,
+          "determinate": 1143,
+          "determinate_rate": 0.9285,
+          "edges_with_post_frame": 1231,
+          "exact": 1143,
+          "exact_over_considered": 0.9285,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 88,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 88,
+            "assignment": 88,
+            "reshape": 88
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 88
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 1231,
+          "determinate": 1222,
+          "determinate_rate": 0.9927,
+          "edges_with_post_frame": 1231,
+          "exact": 1143,
+          "exact_over_considered": 0.9285,
+          "exact_over_determinate": 0.9354,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 88,
+            "determinate": 79,
+            "determinate_rate": 0.8977,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 79
+          },
+          "underdetermined_kind_edges": {
+            "appear": 9,
+            "assignment": 9,
+            "reshape": 9
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 9
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 1005,
+            "exact": 1005,
+            "exact_over_determinate": 1.0,
+            "underdetermined": 9
+          },
+          "weak": {
+            "determinate": 217,
+            "exact": 138,
+            "exact_over_determinate": 0.6359,
+            "underdetermined": 0
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 1231
+    },
+    "g50t": {
+      "full": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 1448
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.27
+        },
+        "rule_tiers": {
+          "majority": 5
+        },
+        "rules": 5,
+        "unresolved_keys": 5
+      },
+      "game": "g50t",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 1448
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.2707
+        },
+        "rule_tiers": {
+          "majority": 5
+        },
+        "rules": 5,
+        "unresolved_keys": 5
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 1448,
+          "determinate": 316,
+          "determinate_rate": 0.2182,
+          "edges_with_post_frame": 1448,
+          "exact": 316,
+          "exact_over_considered": 0.2182,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 1132,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 822,
+            "assignment": 819,
+            "reshape": 1122
+          },
+          "underdetermined_kinds": {
+            "appear|assignment": 10,
+            "appear|assignment|reshape": 807,
+            "appear|reshape": 5,
+            "assignment|reshape": 2,
+            "reshape": 308
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 1448,
+          "determinate": 558,
+          "determinate_rate": 0.3854,
+          "edges_with_post_frame": 1448,
+          "exact": 194,
+          "exact_over_considered": 0.134,
+          "exact_over_determinate": 0.3477,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 1132,
+            "determinate": 364,
+            "determinate_rate": 0.3216,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 364
+          },
+          "underdetermined_kind_edges": {
+            "appear": 890,
+            "assignment": 890,
+            "reshape": 890
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 890
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 558,
+            "exact": 194,
+            "exact_over_determinate": 0.3477,
+            "underdetermined": 890
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 1448
+    },
+    "ka59": {
+      "full": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2923
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.493
+        },
+        "rule_tiers": {
+          "majority": 11
+        },
+        "rules": 11,
+        "unresolved_keys": 11
+      },
+      "game": "ka59",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2923
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.5135
+        },
+        "rule_tiers": {
+          "majority": 11
+        },
+        "rules": 11,
+        "unresolved_keys": 11
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 2923,
+          "determinate": 742,
+          "determinate_rate": 0.2538,
+          "edges_with_post_frame": 2923,
+          "exact": 742,
+          "exact_over_considered": 0.2538,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2181,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 782,
+            "assignment": 790,
+            "reshape": 2095
+          },
+          "underdetermined_kinds": {
+            "appear|assignment": 86,
+            "appear|assignment|reshape": 686,
+            "appear|reshape": 10,
+            "assignment|reshape": 18,
+            "reshape": 1381
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 2923,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 2923,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2181,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 334,
+            "assignment": 333,
+            "reshape": 2923
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 333,
+            "appear|reshape": 1,
+            "reshape": 2589
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 2923
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 2923
+    },
+    "lf52": {
+      "full": {
+        "coverage": {
+          "confident": 0.4384,
+          "uncovered": 0.0,
+          "weak": 0.5616
+        },
+        "edges": {
+          "confident": 64,
+          "uncovered": 0,
+          "weak": 82
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.5976
+        },
+        "rule_tiers": {
+          "majority": 6,
+          "tier0": 4,
+          "tier1": 6
+        },
+        "rules": 16,
+        "unresolved_keys": 6
+      },
+      "game": "lf52",
+      "moveset": {
+        "coverage": {
+          "confident": 0.4384,
+          "uncovered": 0.0,
+          "weak": 0.5616
+        },
+        "edges": {
+          "confident": 64,
+          "uncovered": 0,
+          "weak": 82
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.5976
+        },
+        "rule_tiers": {
+          "majority": 6,
+          "tier0": 4,
+          "tier1": 6
+        },
+        "rules": 16,
+        "unresolved_keys": 6
+      },
+      "post_frame_missing": 1,
+      "reconstruction": {
+        "grammar": {
+          "considered": 145,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 145,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 145,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 39,
+            "assignment": 27,
+            "reshape": 145
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 26,
+            "appear|reshape": 13,
+            "assignment|reshape": 1,
+            "reshape": 105
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 145,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 145,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 145,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 17,
+            "assignment": 16,
+            "reshape": 145
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 16,
+            "appear|reshape": 1,
+            "reshape": 128
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 64
+          },
+          "weak": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 81
+          }
+        }
+      },
+      "store_completions": 1,
+      "store_transitions": 146
+    },
+    "lp85": {
+      "full": {
+        "coverage": {
+          "confident": 0.8571,
+          "uncovered": 0.0,
+          "weak": 0.1429
+        },
+        "edges": {
+          "confident": 36,
+          "uncovered": 0,
+          "weak": 6
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.8333
+        },
+        "rule_tiers": {
+          "majority": 1,
+          "tier0": 7,
+          "tier1": 2
+        },
+        "rules": 10,
+        "unresolved_keys": 1
+      },
+      "game": "lp85",
+      "moveset": {
+        "coverage": {
+          "confident": 0.8571,
+          "uncovered": 0.0,
+          "weak": 0.1429
+        },
+        "edges": {
+          "confident": 36,
+          "uncovered": 0,
+          "weak": 6
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.8333
+        },
+        "rule_tiers": {
+          "majority": 1,
+          "tier0": 7,
+          "tier1": 2
+        },
+        "rules": 10,
+        "unresolved_keys": 1
+      },
+      "post_frame_missing": 1,
+      "reconstruction": {
+        "grammar": {
+          "considered": 41,
+          "determinate": 35,
+          "determinate_rate": 0.8537,
+          "edges_with_post_frame": 41,
+          "exact": 35,
+          "exact_over_considered": 0.8537,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 6,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 6,
+            "assignment": 6,
+            "reshape": 6
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 6
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 41,
+          "determinate": 35,
+          "determinate_rate": 0.8537,
+          "edges_with_post_frame": 41,
+          "exact": 35,
+          "exact_over_considered": 0.8537,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 6,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 6,
+            "assignment": 6,
+            "reshape": 6
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 6
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 35,
+            "exact": 35,
+            "exact_over_determinate": 1.0,
+            "underdetermined": 1
+          },
+          "weak": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 5
+          }
+        }
+      },
+      "store_completions": 1,
+      "store_transitions": 42
+    },
+    "ls20": {
+      "full": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2877
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.6698
+        },
+        "rule_tiers": {
+          "majority": 4
+        },
+        "rules": 4,
+        "unresolved_keys": 4
+      },
+      "game": "ls20",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2877
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.6834
+        },
+        "rule_tiers": {
+          "majority": 4
+        },
+        "rules": 4,
+        "unresolved_keys": 4
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 2877,
+          "determinate": 7,
+          "determinate_rate": 0.0024,
+          "edges_with_post_frame": 2877,
+          "exact": 7,
+          "exact_over_considered": 0.0024,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2870,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 2141,
+            "assignment": 2133,
+            "reshape": 2865
+          },
+          "underdetermined_kinds": {
+            "appear": 5,
+            "appear|assignment|reshape": 2133,
+            "appear|reshape": 3,
+            "reshape": 729
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 2877,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 2877,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2870,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 2877,
+            "assignment": 2877,
+            "reshape": 2877
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 2877
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 2877
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 2877
+    },
+    "m0r0": {
+      "full": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2943
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.5107
+        },
+        "rule_tiers": {
+          "majority": 10
+        },
+        "rules": 10,
+        "unresolved_keys": 10
+      },
+      "game": "m0r0",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2943
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.545
+        },
+        "rule_tiers": {
+          "majority": 10
+        },
+        "rules": 10,
+        "unresolved_keys": 10
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 2943,
+          "determinate": 1227,
+          "determinate_rate": 0.4169,
+          "edges_with_post_frame": 2943,
+          "exact": 1227,
+          "exact_over_considered": 0.4169,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 1716,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 702,
+            "assignment": 160,
+            "reshape": 1232
+          },
+          "underdetermined_kinds": {
+            "appear": 383,
+            "appear|assignment": 101,
+            "appear|assignment|reshape": 59,
+            "appear|reshape": 159,
+            "reshape": 1014
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 2943,
+          "determinate": 1792,
+          "determinate_rate": 0.6089,
+          "edges_with_post_frame": 2943,
+          "exact": 973,
+          "exact_over_considered": 0.3306,
+          "exact_over_determinate": 0.543,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 1716,
+            "determinate": 819,
+            "determinate_rate": 0.4773,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 819
+          },
+          "underdetermined_kind_edges": {
+            "appear": 840,
+            "reshape": 311
+          },
+          "underdetermined_kinds": {
+            "appear": 840,
+            "reshape": 311
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 1792,
+            "exact": 973,
+            "exact_over_determinate": 0.543,
+            "underdetermined": 1151
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 2943
+    },
+    "r11l": {
+      "full": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 130
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.6385
+        },
+        "rule_tiers": {
+          "majority": 7
+        },
+        "rules": 7,
+        "unresolved_keys": 7
+      },
+      "game": "r11l",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 130
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.6615
+        },
+        "rule_tiers": {
+          "majority": 7
+        },
+        "rules": 7,
+        "unresolved_keys": 7
+      },
+      "post_frame_missing": 1,
+      "reconstruction": {
+        "grammar": {
+          "considered": 129,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 129,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 129,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 55,
+            "assignment": 55,
+            "reshape": 127
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 53,
+            "appear|reshape": 2,
+            "assignment": 2,
+            "reshape": 72
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 129,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 129,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 129,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 15,
+            "assignment": 14,
+            "reshape": 129
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 14,
+            "appear|reshape": 1,
+            "reshape": 114
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 129
+          }
+        }
+      },
+      "store_completions": 1,
+      "store_transitions": 130
+    },
+    "re86": {
+      "full": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2911
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.2425
+        },
+        "rule_tiers": {
+          "majority": 5
+        },
+        "rules": 5,
+        "unresolved_keys": 5
+      },
+      "game": "re86",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2911
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.2999
+        },
+        "rule_tiers": {
+          "majority": 5
+        },
+        "rules": 5,
+        "unresolved_keys": 5
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 2911,
+          "determinate": 6,
+          "determinate_rate": 0.0021,
+          "edges_with_post_frame": 2911,
+          "exact": 6,
+          "exact_over_considered": 0.0021,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2905,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 2864,
+            "assignment": 2264,
+            "reshape": 2899
+          },
+          "underdetermined_kinds": {
+            "appear|assignment": 6,
+            "appear|assignment|reshape": 2251,
+            "appear|reshape": 607,
+            "assignment|reshape": 7,
+            "reshape": 34
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 2911,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 2911,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2905,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 2911,
+            "assignment": 2304,
+            "over_assignment": 91,
+            "reshape": 2911
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|over_assignment|reshape": 65,
+            "appear|assignment|reshape": 2239,
+            "appear|over_assignment|reshape": 26,
+            "appear|reshape": 581
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 2911
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 2911
+    },
+    "sb26": {
+      "full": {
+        "coverage": {
+          "confident": 0.3416,
+          "uncovered": 0.0,
+          "weak": 0.6584
+        },
+        "edges": {
+          "confident": 1020,
+          "uncovered": 0,
+          "weak": 1966
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.6928
+        },
+        "rule_tiers": {
+          "majority": 8,
+          "tier0": 3,
+          "tier1": 2
+        },
+        "rules": 13,
+        "unresolved_keys": 8
+      },
+      "game": "sb26",
+      "moveset": {
+        "coverage": {
+          "confident": 0.3416,
+          "uncovered": 0.0,
+          "weak": 0.6584
+        },
+        "edges": {
+          "confident": 1020,
+          "uncovered": 0,
+          "weak": 1966
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.6928
+        },
+        "rule_tiers": {
+          "majority": 8,
+          "tier0": 3,
+          "tier1": 2
+        },
+        "rules": 13,
+        "unresolved_keys": 8
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 2986,
+          "determinate": 2102,
+          "determinate_rate": 0.704,
+          "edges_with_post_frame": 2986,
+          "exact": 2102,
+          "exact_over_considered": 0.704,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 884,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 561,
+            "assignment": 405,
+            "reshape": 339
+          },
+          "underdetermined_kinds": {
+            "appear": 378,
+            "appear|assignment": 38,
+            "appear|assignment|reshape": 144,
+            "appear|reshape": 1,
+            "assignment": 129,
+            "assignment|reshape": 94,
+            "reshape": 100
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 2986,
+          "determinate": 2292,
+          "determinate_rate": 0.7676,
+          "edges_with_post_frame": 2986,
+          "exact": 1963,
+          "exact_over_considered": 0.6574,
+          "exact_over_determinate": 0.8565,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 884,
+            "determinate": 329,
+            "determinate_rate": 0.3722,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 329
+          },
+          "underdetermined_kind_edges": {
+            "appear": 380,
+            "assignment": 160,
+            "reshape": 197
+          },
+          "underdetermined_kinds": {
+            "appear": 337,
+            "appear|assignment": 43,
+            "assignment": 117,
+            "reshape": 197
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 903,
+            "exact": 903,
+            "exact_over_determinate": 1.0,
+            "underdetermined": 117
+          },
+          "weak": {
+            "determinate": 1389,
+            "exact": 1060,
+            "exact_over_determinate": 0.7631,
+            "underdetermined": 577
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 2986
+    },
+    "sc25": {
+      "full": {
+        "coverage": {
+          "confident": 0.3555,
+          "uncovered": 0.0,
+          "weak": 0.6445
+        },
+        "edges": {
+          "confident": 571,
+          "uncovered": 0,
+          "weak": 1035
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.4599
+        },
+        "rule_tiers": {
+          "majority": 8,
+          "tier0": 3,
+          "tier1": 7
+        },
+        "rules": 18,
+        "unresolved_keys": 8
+      },
+      "game": "sc25",
+      "moveset": {
+        "coverage": {
+          "confident": 0.3555,
+          "uncovered": 0.0,
+          "weak": 0.6445
+        },
+        "edges": {
+          "confident": 571,
+          "uncovered": 0,
+          "weak": 1035
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.4647
+        },
+        "rule_tiers": {
+          "majority": 8,
+          "tier0": 3,
+          "tier1": 7
+        },
+        "rules": 18,
+        "unresolved_keys": 8
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 1606,
+          "determinate": 976,
+          "determinate_rate": 0.6077,
+          "edges_with_post_frame": 1606,
+          "exact": 976,
+          "exact_over_considered": 0.6077,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 630,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 503,
+            "assignment": 504,
+            "reshape": 479
+          },
+          "underdetermined_kinds": {
+            "appear|assignment": 151,
+            "appear|assignment|reshape": 347,
+            "appear|reshape": 5,
+            "assignment|reshape": 6,
+            "reshape": 121
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 1606,
+          "determinate": 1284,
+          "determinate_rate": 0.7995,
+          "edges_with_post_frame": 1606,
+          "exact": 943,
+          "exact_over_considered": 0.5872,
+          "exact_over_determinate": 0.7344,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 630,
+            "determinate": 341,
+            "determinate_rate": 0.5413,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 341
+          },
+          "underdetermined_kind_edges": {
+            "appear": 150,
+            "assignment": 150,
+            "reshape": 321
+          },
+          "underdetermined_kinds": {
+            "appear|assignment": 1,
+            "appear|assignment|reshape": 149,
+            "reshape": 172
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 570,
+            "exact": 570,
+            "exact_over_determinate": 1.0,
+            "underdetermined": 1
+          },
+          "weak": {
+            "determinate": 714,
+            "exact": 373,
+            "exact_over_determinate": 0.5224,
+            "underdetermined": 321
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 1606
+    },
+    "sk48": {
+      "full": {
+        "coverage": {
+          "confident": 0.821,
+          "uncovered": 0.0,
+          "weak": 0.179
+        },
+        "edges": {
+          "confident": 2459,
+          "uncovered": 0,
+          "weak": 536
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.3619
+        },
+        "rule_tiers": {
+          "majority": 5,
+          "tier0": 10
+        },
+        "rules": 15,
+        "unresolved_keys": 5
+      },
+      "game": "sk48",
+      "moveset": {
+        "coverage": {
+          "confident": 0.821,
+          "uncovered": 0.0,
+          "weak": 0.179
+        },
+        "edges": {
+          "confident": 2459,
+          "uncovered": 0,
+          "weak": 536
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.3993
+        },
+        "rule_tiers": {
+          "majority": 5,
+          "tier0": 10
+        },
+        "rules": 15,
+        "unresolved_keys": 5
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 2995,
+          "determinate": 2587,
+          "determinate_rate": 0.8638,
+          "edges_with_post_frame": 2995,
+          "exact": 2587,
+          "exact_over_considered": 0.8638,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 408,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 347,
+            "assignment": 346,
+            "reshape": 408
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 310,
+            "appear|reshape": 37,
+            "assignment|reshape": 36,
+            "reshape": 25
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 2995,
+          "determinate": 2733,
+          "determinate_rate": 0.9125,
+          "edges_with_post_frame": 2995,
+          "exact": 2569,
+          "exact_over_considered": 0.8578,
+          "exact_over_determinate": 0.94,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 408,
+            "determinate": 164,
+            "determinate_rate": 0.402,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 164
+          },
+          "underdetermined_kind_edges": {
+            "appear": 195,
+            "assignment": 231,
+            "reshape": 262
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 164,
+            "appear|reshape": 31,
+            "assignment|reshape": 67
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 2459,
+            "exact": 2459,
+            "exact_over_determinate": 1.0,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 274,
+            "exact": 110,
+            "exact_over_determinate": 0.4015,
+            "underdetermined": 262
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 2995
+    },
+    "sp80": {
+      "full": {
+        "coverage": {
+          "confident": 0.0986,
+          "uncovered": 0.0,
+          "weak": 0.9014
+        },
+        "edges": {
+          "confident": 100,
+          "uncovered": 0,
+          "weak": 914
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.9179
+        },
+        "rule_tiers": {
+          "majority": 12,
+          "tier1": 2
+        },
+        "rules": 14,
+        "unresolved_keys": 12
+      },
+      "game": "sp80",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0986,
+          "uncovered": 0.0,
+          "weak": 0.9014
+        },
+        "edges": {
+          "confident": 100,
+          "uncovered": 0,
+          "weak": 914
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.9179
+        },
+        "rule_tiers": {
+          "majority": 12,
+          "tier1": 2
+        },
+        "rules": 14,
+        "unresolved_keys": 12
+      },
+      "post_frame_missing": 1,
+      "reconstruction": {
+        "grammar": {
+          "considered": 1013,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 1013,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 1013,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 118,
+            "reshape": 1013
+          },
+          "underdetermined_kinds": {
+            "appear|reshape": 118,
+            "reshape": 895
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 1013,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 1013,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 1013,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 130,
+            "reshape": 1013
+          },
+          "underdetermined_kinds": {
+            "appear|reshape": 130,
+            "reshape": 883
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 100
+          },
+          "weak": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 913
+          }
+        }
+      },
+      "store_completions": 1,
+      "store_transitions": 1014
+    },
+    "su15": {
+      "full": {
+        "coverage": {
+          "confident": 0.2263,
+          "uncovered": 0.0,
+          "weak": 0.7737
+        },
+        "edges": {
+          "confident": 81,
+          "uncovered": 0,
+          "weak": 277
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.9531
+        },
+        "rule_tiers": {
+          "majority": 5,
+          "tier0": 2
+        },
+        "rules": 7,
+        "unresolved_keys": 5
+      },
+      "game": "su15",
+      "moveset": {
+        "coverage": {
+          "confident": 0.2263,
+          "uncovered": 0.0,
+          "weak": 0.7737
+        },
+        "edges": {
+          "confident": 81,
+          "uncovered": 0,
+          "weak": 277
+        },
+        "effect_accuracy": {
+          "confident": 1.0,
+          "weak": 0.9531
+        },
+        "rule_tiers": {
+          "majority": 5,
+          "tier0": 2
+        },
+        "rules": 7,
+        "unresolved_keys": 5
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 358,
+          "determinate": 166,
+          "determinate_rate": 0.4637,
+          "edges_with_post_frame": 358,
+          "exact": 166,
+          "exact_over_considered": 0.4637,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 197,
+            "determinate": 5,
+            "determinate_rate": 0.0254,
+            "exact": 5,
+            "exact_over_considered": 0.0254,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 8,
+            "assignment": 8,
+            "reshape": 190
+          },
+          "underdetermined_kinds": {
+            "appear|assignment": 2,
+            "appear|assignment|reshape": 6,
+            "reshape": 184
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 358,
+          "determinate": 169,
+          "determinate_rate": 0.4721,
+          "edges_with_post_frame": 358,
+          "exact": 161,
+          "exact_over_considered": 0.4497,
+          "exact_over_determinate": 0.9527,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 197,
+            "determinate": 8,
+            "determinate_rate": 0.0406,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 8
+          },
+          "underdetermined_kind_edges": {
+            "reshape": 189
+          },
+          "underdetermined_kinds": {
+            "reshape": 189
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 81,
+            "exact": 81,
+            "exact_over_determinate": 1.0,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 88,
+            "exact": 80,
+            "exact_over_determinate": 0.9091,
+            "underdetermined": 189
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 358
+    },
+    "tn36": {
+      "full": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2875
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.8915
+        },
+        "rule_tiers": {
+          "majority": 7
+        },
+        "rules": 7,
+        "unresolved_keys": 7
+      },
+      "game": "tn36",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2875
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.8915
+        },
+        "rule_tiers": {
+          "majority": 7
+        },
+        "rules": 7,
+        "unresolved_keys": 7
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 2875,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 2875,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2875,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 269,
+            "assignment": 308,
+            "reshape": 2875
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 6,
+            "appear|reshape": 263,
+            "assignment|reshape": 302,
+            "reshape": 2304
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 2875,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 2875,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2875,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "assignment": 266,
+            "reshape": 2875
+          },
+          "underdetermined_kinds": {
+            "assignment|reshape": 266,
+            "reshape": 2609
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 2875
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 2875
+    },
+    "tr87": {
+      "full": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2925
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.3477
+        },
+        "rule_tiers": {
+          "majority": 4
+        },
+        "rules": 4,
+        "unresolved_keys": 4
+      },
+      "game": "tr87",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2925
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.3703
+        },
+        "rule_tiers": {
+          "majority": 4
+        },
+        "rules": 4,
+        "unresolved_keys": 4
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 2925,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 2925,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2925,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 1941,
+            "assignment": 492,
+            "reshape": 2925
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 177,
+            "appear|reshape": 1764,
+            "assignment|reshape": 315,
+            "reshape": 669
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 2925,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 2925,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2925,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 1454,
+            "reshape": 2925
+          },
+          "underdetermined_kinds": {
+            "appear|reshape": 1454,
+            "reshape": 1471
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 2925
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 2925
+    },
+    "tu93": {
+      "full": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2573
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.5196
+        },
+        "rule_tiers": {
+          "majority": 4
+        },
+        "rules": 4,
+        "unresolved_keys": 4
+      },
+      "game": "tu93",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2573
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.5196
+        },
+        "rule_tiers": {
+          "majority": 4
+        },
+        "rules": 4,
+        "unresolved_keys": 4
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 2573,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 2573,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2573,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 1332,
+            "assignment": 1329,
+            "reshape": 2573
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 1329,
+            "appear|reshape": 3,
+            "reshape": 1241
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 2573,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 2573,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2573,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 1952,
+            "assignment": 1952,
+            "reshape": 2573
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 1952,
+            "reshape": 621
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 2573
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 2573
+    },
+    "vc33": {
+      "full": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 800
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.92
+        },
+        "rule_tiers": {
+          "majority": 7
+        },
+        "rules": 7,
+        "unresolved_keys": 7
+      },
+      "game": "vc33",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 800
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.92
+        },
+        "rule_tiers": {
+          "majority": 7
+        },
+        "rules": 7,
+        "unresolved_keys": 7
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 800,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 800,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 800,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 52,
+            "assignment": 43,
+            "reshape": 800
+          },
+          "underdetermined_kinds": {
+            "appear|assignment|reshape": 43,
+            "appear|reshape": 9,
+            "reshape": 748
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 800,
+          "determinate": 0,
+          "determinate_rate": 0.0,
+          "edges_with_post_frame": 800,
+          "exact": 0,
+          "exact_over_considered": 0.0,
+          "exact_over_determinate": null,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 800,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "reshape": 800
+          },
+          "underdetermined_kinds": {
+            "reshape": 800
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 800
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 800
+    },
+    "wa30": {
+      "full": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2960
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.5858
+        },
+        "rule_tiers": {
+          "majority": 5
+        },
+        "rules": 5,
+        "unresolved_keys": 5
+      },
+      "game": "wa30",
+      "moveset": {
+        "coverage": {
+          "confident": 0.0,
+          "uncovered": 0.0,
+          "weak": 1.0
+        },
+        "edges": {
+          "confident": 0,
+          "uncovered": 0,
+          "weak": 2960
+        },
+        "effect_accuracy": {
+          "confident": null,
+          "weak": 0.5858
+        },
+        "rule_tiers": {
+          "majority": 5
+        },
+        "rules": 5,
+        "unresolved_keys": 5
+      },
+      "post_frame_missing": 0,
+      "reconstruction": {
+        "grammar": {
+          "considered": 2960,
+          "determinate": 382,
+          "determinate_rate": 0.1291,
+          "edges_with_post_frame": 2960,
+          "exact": 382,
+          "exact_over_considered": 0.1291,
+          "exact_over_determinate": 1.0,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2578,
+            "determinate": 0,
+            "determinate_rate": 0.0,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 0
+          },
+          "underdetermined_kind_edges": {
+            "appear": 2319,
+            "assignment": 81,
+            "reshape": 1085
+          },
+          "underdetermined_kinds": {
+            "appear": 1450,
+            "appear|assignment": 43,
+            "appear|assignment|reshape": 38,
+            "appear|reshape": 788,
+            "reshape": 259
+          }
+        },
+        "identity_check": {
+          "lossless": 25,
+          "sampled": 25
+        },
+        "model": {
+          "considered": 2960,
+          "determinate": 497,
+          "determinate_rate": 0.1679,
+          "edges_with_post_frame": 2960,
+          "exact": 319,
+          "exact_over_considered": 0.1078,
+          "exact_over_determinate": 0.6419,
+          "no_rule": 0,
+          "state_changing": {
+            "considered": 2578,
+            "determinate": 178,
+            "determinate_rate": 0.069,
+            "exact": 0,
+            "exact_over_considered": 0.0,
+            "predicted_noop": 178
+          },
+          "underdetermined_kind_edges": {
+            "appear": 2463,
+            "over_assignment": 15
+          },
+          "underdetermined_kinds": {
+            "appear": 2448,
+            "appear|over_assignment": 15
+          }
+        },
+        "model_by_confidence": {
+          "confident": {
+            "determinate": 0,
+            "exact": 0,
+            "exact_over_determinate": null,
+            "underdetermined": 0
+          },
+          "weak": {
+            "determinate": 497,
+            "exact": 319,
+            "exact_over_determinate": 0.6419,
+            "underdetermined": 2463
+          }
+        }
+      },
+      "store_completions": 0,
+      "store_transitions": 2960
+    }
+  },
+  "guard_vocabulary": "v2",
+  "stage": "x1",
+  "store": "logs/e1_store_v2"
+}
