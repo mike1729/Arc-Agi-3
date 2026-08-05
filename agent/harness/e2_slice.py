@@ -86,8 +86,13 @@ TOP_P = 0.95
 MAX_RULES_SHOWN = 40
 MAX_UNRESOLVED_SHOWN = 12
 MAX_EVIDENCE_PER_KEY = 6
-MAX_FEATURES_PER_GROUP = 6  # (w) slice 1.1 — value-set display, autopsy rec 1
-MAX_VALUES_PER_FEATURE = 4  # (w)
+# slice 1.1 measured the cost of capping features silently: the digest asserted complete
+# value sets while showing only the first 6 varying features, and 21 of 24 traces inferred
+# "unlisted => constant => cannot separate". In 14 unresolved-key blocks the witness named a
+# feature the display never showed. The cap is lifted so that inference is SOUND: every
+# feature that varies is shown, so absence now really does mean constant across the key.
+MAX_FEATURES_PER_GROUP = None  # no cap — see notes/e2-variance-arm.md §2
+MAX_VALUES_PER_FEATURE = 4  # (w) truncation is marked "+N more" and declared in the prompt
 MAX_ALIAS_SHOWN = 8
 SEED = 20260804  # phase 1 is sampled; seeded and recorded so a cell is reproducible
 
@@ -235,7 +240,8 @@ def build_digest(game: str, dose: int | None) -> dict[str, Any]:
         for effect, count in effects.most_common(MAX_EVIDENCE_PER_KEY):
             group = [row for row in rows if abstract(row.effect, MODE) == effect]
             parts = []
-            for name in varying[:MAX_FEATURES_PER_GROUP]:
+            for name in (varying if MAX_FEATURES_PER_GROUP is None
+                         else varying[:MAX_FEATURES_PER_GROUP]):
                 seen = sorted({_hv(row.guards.get(name)) for row in group}, key=repr)
                 vals = ", ".join(str(v) for v in seen[:MAX_VALUES_PER_FEATURE])
                 if len(seen) > MAX_VALUES_PER_FEATURE:
@@ -297,11 +303,19 @@ KEYS THE MINER COULD NOT RESOLVE — the actual problem
   click_on_background. A guard tests exactly
   `feature = one literal value`; negation, inequalities, thresholds and combined conditions
   do not exist and cannot be tested.
-  READ THE VALUE SETS LITERALLY: for each effect group, each feature is shown with the
-  COMPLETE set of values it takes within that group. A one-element set means constant
-  within that group; a multi-element set means the feature took ALL of those values while
-  producing the same effect. Each key ends with a NO-SEPARATION WITNESS: the best single
-  feature, shown failing on concrete counts.
+  READ THE VALUE SETS LITERALLY. For each effect group, every feature that VARIES anywhere
+  in this key is listed, with the set of values it takes within that group. A one-element
+  set means constant within that group; a multi-element set means the feature took ALL of
+  those values while producing the same effect. A set ending "+N more" is truncated at
+  {MAX_VALUES_PER_FEATURE} values and N further values are not shown; an unmarked set is complete.
+  A feature ABSENT from these lines is constant across every transition of this key, so it
+  cannot separate anything — that inference is sound here, but it is the ONLY thing absence
+  licenses. Only the {MAX_EVIDENCE_PER_KEY} largest effect groups are shown; if the header
+  reports more distinct effects than there are groups below, the remainder are omitted.
+  Each key ends with a NO-SEPARATION WITNESS: the single feature that comes CLOSEST to
+  separating the key, shown failing on concrete counts. It is the best available, not a
+  good one — a feature that splits two groups cleanly can still fail the key, because
+  separating the key means telling ALL of its effects apart.
 {chr(10).join(unresolved_lines) if unresolved_lines else "  none"}
 
 ALIAS CONFLICTS (same state hash + same action -> different outcome; replay is deterministic,

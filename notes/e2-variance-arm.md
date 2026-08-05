@@ -315,6 +315,55 @@ by default, including the completeness assertion that §2 shows to be false whil
 `MAX_FEATURES_PER_GROUP = 6` silently truncates. It was kept as-run for reproducibility of
 these results. Fixing or reverting it is a slice-2 decision, not made here.
 
+## Addendum 2026-08-05 — the §2 defect is fixed in `e2_slice.py` (not yet re-measured)
+
+Operator direction after the readout: fix the completeness assertion and lift the feature
+cap. Both done; **no model has been run against the fixed digest**, so nothing below is a
+result.
+
+**The cap was hiding most of the evidence**, not a tail of it — varying features per
+unresolved key, against the cap of 6:
+
+| game | dose 125 (min/med/max) | dose full (min/med/max) |
+|---|---|---|
+| dc22 | 7 / 12 / 16 | 11 / 11 / 19 |
+| tu93 | 10 / 10 / 10 | 10 / 10 / 10 |
+| m0r0 | 4 / 7 / 10 | 8 / 8 / 12 |
+| ls20 | 5 / 5 / 6 | 6 / 6 / 6 |
+| vc33 | 2 / 3 / 5 | 4 / 6 / 8 |
+| ft09 | — | 5 / 5 / 5 |
+
+dc22 showed 6 of up to 19. Only ft09 and vc33/125 were fully shown — which is consistent
+with ft09/full being slice 1's one substantive survivor and the one trace the autopsy found
+holding the correct semantics.
+
+**Changes:**
+
+1. `MAX_FEATURES_PER_GROUP = 6` → `None`; every varying feature is now listed. This does not
+   merely remove a falsehood, it makes the traces' own inference-from-absence **sound**:
+   absence now really does mean constant across the key.
+2. The prompt states what the display does, and no more than that: absence ⇒ constant across
+   the key *and nothing else*; `+N more` marks a truncated value set and an unmarked set is
+   complete; only the {MAX_EVIDENCE_PER_KEY} largest effect groups appear, detectable by
+   comparing against the distinct-effect count in the header.
+3. The witness is relabelled from "the best single feature" to the one that comes **closest**,
+   with the failure mode named: *"a feature that splits two groups cleanly can still fail the
+   key, because separating the key means telling ALL of its effects apart."* That is the exact
+   over-reading ls20/125 s2 made.
+
+`MAX_VALUES_PER_FEATURE = 4` is kept — it never fired in the run (0 of 24 prompts contained
+`+N more`) and it is now declared rather than silent.
+
+**Cost, measured** (digest renders, no model): dc22/125 **11,760 → 17,741 chars (+51%)**,
+tu93/125 5,367 → 7,066 (+32%), vc33/125 4,087 → 5,255 (+29%). Growth tracks how much the cap
+was hiding, so dc22 — the game with up to 19 varying features — pays most. `THINK_BUDGET` (16384) is unchanged and
+was not re-checked against the longer prompt.
+
+**Open, and deliberately not decided here:** whether the larger digest helps, hurts, or
+merely costs tokens is a slice-2 measurement, and it should be run as one — the lesson of
+slice 1.1 is that a display change which is obviously correct on inspection moved nothing
+measurable. Verified so far: the digest renders, the constants interpolate, `--help` runs.
+
 ## Limits
 
 Two seeds, one temperature, one model, v1 vocabulary, public games. The goal/probe
