@@ -29,10 +29,13 @@ launch until its four sub-task commits are on main and its "Done means" holds.**
 6. **Verify the CLI**: `--seed`, `--out`, game list (six + sp80 + lf52), full dose
    only. Outputs `logs/e2_slice2_seed{1,2}.json`, traces tagged `_s2r1`/`_s2r2` (any
    unambiguous tag; record it).
-   ⚠ **ALWAYS pass `--out` explicitly.** The CLI's default output path is
-   `logs/e2_slice_seed1.json` — the **committed slice-1.1 result file**; a defaulted
-   run silently overwrites it (this bit the pre-flight dry-run on 2026-08-05; restored
-   from git).
+   ⚠ **FIXED 2026-08-05 (`0dea91a`), warning kept for the record.** The default output
+   path *was* `logs/e2_slice_seed{seed}.json` — slice 1.1's **committed result file** —
+   so a defaulted seed-1 run silently overwrote it. That bit the pre-flight dry-run on
+   2026-08-05 (12 scored cells replaced by 8 dry-run stubs; restored from git). The
+   default is now `logs/e2_slice2_seed{seed}.json`: different experiment,
+   `format_version 2`, different file. Passing `--out` explicitly is still the safer
+   habit, but it is no longer load-bearing.
 
 ## Pre-flight already executed 2026-08-05 (verify, don't redo blindly)
 
