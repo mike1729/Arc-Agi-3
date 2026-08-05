@@ -1,0 +1,741 @@
+{
+  "format_version": 1,
+  "games": {
+    "ar25": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.0332,
+      "game": "ar25",
+      "max_prefix_depth": 68,
+      "reached": 582,
+      "reached_rate": 0.9668,
+      "reset_restores_origin": true,
+      "shallowest_failures": [
+        {
+          "landed_on": "e9cb4c538ee3eaae",
+          "prefix_actions": 6,
+          "state": "c3b1ee00578ae662"
+        },
+        {
+          "landed_on": "46558df70f953a81",
+          "prefix_actions": 7,
+          "state": "b1c6141831d7792d"
+        },
+        {
+          "landed_on": "9f205fe2d32f7407",
+          "prefix_actions": 8,
+          "state": "59a0c7b642b4f18b"
+        },
+        {
+          "landed_on": "1fd6093086567fbd",
+          "prefix_actions": 9,
+          "state": "505c37ecd425e0f0"
+        },
+        {
+          "landed_on": "f0899336ccfc121b",
+          "prefix_actions": 9,
+          "state": "821b95ddb9f83daf"
+        }
+      ],
+      "states": 602,
+      "suspect_states": 0,
+      "unreached": 20,
+      "verified": 582,
+      "verified_rate": 0.9668
+    },
+    "bp35": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.3219,
+      "game": "bp35",
+      "max_prefix_depth": 64,
+      "reached": 1325,
+      "reached_rate": 0.6781,
+      "reset_restores_origin": true,
+      "shallowest_failures": [
+        {
+          "landed_on": "1ff9da45c6b8cc04",
+          "prefix_actions": 11,
+          "state": "739551b774c1411d"
+        },
+        {
+          "landed_on": "53d4e0499963a49b",
+          "prefix_actions": 15,
+          "state": "4f2e5ca9480ab6d0"
+        },
+        {
+          "landed_on": "f89740032aa3002b",
+          "prefix_actions": 16,
+          "state": "622e5d83d32d841d"
+        },
+        {
+          "landed_on": "484d10aae4fe97f3",
+          "prefix_actions": 16,
+          "state": "aa293a9db0379f75"
+        },
+        {
+          "landed_on": "622e5d83d32d841d",
+          "prefix_actions": 16,
+          "state": "f89740032aa3002b"
+        }
+      ],
+      "states": 1954,
+      "suspect_states": 0,
+      "unreached": 629,
+      "verified": 1272,
+      "verified_rate": 0.651
+    },
+    "cd82": {
+      "conflicted_edges": 1,
+      "drop_upper_bound": 0.7225,
+      "game": "cd82",
+      "max_prefix_depth": 75,
+      "reached": 409,
+      "reached_rate": 0.2775,
+      "reset_restores_origin": true,
+      "shallowest_failures": [
+        {
+          "landed_on": "53bbea6c1c05f834",
+          "prefix_actions": 2,
+          "state": "1f52e12598468b65"
+        },
+        {
+          "landed_on": "0f6a61a0119a9091",
+          "prefix_actions": 2,
+          "state": "459b4a086170338a"
+        },
+        {
+          "landed_on": "cf59b032a257bf0f",
+          "prefix_actions": 2,
+          "state": "4b36208f5fedaa8c"
+        },
+        {
+          "landed_on": "b6fd6f9bdc183d19",
+          "prefix_actions": 2,
+          "state": "bbfd89f5c94cb050"
+        },
+        {
+          "landed_on": "86a66417b90584f2",
+          "prefix_actions": 2,
+          "state": "cc758b17eb438260"
+        }
+      ],
+      "states": 1474,
+      "suspect_states": 1,
+      "unreached": 1065,
+      "verified": 10,
+      "verified_rate": 0.0068
+    },
+    "cn04": {
+      "conflicted_edges": 4,
+      "drop_upper_bound": 0.8593,
+      "game": "cn04",
+      "max_prefix_depth": 57,
+      "reached": 265,
+      "reached_rate": 0.1407,
+      "reset_restores_origin": true,
+      "shallowest_failures": [
+        {
+          "landed_on": "04652079f3ef226c",
+          "prefix_actions": 1,
+          "state": "5849e2b65542f61e"
+        },
+        {
+          "landed_on": "2ec7ffab934b829b",
+          "prefix_actions": 1,
+          "state": "da12bf55de2f6062"
+        },
+        {
+          "landed_on": "0c8b95f85ac74368",
+          "prefix_actions": 1,
+          "state": "eb29893946866abd"
+        },
+        {
+          "landed_on": "d7d736fcecd766ed",
+          "prefix_actions": 2,
+          "state": "11e888863c88852f"
+        },
+        {
+          "landed_on": "5849e2b65542f61e",
+          "prefix_actions": 2,
+          "state": "216be9c323c68e90"
+        }
+      ],
+      "states": 1884,
+      "suspect_states": 2,
+      "unreached": 1619,
+      "verified": 92,
+      "verified_rate": 0.0488
+    },
+    "dc22": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.6625,
+      "game": "dc22",
+      "max_prefix_depth": 76,
+      "reached": 459,
+      "reached_rate": 0.3375,
+      "reset_restores_origin": true,
+      "shallowest_failures": [
+        {
+          "landed_on": "878aa2e1edc8c449",
+          "prefix_actions": 2,
+          "state": "6bbcbb55f4340839"
+        },
+        {
+          "landed_on": "1f6ca9ff9014812b",
+          "prefix_actions": 2,
+          "state": "8522f7f8c2dbdad1"
+        },
+        {
+          "landed_on": "7998d071999f5c0d",
+          "prefix_actions": 2,
+          "state": "86f1e29a5d0d29ae"
+        },
+        {
+          "landed_on": "3d267207672ba817",
+          "prefix_actions": 2,
+          "state": "d8415c9c5129adef"
+        },
+        {
+          "landed_on": "6930b107143ddfdc",
+          "prefix_actions": 3,
+          "state": "073ac690d462a230"
+        }
+      ],
+      "states": 1360,
+      "suspect_states": 0,
+      "unreached": 901,
+      "verified": 28,
+      "verified_rate": 0.0206
+    },
+    "ft09": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.0,
+      "game": "ft09",
+      "max_prefix_depth": 2,
+      "reached": 35,
+      "reached_rate": 1.0,
+      "reset_restores_origin": true,
+      "shallowest_failures": [],
+      "states": 35,
+      "suspect_states": 0,
+      "unreached": 0,
+      "verified": 35,
+      "verified_rate": 1.0
+    },
+    "g50t": {
+      "conflicted_edges": 43,
+      "drop_upper_bound": 0.566,
+      "game": "g50t",
+      "max_prefix_depth": 104,
+      "reached": 309,
+      "reached_rate": 0.434,
+      "reset_restores_origin": true,
+      "shallowest_failures": [
+        {
+          "landed_on": "e320c3321f34d075",
+          "prefix_actions": 1,
+          "state": "1d19e05c389afeb1"
+        },
+        {
+          "landed_on": "ab19d72fda1363c3",
+          "prefix_actions": 1,
+          "state": "9b3d2d6196ac2111"
+        },
+        {
+          "landed_on": "f15517e428ae26f6",
+          "prefix_actions": 2,
+          "state": "06df2a109afcbf0d"
+        },
+        {
+          "landed_on": "219602b5b008ca05",
+          "prefix_actions": 2,
+          "state": "38345d515f559121"
+        },
+        {
+          "landed_on": "1d19e05c389afeb1",
+          "prefix_actions": 2,
+          "state": "92eb583e9860288f"
+        }
+      ],
+      "states": 712,
+      "suspect_states": 40,
+      "unreached": 403,
+      "verified": 33,
+      "verified_rate": 0.0463
+    },
+    "ka59": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.7952,
+      "game": "ka59",
+      "max_prefix_depth": 81,
+      "reached": 398,
+      "reached_rate": 0.2048,
+      "reset_restores_origin": true,
+      "shallowest_failures": [
+        {
+          "landed_on": "5769b23d562fda9e",
+          "prefix_actions": 2,
+          "state": "0f05382b73ed162d"
+        },
+        {
+          "landed_on": "ce8999e25c0369c8",
+          "prefix_actions": 2,
+          "state": "4cb44b485f417130"
+        },
+        {
+          "landed_on": "622e48bc410b5dc2",
+          "prefix_actions": 2,
+          "state": "5714eb36c0daee3d"
+        },
+        {
+          "landed_on": "3c6bd484962d1c56",
+          "prefix_actions": 2,
+          "state": "64c7e2c58f36fbd7"
+        },
+        {
+          "landed_on": "c4f9bc2de266ff3b",
+          "prefix_actions": 2,
+          "state": "7e9774c0b7ca8e4b"
+        }
+      ],
+      "states": 1943,
+      "suspect_states": 0,
+      "unreached": 1545,
+      "verified": 34,
+      "verified_rate": 0.0175
+    },
+    "lf52": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.0,
+      "game": "lf52",
+      "max_prefix_depth": 74,
+      "reached": 124,
+      "reached_rate": 1.0,
+      "reset_restores_origin": true,
+      "shallowest_failures": [],
+      "states": 124,
+      "suspect_states": 0,
+      "unreached": 0,
+      "verified": 124,
+      "verified_rate": 1.0
+    },
+    "lp85": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.0,
+      "game": "lp85",
+      "max_prefix_depth": 6,
+      "reached": 7,
+      "reached_rate": 1.0,
+      "reset_restores_origin": true,
+      "shallowest_failures": [],
+      "states": 7,
+      "suspect_states": 0,
+      "unreached": 0,
+      "verified": 7,
+      "verified_rate": 1.0
+    },
+    "ls20": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.0,
+      "game": "ls20",
+      "max_prefix_depth": 130,
+      "reached": 2002,
+      "reached_rate": 1.0,
+      "reset_restores_origin": true,
+      "shallowest_failures": [],
+      "states": 2002,
+      "suspect_states": 0,
+      "unreached": 0,
+      "verified": 2002,
+      "verified_rate": 1.0
+    },
+    "m0r0": {
+      "conflicted_edges": 3,
+      "drop_upper_bound": 0.7954,
+      "game": "m0r0",
+      "max_prefix_depth": 88,
+      "reached": 274,
+      "reached_rate": 0.2046,
+      "reset_restores_origin": true,
+      "shallowest_failures": [
+        {
+          "landed_on": "e3fc5841cdc354d5",
+          "prefix_actions": 1,
+          "state": "3115bcfdf29be513"
+        },
+        {
+          "landed_on": "b79fe5d16fbe1a4f",
+          "prefix_actions": 1,
+          "state": "a6bba1fd6f9072eb"
+        },
+        {
+          "landed_on": "3115bcfdf29be513",
+          "prefix_actions": 2,
+          "state": "35ad5bca102c8b0d"
+        },
+        {
+          "landed_on": "69911f784ef29015",
+          "prefix_actions": 2,
+          "state": "871966bd07ca650f"
+        },
+        {
+          "landed_on": "a6bba1fd6f9072eb",
+          "prefix_actions": 2,
+          "state": "f90c735c44ece9d8"
+        }
+      ],
+      "states": 1339,
+      "suspect_states": 2,
+      "unreached": 1065,
+      "verified": 13,
+      "verified_rate": 0.0097
+    },
+    "r11l": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.0,
+      "game": "r11l",
+      "max_prefix_depth": 60,
+      "reached": 130,
+      "reached_rate": 1.0,
+      "reset_restores_origin": true,
+      "shallowest_failures": [],
+      "states": 130,
+      "suspect_states": 0,
+      "unreached": 0,
+      "verified": 130,
+      "verified_rate": 1.0
+    },
+    "re86": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.0262,
+      "game": "re86",
+      "max_prefix_depth": 100,
+      "reached": 2786,
+      "reached_rate": 0.9738,
+      "reset_restores_origin": true,
+      "shallowest_failures": [
+        {
+          "landed_on": "64cc5a6c74af68a2",
+          "prefix_actions": 38,
+          "state": "b0da1bf55ea20a7f"
+        },
+        {
+          "landed_on": "c1158099b71ecf9d",
+          "prefix_actions": 39,
+          "state": "4439812c3acc2e95"
+        },
+        {
+          "landed_on": "4439812c3acc2e95",
+          "prefix_actions": 41,
+          "state": "7b933147dd5b57f7"
+        },
+        {
+          "landed_on": "35526b4d65563a5e",
+          "prefix_actions": 42,
+          "state": "1a6df006c242412e"
+        },
+        {
+          "landed_on": "1a6df006c242412e",
+          "prefix_actions": 44,
+          "state": "8d92d3b4269d4e0d"
+        }
+      ],
+      "states": 2861,
+      "suspect_states": 0,
+      "unreached": 75,
+      "verified": 2771,
+      "verified_rate": 0.9685
+    },
+    "sb26": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.0,
+      "game": "sb26",
+      "max_prefix_depth": 128,
+      "reached": 736,
+      "reached_rate": 1.0,
+      "reset_restores_origin": true,
+      "shallowest_failures": [],
+      "states": 736,
+      "suspect_states": 0,
+      "unreached": 0,
+      "verified": 736,
+      "verified_rate": 1.0
+    },
+    "sc25": {
+      "conflicted_edges": 3,
+      "drop_upper_bound": 0.8133,
+      "game": "sc25",
+      "max_prefix_depth": 51,
+      "reached": 112,
+      "reached_rate": 0.1867,
+      "reset_restores_origin": true,
+      "shallowest_failures": [
+        {
+          "landed_on": "940d8b01d211c203",
+          "prefix_actions": 1,
+          "state": "10030ddfb2d92b3c"
+        },
+        {
+          "landed_on": "940d8b01d211c203",
+          "prefix_actions": 1,
+          "state": "63631325beced8e1"
+        },
+        {
+          "landed_on": "940d8b01d211c203",
+          "prefix_actions": 1,
+          "state": "6e0104844eb9c88b"
+        },
+        {
+          "landed_on": "63631325beced8e1",
+          "prefix_actions": 2,
+          "state": "0309856f888724da"
+        },
+        {
+          "landed_on": "6e0104844eb9c88b",
+          "prefix_actions": 2,
+          "state": "265c9095ea7c9215"
+        }
+      ],
+      "states": 600,
+      "suspect_states": 1,
+      "unreached": 488,
+      "verified": 22,
+      "verified_rate": 0.0367
+    },
+    "sk48": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.5373,
+      "game": "sk48",
+      "max_prefix_depth": 127,
+      "reached": 149,
+      "reached_rate": 0.4627,
+      "reset_restores_origin": true,
+      "shallowest_failures": [
+        {
+          "landed_on": "4a269c0e0633f9a9",
+          "prefix_actions": 3,
+          "state": "b44dd921047672a6"
+        },
+        {
+          "landed_on": "e9f0e2049732b6cd",
+          "prefix_actions": 6,
+          "state": "7716495f76b21bae"
+        },
+        {
+          "landed_on": "78ab5ebbf86cd5b8",
+          "prefix_actions": 6,
+          "state": "9c62f4e88e741a6c"
+        },
+        {
+          "landed_on": "f830e0e490510cd8",
+          "prefix_actions": 6,
+          "state": "f33c70b6f07e25f4"
+        },
+        {
+          "landed_on": "7716495f76b21bae",
+          "prefix_actions": 7,
+          "state": "1745c39980db5496"
+        }
+      ],
+      "states": 322,
+      "suspect_states": 0,
+      "unreached": 173,
+      "verified": 17,
+      "verified_rate": 0.0528
+    },
+    "sp80": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.2811,
+      "game": "sp80",
+      "max_prefix_depth": 30,
+      "reached": 358,
+      "reached_rate": 0.7189,
+      "reset_restores_origin": true,
+      "shallowest_failures": [
+        {
+          "landed_on": "261495580b11d8bc",
+          "prefix_actions": 14,
+          "state": "358a5f7bb385db37"
+        },
+        {
+          "landed_on": "261495580b11d8bc",
+          "prefix_actions": 14,
+          "state": "afa80864ccf9c040"
+        },
+        {
+          "landed_on": "261495580b11d8bc",
+          "prefix_actions": 14,
+          "state": "b12e6e37d661af52"
+        },
+        {
+          "landed_on": "261495580b11d8bc",
+          "prefix_actions": 14,
+          "state": "e729d3ba7b75731c"
+        },
+        {
+          "landed_on": "261495580b11d8bc",
+          "prefix_actions": 15,
+          "state": "48c740438cc81fa2"
+        }
+      ],
+      "states": 498,
+      "suspect_states": 0,
+      "unreached": 140,
+      "verified": 358,
+      "verified_rate": 0.7189
+    },
+    "su15": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.0,
+      "game": "su15",
+      "max_prefix_depth": 33,
+      "reached": 82,
+      "reached_rate": 1.0,
+      "reset_restores_origin": true,
+      "shallowest_failures": [],
+      "states": 82,
+      "suspect_states": 0,
+      "unreached": 0,
+      "verified": 82,
+      "verified_rate": 1.0
+    },
+    "tn36": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.0,
+      "game": "tn36",
+      "max_prefix_depth": 61,
+      "reached": 2106,
+      "reached_rate": 1.0,
+      "reset_restores_origin": true,
+      "shallowest_failures": [],
+      "states": 2106,
+      "suspect_states": 0,
+      "unreached": 0,
+      "verified": 2106,
+      "verified_rate": 1.0
+    },
+    "tr87": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.0317,
+      "game": "tr87",
+      "max_prefix_depth": 128,
+      "reached": 2812,
+      "reached_rate": 0.9683,
+      "reset_restores_origin": true,
+      "shallowest_failures": [
+        {
+          "landed_on": "1b81f71194fd9926",
+          "prefix_actions": 5,
+          "state": "19153f9852cb8e99"
+        },
+        {
+          "landed_on": "b0ac2792637d050a",
+          "prefix_actions": 7,
+          "state": "0653fa929b7a1db7"
+        },
+        {
+          "landed_on": "0add9e21e21f51b2",
+          "prefix_actions": 9,
+          "state": "d5e7b9a798b35a70"
+        },
+        {
+          "landed_on": "a73d692a4a97b931",
+          "prefix_actions": 11,
+          "state": "9df2bdf393ed3662"
+        },
+        {
+          "landed_on": "3a2a95dd57f15940",
+          "prefix_actions": 11,
+          "state": "cc579e597a0d3385"
+        }
+      ],
+      "states": 2904,
+      "suspect_states": 0,
+      "unreached": 92,
+      "verified": 2783,
+      "verified_rate": 0.9583
+    },
+    "tu93": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.0,
+      "game": "tu93",
+      "max_prefix_depth": 50,
+      "reached": 1202,
+      "reached_rate": 1.0,
+      "reset_restores_origin": true,
+      "shallowest_failures": [],
+      "states": 1202,
+      "suspect_states": 0,
+      "unreached": 0,
+      "verified": 1202,
+      "verified_rate": 1.0
+    },
+    "vc33": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.0,
+      "game": "vc33",
+      "max_prefix_depth": 50,
+      "reached": 170,
+      "reached_rate": 1.0,
+      "reset_restores_origin": true,
+      "shallowest_failures": [],
+      "states": 170,
+      "suspect_states": 0,
+      "unreached": 0,
+      "verified": 170,
+      "verified_rate": 1.0
+    },
+    "wa30": {
+      "conflicted_edges": 0,
+      "drop_upper_bound": 0.8905,
+      "game": "wa30",
+      "max_prefix_depth": 175,
+      "reached": 271,
+      "reached_rate": 0.1095,
+      "reset_restores_origin": true,
+      "shallowest_failures": [
+        {
+          "landed_on": "52b02f24f843584f",
+          "prefix_actions": 1,
+          "state": "52afba4d757c0b13"
+        },
+        {
+          "landed_on": "4197e89aae64d2ad",
+          "prefix_actions": 2,
+          "state": "00875f2d209c19b9"
+        },
+        {
+          "landed_on": "c3a8fa9f85600bbf",
+          "prefix_actions": 3,
+          "state": "17ad23daf022fb44"
+        },
+        {
+          "landed_on": "00809b07f97ad95a",
+          "prefix_actions": 3,
+          "state": "225deef4a32a26cd"
+        },
+        {
+          "landed_on": "c674e24271efcd86",
+          "prefix_actions": 3,
+          "state": "324ca09fdaf17ffb"
+        }
+      ],
+      "states": 2474,
+      "suspect_states": 0,
+      "unreached": 2203,
+      "verified": 85,
+      "verified_rate": 0.0344
+    }
+  },
+  "note": "notes/e1-prefix-audit.md \u2014 read-only. Nothing here re-derives a prefix.",
+  "store": "logs/e1_store_v2",
+  "totals": {
+    "drop_upper_bound": 0.3785,
+    "fully_verified_games": 10,
+    "games": 24,
+    "reached": 17103,
+    "reached_rate": 0.6215,
+    "states": 27521,
+    "verified": 14694,
+    "verified_rate": 0.5339
+  }
+}
