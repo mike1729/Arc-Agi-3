@@ -37,7 +37,10 @@ Prose goals score zero. The test action is the S1 end-to-end read's joint goal+a
 scoring (`aca2d47`): ft09 held a fully solved goal for ten actions because nothing
 connected it to an untried action; a predicate without its next action is not yet
 knowledge the system can use. Executability of the test action is scored mechanically
-through the probe-executor machinery, which exists and is otherwise idle.
+through the probe-executor machinery, which exists and is otherwise idle. **The test
+action is a diagnostic count, never the channel verdict** — given the probe-channel
+result we *expect* executability to be low; it is measured because the check is free
+and calibrating, not because anything downstream relies on it.
 
 **Scoring (mechanical first, adjudication last):**
 1. consistency with every store transition (negatives; own completion positive where one
@@ -54,6 +57,15 @@ instantiated *mechanically* on each game's census and filtered by the same store
 consistency check. The channel is alive only where the model's predicate is correct **and
 the prior library's is not** — the corrected S1 read (`aca2d47`) puts the prior firing at
 **50%** of reference wins (21/42), so matching the library is worth nothing.
+
+**Scope guard: the library is a measurement control on public games, not a deployed
+strategy.** Its hidden-set hit rate is irrelevant to its role here (adjudication happens
+on public games where truth is checkable), the standing caution that public numbers are
+never evidence of hidden generalization applies to it like everything else, and the S1
+cross-tab already shows the priors failing on trivially prior-shaped public games (dc22,
+sc25 — 0/6 episodes). The deployed goal supply is the evidence-driven disambiguation
+loop in `notes/e3-executor.md` §5; the library at most orders which candidates get
+tested first.
 
 **Seeding (revised same day after the end-to-end S1 read, `aca2d47`):** the
 **inert-object inventory** — objects that never changed across the entire store — is the
