@@ -188,6 +188,12 @@ Decided now, before any call runs; each is a direction, no invented numbers:
    with recorded satisfied-but-not-advanced events — the re-specification read).
 2. **B**: count of accepted latents (beats all 5 random controls on half B; half A where
    measurable). Zero → channel dead on 3.6; the template survives regardless.
+   **Guard against grammar-artifact false negatives** (added after external review):
+   every `prose_rejected` item is listed verbatim in the readout and adjudicated into
+   *garbage* vs *coherent-but-out-of-grammar* (a reading task on ≤24 items). A
+   preponderance of coherent out-of-grammar proposals reads as a DSL expressiveness gap
+   — the fix is growing the grammar, not a channel death sentence. Parse failure and
+   reasoning failure are never pooled.
 3. **C**: targeting rate vs the measured failure-typing, and the implementation queue.
    C's final verdict lands only after the post-slice implementation measurements.
 4. Every channel's full output is logged and committed; negative results same-day; the
