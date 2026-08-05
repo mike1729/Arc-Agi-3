@@ -206,6 +206,12 @@ from therefore printed "ALIAS CONFLICTS: none recorded", which is false in subst
 of the six iteration games cannot be branch-and-deviate probed from the store as it
 stands.
 
+> **Superseded in scope, same day — see [`notes/e1-prefix-audit.md`](e1-prefix-audit.md)
+> and §11 below.** Three prefixes per game was enough to stop this run and not enough to
+> size the defect. The full sweep finds **14 of 24 stores affected**, and it shows the
+> `conflicted`-list reasoning above generalizes: an empty list is not evidence of a sound
+> graph on *any* game, because E1 only flags an edge it happens to re-test.
+
 This is a limit on REPLAY-DET as the line uses it. REPLAY-DET holds for *re-executing a
 walked action sequence*; it does not hold for *reaching a stored state by its recorded
 prefix*, and `notes/l1-evidence-first.md`'s licence for branch-and-deviate rests on the
@@ -334,7 +340,62 @@ already-answered check in the loop rather than after it.
   where it claims) before any branch-and-deviate work touches them, and the same check
   should run over all 24 games — the two failures here were found by three samples each.
   Until then, "REPLAY-DET licenses branch-and-deviate" is true only for prefixes that have
-  been individually verified.
+  been individually verified. **Done the same day —
+  [`notes/e1-prefix-audit.md`](e1-prefix-audit.md); it is 14 of 24 games, and §11 below
+  records what that changes here.**
 * **The digest is missing a coverage channel.** Every already-answered probe is a request
   the model would not have made if it could see what the store already covers.
 * **No slice-2 or X-phase decision is taken here**, per the note's non-goals.
+
+---
+
+## 11. Addendum — the store defect is 14 games, not 2 (2026-08-05, same day)
+
+The gate failure in §2 was sized by a full sweep: every prefix of every state of all 24
+stores, replayed. Results in [`notes/e1-prefix-audit.md`](e1-prefix-audit.md) /
+`logs/e1_prefix_audit.json` (`61cda0d`). What it changes for this note:
+
+**Scope.** Pooled over 27,521 states: verified 0.5339, reached-by-some-walk 0.6215, drop
+upper bound 0.3785. **14 of 24 stores are affected, 9 of them below 6% verified** — cd82
+0.0068, m0r0 0.0097, ka59 0.0175, dc22 0.0206, wa30 0.0344, sc25 0.0367, g50t 0.0463,
+cn04 0.0488, sk48 0.0528. §2's two games are the two the iteration set happened to
+contain, not the extent of the problem.
+
+**This run of record is unaffected.** All four games that passed the gate — ft09, ls20,
+tu93, vc33 — verify at 1.0000. Every prefix the probe channel actually replayed was
+sound, and the executed probe (tu93_125_s0) stands as measured.
+
+**§2's `conflicted` observation generalizes, and is stronger than it looked.** ka59, dc22,
+wa30 and sk48 all record **zero** conflicted edges and all sit below 6% verified. E1 flags
+an edge only when it happens to re-test it, and the routing policy re-tests almost
+nothing, so the count measures re-test frequency rather than aliasing. dc22's silent alias
+was not an unlucky case; an empty `conflicted` list carries no information about soundness
+on any game. Every digest built by `e2_slice.build_digest` prints that list under "ALIAS
+CONFLICTS", so the same unsupported inference is available to the model on all 24 games.
+
+**Two defects, not one — and this splits §10's first bullet.** Replaying every
+single-action edge out of the origin separates them:
+
+* *Composition failure* — cd82 19/19, ka59 14/14, dc22 22/22, sk48 21/21, bp35 11/11,
+  sp80 12/12 origin edges reproduce, yet the stores still collapse by depth 2–3. The
+  recorded edges are real; only the paths composed through them are false. Verified
+  re-derivation is the right repair.
+* *Single-edge failure* — m0r0 7/10, sc25 13/17, cn04 8/11, g50t 3/5, wa30 4/5. Individual
+  edges fail on their own, typically replaying as no-change where the store recorded a
+  change. No path search recovers a state whose one-step edge is not reproducible; these
+  games need the latent variable identified before their graphs mean anything. **m0r0 is
+  in this class**, so §10's "re-derive dc22 and m0r0" is right for dc22 and wrong for
+  m0r0.
+
+**§8's verdict is unchanged**, and so is every number in §1 and §3–§7. The already-answered
+and unreachable-in-store classifications are transition lookups, and every stored
+transition was really executed and observed; only navigation by composed prefix is
+unsound. Nothing mined here is retracted.
+
+**The recommendation against re-running dc22/m0r0 (§10) holds, with a caveat.** Their
+verified-reachable sets are at most 0.3375 and 0.2046 of stored states. But "reached by
+some walked path" is much larger than "own prefix verifies" (dc22 0.0206 → 0.3375, cd82
+0.0068 → 0.2775), so a re-derivation that searches over verified edges recovers far more
+than the verified column suggests. If dc22's corrected map lands near its 0.3375 ceiling
+it is worth one re-run of its three blocked probes; m0r0 is not worth it under either
+bound, and its defect class says re-derivation will not deliver one.
