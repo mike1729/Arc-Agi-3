@@ -29,6 +29,20 @@ launch until its four sub-task commits are on main and its "Done means" holds.**
 6. **Verify the CLI**: `--seed`, `--out`, game list (six + sp80 + lf52), full dose
    only. Outputs `logs/e2_slice2_seed{1,2}.json`, traces tagged `_s2r1`/`_s2r2` (any
    unambiguous tag; record it).
+   ⚠ **ALWAYS pass `--out` explicitly.** The CLI's default output path is
+   `logs/e2_slice_seed1.json` — the **committed slice-1.1 result file**; a defaulted
+   run silently overwrites it (this bit the pre-flight dry-run on 2026-08-05; restored
+   from git).
+
+## Pre-flight already executed 2026-08-05 (verify, don't redo blindly)
+
+Renders confirmed for all 8 games (JSON cells, not stdout): dc22 43,185 · m0r0 26,180
+· lf52 21,441 · sp80 21,371 · tu93 18,906 · vc33 16,335 · ls20 15,870 · ft09 11,372
+chars — growth +50–170% over pre-v3. **dc22/full exceeds the 40k gate → the
+think-budget probe in step 3 is REQUIRED, not conditional.** DSL selftest PASS
+(roundtrips, row-C agreement, m0r0 counter reproduction); prior library covers all 8
+games; channel-D conditional resolved negative (rule request stays out); v2 floors
+stand (conjunction tier rejected; partial-tier-1 follow-up is post-night).
 
 ## Launch
 
