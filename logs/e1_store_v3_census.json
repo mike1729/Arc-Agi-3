@@ -1,0 +1,660 @@
+{
+  "floor_of_record": "logs/e2_dose_vocab_v2.json",
+  "format_version": 1,
+  "game": "m0r0",
+  "guard_vocabulary": "v2",
+  "store": "logs/e1_store_v2",
+  "store_census": {
+    "games": {
+      "ar25": {
+        "confirmations": {
+          "attempted": 86,
+          "disagreed": 0,
+          "landed": 86,
+          "route_diverged": 0
+        },
+        "game": "ar25",
+        "performs": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 2994,
+          "observations_in_repeated_groups": 385,
+          "repeated_groups": 100,
+          "rows": 3300
+        },
+        "recorded_conflict_records": 0,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 2972,
+          "observations_in_repeated_groups": 172,
+          "repeated_groups": 86,
+          "rows": 3058
+        }
+      },
+      "bp35": {
+        "confirmations": {
+          "attempted": 0,
+          "disagreed": 0,
+          "landed": 0,
+          "route_diverged": 0
+        },
+        "game": "bp35",
+        "performs": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 2873,
+          "observations_in_repeated_groups": 41,
+          "repeated_groups": 5,
+          "rows": 3000
+        },
+        "recorded_conflict_records": 0,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 2873,
+          "observations_in_repeated_groups": 0,
+          "repeated_groups": 0,
+          "rows": 2873
+        }
+      },
+      "cd82": {
+        "confirmations": {
+          "attempted": 81,
+          "disagreed": 55,
+          "landed": 55,
+          "route_diverged": 26
+        },
+        "game": "cd82",
+        "performs": {
+          "aliased_different_count": 55,
+          "disagreeing_same_count": 0,
+          "groups": 2936,
+          "observations_in_repeated_groups": 347,
+          "repeated_groups": 70,
+          "rows": 3272
+        },
+        "recorded_conflict_records": 56,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 55,
+          "disagreeing_same_count": 0,
+          "groups": 2922,
+          "observations_in_repeated_groups": 110,
+          "repeated_groups": 55,
+          "rows": 2977
+        }
+      },
+      "cn04": {
+        "confirmations": {
+          "attempted": 83,
+          "disagreed": 19,
+          "landed": 19,
+          "route_diverged": 64
+        },
+        "game": "cn04",
+        "performs": {
+          "aliased_different_count": 20,
+          "disagreeing_same_count": 0,
+          "groups": 2906,
+          "observations_in_repeated_groups": 288,
+          "repeated_groups": 37,
+          "rows": 3234
+        },
+        "recorded_conflict_records": 23,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 19,
+          "disagreeing_same_count": 0,
+          "groups": 2885,
+          "observations_in_repeated_groups": 38,
+          "repeated_groups": 19,
+          "rows": 2904
+        }
+      },
+      "dc22": {
+        "confirmations": {
+          "attempted": 78,
+          "disagreed": 43,
+          "landed": 47,
+          "route_diverged": 31
+        },
+        "game": "dc22",
+        "performs": {
+          "aliased_different_count": 43,
+          "disagreeing_same_count": 0,
+          "groups": 2957,
+          "observations_in_repeated_groups": 321,
+          "repeated_groups": 66,
+          "rows": 3265
+        },
+        "recorded_conflict_records": 43,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 43,
+          "disagreeing_same_count": 0,
+          "groups": 2939,
+          "observations_in_repeated_groups": 94,
+          "repeated_groups": 47,
+          "rows": 2986
+        }
+      },
+      "ft09": {
+        "confirmations": {
+          "attempted": 136,
+          "disagreed": 0,
+          "landed": 136,
+          "route_diverged": 0
+        },
+        "game": "ft09",
+        "performs": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 1266,
+          "observations_in_repeated_groups": 602,
+          "repeated_groups": 170,
+          "rows": 1699
+        },
+        "recorded_conflict_records": 0,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 1231,
+          "observations_in_repeated_groups": 272,
+          "repeated_groups": 136,
+          "rows": 1367
+        }
+      },
+      "g50t": {
+        "confirmations": {
+          "attempted": 56,
+          "disagreed": 8,
+          "landed": 8,
+          "route_diverged": 48
+        },
+        "game": "g50t",
+        "performs": {
+          "aliased_different_count": 58,
+          "disagreeing_same_count": 4,
+          "groups": 1483,
+          "observations_in_repeated_groups": 1876,
+          "repeated_groups": 123,
+          "rows": 3251
+        },
+        "recorded_conflict_records": 662,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 8,
+          "disagreeing_same_count": 0,
+          "groups": 1448,
+          "observations_in_repeated_groups": 16,
+          "repeated_groups": 8,
+          "rows": 1456
+        }
+      },
+      "ka59": {
+        "confirmations": {
+          "attempted": 79,
+          "disagreed": 52,
+          "landed": 52,
+          "route_diverged": 27
+        },
+        "game": "ka59",
+        "performs": {
+          "aliased_different_count": 52,
+          "disagreeing_same_count": 0,
+          "groups": 2945,
+          "observations_in_repeated_groups": 339,
+          "repeated_groups": 74,
+          "rows": 3269
+        },
+        "recorded_conflict_records": 52,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 52,
+          "disagreeing_same_count": 0,
+          "groups": 2923,
+          "observations_in_repeated_groups": 104,
+          "repeated_groups": 52,
+          "rows": 2975
+        }
+      },
+      "lf52": {
+        "confirmations": {
+          "attempted": 0,
+          "disagreed": 0,
+          "landed": 0,
+          "route_diverged": 0
+        },
+        "game": "lf52",
+        "performs": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 146,
+          "observations_in_repeated_groups": 0,
+          "repeated_groups": 0,
+          "rows": 149
+        },
+        "recorded_conflict_records": 0,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 146,
+          "observations_in_repeated_groups": 0,
+          "repeated_groups": 0,
+          "rows": 146
+        }
+      },
+      "lp85": {
+        "confirmations": {
+          "attempted": 0,
+          "disagreed": 0,
+          "landed": 0,
+          "route_diverged": 0
+        },
+        "game": "lp85",
+        "performs": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 42,
+          "observations_in_repeated_groups": 0,
+          "repeated_groups": 0,
+          "rows": 43
+        },
+        "recorded_conflict_records": 0,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 42,
+          "observations_in_repeated_groups": 0,
+          "repeated_groups": 0,
+          "rows": 42
+        }
+      },
+      "ls20": {
+        "confirmations": {
+          "attempted": 0,
+          "disagreed": 0,
+          "landed": 0,
+          "route_diverged": 0
+        },
+        "game": "ls20",
+        "performs": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 2877,
+          "observations_in_repeated_groups": 102,
+          "repeated_groups": 24,
+          "rows": 3000
+        },
+        "recorded_conflict_records": 0,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 2877,
+          "observations_in_repeated_groups": 0,
+          "repeated_groups": 0,
+          "rows": 2877
+        }
+      },
+      "m0r0": {
+        "confirmations": {
+          "attempted": 77,
+          "disagreed": 28,
+          "landed": 28,
+          "route_diverged": 49
+        },
+        "game": "m0r0",
+        "performs": {
+          "aliased_different_count": 29,
+          "disagreeing_same_count": 0,
+          "groups": 2962,
+          "observations_in_repeated_groups": 298,
+          "repeated_groups": 49,
+          "rows": 3250
+        },
+        "recorded_conflict_records": 31,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 28,
+          "disagreeing_same_count": 0,
+          "groups": 2943,
+          "observations_in_repeated_groups": 56,
+          "repeated_groups": 28,
+          "rows": 2971
+        }
+      },
+      "r11l": {
+        "confirmations": {
+          "attempted": 0,
+          "disagreed": 0,
+          "landed": 0,
+          "route_diverged": 0
+        },
+        "game": "r11l",
+        "performs": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 130,
+          "observations_in_repeated_groups": 0,
+          "repeated_groups": 0,
+          "rows": 135
+        },
+        "recorded_conflict_records": 0,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 130,
+          "observations_in_repeated_groups": 0,
+          "repeated_groups": 0,
+          "rows": 130
+        }
+      },
+      "re86": {
+        "confirmations": {
+          "attempted": 0,
+          "disagreed": 0,
+          "landed": 0,
+          "route_diverged": 0
+        },
+        "game": "re86",
+        "performs": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 2911,
+          "observations_in_repeated_groups": 37,
+          "repeated_groups": 7,
+          "rows": 3000
+        },
+        "recorded_conflict_records": 0,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 2911,
+          "observations_in_repeated_groups": 0,
+          "repeated_groups": 0,
+          "rows": 2911
+        }
+      },
+      "sb26": {
+        "confirmations": {
+          "attempted": 94,
+          "disagreed": 0,
+          "landed": 94,
+          "route_diverged": 0
+        },
+        "game": "sb26",
+        "performs": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 3005,
+          "observations_in_repeated_groups": 385,
+          "repeated_groups": 103,
+          "rows": 3298
+        },
+        "recorded_conflict_records": 0,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 2986,
+          "observations_in_repeated_groups": 188,
+          "repeated_groups": 94,
+          "rows": 3080
+        }
+      },
+      "sc25": {
+        "confirmations": {
+          "attempted": 89,
+          "disagreed": 7,
+          "landed": 17,
+          "route_diverged": 72
+        },
+        "game": "sc25",
+        "performs": {
+          "aliased_different_count": 7,
+          "disagreeing_same_count": 0,
+          "groups": 1614,
+          "observations_in_repeated_groups": 1611,
+          "repeated_groups": 24,
+          "rows": 3228
+        },
+        "recorded_conflict_records": 690,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 7,
+          "disagreeing_same_count": 0,
+          "groups": 1606,
+          "observations_in_repeated_groups": 34,
+          "repeated_groups": 17,
+          "rows": 1623
+        }
+      },
+      "sk48": {
+        "confirmations": {
+          "attempted": 90,
+          "disagreed": 1,
+          "landed": 90,
+          "route_diverged": 0
+        },
+        "game": "sk48",
+        "performs": {
+          "aliased_different_count": 1,
+          "disagreeing_same_count": 0,
+          "groups": 3006,
+          "observations_in_repeated_groups": 383,
+          "repeated_groups": 97,
+          "rows": 3297
+        },
+        "recorded_conflict_records": 1,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 1,
+          "disagreeing_same_count": 0,
+          "groups": 2995,
+          "observations_in_repeated_groups": 180,
+          "repeated_groups": 90,
+          "rows": 3085
+        }
+      },
+      "sp80": {
+        "confirmations": {
+          "attempted": 0,
+          "disagreed": 0,
+          "landed": 0,
+          "route_diverged": 0
+        },
+        "game": "sp80",
+        "performs": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 1014,
+          "observations_in_repeated_groups": 26,
+          "repeated_groups": 3,
+          "rows": 1106
+        },
+        "recorded_conflict_records": 0,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 1014,
+          "observations_in_repeated_groups": 0,
+          "repeated_groups": 0,
+          "rows": 1014
+        }
+      },
+      "su15": {
+        "confirmations": {
+          "attempted": 63,
+          "disagreed": 0,
+          "landed": 63,
+          "route_diverged": 0
+        },
+        "game": "su15",
+        "performs": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 377,
+          "observations_in_repeated_groups": 384,
+          "repeated_groups": 93,
+          "rows": 681
+        },
+        "recorded_conflict_records": 0,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 358,
+          "observations_in_repeated_groups": 126,
+          "repeated_groups": 63,
+          "rows": 421
+        }
+      },
+      "tn36": {
+        "confirmations": {
+          "attempted": 0,
+          "disagreed": 0,
+          "landed": 0,
+          "route_diverged": 0
+        },
+        "game": "tn36",
+        "performs": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 2875,
+          "observations_in_repeated_groups": 33,
+          "repeated_groups": 3,
+          "rows": 3000
+        },
+        "recorded_conflict_records": 0,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 2875,
+          "observations_in_repeated_groups": 0,
+          "repeated_groups": 0,
+          "rows": 2875
+        }
+      },
+      "tr87": {
+        "confirmations": {
+          "attempted": 22,
+          "disagreed": 12,
+          "landed": 12,
+          "route_diverged": 10
+        },
+        "game": "tr87",
+        "performs": {
+          "aliased_different_count": 12,
+          "disagreeing_same_count": 0,
+          "groups": 2945,
+          "observations_in_repeated_groups": 297,
+          "repeated_groups": 59,
+          "rows": 3230
+        },
+        "recorded_conflict_records": 12,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 12,
+          "disagreeing_same_count": 0,
+          "groups": 2925,
+          "observations_in_repeated_groups": 24,
+          "repeated_groups": 12,
+          "rows": 2937
+        }
+      },
+      "tu93": {
+        "confirmations": {
+          "attempted": 0,
+          "disagreed": 0,
+          "landed": 0,
+          "route_diverged": 0
+        },
+        "game": "tu93",
+        "performs": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 2574,
+          "observations_in_repeated_groups": 426,
+          "repeated_groups": 113,
+          "rows": 3000
+        },
+        "recorded_conflict_records": 0,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 2573,
+          "observations_in_repeated_groups": 0,
+          "repeated_groups": 0,
+          "rows": 2573
+        }
+      },
+      "vc33": {
+        "confirmations": {
+          "attempted": 0,
+          "disagreed": 0,
+          "landed": 0,
+          "route_diverged": 0
+        },
+        "game": "vc33",
+        "performs": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 804,
+          "observations_in_repeated_groups": 11,
+          "repeated_groups": 3,
+          "rows": 835
+        },
+        "recorded_conflict_records": 0,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 0,
+          "disagreeing_same_count": 0,
+          "groups": 800,
+          "observations_in_repeated_groups": 0,
+          "repeated_groups": 0,
+          "rows": 800
+        }
+      },
+      "wa30": {
+        "confirmations": {
+          "attempted": 69,
+          "disagreed": 15,
+          "landed": 36,
+          "route_diverged": 33
+        },
+        "game": "wa30",
+        "performs": {
+          "aliased_different_count": 16,
+          "disagreeing_same_count": 0,
+          "groups": 3000,
+          "observations_in_repeated_groups": 301,
+          "repeated_groups": 67,
+          "rows": 3263
+        },
+        "recorded_conflict_records": 15,
+        "store": "logs/e1_store_v3",
+        "transitions": {
+          "aliased_different_count": 15,
+          "disagreeing_same_count": 0,
+          "groups": 2960,
+          "observations_in_repeated_groups": 72,
+          "repeated_groups": 36,
+          "rows": 2996
+        }
+      }
+    },
+    "store": "logs/e1_store_v3"
+  }
+}

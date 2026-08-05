@@ -206,13 +206,56 @@ class Explorer:
         self.current: str | None = None
         self.level = 1
 
+        # -- REPEATED OBSERVATIONS (notes/e1-store-repeats.md) ---------------------------
+        # The store could not previously disagree with itself. `record()` was reachable only
+        # from `test()`, and `test()` pops each candidate from a state's frontier exactly
+        # once, so a repeated `(pre, action)` row was unreachable BY CONSTRUCTION and every
+        # aliasing census over the store read zero — which looks like "no hidden state" and
+        # actually means "no ability to see any". Measured consequence: E2 found a real hidden
+        # in-episode action counter in four games whose evidence the store had discarded.
+        #
+        # Two additions, both of which leave the explorer's TRAJECTORY untouched:
+        #   `performs`      every action, routing included, with its pre/post digests. Routing
+        #                   re-executes known edges constantly (sc25: 46% of the budget) and
+        #                   those were free repeat observations we were throwing away.
+        #   `episode_step`  the in-episode action count at the pre-state. A repeat is only
+        #                   INTERPRETABLE with it: two observations of one edge at the same
+        #                   count test determinism, at different counts they test aliasing.
+        self.performs: list[dict[str, Any]] = []
+        self.last_reset = 0  # environment creation is an implicit RESET
+        self.confirm_budget = 0
+        self.confirm_actions = 0
+        self.confirmations: list[dict[str, Any]] = []
+
+    def episode_step(self) -> int:
+        """Actions executed since the last RESET, at the CURRENT pre-state."""
+        return self.actions_used - self.last_reset
+
     # -- engine ---------------------------------------------------------------------
-    def perform(self, action: tuple[int, int | None, int | None]) -> dict[str, Any]:
+    def perform(
+        self, action: tuple[int, int | None, int | None], *, source: str = "test"
+    ) -> dict[str, Any]:
+        source_state = self.current
+        episode_step = self.episode_step()
         response = self.driver.perform(self.engine, _act(action))
         self.actions_used += 1
         frames = _plain_frames(response.frame or [])
         grid = frames[-1] if frames else None
         levels = response.levels_completed
+        self.performs.append(
+            {
+                "step": self.actions_used,
+                "episode_step": episode_step,
+                "source": source,
+                "pre": source_state,
+                "action": list(action),
+                "post": _hash(self.level, grid) if grid is not None else None,
+                "levels": int(levels) if levels is not None else None,
+                "state": str(getattr(response.state, "value", response.state)),
+            }
+        )
+        if action[0] == RESET:
+            self.last_reset = self.actions_used
         return {
             "grid": grid,
             "frames": len(frames),
@@ -402,7 +445,7 @@ class Explorer:
         """Execute a route step-validated. False on divergence; the bad edge is conflicted."""
         for action in path:
             source = self.current
-            result = self.perform(action)
+            result = self.perform(action, source="walk")
             self.routing_actions += 1
             if result["levels"] and result["levels"] > 0:
                 self.completed_at = self.actions_used
@@ -422,7 +465,7 @@ class Explorer:
         return expect is None or self.current == expect
 
     def reset_route(self, target: str) -> bool:
-        result = self.perform((RESET, None, None))
+        result = self.perform((RESET, None, None), source="reset")
         self.routing_actions += 1
         digest = self.observe(result, [])
         if self.origin is not None and digest != self.origin:
@@ -438,7 +481,7 @@ class Explorer:
 
     # -- the loop -------------------------------------------------------------------
     def run(self) -> dict[str, Any]:
-        result = self.perform((RESET, None, None))
+        result = self.perform((RESET, None, None), source="boot")
         if result["grid"] is None:
             return self.summary("no_initial_frame")
         self.origin = self.current = self.observe(result, [])
@@ -493,7 +536,147 @@ class Explorer:
                 break
             if not self.test(target):
                 continue
+        if self.confirm_budget > 0 and self.completed_at is None:
+            self.confirm()
         return self.summary(outcome)
+
+    # -- confirmation pass (repeated observations, deliberately) ------------------------
+    def paths_by_length(self, max_length: int) -> dict[str, dict[int, list[tuple]]]:
+        """Per state, one route from the origin of each achievable length up to `max_length`.
+
+        The graph keeps only the SHORTEST prefix per state, which is exactly the wrong thing
+        to keep for this purpose: a second route of a DIFFERENT length is what re-observes an
+        edge at a different in-episode count. Routes are proposed here and verified by
+        execution in `confirm` — a proposal that does not land on its state is discarded, and
+        the divergence is itself recorded as evidence.
+        """
+        adjacency: dict[str, list[tuple[tuple, str]]] = {}
+        for (origin, action), target in self.edges.items():
+            adjacency.setdefault(origin, []).append((action, target))
+        paths: dict[str, dict[int, list[tuple]]] = {self.origin: {0: []}}
+        layer = {self.origin: []}
+        for length in range(1, max_length + 1):
+            following: dict[str, list[tuple]] = {}
+            for node, path in layer.items():
+                for action, target in adjacency.get(node, ()):
+                    if length in paths.get(target, {}) or target in following:
+                        continue
+                    following[target] = path + [action]
+            for node, path in following.items():
+                paths.setdefault(node, {})[length] = path
+            layer = following
+            if not layer:
+                break
+        return paths
+
+    def confirm(self, *, max_path: int = 12) -> None:
+        """Spend `confirm_budget` actions re-observing tested edges at a DIFFERENT count.
+
+        Routing repeats are nearly free but nearly useless on their own: RESET + prefix replay
+        reproduces the SAME in-episode count the edge was first seen at, so it tests
+        determinism and not aliasing. The only way to get an aliasing observation is to reach
+        the state by a route of a different LENGTH, which is what this does.
+
+        Order is deterministic and value-first: edges the explorer already caught disagreeing,
+        then a spread over the rest, cheapest route first so the budget buys the most
+        observations. Every instance is RESET-rooted and digest-checked before the target
+        action is executed.
+        """
+        seen: dict[tuple[str, tuple], int] = {}
+        for row in self.transitions:
+            key = (row["pre"], tuple(row["action"]))
+            seen.setdefault(key, row["episode_step"])
+        paths = self.paths_by_length(max_path)
+
+        candidates: list[tuple[int, int, str, tuple, list[tuple]]] = []
+        for (state, action), first_count in seen.items():
+            routes = paths.get(state) or {}
+            alternates = sorted(
+                length for length in routes if length != first_count
+            )
+            if not alternates:
+                continue
+            length = alternates[0]
+            candidates.append(
+                (
+                    0 if (state, action) in self.conflicted else 1,  # conflicted first
+                    length,  # then cheapest
+                    state,
+                    action,
+                    routes[length],
+                )
+            )
+        candidates.sort(key=lambda item: (item[0], item[1], item[2], str(item[3])))
+
+        spent = 0
+        for _, length, state, action, route in candidates:
+            cost = len(route) + 2  # RESET + route + the target action
+            if spent + cost > self.confirm_budget:
+                continue
+            spent += cost
+            result = self.perform((RESET, None, None), source="confirm")
+            digest = self.observe(result, [])
+            self.current = digest
+            walked: list[tuple] = []
+            for step_action in route:
+                walked.append(step_action)
+                result = self.perform(step_action, source="confirm")
+                # the prefix handed to `observe` must be the route ACTUALLY walked -- it is
+                # what `prefix` will record for a state first seen here, and a wrong one
+                # would plant exactly the kind of unreplayable shortest-path this pass exists
+                # to expose
+                digest = self.observe(result, list(walked))
+                self.current = digest
+            if digest != state:
+                self.confirmations.append(
+                    {
+                        "state": state,
+                        "action": list(action),
+                        "route_length": length,
+                        "outcome": "route_diverged",
+                        "landed": digest,
+                    }
+                )
+                continue
+            episode_step = self.episode_step()
+            pre_objects = _Objects(self.states[state])
+            result = self.perform(action, source="confirm")
+            post = (
+                _hash(self.level, result["grid"]) if result["grid"] is not None else None
+            )
+            if result["levels"] and post is not None:
+                # same rule as `test`: retain the completion frame, it is a positive example
+                self.states.setdefault(post, result["grid"])
+            self.record(
+                state, action, result, pre_objects,
+                completed=bool(result["levels"]),
+                episode_step=episode_step,
+                source="confirm",
+            )
+            previous = self.edges.get((state, action))
+            agrees = previous is None or post is None or previous == post
+            if not agrees:
+                self.conflicted.add((state, action))
+                self.suspect.add(state)
+                self.alias_conflicts.append(
+                    {"state": state, "action": list(action), "step": self.actions_used}
+                )
+            self.confirmations.append(
+                {
+                    "state": state,
+                    "action": list(action),
+                    "route_length": length,
+                    "first_seen_at_count": seen[(state, action)],
+                    "reobserved_at_count": episode_step,
+                    "outcome": "agrees" if agrees else "disagrees",
+                    "first_post": previous,
+                    "post": post,
+                }
+            )
+            if post is not None:
+                self.edges[(state, action)] = post
+            self.current = post
+        self.confirm_actions = spent
 
     def select(self, pending: list[tuple[str, list]]) -> str | None:
         if self.policy == "v2":
@@ -594,7 +777,8 @@ class Explorer:
         pre_grid = self.states[digest]
         pre_objects = _Objects(pre_grid)
 
-        result = self.perform(action)
+        episode_step = self.episode_step()
+        result = self.perform(action, source="test")
         self.test_actions += 1
         if result["levels"] and result["levels"] > 0:
             self.completed_at = self.actions_used
@@ -602,13 +786,19 @@ class Explorer:
                 # retain the completion frame: it is the store's one positive goal
                 # example, and a post hash without its grid corrupts goal mining (E2)
                 self.states.setdefault(_hash(self.level, result["grid"]), result["grid"])
-            self.record(digest, action, result, pre_objects, completed=True)
+            self.record(
+                digest, action, result, pre_objects, completed=True,
+                episode_step=episode_step,
+            )
             return True
 
         known = len(self.states)
         post = self.observe(result, self.prefix.get(digest, []) + [action])
         fresh_state = len(self.states) > known
-        signature = self.record(digest, action, result, pre_objects, completed=False)
+        signature = self.record(
+            digest, action, result, pre_objects, completed=False,
+            episode_step=episode_step,
+        )
 
         previous = self.edges.get((digest, action))
         if previous is not None and post is not None and previous != post:
@@ -631,8 +821,16 @@ class Explorer:
         pre_objects: _Objects,
         *,
         completed: bool,
+        episode_step: int | None = None,
+        source: str = "test",
     ) -> bool:
-        """Append the transition to the store. Returns True if its moveset is new."""
+        """Append the transition to the store. Returns True if its moveset is new.
+
+        `episode_step` is the in-episode action count at the PRE-state and is what makes a
+        repeated `(pre, action)` row interpretable: same count is a determinism check,
+        different counts is an aliasing check. Defaults to the count at call time so any
+        caller that does not thread it through still records something true.
+        """
         grid = result["grid"]
         if grid is None:
             return False
@@ -662,6 +860,10 @@ class Explorer:
                 ),
                 "tier": 2 if (digest, action) in self.tier2_entries else 1,
                 "prefix": len(self.prefix.get(digest, [])),
+                "episode_step": (
+                    self.episode_step() - 1 if episode_step is None else episode_step
+                ),
+                "source": source,
             }
         )
         return fresh
@@ -691,6 +893,15 @@ class Explorer:
             "walk_mode_at": self.walk_mode_at,
             "tier2_states": len(self.tier2_states),
             "reset_anomalies": self.reset_anomaly_count,
+            "performs": len(self.performs),
+            "confirm_actions": self.confirm_actions,
+            "confirmations": len(self.confirmations),
+            "confirmations_disagreeing": sum(
+                1 for row in self.confirmations if row["outcome"] == "disagrees"
+            ),
+            "confirmations_route_diverged": sum(
+                1 for row in self.confirmations if row["outcome"] == "route_diverged"
+            ),
             "moveset_signatures": len(self.signatures_moveset),
             "changed_signatures": len(self.signatures_changed),
             "novelty_window": (
@@ -701,9 +912,10 @@ class Explorer:
         }
 
 
-def run_game(job: tuple[str, int, float, int, Path | None, str]) -> dict[str, Any]:
-    game, budget, wall, cap, store_dir, policy = job
+def run_game(job: tuple[str, int, float, int, Path | None, str, int]) -> dict[str, Any]:
+    game, budget, wall, cap, store_dir, policy, confirm_budget = job
     explorer = Explorer(game, budget=budget, wall=wall, cap=cap, policy=policy)
+    explorer.confirm_budget = confirm_budget
     try:
         summary = explorer.run()
     except Exception as error:  # a game that breaks the driver is a result, not a crash
@@ -717,6 +929,12 @@ def run_game(job: tuple[str, int, float, int, Path | None, str]) -> dict[str, An
         with (store_dir / f"{game}.transitions.jsonl").open("w") as handle:
             for row in explorer.transitions:
                 handle.write(json.dumps(row, separators=(",", ":")) + "\n")
+        # Every action, routing included. This is the file an aliasing census reads; the
+        # transitions log alone cannot hold a repeated (pre, action) row unless the
+        # confirmation pass ran.
+        with (store_dir / f"{game}.performs.jsonl").open("w") as handle:
+            for row in explorer.performs:
+                handle.write(json.dumps(row, separators=(",", ":")) + "\n")
         (store_dir / f"{game}.graph.json").write_text(
             json.dumps(
                 {
@@ -725,11 +943,18 @@ def run_game(job: tuple[str, int, float, int, Path | None, str]) -> dict[str, An
                         [source, list(action), target]
                         for (source, action), target in explorer.edges.items()
                     ],
-                    "conflicted": [
-                        [source, list(action)] for source, action in explorer.conflicted
-                    ],
+                    # SORTED. `conflicted` is a set of tuples containing strings, so its
+                    # iteration order follows PYTHONHASHSEED and differed between two runs of
+                    # an otherwise byte-identical trajectory. That made the graph file falsely
+                    # non-reproducible and would have been read as a real divergence by any
+                    # replay gate that compared it. `suspect` was already sorted.
+                    "conflicted": sorted(
+                        ([source, list(action)] for source, action in explorer.conflicted),
+                        key=lambda item: (item[0], str(item[1])),
+                    ),
                     "suspect": sorted(explorer.suspect),
                     "conflict_records": explorer.alias_conflicts,
+                    "confirmations": explorer.confirmations,
                     "closed_t1_at": explorer.closed_t1_at,
                     "walk_mode_at": explorer.walk_mode_at,
                     "prefix": {k: [list(a) for a in v] for k, v in explorer.prefix.items()},
@@ -751,7 +976,8 @@ def _emit(row: dict[str, Any]) -> None:
         f"{'  n/a' if overhead is None else f'{overhead:5.2f}'} "
         f"{row['unique_states']:6d} {row['transitions']:6d} "
         f"{row['frontier_remaining']:7d} {row['alias_conflicts']:5d} "
-        f"{row['moveset_signatures']:5d} {row['wall_clock']:6.1f}",
+        f"{row['moveset_signatures']:5d} {row['wall_clock']:6.1f} "
+        f"{row.get('confirmations', 0):5d} {row.get('confirmations_disagreeing', 0):4d}",
         flush=True,
     )
 
@@ -773,6 +999,16 @@ def main() -> int:
             "`nearest` is SS3 as written (never routes); `shallowest` the v1 correction"
         ),
     )
+    parser.add_argument(
+        "--confirm-budget",
+        type=int,
+        default=0,
+        help=(
+            "extra actions spent AFTER the main loop re-observing already-tested edges at a "
+            "different in-episode count. 0 (default) leaves the trajectory byte-identical to "
+            "the v2 store; this is the only knob here that costs actions"
+        ),
+    )
     parser.add_argument("--no-store", action="store_true")
     parser.add_argument("--store-dir", type=Path, default=STORE)
     parser.add_argument("--out", type=Path, default=OUTPUT)
@@ -791,12 +1027,14 @@ def main() -> int:
             args.cap,
             None if args.no_store else args.store_dir,
             args.policy,
+            args.confirm_budget,
         )
         for game in games
     ]
     print(
         f"{'game':5s} {'outcome':20s} {'act':>5s} {'test':>5s} {'route':>6s} {'ovh':>5s} "
-        f"{'states':>6s} {'trans':>6s} {'front':>7s} {'alias':>5s} {'msig':>5s} {'sec':>6s}",
+        f"{'states':>6s} {'trans':>6s} {'front':>7s} {'alias':>5s} {'msig':>5s} {'sec':>6s} "
+        f"{'confm':>5s} {'dis':>4s}",
         flush=True,
     )
     results = []
@@ -817,6 +1055,7 @@ def main() -> int:
         "budget": {"actions": args.budget, "wall_seconds": args.wall},
         "cap": args.cap,
         "policy": args.policy,
+        "confirm_budget": args.confirm_budget,
         "novelty": {"window": WINDOW, "threshold": SATURATION, "signal": "moveset|state"},
         "games": {row["game"]: row for row in results},
     }

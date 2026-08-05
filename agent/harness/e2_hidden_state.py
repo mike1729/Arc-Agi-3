@@ -241,6 +241,68 @@ def counters_for(transitions: list[Transition], table: dict) -> list[dict[str, i
 # ======================================================================================
 
 
+def store_census(store: Path, game: str) -> dict[str, Any]:
+    """Aliasing census over a store that CAN hold repeated observations.
+
+    `census` below reads the v2 store, whose transitions log cannot disagree with itself; this
+    reads a v3-shaped store, whose log carries confirmation rows and whose `performs.jsonl`
+    carries every action including routing. A repeated `(pre, action)` group is classified by
+    whether its observations were taken at the same in-episode count, and conflating the two
+    cases is what made the old census uninterpretable even in principle:
+
+      different count, different outcome   ALIASING by the in-episode counter
+      same count, different outcome        hidden state the `(board, count)` pair does NOT
+                                           capture. Do not read this as non-determinism
+                                           without checking: measured on g50t, each variant
+                                           is highly reproducible (one group holds 33
+                                           identical repeats of the minority outcome), which
+                                           is a further latent, not a flaky engine.
+    """
+    out: dict[str, Any] = {"store": str(store), "game": game}
+    for label, name, key in (
+        ("transitions", f"{game}.transitions.jsonl", "episode_step"),
+        ("performs", f"{game}.performs.jsonl", "episode_step"),
+    ):
+        path = store / name
+        if not path.exists():
+            out[label] = {"missing": str(path)}
+            continue
+        rows = [json.loads(line) for line in path.read_text().splitlines() if line]
+        groups: dict[tuple, list[dict]] = defaultdict(list)
+        for row in rows:
+            if row.get("pre") is None or row.get("post") is None:
+                continue
+            groups[(row["pre"], tuple(row["action"]))].append(row)
+        repeated = {k: v for k, v in groups.items() if len(v) > 1}
+        aliased = same_count = 0
+        for observations in repeated.values():
+            if len({o["post"] for o in observations}) == 1:
+                continue
+            counts = {o[key] for o in observations}
+            if len(counts) > 1:
+                aliased += 1
+            else:
+                same_count += 1
+        out[label] = {
+            "rows": len(rows),
+            "groups": len(groups),
+            "repeated_groups": len(repeated),
+            "aliased_different_count": aliased,
+            "disagreeing_same_count": same_count,
+            "observations_in_repeated_groups": sum(len(v) for v in repeated.values()),
+        }
+    graph = json.loads((store / f"{game}.graph.json").read_text())
+    confirmations = graph.get("confirmations", [])
+    out["confirmations"] = {
+        "attempted": len(confirmations),
+        "landed": sum(1 for r in confirmations if r["outcome"] != "route_diverged"),
+        "disagreed": sum(1 for r in confirmations if r["outcome"] == "disagrees"),
+        "route_diverged": sum(1 for r in confirmations if r["outcome"] == "route_diverged"),
+    }
+    out["recorded_conflict_records"] = len(graph.get("conflict_records", []))
+    return out
+
+
 def census(game: str = GAME) -> dict[str, Any]:
     rows = [
         json.loads(line)
@@ -1211,7 +1273,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--stage",
-        choices=("census", "rerun", "rerun_all", "probe", "mine", "cross", "all"),
+        choices=(
+            "census", "store_census", "rerun", "rerun_all", "probe", "mine", "cross", "all"
+        ),
         default="all",
     )
     parser.add_argument("--game", default=GAME)
@@ -1229,6 +1293,12 @@ def main() -> int:
     )
     parser.add_argument("--vocab", choices=("v1", "v2"), default="v2")
     parser.add_argument("--out", type=Path, default=OUTPUT)
+    parser.add_argument(
+        "--store-dir",
+        type=Path,
+        default=ROOT / "logs/e1_store_v3",
+        help="store read by --stage store_census",
+    )
     args = parser.parse_args()
 
     set_vocab(args.vocab)
@@ -1254,6 +1324,24 @@ def main() -> int:
                 f"recorded_conflicts={row['recorded_conflict_records']}",
                 flush=True,
             )
+        elif stage == "store_census":
+            games = [g for g in ALL_GAMES if g not in EXCLUDED_GAMES]
+            rows = {}
+            for game in games:
+                if not (args.store_dir / f"{game}.transitions.jsonl").exists():
+                    continue
+                row = store_census(args.store_dir, game)
+                rows[game] = row
+                t, p, c = row["transitions"], row["performs"], row["confirmations"]
+                print(
+                    f"{game:5s} trans rows={t['rows']:5d} rep={t['repeated_groups']:4d} "
+                    f"alias={t['aliased_different_count']:4d} nondet={t['disagreeing_same_count']:3d} | "
+                    f"performs rep={p['repeated_groups']:4d} alias={p['aliased_different_count']:4d} "
+                    f"nondet={p['disagreeing_same_count']:3d} | confirm {c['landed']}/{c['attempted']} "
+                    f"dis={c['disagreed']}",
+                    flush=True,
+                )
+            document["store_census"] = {"store": str(args.store_dir), "games": rows}
         elif stage == "rerun":
             document["rerun"] = rerun(
                 args.game, budget=args.budget, wall=args.wall, cap=args.cap
