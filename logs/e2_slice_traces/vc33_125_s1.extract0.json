@@ -1,0 +1,15 @@
+{
+  "prompt_chars": 4777,
+  "prefilled_empty_think": true,
+  "prompt_opens_think": false,
+  "think_opened": false,
+  "think_closed": false,
+  "think_chars": 0,
+  "answer": "{\n  \"rules\": [],\n  \"goal\": \"The goal is almost certainly to clear the board of all non-background objects.\",\n  \"hidden_state\": \"None.\",\n  \"next_probe\": \"Execute ACTION6 on colour 0 in a state where adj:7:down=None and count:0=1, but systematically vary the untracked adjacency adj:0:right (or adj:0:down) to determine if direct object-to-object adjacency is the true condition.\"\n}",
+  "raw": "{\n  \"rules\": [],\n  \"goal\": \"The goal is almost certainly to clear the board of all non-background objects.\",\n  \"hidden_state\": \"None.\",\n  \"next_probe\": \"Execute ACTION6 on colour 0 in a state where adj:7:down=None and count:0=1, but systematically vary the untracked adjacency adj:0:right (or adj:0:down) to determine if direct object-to-object adjacency is the true condition.\"\n}",
+  "wall_seconds": 14.1,
+  "prompt_tps": 417.2110823385269,
+  "generation_tps": 9.435884788941635,
+  "temp": 0.0,
+  "seed": 1
+}

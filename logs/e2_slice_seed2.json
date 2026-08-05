@@ -1,0 +1,2126 @@
+{
+  "budgets": {
+    "extract": 4096,
+    "think": 16384
+  },
+  "cells": [
+    {
+      "digest_chars": 11760,
+      "dose": 125,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.1997,
+          "accuracy_over_covered": 0.2081,
+          "correct": 128,
+          "coverage": 0.9594,
+          "covered": 615,
+          "failure_split": {
+            "guard_fixable": 341,
+            "separable_by_census": 0,
+            "unpredicted": 146
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 18,
+          "rules_never_fired": 1,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 341
+          },
+          "test_transitions": 641
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0641,
+          "accuracy_over_covered": 0.0734,
+          "correct": 65,
+          "coverage": 0.8728,
+          "covered": 885,
+          "failure_split": {
+            "guard_fixable": 820,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.1667,
+          "rules_fired": 12,
+          "rules_never_fired": 7,
+          "rules_survived": 2,
+          "separating_guard_family": {
+            "adj": 820
+          },
+          "test_transitions": 1014
+        }
+      },
+      "game": "dc22",
+      "goal": "Position colour 14 (via ACTION1/ACTION2) and colour 13 to specific board edges or corners to trigger cascading disappear/reshape effects, ultimately clearing or aligning the board.",
+      "hidden_state": "None recorded (alias conflicts: none). The game is fully deterministic given the visual frame. The apparent non-determinism/unresolvability stems entirely from the miner's feature vocabulary, not hidden state.",
+      "miner_rules": 19,
+      "next_probe": "Execute ACTION6 on a colour instance explicitly placed at the top-left board corner (guaranteeing adj:CLICKED:up=None and adj:CLICKED:left=None), while logging click_row, click_col, and adj:CLICKED:direction.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 10,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 125,
+      "thinking": {
+        "generation_tps": 9.104426556990147,
+        "prefilled_empty_think": false,
+        "prompt_chars": 13599,
+        "prompt_opens_think": true,
+        "prompt_tps": 393.19661795027577,
+        "seed": 2,
+        "temp": 0.6,
+        "think_chars": 28267,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 1076.4
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.1997,
+          "accuracy_over_covered": 0.2081,
+          "correct": 128,
+          "coverage": 0.9594,
+          "covered": 615,
+          "failure_split": {
+            "guard_fixable": 341,
+            "separable_by_census": 0,
+            "unpredicted": 146
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 18,
+          "rules_never_fired": 1,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 341
+          },
+          "test_transitions": 641
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0641,
+          "accuracy_over_covered": 0.0734,
+          "correct": 65,
+          "coverage": 0.8728,
+          "covered": 885,
+          "failure_split": {
+            "guard_fixable": 820,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.1667,
+          "rules_fired": 12,
+          "rules_never_fired": 7,
+          "rules_survived": 2,
+          "separating_guard_family": {
+            "adj": 820
+          },
+          "test_transitions": 1014
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.2183,
+          "transitions": 394,
+          "union_accuracy_over_all": 0.2183
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.0866,
+          "transitions": 589,
+          "union_accuracy_over_all": 0.0866
+        }
+      },
+      "unresolved_keys": 10,
+      "verification": [
+        {
+          "contradicted_on_store": 7,
+          "kept": false,
+          "rule": "A6:0",
+          "support_on_store": 3
+        },
+        {
+          "contradicted_on_store": 6,
+          "kept": false,
+          "rule": "A6:2",
+          "support_on_store": 10
+        },
+        {
+          "contradicted_on_store": 6,
+          "kept": false,
+          "rule": "A6:3",
+          "support_on_store": 9
+        },
+        {
+          "contradicted_on_store": 4,
+          "kept": false,
+          "rule": "A6:5",
+          "support_on_store": 6
+        },
+        {
+          "contradicted_on_store": 8,
+          "kept": false,
+          "rule": "A6:8",
+          "support_on_store": 7
+        },
+        {
+          "contradicted_on_store": 4,
+          "kept": false,
+          "rule": "A6:9",
+          "support_on_store": 7
+        },
+        {
+          "contradicted_on_store": 5,
+          "kept": false,
+          "rule": "A6:13",
+          "support_on_store": 2
+        },
+        {
+          "contradicted_on_store": 4,
+          "kept": false,
+          "rule": "A6:14",
+          "support_on_store": 6
+        },
+        {
+          "contradicted_on_store": 3,
+          "kept": false,
+          "rule": "A:1",
+          "support_on_store": 2
+        },
+        {
+          "contradicted_on_store": 3,
+          "kept": false,
+          "rule": "A:2",
+          "support_on_store": 1
+        }
+      ],
+      "verified": 0,
+      "wall_seconds": 1199.1000000000001
+    },
+    {
+      "digest_chars": 16972,
+      "dose": null,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.2278,
+          "accuracy_over_covered": 0.2281,
+          "correct": 146,
+          "coverage": 0.9984,
+          "covered": 640,
+          "failure_split": {
+            "guard_fixable": 270,
+            "separable_by_census": 0,
+            "unpredicted": 224
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 13,
+          "rules_never_fired": 1,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 270
+          },
+          "test_transitions": 641
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0552,
+          "accuracy_over_covered": 0.0593,
+          "correct": 56,
+          "coverage": 0.931,
+          "covered": 944,
+          "failure_split": {
+            "guard_fixable": 888,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.1667,
+          "rules_fired": 12,
+          "rules_never_fired": 2,
+          "rules_survived": 2,
+          "separating_guard_family": {
+            "adj": 888
+          },
+          "test_transitions": 1014
+        }
+      },
+      "game": "dc22",
+      "goal": "The level is a state-toggling puzzle requiring driving colours 0, 2, 3, and 9 into specific target shapes while positioning the single colour 14 object correctly.",
+      "hidden_state": "The missing state variables are the discrete shape/rotation index of each coloured component and possibly a global toggle counter, which are outside the miner's vocabulary.",
+      "miner_rules": 14,
+      "next_probe": "Execute ACTION6 on colour 2 twice consecutively on the exact same object and log the exact pixel boundary of colour 0 before and after each click to map the reshape effect to a deterministic state machine.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 0,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 2939,
+      "thinking": {
+        "generation_tps": 9.065189572895857,
+        "prefilled_empty_think": false,
+        "prompt_chars": 18811,
+        "prompt_opens_think": true,
+        "prompt_tps": 429.1991082912654,
+        "seed": 2,
+        "temp": 0.6,
+        "think_chars": 24721,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 885.2
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.2278,
+          "accuracy_over_covered": 0.2281,
+          "correct": 146,
+          "coverage": 0.9984,
+          "covered": 640,
+          "failure_split": {
+            "guard_fixable": 270,
+            "separable_by_census": 0,
+            "unpredicted": 224
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 13,
+          "rules_never_fired": 1,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 270
+          },
+          "test_transitions": 641
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0552,
+          "accuracy_over_covered": 0.0593,
+          "correct": 56,
+          "coverage": 0.931,
+          "covered": 944,
+          "failure_split": {
+            "guard_fixable": 888,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.1667,
+          "rules_fired": 12,
+          "rules_never_fired": 2,
+          "rules_survived": 2,
+          "separating_guard_family": {
+            "adj": 888
+          },
+          "test_transitions": 1014
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.2281,
+          "transitions": 640,
+          "union_accuracy_over_all": 0.2281
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.0593,
+          "transitions": 944,
+          "union_accuracy_over_all": 0.0593
+        }
+      },
+      "unresolved_keys": 14,
+      "verification": [],
+      "verified": 0,
+      "wall_seconds": 903.7
+    },
+    {
+      "digest_chars": 2816,
+      "dose": 125,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.2522,
+          "accuracy_over_covered": 0.4432,
+          "correct": 117,
+          "coverage": 0.569,
+          "covered": 264,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 147
+          },
+          "rule_survival_rate": 0.6667,
+          "rules_fired": 6,
+          "rules_never_fired": 2,
+          "rules_survived": 4,
+          "separating_guard_family": {},
+          "test_transitions": 464
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0885,
+          "accuracy_over_covered": 0.1064,
+          "correct": 10,
+          "coverage": 0.8319,
+          "covered": 94,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 84,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 3,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "count": 84
+          },
+          "test_transitions": 113
+        }
+      },
+      "game": "ft09",
+      "goal": "Completing level 1 likely requires repeatedly triggering the transformation reaction (appear(8) + appear(11) + disappear(9) + reshape(12)) to eliminate colour 9 and assemble/modify colours 8, 11, and 12 into a target configuration.",
+      "hidden_state": "None.",
+      "miner_rules": 8,
+      "next_probe": "Execute ACTION6 on colour 9 when count:9=20, adj:12:right=edge, but deliberately ensure count:8=17.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 0,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 125,
+      "thinking": {
+        "generation_tps": 9.22748979677772,
+        "prefilled_empty_think": false,
+        "prompt_chars": 4655,
+        "prompt_opens_think": true,
+        "prompt_tps": 368.97078318699096,
+        "seed": 2,
+        "temp": 0.6,
+        "think_chars": 19486,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 677.8
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.2522,
+          "accuracy_over_covered": 0.4432,
+          "correct": 117,
+          "coverage": 0.569,
+          "covered": 264,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 147
+          },
+          "rule_survival_rate": 0.6667,
+          "rules_fired": 6,
+          "rules_never_fired": 2,
+          "rules_survived": 4,
+          "separating_guard_family": {},
+          "test_transitions": 464
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0885,
+          "accuracy_over_covered": 0.1064,
+          "correct": 10,
+          "coverage": 0.8319,
+          "covered": 94,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 84,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 3,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "count": 84
+          },
+          "test_transitions": 113
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.1223,
+          "transitions": 139,
+          "union_accuracy_over_all": 0.1223
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.0,
+          "transitions": 69,
+          "union_accuracy_over_all": 0.0
+        }
+      },
+      "unresolved_keys": 1,
+      "verification": [],
+      "verified": 0,
+      "wall_seconds": 693.1999999999999
+    },
+    {
+      "digest_chars": 3445,
+      "dose": null,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.2522,
+          "accuracy_over_covered": 0.4432,
+          "correct": 117,
+          "coverage": 0.569,
+          "covered": 264,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 147
+          },
+          "rule_survival_rate": 0.6667,
+          "rules_fired": 6,
+          "rules_never_fired": 2,
+          "rules_survived": 4,
+          "separating_guard_family": {},
+          "test_transitions": 464
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0885,
+          "accuracy_over_covered": 0.1064,
+          "correct": 10,
+          "coverage": 0.8319,
+          "covered": 94,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 84,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 3,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "count": 84
+          },
+          "test_transitions": 113
+        }
+      },
+      "game": "ft09",
+      "goal": "The level likely requires swapping the large colour-8 and colour-9 components until their component counts reach exactly 17 and 19, triggering a swap and reshape of objects 11 and 12, with completion occurring when 11 and 12 achieve a target configuration, merge, or disappear.",
+      "hidden_state": "None.",
+      "miner_rules": 8,
+      "next_probe": "Click ACTION6 on colour 8 when count:8 = 17 but count:9 = 20 (or 18) to confirm the trigger strictly requires the conjunction count:8=17 AND count:9=19.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 3,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 1231,
+      "thinking": {
+        "generation_tps": 9.223651049043482,
+        "prefilled_empty_think": false,
+        "prompt_chars": 5284,
+        "prompt_opens_think": true,
+        "prompt_tps": 405.1403573339173,
+        "seed": 2,
+        "temp": 0.6,
+        "think_chars": 19962,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 693.3
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.2522,
+          "accuracy_over_covered": 0.4432,
+          "correct": 117,
+          "coverage": 0.569,
+          "covered": 264,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 147
+          },
+          "rule_survival_rate": 0.6667,
+          "rules_fired": 6,
+          "rules_never_fired": 2,
+          "rules_survived": 4,
+          "separating_guard_family": {},
+          "test_transitions": 464
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0885,
+          "accuracy_over_covered": 0.1064,
+          "correct": 10,
+          "coverage": 0.8319,
+          "covered": 94,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 84,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 3,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "count": 84
+          },
+          "test_transitions": 113
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.2967,
+          "transitions": 209,
+          "union_accuracy_over_all": 0.2967
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.0,
+          "transitions": 69,
+          "union_accuracy_over_all": 0.0
+        }
+      },
+      "unresolved_keys": 2,
+      "verification": [
+        {
+          "contradicted_on_store": 188,
+          "kept": false,
+          "rule": "A6:8",
+          "support_on_store": 9
+        },
+        {
+          "contradicted_on_store": 154,
+          "kept": false,
+          "rule": "A6:9",
+          "support_on_store": 63
+        },
+        {
+          "contradicted_on_store": 201,
+          "kept": false,
+          "rule": "A6:9",
+          "support_on_store": 16
+        }
+      ],
+      "verified": 0,
+      "wall_seconds": 749.5
+    },
+    {
+      "digest_chars": 6939,
+      "dose": 125,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.4396,
+          "accuracy_over_covered": 0.4405,
+          "correct": 211,
+          "coverage": 0.9979,
+          "covered": 479,
+          "failure_split": {
+            "guard_fixable": 86,
+            "separable_by_census": 0,
+            "unpredicted": 182
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 86
+          },
+          "test_transitions": 480
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3466,
+          "accuracy_over_covered": 0.3484,
+          "correct": 680,
+          "coverage": 0.9949,
+          "covered": 1952,
+          "failure_split": {
+            "guard_fixable": 341,
+            "separable_by_census": 786,
+            "unpredicted": 145
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 341,
+            "count": 786
+          },
+          "test_transitions": 1962
+        }
+      },
+      "game": "ls20",
+      "goal": "The level likely requires moving objects 9 and 12 onto target zones or eliminating all 3s through repeated reshaping/movement.",
+      "hidden_state": "None.",
+      "miner_rules": 4,
+      "next_probe": "Test ACTION2 with a controlled adj:12:down condition by placing a 3 directly below object 12 and pressing ACTION2 to confirm the directional adjacency rule.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 8,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 125,
+      "thinking": {
+        "generation_tps": 9.129398699827407,
+        "prefilled_empty_think": false,
+        "prompt_chars": 8778,
+        "prompt_opens_think": true,
+        "prompt_tps": 408.0899073400447,
+        "seed": 2,
+        "temp": 0.6,
+        "think_chars": 32497,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 1256.6
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.4396,
+          "accuracy_over_covered": 0.4405,
+          "correct": 211,
+          "coverage": 0.9979,
+          "covered": 479,
+          "failure_split": {
+            "guard_fixable": 86,
+            "separable_by_census": 0,
+            "unpredicted": 182
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 86
+          },
+          "test_transitions": 480
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3466,
+          "accuracy_over_covered": 0.3484,
+          "correct": 680,
+          "coverage": 0.9949,
+          "covered": 1952,
+          "failure_split": {
+            "guard_fixable": 341,
+            "separable_by_census": 786,
+            "unpredicted": 145
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 341,
+            "count": 786
+          },
+          "test_transitions": 1962
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.4405,
+          "transitions": 479,
+          "union_accuracy_over_all": 0.4405
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.3484,
+          "transitions": 1952,
+          "union_accuracy_over_all": 0.3484
+        }
+      },
+      "unresolved_keys": 4,
+      "verification": [
+        {
+          "contradicted_on_store": 2,
+          "kept": false,
+          "rule": "A:1|adj:12:up=3",
+          "support_on_store": 24
+        },
+        {
+          "contradicted_on_store": 26,
+          "kept": false,
+          "rule": "A:1",
+          "support_on_store": 6
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A:2|adj:12:down=3",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 21,
+          "kept": false,
+          "rule": "A:2",
+          "support_on_store": 10
+        },
+        {
+          "contradicted_on_store": 3,
+          "kept": false,
+          "rule": "A:3|adj:12:left=3",
+          "support_on_store": 23
+        },
+        {
+          "contradicted_on_store": 27,
+          "kept": false,
+          "rule": "A:3",
+          "support_on_store": 3
+        },
+        {
+          "contradicted_on_store": 4,
+          "kept": false,
+          "rule": "A:4|adj:12:right=3",
+          "support_on_store": 25
+        },
+        {
+          "contradicted_on_store": 29,
+          "kept": false,
+          "rule": "A:4",
+          "support_on_store": 3
+        }
+      ],
+      "verified": 0,
+      "wall_seconds": 1380.3
+    },
+    {
+      "digest_chars": 8929,
+      "dose": null,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.4396,
+          "accuracy_over_covered": 0.4405,
+          "correct": 211,
+          "coverage": 0.9979,
+          "covered": 479,
+          "failure_split": {
+            "guard_fixable": 73,
+            "separable_by_census": 0,
+            "unpredicted": 195
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 73
+          },
+          "test_transitions": 480
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3466,
+          "accuracy_over_covered": 0.3484,
+          "correct": 680,
+          "coverage": 0.9949,
+          "covered": 1952,
+          "failure_split": {
+            "guard_fixable": 73,
+            "separable_by_census": 940,
+            "unpredicted": 259
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 73,
+            "count": 940
+          },
+          "test_transitions": 1962
+        }
+      },
+      "game": "ls20",
+      "goal": "The level requires repositioning objects 9 and 12 to specific target locations or merging them with other objects, using objects 3 and 11 as dynamic conveyors or alignment mechanisms.",
+      "hidden_state": "The settled frame hash omits relational geometry, including exact relative positioning/distance between 11, 12, and 3, orientation or internal shape of object 3, and action-direction binding.",
+      "miner_rules": 4,
+      "next_probe": "Execute ACTION1 in two carefully constructed states where adj:12:up = 3 is true in both, but count:3 differs or the shape/orientation of object 3 differs.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 8,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 2877,
+      "thinking": {
+        "generation_tps": 9.123944688115522,
+        "prefilled_empty_think": false,
+        "prompt_chars": 10768,
+        "prompt_opens_think": true,
+        "prompt_tps": 430.6482329843387,
+        "seed": 2,
+        "temp": 0.6,
+        "think_chars": 29313,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 1098.9
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.4396,
+          "accuracy_over_covered": 0.4405,
+          "correct": 211,
+          "coverage": 0.9979,
+          "covered": 479,
+          "failure_split": {
+            "guard_fixable": 73,
+            "separable_by_census": 0,
+            "unpredicted": 195
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 73
+          },
+          "test_transitions": 480
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3466,
+          "accuracy_over_covered": 0.3484,
+          "correct": 680,
+          "coverage": 0.9949,
+          "covered": 1952,
+          "failure_split": {
+            "guard_fixable": 73,
+            "separable_by_census": 940,
+            "unpredicted": 259
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 73,
+            "count": 940
+          },
+          "test_transitions": 1962
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.4405,
+          "transitions": 479,
+          "union_accuracy_over_all": 0.4405
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.3484,
+          "transitions": 1952,
+          "union_accuracy_over_all": 0.3484
+        }
+      },
+      "unresolved_keys": 4,
+      "verification": [
+        {
+          "contradicted_on_store": 580,
+          "kept": false,
+          "rule": "A:1|adj:12:up=3",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 593,
+          "kept": false,
+          "rule": "A:1",
+          "support_on_store": 157
+        },
+        {
+          "contradicted_on_store": 583,
+          "kept": false,
+          "rule": "A:2|adj:12:right=3",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 462,
+          "kept": false,
+          "rule": "A:2",
+          "support_on_store": 278
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A:3|adj:12:down=3",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 528,
+          "kept": false,
+          "rule": "A:3",
+          "support_on_store": 111
+        },
+        {
+          "contradicted_on_store": 616,
+          "kept": false,
+          "rule": "A:4|adj:12:left=3",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 583,
+          "kept": false,
+          "rule": "A:4",
+          "support_on_store": 165
+        }
+      ],
+      "verified": 0,
+      "wall_seconds": 1217.7
+    },
+    {
+      "digest_chars": 9536,
+      "dose": 125,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.2362,
+          "accuracy_over_covered": 0.2362,
+          "correct": 81,
+          "coverage": 1.0,
+          "covered": 343,
+          "failure_split": {
+            "guard_fixable": 106,
+            "separable_by_census": 4,
+            "unpredicted": 152
+          },
+          "rule_survival_rate": 0.1429,
+          "rules_fired": 7,
+          "rules_never_fired": 3,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 106,
+            "count": 4
+          },
+          "test_transitions": 343
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3422,
+          "accuracy_over_covered": 0.344,
+          "correct": 592,
+          "coverage": 0.9948,
+          "covered": 1721,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 88,
+            "unpredicted": 1041
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 7,
+          "rules_never_fired": 3,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "count": 88
+          },
+          "test_transitions": 1730
+        }
+      },
+      "game": "m0r0",
+      "goal": "The level likely requires positioning the two colour-10 objects onto specific target cells while aligning the two colour-0 objects into a target shape/configuration.",
+      "hidden_state": "A global binary flag or turn parity counter that toggles or increments with every action.",
+      "miner_rules": 10,
+      "next_probe": "Execute ACTION6 on colour 11 twice consecutively from the initial state (e3fc5841).",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 9,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 125,
+      "thinking": {
+        "generation_tps": 9.136907955937843,
+        "prefilled_empty_think": false,
+        "prompt_chars": 11375,
+        "prompt_opens_think": true,
+        "prompt_tps": 415.8995493678573,
+        "seed": 2,
+        "temp": 0.6,
+        "think_chars": 25742,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 961.6
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.2362,
+          "accuracy_over_covered": 0.2362,
+          "correct": 81,
+          "coverage": 1.0,
+          "covered": 343,
+          "failure_split": {
+            "guard_fixable": 106,
+            "separable_by_census": 4,
+            "unpredicted": 152
+          },
+          "rule_survival_rate": 0.1429,
+          "rules_fired": 7,
+          "rules_never_fired": 3,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 106,
+            "count": 4
+          },
+          "test_transitions": 343
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3422,
+          "accuracy_over_covered": 0.344,
+          "correct": 592,
+          "coverage": 0.9948,
+          "covered": 1721,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 88,
+            "unpredicted": 1041
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 7,
+          "rules_never_fired": 3,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "count": 88
+          },
+          "test_transitions": 1730
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.2415,
+          "transitions": 294,
+          "union_accuracy_over_all": 0.2415
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.266,
+          "transitions": 1218,
+          "union_accuracy_over_all": 0.266
+        }
+      },
+      "unresolved_keys": 9,
+      "verification": [
+        {
+          "contradicted_on_store": 10,
+          "kept": false,
+          "rule": "A:1",
+          "support_on_store": 5
+        },
+        {
+          "contradicted_on_store": 3,
+          "kept": false,
+          "rule": "A:3",
+          "support_on_store": 4
+        },
+        {
+          "contradicted_on_store": 5,
+          "kept": false,
+          "rule": "A:4",
+          "support_on_store": 2
+        },
+        {
+          "contradicted_on_store": 2,
+          "kept": false,
+          "rule": "A:5",
+          "support_on_store": 1
+        },
+        {
+          "contradicted_on_store": 4,
+          "kept": false,
+          "rule": "A6:0",
+          "support_on_store": 4
+        },
+        {
+          "contradicted_on_store": 4,
+          "kept": false,
+          "rule": "A6:10",
+          "support_on_store": 7
+        },
+        {
+          "contradicted_on_store": 8,
+          "kept": false,
+          "rule": "A6:11",
+          "support_on_store": 8
+        },
+        {
+          "contradicted_on_store": 7,
+          "kept": false,
+          "rule": "A6:12",
+          "support_on_store": 4
+        },
+        {
+          "contradicted_on_store": 23,
+          "kept": false,
+          "rule": "A6:5",
+          "support_on_store": 19
+        }
+      ],
+      "verified": 0,
+      "wall_seconds": 1062.1
+    },
+    {
+      "digest_chars": 13419,
+      "dose": null,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.2624,
+          "accuracy_over_covered": 0.2624,
+          "correct": 90,
+          "coverage": 1.0,
+          "covered": 343,
+          "failure_split": {
+            "guard_fixable": 80,
+            "separable_by_census": 8,
+            "unpredicted": 165
+          },
+          "rule_survival_rate": 0.1429,
+          "rules_fired": 7,
+          "rules_never_fired": 3,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 80,
+            "count": 8
+          },
+          "test_transitions": 343
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3988,
+          "accuracy_over_covered": 0.4009,
+          "correct": 690,
+          "coverage": 0.9948,
+          "covered": 1721,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 87,
+            "unpredicted": 944
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 7,
+          "rules_never_fired": 3,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "count": 87
+          },
+          "test_transitions": 1730
+        }
+      },
+      "game": "m0r0",
+      "goal": "The goal is to spawn two 0s and/or reshape the existing 0s into a fixed target shape while satisfying the hidden phase condition.",
+      "hidden_state": "The game logic gates on a hidden turn counter or binary phase flag that toggles or cycles with each action, determining whether an action results in no-change, reshape(0), or full appear/disappear sequences.",
+      "miner_rules": 10,
+      "next_probe": "Execute ACTION1 repeatedly from the initial state for 6\u20138 turns, logging the exact effect each time to reveal the hidden phase update rule.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 0,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 2943,
+      "thinking": {
+        "generation_tps": 9.085315270401049,
+        "prefilled_empty_think": false,
+        "prompt_chars": 15258,
+        "prompt_opens_think": true,
+        "prompt_tps": 427.55867891532046,
+        "seed": 2,
+        "temp": 0.6,
+        "think_chars": 27379,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 1042.8
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.2624,
+          "accuracy_over_covered": 0.2624,
+          "correct": 90,
+          "coverage": 1.0,
+          "covered": 343,
+          "failure_split": {
+            "guard_fixable": 80,
+            "separable_by_census": 8,
+            "unpredicted": 165
+          },
+          "rule_survival_rate": 0.1429,
+          "rules_fired": 7,
+          "rules_never_fired": 3,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 80,
+            "count": 8
+          },
+          "test_transitions": 343
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.3988,
+          "accuracy_over_covered": 0.4009,
+          "correct": 690,
+          "coverage": 0.9948,
+          "covered": 1721,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 87,
+            "unpredicted": 944
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 7,
+          "rules_never_fired": 3,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "count": 87
+          },
+          "test_transitions": 1730
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.2624,
+          "transitions": 343,
+          "union_accuracy_over_all": 0.2624
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.4009,
+          "transitions": 1721,
+          "union_accuracy_over_all": 0.4009
+        }
+      },
+      "unresolved_keys": 10,
+      "verification": [],
+      "verified": 0,
+      "wall_seconds": 1061.3999999999999
+    },
+    {
+      "digest_chars": 5367,
+      "dose": 125,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.4778,
+          "accuracy_over_covered": 0.4778,
+          "correct": 129,
+          "coverage": 1.0,
+          "covered": 270,
+          "failure_split": {
+            "guard_fixable": 141,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.3333,
+          "rules_fired": 6,
+          "rules_never_fired": 0,
+          "rules_survived": 2,
+          "separating_guard_family": {
+            "adj": 141
+          },
+          "test_transitions": 270
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.5431,
+          "accuracy_over_covered": 0.5847,
+          "correct": 145,
+          "coverage": 0.9288,
+          "covered": 248,
+          "failure_split": {
+            "guard_fixable": 103,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.2,
+          "rules_fired": 5,
+          "rules_never_fired": 1,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 103
+          },
+          "test_transitions": 267
+        }
+      },
+      "game": "tu93",
+      "goal": "Completion likely requires positioning 6 (or 0) adjacent to 14 after achieving the correct color/shape configuration via the swap mechanic.",
+      "hidden_state": "None.",
+      "miner_rules": 6,
+      "next_probe": "Construct a controlled test state where adj:4:up=2 and adj:9:down=4 while holding all other tracked adjacencies constant to the reshape group's values and apply ACTION1.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 3,
+      "qwen_only": {
+        "human_l1": {
+          "accuracy_over_all": 0.1222,
+          "accuracy_over_covered": 0.9706,
+          "correct": 33,
+          "coverage": 0.1259,
+          "covered": 34,
+          "failure_split": {
+            "guard_fixable": 1,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6667,
+          "rules_fired": 3,
+          "rules_never_fired": 0,
+          "rules_survived": 2,
+          "separating_guard_family": {
+            "adj": 1
+          },
+          "test_transitions": 270
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0524,
+          "accuracy_over_covered": 0.875,
+          "correct": 14,
+          "coverage": 0.0599,
+          "covered": 16,
+          "failure_split": {
+            "guard_fixable": 2,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.5,
+          "rules_fired": 2,
+          "rules_never_fired": 1,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 2
+          },
+          "test_transitions": 267
+        }
+      },
+      "store_transitions": 125,
+      "thinking": {
+        "generation_tps": 9.159306501710331,
+        "prefilled_empty_think": false,
+        "prompt_chars": 7206,
+        "prompt_opens_think": true,
+        "prompt_tps": 397.74544653783596,
+        "seed": 2,
+        "temp": 0.6,
+        "think_chars": 31005,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 1118.3
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.4778,
+          "accuracy_over_covered": 0.4778,
+          "correct": 129,
+          "coverage": 1.0,
+          "covered": 270,
+          "failure_split": {
+            "guard_fixable": 141,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.3333,
+          "rules_fired": 6,
+          "rules_never_fired": 3,
+          "rules_survived": 2,
+          "separating_guard_family": {
+            "adj": 141
+          },
+          "test_transitions": 270
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.5431,
+          "accuracy_over_covered": 0.5847,
+          "correct": 145,
+          "coverage": 0.9288,
+          "covered": 248,
+          "failure_split": {
+            "guard_fixable": 103,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.2,
+          "rules_fired": 5,
+          "rules_never_fired": 4,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 103
+          },
+          "test_transitions": 267
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.4068,
+          "transitions": 236,
+          "union_accuracy_over_all": 0.4068
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.5647,
+          "transitions": 232,
+          "union_accuracy_over_all": 0.5647
+        }
+      },
+      "unresolved_keys": 3,
+      "verification": [
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A:3|adj:9:left=2",
+          "support_on_store": 13
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A:3|adj:9:left=4",
+          "support_on_store": 17
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A:3|adj:9:left=None",
+          "support_on_store": 2
+        }
+      ],
+      "verified": 3,
+      "wall_seconds": 1175.3999999999999
+    },
+    {
+      "digest_chars": 7493,
+      "dose": null,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.7296,
+          "accuracy_over_covered": 0.7296,
+          "correct": 197,
+          "coverage": 1.0,
+          "covered": 270,
+          "failure_split": {
+            "guard_fixable": 28,
+            "separable_by_census": 0,
+            "unpredicted": 45
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 28
+          },
+          "test_transitions": 270
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.5768,
+          "accuracy_over_covered": 0.621,
+          "correct": 154,
+          "coverage": 0.9288,
+          "covered": 248,
+          "failure_split": {
+            "guard_fixable": 94,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 4,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {
+            "adj": 94
+          },
+          "test_transitions": 267
+        }
+      },
+      "game": "tu93",
+      "goal": "Clear all instances of colours 4, 6, and 9 by triggering their disappear effects, leaving only the persistent, shape-adapting colour 0.",
+      "hidden_state": "The miner's feature vocabulary is insufficiently expressive to capture the true state dependencies, implying that object counts or multi-cell spatial patterns determine the outcome.",
+      "miner_rules": 4,
+      "next_probe": "Execute ACTION1 in a state where adj:6:right=0 and adj:4:down=9, then systematically vary the clicked cell coordinates or force a change in count:0 while holding all adjacency relations constant.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 4,
+      "qwen_only": {
+        "human_l1": {
+          "accuracy_over_all": 0.0074,
+          "accuracy_over_covered": 1.0,
+          "correct": 2,
+          "coverage": 0.0074,
+          "covered": 2,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 1.0,
+          "rules_fired": 2,
+          "rules_never_fired": 1,
+          "rules_survived": 2,
+          "separating_guard_family": {},
+          "test_transitions": 270
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0075,
+          "accuracy_over_covered": 0.0645,
+          "correct": 2,
+          "coverage": 0.1161,
+          "covered": 31,
+          "failure_split": {
+            "guard_fixable": 29,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.5,
+          "rules_fired": 2,
+          "rules_never_fired": 1,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 29
+          },
+          "test_transitions": 267
+        }
+      },
+      "store_transitions": 2573,
+      "thinking": {
+        "generation_tps": 9.166768754284252,
+        "prefilled_empty_think": false,
+        "prompt_chars": 9332,
+        "prompt_opens_think": true,
+        "prompt_tps": 432.0709998636739,
+        "seed": 2,
+        "temp": 0.6,
+        "think_chars": 22465,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 852.9
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.737,
+          "accuracy_over_covered": 0.737,
+          "correct": 199,
+          "coverage": 1.0,
+          "covered": 270,
+          "failure_split": {
+            "guard_fixable": 26,
+            "separable_by_census": 0,
+            "unpredicted": 45
+          },
+          "rule_survival_rate": 0.3333,
+          "rules_fired": 6,
+          "rules_never_fired": 1,
+          "rules_survived": 2,
+          "separating_guard_family": {
+            "adj": 26
+          },
+          "test_transitions": 270
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.5843,
+          "accuracy_over_covered": 0.629,
+          "correct": 156,
+          "coverage": 0.9288,
+          "covered": 248,
+          "failure_split": {
+            "guard_fixable": 92,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.1667,
+          "rules_fired": 6,
+          "rules_never_fired": 1,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 92
+          },
+          "test_transitions": 267
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0074,
+          "miner_accuracy_over_all": 0.7296,
+          "transitions": 270,
+          "union_accuracy_over_all": 0.737
+        },
+        "human_l2": {
+          "delta": 0.008,
+          "miner_accuracy_over_all": 0.621,
+          "transitions": 248,
+          "union_accuracy_over_all": 0.629
+        }
+      },
+      "unresolved_keys": 4,
+      "verification": [
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A:1|adj:6:right=edge",
+          "support_on_store": 1
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A:2|adj:6:right=edge",
+          "support_on_store": 1
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A:3|adj:6:right=edge",
+          "support_on_store": 1
+        },
+        {
+          "contradicted_on_store": 1,
+          "kept": false,
+          "rule": "A:4|adj:6:right=edge",
+          "support_on_store": 0
+        }
+      ],
+      "verified": 3,
+      "wall_seconds": 922.0
+    },
+    {
+      "digest_chars": 4087,
+      "dose": 125,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.9197,
+          "accuracy_over_covered": 0.9197,
+          "correct": 126,
+          "coverage": 1.0,
+          "covered": 137,
+          "failure_split": {
+            "guard_fixable": 4,
+            "separable_by_census": 5,
+            "unpredicted": 2
+          },
+          "rule_survival_rate": 0.625,
+          "rules_fired": 8,
+          "rules_never_fired": 1,
+          "rules_survived": 5,
+          "separating_guard_family": {
+            "adj": 4,
+            "count": 5
+          },
+          "test_transitions": 137
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.087,
+          "accuracy_over_covered": 0.0878,
+          "correct": 18,
+          "coverage": 0.9903,
+          "covered": 205,
+          "failure_split": {
+            "guard_fixable": 10,
+            "separable_by_census": 177,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 4,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "adj": 10,
+            "count": 177
+          },
+          "test_transitions": 207
+        }
+      },
+      "game": "vc33",
+      "goal": "The level likely requires clearing all objects of colour 0 and 11, or constructing a specific configuration of 4 and 7.",
+      "hidden_state": "None.",
+      "miner_rules": 9,
+      "next_probe": "ACTION6 on colour 9 when count:0=2 and adj:7:down=0, but manipulate the horizontal distance between the two 0 objects (e.g., place them adjacent vs. separated by 1+ background cells).",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 4,
+      "qwen_only": {
+        "human_l1": {
+          "accuracy_over_all": 0.0219,
+          "accuracy_over_covered": 0.6,
+          "correct": 3,
+          "coverage": 0.0365,
+          "covered": 5,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 2
+          },
+          "rule_survival_rate": 0.0,
+          "rules_fired": 1,
+          "rules_never_fired": 0,
+          "rules_survived": 0,
+          "separating_guard_family": {},
+          "test_transitions": 137
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.0,
+          "accuracy_over_covered": null,
+          "correct": 0,
+          "coverage": 0.0,
+          "covered": 0,
+          "failure_split": {
+            "guard_fixable": 0,
+            "separable_by_census": 0,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": null,
+          "rules_fired": 0,
+          "rules_never_fired": 1,
+          "rules_survived": 0,
+          "separating_guard_family": {},
+          "test_transitions": 207
+        }
+      },
+      "store_transitions": 125,
+      "thinking": {
+        "generation_tps": 9.187053956019968,
+        "prefilled_empty_think": false,
+        "prompt_chars": 5926,
+        "prompt_opens_think": true,
+        "prompt_tps": 379.84200206526884,
+        "seed": 2,
+        "temp": 0.6,
+        "think_chars": 26726,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 958.5
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.9416,
+          "accuracy_over_covered": 0.9416,
+          "correct": 129,
+          "coverage": 1.0,
+          "covered": 137,
+          "failure_split": {
+            "guard_fixable": 4,
+            "separable_by_census": 0,
+            "unpredicted": 4
+          },
+          "rule_survival_rate": 0.5556,
+          "rules_fired": 9,
+          "rules_never_fired": 1,
+          "rules_survived": 5,
+          "separating_guard_family": {
+            "adj": 4
+          },
+          "test_transitions": 137
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.087,
+          "accuracy_over_covered": 0.0878,
+          "correct": 18,
+          "coverage": 0.9903,
+          "covered": 205,
+          "failure_split": {
+            "guard_fixable": 10,
+            "separable_by_census": 177,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 5,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "adj": 10,
+            "count": 177
+          },
+          "test_transitions": 207
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0323,
+          "miner_accuracy_over_all": 0.9032,
+          "transitions": 93,
+          "union_accuracy_over_all": 0.9355
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.0788,
+          "transitions": 203,
+          "union_accuracy_over_all": 0.0788
+        }
+      },
+      "unresolved_keys": 3,
+      "verification": [
+        {
+          "contradicted_on_store": 1,
+          "kept": false,
+          "rule": "A6:0",
+          "support_on_store": 20
+        },
+        {
+          "contradicted_on_store": 1,
+          "kept": false,
+          "rule": "A6:5",
+          "support_on_store": 17
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": true,
+          "rule": "A6:9|count:0=1",
+          "support_on_store": 5
+        },
+        {
+          "contradicted_on_store": 2,
+          "kept": false,
+          "rule": "A6:9|count:0=2",
+          "support_on_store": 6
+        }
+      ],
+      "verified": 1,
+      "wall_seconds": 1024.7
+    },
+    {
+      "digest_chars": 7164,
+      "dose": null,
+      "extract_attempts": 1,
+      "floor": {
+        "human_l1": {
+          "accuracy_over_all": 0.4891,
+          "accuracy_over_covered": 0.4891,
+          "correct": 67,
+          "coverage": 1.0,
+          "covered": 137,
+          "failure_split": {
+            "guard_fixable": 10,
+            "separable_by_census": 58,
+            "unpredicted": 2
+          },
+          "rule_survival_rate": 0.1667,
+          "rules_fired": 6,
+          "rules_never_fired": 1,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 10,
+            "count": 58
+          },
+          "test_transitions": 137
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.2367,
+          "accuracy_over_covered": 0.239,
+          "correct": 49,
+          "coverage": 0.9903,
+          "covered": 205,
+          "failure_split": {
+            "guard_fixable": 10,
+            "separable_by_census": 146,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 2,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "adj": 10,
+            "count": 146
+          },
+          "test_transitions": 207
+        }
+      },
+      "game": "vc33",
+      "goal": "The level likely requires reaching a target count configuration, specifically stabilizing count:4 = 2 and reducing count:0 (and possibly count:7) to a terminal state.",
+      "hidden_state": "The missing variable is almost certainly a spatial relationship between non-7 objects or an internal turn/phase counter that gates the disappear(7) effect.",
+      "miner_rules": 7,
+      "next_probe": "Execute ACTION6 on colour 0 in a controlled state where count:0=1, count:4=2, and adj:7:right=4, but deliberately vary the adjacency of colour 0 to colour 4.",
+      "outcome": "scored",
+      "parse_rejected": [],
+      "proposed": 2,
+      "qwen_only": {
+        "human_l1": null,
+        "human_l2": null
+      },
+      "store_transitions": 800,
+      "thinking": {
+        "generation_tps": 9.154253748003434,
+        "prefilled_empty_think": false,
+        "prompt_chars": 9003,
+        "prompt_opens_think": true,
+        "prompt_tps": 429.9340100736236,
+        "seed": 2,
+        "temp": 0.6,
+        "think_chars": 30663,
+        "think_closed": true,
+        "think_opened": true,
+        "wall_seconds": 1028.5
+      },
+      "thinking_verdict": {
+        "answer_nonempty": true,
+        "no_prefilled_empty_think": true,
+        "think_closed": true,
+        "think_opened": true,
+        "think_substantive": true
+      },
+      "union": {
+        "human_l1": {
+          "accuracy_over_all": 0.4891,
+          "accuracy_over_covered": 0.4891,
+          "correct": 67,
+          "coverage": 1.0,
+          "covered": 137,
+          "failure_split": {
+            "guard_fixable": 10,
+            "separable_by_census": 58,
+            "unpredicted": 2
+          },
+          "rule_survival_rate": 0.1667,
+          "rules_fired": 6,
+          "rules_never_fired": 1,
+          "rules_survived": 1,
+          "separating_guard_family": {
+            "adj": 10,
+            "count": 58
+          },
+          "test_transitions": 137
+        },
+        "human_l2": {
+          "accuracy_over_all": 0.2367,
+          "accuracy_over_covered": 0.239,
+          "correct": 49,
+          "coverage": 0.9903,
+          "covered": 205,
+          "failure_split": {
+            "guard_fixable": 10,
+            "separable_by_census": 146,
+            "unpredicted": 0
+          },
+          "rule_survival_rate": 0.6,
+          "rules_fired": 5,
+          "rules_never_fired": 2,
+          "rules_survived": 3,
+          "separating_guard_family": {
+            "adj": 10,
+            "count": 146
+          },
+          "test_transitions": 207
+        }
+      },
+      "unresolved_delta": {
+        "human_l1": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.4891,
+          "transitions": 137,
+          "union_accuracy_over_all": 0.4891
+        },
+        "human_l2": {
+          "delta": 0.0,
+          "miner_accuracy_over_all": 0.239,
+          "transitions": 205,
+          "union_accuracy_over_all": 0.239
+        }
+      },
+      "unresolved_keys": 7,
+      "verification": [
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:None|count:4=1",
+          "support_on_store": 0
+        },
+        {
+          "contradicted_on_store": 0,
+          "kept": false,
+          "rule": "A6:None",
+          "support_on_store": 0
+        }
+      ],
+      "verified": 0,
+      "wall_seconds": 1068.3
+    }
+  ],
+  "doses": [
+    125,
+    "full"
+  ],
+  "format_version": 1,
+  "mode": "full",
+  "model": "/Users/michal/models/mlx/Qwen3.6-27B-8bit",
+  "seed": 2
+}

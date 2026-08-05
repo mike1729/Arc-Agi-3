@@ -86,6 +86,8 @@ TOP_P = 0.95
 MAX_RULES_SHOWN = 40
 MAX_UNRESOLVED_SHOWN = 12
 MAX_EVIDENCE_PER_KEY = 6
+MAX_FEATURES_PER_GROUP = 6  # (w) slice 1.1 — value-set display, autopsy rec 1
+MAX_VALUES_PER_FEATURE = 4  # (w)
 MAX_ALIAS_SHOWN = 8
 SEED = 20260804  # phase 1 is sampled; seeded and recorded so a cell is reproducible
 
@@ -140,6 +142,40 @@ def _key_text(key: tuple) -> str:
     return f"ACTION6 on colour {key[1]}" if key[0] == "A6" else f"ACTION{key[1]}"
 
 
+def _hv(value: Any) -> Any:
+    return tuple(value) if isinstance(value, list) else value
+
+
+def _no_separation_witness(rows: list, varying: list[str]) -> tuple | None:
+    """The best single feature shown failing: fewest mixed value-classes, then the
+    largest one — two transition sets sharing the feature's value with different effects.
+
+    A varying feature with NO mixed class separates only under the None-for-absent
+    convention the miner does not use; it is skipped, not presented as a witness.
+    """
+    best = None
+    for name in varying:
+        classes: dict[Any, Counter] = {}
+        for row in rows:
+            classes.setdefault(_hv(row.guards.get(name)), Counter())[
+                abstract(row.effect, MODE)
+            ] += 1
+        mixed = {v: c for v, c in classes.items() if len(c) > 1}
+        if not mixed:
+            continue
+        value, counts = max(
+            mixed.items(), key=lambda item: (sum(item[1].values()), repr(item[0]))
+        )
+        rank = (len(mixed), -sum(counts.values()), name)
+        if best is None or rank < best[0]:
+            top = counts.most_common(2)
+            best = (rank, name, value, (top[0][0], top[0][1]), (top[1][0], top[1][1]))
+    if best is None:
+        return None
+    _, name, value, first, second = best
+    return name, value, first, second
+
+
 def unresolved_keys(rules: dict[str, Rule]) -> list[tuple]:
     """The keys the miner could not resolve.
 
@@ -184,25 +220,39 @@ def build_digest(game: str, dose: int | None) -> dict[str, Any]:
         effects = Counter(abstract(row.effect, MODE) for row in rows)
 
         # Only guards that VARY across this key's transitions can possibly separate them.
-        # Showing the alphabetically-first six shows constants, which is worse than showing
-        # nothing: it invites a rule keyed on a feature that never distinguishes anything.
         values: dict[str, set] = {}
         for row in rows:
             for name, value in row.guards.items():
-                values.setdefault(name, set()).add(
-                    tuple(value) if isinstance(value, list) else value
-                )
+                values.setdefault(name, set()).add(_hv(value))
         varying = [name for name, seen in sorted(values.items()) if len(seen) > 1]
         constant_note = "" if varying else "  (NO guard in the vocabulary varies here at all)"
         unresolved_lines.append(
             f"  {_key_text(key)} — {len(rows)} transitions, {len(effects)} distinct effects, "
             f"no single guard separates them:{constant_note}"
         )
+        # Autopsy rec 1: the COMPLETE value set per feature within each effect group —
+        # slice 1's one-example row was read as a group constant by 59 of 84 proposals.
         for effect, count in effects.most_common(MAX_EVIDENCE_PER_KEY):
-            example = next(row for row in rows if abstract(row.effect, MODE) == effect)
-            shown = {name: example.guards.get(name) for name in varying[:8]}
+            group = [row for row in rows if abstract(row.effect, MODE) == effect]
+            parts = []
+            for name in varying[:MAX_FEATURES_PER_GROUP]:
+                seen = sorted({_hv(row.guards.get(name)) for row in group}, key=repr)
+                vals = ", ".join(str(v) for v in seen[:MAX_VALUES_PER_FEATURE])
+                if len(seen) > MAX_VALUES_PER_FEATURE:
+                    vals += f", +{len(seen) - MAX_VALUES_PER_FEATURE} more"
+                parts.append(f"{name} in {{{vals}}}")
+            unresolved_lines.append(f"      x{count:<4d} {_effect_text(effect)}")
+            if parts:
+                unresolved_lines.append(f"            {'; '.join(parts)}")
+        # Autopsy rec 2: the miner's assertion carries its own evidence — the best single
+        # feature shown FAILING. 55 of 84 slice-1 proposals overrode the bare assertion.
+        witness = _no_separation_witness(rows, varying)
+        if witness is not None:
+            name, value, (effect_a, n_a), (effect_b, n_b) = witness
             unresolved_lines.append(
-                f"      x{count:<4d} {_effect_text(effect):<44s} varying guards {shown}"
+                f"      NO-SEPARATION WITNESS — the best single feature `{name}` still "
+                f"fails: at {name}={value}, x{n_a} gave {_effect_text(effect_a)} while "
+                f"x{n_b} gave {_effect_text(effect_b)}"
             )
 
     graph_path = ROOT / "logs/e1_store_v2" / f"{game}.graph.json"
@@ -234,7 +284,9 @@ OBJECT CENSUS (max simultaneous components per colour, over the first {len(sampl
   {dict(sorted(census.items()))}
 
 RULES THE MECHANICAL MINER RESOLVED ({len(rules)} total, top {MAX_RULES_SHOWN} by support)
-{chr(10).join(rule_lines) if rule_lines else "  none"}
+{chr(10).join(rule_lines) if rule_lines else (
+    "  none — every mined rule at this dose is a majority-tier guess for a key listed below"
+    if rules else "  none")}
 
 KEYS THE MINER COULD NOT RESOLVE — the actual problem
   A key is unresolved when its transitions disagree about the effect and NO SINGLE guard
@@ -242,7 +294,14 @@ KEYS THE MINER COULD NOT RESOLVE — the actual problem
   adj:C:direction (the first non-background colour met stepping one cell out from colour C's
   single object, or "edge"), clicked_adjacent_to:C (ACTION6 only — does the 4-connected
   same-colour component under the click touch any cell of colour C), click_colour,
-  click_on_background.
+  click_on_background. A guard tests exactly
+  `feature = one literal value`; negation, inequalities, thresholds and combined conditions
+  do not exist and cannot be tested.
+  READ THE VALUE SETS LITERALLY: for each effect group, each feature is shown with the
+  COMPLETE set of values it takes within that group. A one-element set means constant
+  within that group; a multi-element set means the feature took ALL of those values while
+  producing the same effect. Each key ends with a NO-SEPARATION WITNESS: the best single
+  feature, shown failing on concrete counts.
 {chr(10).join(unresolved_lines) if unresolved_lines else "  none"}
 
 ALIAS CONFLICTS (same state hash + same action -> different outcome; replay is deterministic,
@@ -278,11 +337,19 @@ reasoning you like, but your final rules must be expressible as:
 
     action (+ the colour clicked, for ACTION6)  [+ at most ONE guard]  ->  effect
 
+A guard is exactly `feature = literal` — equality against ONE literal value that appears in
+the evidence. Negation ("not 11"), inequalities ("> 1"), and combined conditions cannot be
+expressed or tested; if the true condition needs them, name that as a vocabulary limit
+instead of forcing a rule.
+
 Think about whether the disagreement is caused by something the guard vocabulary can name.
-If it cannot, say so explicitly rather than inventing a rule that fits.
+If it cannot, say so explicitly rather than inventing a rule that fits. The miner's
+no-separation claims above come with their witness counts — treat them as constraints your
+rule must survive, not as claims to argue with.
 
 Then answer, in plain prose:
-1. RULES — each as: action, optional guard (feature=value), and the exact effect.
+1. RULES — each as: action, optional guard (feature=value), the exact effect, the number of
+   shown transitions that support it, and the single observation that would refute it.
 2. GOAL — what you believe completing this level requires, and what evidence supports it.
 3. HIDDEN STATE — if alias conflicts appear above, what unobserved variable would explain them.
 4. WHAT WOULD SETTLE IT — the single most informative action to try next, and where.
@@ -297,7 +364,8 @@ Emit ONLY a JSON object, no commentary:
 {{"rules": [{{"action_id": <int 1-7>, "click_colour": <int or null>,
               "guard": null or {{"feature": "<e.g. adj:3:up or count:5>", "value": <int, string or null>}},
               "effect": [["move", <colour>, <dr>, <dc>] or ["reshape", <colour>] or
-                         ["appear", <colour>] or ["disappear", <colour>]]}}],
+                         ["appear", <colour>] or ["disappear", <colour>]],
+              "support_claim": <int or null>, "refuter": "<one sentence or null>"}}],
  "goal": "<one sentence>",
  "hidden_state": "<one sentence or empty>",
  "next_probe": "<one sentence or empty>"}}
@@ -526,7 +594,11 @@ def per_key_delta(
 
 
 def run_cell(
-    game: str, dose: int | None, qwen: Qwen | None, human: dict[str, list]
+    game: str,
+    dose: int | None,
+    qwen: Qwen | None,
+    human: dict[str, list],
+    seed: int = SEED,
 ) -> dict[str, Any]:
     digest = build_digest(game, dose)
     used, baseline_rules, _ = mined(game, dose)
@@ -554,11 +626,12 @@ def run_cell(
         [{"role": "user", "content": PROMPT.format(digest=digest["text"])}],
         max_tokens=THINK_BUDGET,
         thinking=True,
-        seed=SEED,
+        seed=seed,
     )
     verdict = thinking_verdict(think)
     TRACES.mkdir(parents=True, exist_ok=True)
-    tag = f"{game}_{'full' if dose is None else dose}"
+    # seed-tagged so variance-arm reruns can never overwrite slice 1's committed traces
+    tag = f"{game}_{'full' if dose is None else dose}_s{seed}"
     (TRACES / f"{tag}.think.json").write_text(
         json.dumps({"prompt": digest["text"], **think, "verdict": verdict}, indent=2)
     )
@@ -585,7 +658,7 @@ def run_cell(
             max_tokens=EXTRACT_BUDGET,
             thinking=False,
             temp=0.0,
-            seed=SEED + attempt,
+            seed=seed + attempt,
         )
         attempts.append(extract)
         (TRACES / f"{tag}.extract{attempt}.json").write_text(json.dumps(extract, indent=2))
@@ -642,8 +715,12 @@ def main() -> int:
     parser.add_argument("--doses", type=int, nargs="*", default=None)
     parser.add_argument("--model", type=Path, default=MODEL)
     parser.add_argument("--dry-run", action="store_true", help="digests + floors, no model")
-    parser.add_argument("--out", type=Path, default=OUTPUT)
+    parser.add_argument(
+        "--seed", type=int, default=SEED, help="phase-1 sampling seed; tags traces and output"
+    )
+    parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args()
+    out = args.out or (ROOT / f"logs/e2_slice_seed{args.seed}.json")
 
     doses = tuple(args.doses) if args.doses else DOSES
     qwen = None
@@ -663,7 +740,7 @@ def main() -> int:
         for dose in doses:
             label = f"{game} dose={'full' if dose is None else dose}"
             print(f"\n=== {label} ===", flush=True)
-            cell = run_cell(game, dose, qwen, human)
+            cell = run_cell(game, dose, qwen, human, seed=args.seed)
             cells.append(cell)
             if cell.get("outcome") == "scored":
                 # accuracy_over_ALL with coverage beside it. accuracy_over_covered rewards a
@@ -683,13 +760,14 @@ def main() -> int:
                 )
             else:
                 print(f"{label}: {cell.get('outcome', 'dry-run')}", flush=True)
-            args.out.parent.mkdir(parents=True, exist_ok=True)
-            args.out.write_text(
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(
                 json.dumps(
                     {
                         "format_version": FORMAT_VERSION,
                         "model": str(args.model),
                         "mode": MODE,
+                        "seed": args.seed,
                         "doses": [d if d is not None else "full" for d in doses],
                         "budgets": {"think": THINK_BUDGET, "extract": EXTRACT_BUDGET},
                         "cells": cells,
@@ -698,7 +776,7 @@ def main() -> int:
                     sort_keys=True,
                 )
             )
-    print(f"\nwrote {args.out}")
+    print(f"\nwrote {out}")
     return 0
 
 
