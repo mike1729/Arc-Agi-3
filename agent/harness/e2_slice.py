@@ -937,7 +937,7 @@ questions, A, B and C.
 
 {counter_grammar}
 
-{frames_preamble}A. GOAL — one falsifiable predicate, its refuter, and one test action.
+A. GOAL — one falsifiable predicate, its refuter, and one test action.
    * PREDICATE: what must be true of the board for this level to be complete, written in the
      predicate grammar above. The NEGATIVE EVIDENCE section lists predicates this run has
      already refuted: a predicate that was satisfied while the level did not advance is not
@@ -1191,6 +1191,15 @@ def thinking_verdict(call: dict[str, Any]) -> dict[str, bool]:
 _TOKENIZER = None
 
 
+def tokenizer(model: Path = MODEL):
+    global _TOKENIZER
+    if _TOKENIZER is None:
+        from transformers import AutoTokenizer
+
+        _TOKENIZER = AutoTokenizer.from_pretrained(str(model))
+    return _TOKENIZER
+
+
 def token_count(text: str, model: Path = MODEL) -> int:
     """Real tokens, from the model's own tokenizer. Never characters, never an estimate.
 
@@ -1198,12 +1207,24 @@ def token_count(text: str, model: Path = MODEL) -> int:
     did not move, because the growth was all prefill. A character budget would have been a
     budget on the wrong quantity in both directions.
     """
-    global _TOKENIZER
-    if _TOKENIZER is None:
-        from transformers import AutoTokenizer
+    return len(tokenizer(model).encode(text))
 
-        _TOKENIZER = AutoTokenizer.from_pretrained(str(model))
-    return len(_TOKENIZER.encode(text))
+
+def chat_tokens(messages: list[dict[str, str]], model: Path = MODEL) -> int:
+    """Tokens of the ASSEMBLED conversation, not of concatenated text.
+
+    What the model is actually given is the chat template applied to the message list, with
+    its role headers and turn markers — the same call `Qwen.generate` makes. Counting the raw
+    concatenation instead undercounts by the scaffolding, which is small (nine tokens on
+    m0r0) but is exactly the kind of small that turns a "hard cap" into an approximate one.
+    """
+    return len(
+        tokenizer(model).encode(
+            tokenizer(model).apply_chat_template(
+                messages, add_generation_prompt=True, enable_thinking=True, tokenize=False
+            )
+        )
+    )
 
 
 # The trim ladder, in the order rev 2 fixes: the episode's diff span first, then the matched
@@ -1267,13 +1288,22 @@ def fit_caps(
         caps = frames.FrameCaps(**overrides)
         digest = build_digest(game, dose, with_frames=True, caps=caps)
         prompt = build_prompt(digest)
-        f_tokens = token_count(prompt, model)
-        # The FB chat is the binding one. Measured, not assumed: the counterexample renders a
-        # full board of THIS game, and the chat template's own turn scaffolding is applied by
-        # counting the assembled three-message conversation rather than summing the parts.
-        fb_tokens = token_count(
-            prompt + REVISE.format(counterexample=worst_counterexample(game)), model
-        ) + FB_ANSWER_ALLOWANCE
+        f_tokens = chat_tokens([{"role": "user", "content": prompt}], model)
+        # The FB chat is the binding one, and it is counted as the ASSEMBLED three-message
+        # conversation the FB turn will actually send — not as concatenated text. The answer
+        # is the one part that cannot be known in advance, so it enters as an allowance and
+        # is RE-COUNTED for real before the turn is issued (`run_cell`).
+        fb_tokens = chat_tokens(
+            [
+                {"role": "user", "content": prompt},
+                {"role": "assistant", "content": "x " * FB_ANSWER_ALLOWANCE},
+                {
+                    "role": "user",
+                    "content": REVISE_V4.format(counterexample=worst_counterexample(game)),
+                },
+            ],
+            model,
+        )
         trials.append(
             {
                 "step": step,
@@ -1884,6 +1914,25 @@ otherwise change it. A predicate that fails the same way twice is worth nothing.
 """
 
 
+# The v4 revision. The slice-2 REVISE above asks for "its refuter" — a field rev 2 DELETED
+# and `EXTRACT_V4` does not transcribe. Sending it would have spent the cell's one revision
+# turn on an answer the extractor drops on the floor, and the arm would have measured the
+# schema mismatch rather than re-specification under contradiction.
+REVISE_V4 = """Your answer to A was checked mechanically against this run's own record, before you
+were asked anything else. It does not survive that check. The counterexample is below, from
+the same record you were given.
+
+{counterexample}
+
+Re-specify. Give a REVISED answer to A only — the predicate, the evidence ids, the test
+action, and the plain-sentence condition if the grammar cannot say it. B and C are not asked
+again and anything you write about them is discarded unread.
+
+You may keep your condition only if you can say why the counterexample does not refute it;
+otherwise change it. A condition that fails the same way twice is worth nothing.
+"""
+
+
 def feedback_counterexample(
     scored: dict[str, Any], used: list, post_missing: set[int], with_frames: bool
 ) -> dict[str, Any] | None:
@@ -1919,15 +1968,25 @@ def feedback_counterexample(
         kinds.append("false_positive")
         parts.append(
             f"YOUR CONDITION, AS WRITTEN: {scored['predicate']['canonical']}\n"
-            f"At step {transition.step} of this run it was TRUE of the board — and the level "
-            f"did NOT advance. A condition the board satisfies while nothing happens is not "
-            f"this level's completion condition. It survived "
+            f"The action at step {transition.step} of this run PRODUCED a board your condition "
+            f"is TRUE of — and the level did NOT advance. A condition the board satisfies "
+            f"while nothing happens is not this level's completion condition. It survived "
             f"{consistency.get('definite_correct', 0)} earlier boards before this one "
             f"refuted it."
         )
         if with_frames:
-            parts.append("THE BOARD THAT REFUTED IT, in full, at that step:")
-            parts.append("\n".join(frames.render_grid(transition.pre)))
+            # THE BOARD THE CONDITION WAS EVALUATED ON is the POST board. The grammar
+            # evaluates against `context["objects"]`, which `dsl.transition_contexts` builds
+            # from the POST frame — so rendering the pre frame here showed a board on which
+            # every one of these conditions is demonstrably FALSE. Verified on dc22 step 1606
+            # and ft09 step 305: false on pre, true on post, in every case checked. Feeding
+            # that to the model would have been worse than feeding it nothing.
+            parts.append(
+                f"THE BOARD THAT REFUTED IT — the board AFTER "
+                f"{frames.action_text(transition)} at step {transition.step}:"
+            )
+            parts.append("\n".join(frames.render_grid(transition.post)))
+            parts.append(frames._change_summary(transition, 12).strip())
 
     if checks.get("false_negative"):
         kinds.append("false_negative")
@@ -1953,6 +2012,8 @@ def run_cell(
     with_frames: bool = False,
     caps: Any = None,
     feedback: bool = False,
+    fb_budget: int | None = None,
+    model: Path = MODEL,
 ) -> dict[str, Any]:
     digest = build_digest(game, dose, with_frames=with_frames, caps=caps)
     used, baseline_rules, _ = mined(game, dose)
@@ -2068,13 +2129,32 @@ def run_cell(
         cell["feedback"] = {"attempted": False, "reason": "answer passed both checks"}
         return cell
 
-    revision_prompt = REVISE.format(counterexample=counterexample["text"])
+    revision_prompt = (REVISE_V4 if with_frames else REVISE).format(
+        counterexample=counterexample["text"]
+    )
+    messages = [
+        {"role": "user", "content": prompt},
+        {"role": "assistant", "content": think["answer"]},
+        {"role": "user", "content": revision_prompt},
+    ]
+    # THE CAP, RE-COUNTED FOR REAL. `fit_caps` allowanced the answer because it could not
+    # know it; now it is known, and so is the counterexample that was actually built. This is
+    # the only point at which the FB chat's true size exists, so it is the only point at which
+    # the ceiling can be enforced rather than estimated.
+    if fb_budget is not None:
+        actual = chat_tokens(messages, model)
+        if actual > fb_budget:
+            cell["feedback"] = {
+                "attempted": False,
+                "reason": "FB chat over the ceiling once measured",
+                "fb_chat_tokens": actual,
+                "fb_budget": fb_budget,
+                "kinds": counterexample["kinds"],
+            }
+            return cell
+        cell.setdefault("feedback_measured", {})["fb_chat_tokens"] = actual
     revised_think = qwen.generate(
-        [
-            {"role": "user", "content": prompt},
-            {"role": "assistant", "content": think["answer"]},
-            {"role": "user", "content": revision_prompt},
-        ],
+        messages,
         max_tokens=THINK_BUDGET,
         thinking=True,
         seed=seed,
@@ -2183,6 +2263,11 @@ def main() -> int:
         default=FB_TOKEN_BUDGET,
         help="FB-chat token ceiling (F + answer + counterexample); breaching it also trims",
     )
+    parser.add_argument(
+        "--allow-over-cap",
+        action="store_true",
+        help="run a cell whose F prompt still exceeds the ceiling after the full trim ladder",
+    )
     parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args()
     # `logs/e2_slice_seed{seed}.json` is SLICE 1.1's committed results file (format_version
@@ -2198,7 +2283,9 @@ def main() -> int:
     out = args.out or (ROOT / f"logs/e2_slice{slice_number}_seed{args.seed}.json")
 
     if args.print_digest:
-        caps = fit_caps(args.print_digest, None, args.token_budget) if args.frames else None
+        caps = None
+        if args.frames:
+            caps, _ = fit_caps(args.print_digest, None, args.token_budget, args.model)
         print(build_digest(args.print_digest, None, with_frames=args.frames, caps=caps)["text"])
         return 0
 
@@ -2243,6 +2330,27 @@ def main() -> int:
                     ),
                     flush=True,
                 )
+            if (
+                fit_report is not None
+                and not fit_report["f_within_budget"]
+                and not args.allow_over_cap
+            ):
+                # A hard cap that runs anyway is not a cap. Skipping is recorded, loudly, so
+                # the readout reports a missing cell as missing rather than as a result.
+                cell = {
+                    "game": game,
+                    "dose": dose,
+                    "skipped": "F prompt over the ceiling after the full trim ladder",
+                    "prompt_fit": fit_report,
+                }
+                cells.append(cell)
+                print(
+                    f"{label}: SKIPPED — F prompt {fit_report['f_prompt_tokens']} tokens "
+                    f"exceeds the {args.token_budget} ceiling after the full trim ladder. "
+                    f"Pass --allow-over-cap to run it anyway.",
+                    flush=True,
+                )
+                continue
             cell = run_cell(
                 game,
                 dose,
@@ -2251,10 +2359,20 @@ def main() -> int:
                 seed=args.seed,
                 with_frames=args.frames,
                 caps=caps,
-                feedback=args.feedback,
+                # Rev 2.1: a cell whose FB chat will not fit runs F ONLY. The decision is made
+                # here from the fit, and re-checked inside the cell against the real chat.
+                feedback=args.feedback
+                and (fit_report is None or fit_report["feedback_possible"]),
+                fb_budget=args.fb_token_budget if args.frames else None,
+                model=args.model,
             )
             if fit_report is not None:
                 cell["prompt_fit"] = fit_report
+                if args.feedback and not fit_report["feedback_possible"]:
+                    cell["feedback"] = {
+                        "attempted": False,
+                        "reason": "FB chat over the ceiling at fit time — this cell ran F only",
+                    }
             cells.append(cell)
             if cell.get("outcome") == "scored":
                 a, b, c = cell["channel_a"], cell["channel_b"], cell["channel_c"]

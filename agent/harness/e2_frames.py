@@ -528,11 +528,14 @@ above and the predicate grammar both use. Rulers are absolute row and column ind
 coordinate means the same thing in every view, including every crop.
 An ENTITY is a 4-connected same-colour component measured against the board's background
 colour; cells of the background colour are not entities.
-ENTITY IDS ARE LOCAL TO THE BLOCK THEY APPEAR IN. Inside one episode, or inside one
-before/after pair, the same id is the same thing. Across blocks they are NOT comparable, and
-no id here asserts that an entity in one part of this record is the entity of the same
-number somewhere else — the run's branches are unrelated and matching across them would
-invent an identity nothing observed."""
+ENTITY IDS ARE LOCAL TO THE BLOCK THEY APPEAR IN, and they are deliberately cautious.
+Within one episode an id is carried from frame to frame only where the evidence is exact:
+the same cells, or the same shape in the same colour moved to a new place. An entity that
+changes shape, splits, merges or is recoloured gets a NEW id, and the episode says so on the
+line where it happens — including when the old and new are probably the same thing, which is
+reported as "possibly, not asserted". So two ids may turn out to name one thing, but one id
+never silently names two. Across blocks ids are not comparable at all: the run's branches are
+unrelated, and matching across them would invent an identity nothing observed."""
 
 
 def frames_section(
@@ -609,8 +612,10 @@ def frames_section(
             f"[2] THE CAUSAL EPISODE  (OBSERVED)  — {len(episode)} consecutive actions this\n"
             f"    run took, in order. Chosen as {why}.\n"
             f"    Each line is one action and what changed, named by ENTITY — the board is\n"
-            f"    not repeated. Entity ids in this block are the episode's own and are stable\n"
-            f"    within it. Changes confined to hud?-status entities are flagged, because a\n"
+            f"    not repeated. Entity ids in this block are the episode's own; `lineage`\n"
+            f"    lines report every entity that appeared, vanished or changed shape, and a\n"
+            f"    shape change always produces a NEW id rather than an assumed continuation.\n"
+            f"    Changes confined to hud?-status entities are flagged, because a\n"
             f"    status display changing is not the game changing. Cell lists are capped at\n"
             f"    {caps.diff_cells} with the remainder counted. A full board appears only\n"
             f"    where the scene's composition itself changed, at most {caps.snapshots} times."
@@ -648,8 +653,10 @@ def frames_section(
             f"[3b] SATISFIED, AND THE LEVEL DID NOT ADVANCE  (OBSERVED)\n"
             f"     The negative half of the same contrast, and the strongest evidence in this\n"
             f"     record about what the completion condition is NOT. {len(events)}\n"
-            f"     mechanically enumerated candidates were true of the board at a step that\n"
-            f"     did not complete the level; the "
+            f"     mechanically enumerated candidates were true of the board an action\n"
+            f"     PRODUCED, at a step that did not complete the level. Each board below is\n"
+            f"     the board AFTER the action named with it — that is the board the condition\n"
+            f"     is true of. The "
             f"{min(len(events), caps.refuted_examples)} that survived the most evidence\n"
             f"     before being refuted are shown as boards."
         )
@@ -659,10 +666,13 @@ def frames_section(
                 continue
             lines.append("")
             lines.append(
-                f"  `{event['predicate']}` was TRUE of this board at step {event['step']}, "
-                f"and {action_text(transition)} did not complete the level:"
+                f"  {action_text(transition)} at step {event['step']} produced the board "
+                f"below, `{event['predicate']}` is TRUE of it, and the level did NOT advance:"
             )
-            lines.extend(f"  {line}" for line in _condition_view(transition.pre, event["predicate"]))
+            lines.extend(
+                f"  {line}" for line in _condition_view(transition.post, event["predicate"])
+            )
+            lines.append(f"  {_change_summary(transition, caps.diff_cells)}")
         meta["blocks"]["refuted_boards"] = min(len(events), caps.refuted_examples)
     else:
         lines.append(
@@ -749,6 +759,24 @@ def frames_section(
 # ---------------------------------------------------------------------------------------
 # Block helpers
 # ---------------------------------------------------------------------------------------
+
+
+def _change_summary(transition: Any, max_cells: int) -> str:
+    """How the board got here, in one line.
+
+    A condition like `appears(c9)` is about the TRANSITION, not about a single state, so a
+    board on its own cannot show why it holds. This line carries the difference from the
+    previous board without spending a second board on it.
+    """
+    changes = changed_cells(transition.pre, transition.post)
+    if not changes:
+        return "  (that action changed no cell; the board is the same as the one before it)"
+    detail = ", ".join(
+        f"({row},{col}) {letter(before)}->{letter(after)}"
+        for row, col, before, after in changes[:max_cells]
+    )
+    more = "" if len(changes) <= max_cells else f", +{len(changes) - max_cells} more"
+    return f"  (that action changed {len(changes)} cells: {detail}{more})"
 
 
 def _condition_view(grid: Sequence[Sequence[int]], predicate: str) -> list[str]:
@@ -840,6 +868,12 @@ def _episode_lines(episode: list, caps: FrameCaps, effect_text) -> list[str]:
                 f"{head}  ->  {effect_text(transition.effect)}{marker}\n"
                 f"        entities {', '.join(f'#{i}' for i in touched) or 'none'}; "
                 f"{len(changes)} cells: {detail}{more}"
+            )
+        for event in tracker.lineage[:4]:
+            lines.append(f"        lineage: {event}")
+        if len(tracker.lineage) > 4:
+            lines.append(
+                f"        lineage: (+{len(tracker.lineage) - 4} further entity changes)"
             )
         if transition.completed:
             lines.append("        *** THIS ACTION COMPLETED THE LEVEL ***")

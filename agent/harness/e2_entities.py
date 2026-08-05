@@ -19,11 +19,17 @@ needs a tracking layer, and this is it.
 WHAT AN ID MEANS HERE, AND WHAT IT DOES NOT
 -------------------------------------------
 An entity id is a CLAIM that two components in two frames are the same thing, made by a
-matcher, not an observation. The matcher is deliberately conservative and its rule is stated
-in the prompt: same colour, then best score over (identical normalized shape, bounding-box
-proximity, area ratio), and an unmatched component becomes a NEW id rather than being forced
-onto an old one. Where it is unsure it invents an id — which is the direction that cannot
-manufacture a false "this object moved across the board".
+matcher, not an observation. So the matcher only makes the claim where the evidence is
+EXACT: an identical cell set, or an identical normalized shape in the same colour (a rigid
+translation, whose vector the lineage line reports). Everything else — a reshape, a split, a
+merge, a recolour, an unrelated same-colour object drifting past — gets a FRESH id, and the
+lineage line names the plausible partner while explicitly declining to assert it.
+
+An earlier version scored area and proximity and kept an id across a change of shape. The
+prompt meanwhile told the model that an id denotes the same entity, so that matcher could
+hand the model invented continuity in the one place the record exists to be conservative.
+Fresh ids are the safe direction: two ids may name one thing, but one id never silently
+names two.
 
 Objects are `_Objects`' objects: 4-connected same-colour components over the state-local
 background. That convention is inherited so an entity id and a `cN` term in the predicate
@@ -58,6 +64,10 @@ class Entity:
     children: list[int] = field(default_factory=list)
     adjacent: list[int] = field(default_factory=list)
     status: str = "unknown"
+    # how this entity's id was obtained: `exact` (identical cells), `translated` (identical
+    # shape, moved), `new` (no exact match — a fresh id, never a scored guess), or `first`
+    # for the frame that started the tracker.
+    match: str = "first"
 
     @property
     def height(self) -> int:
@@ -92,6 +102,8 @@ class Tracker:
         self._shapes: dict[tuple, str] = {}
         self._next_eid = 1
         self._previous: list[Entity] = []
+        # what happened between the last two observed frames, in the model's own vocabulary
+        self.lineage: list[str] = []
 
     def shape_key(self, cells: Iterable[tuple[int, int]]) -> str:
         shape = normalized_shape(cells)
@@ -118,62 +130,110 @@ class Tracker:
             )
             for item in raw
         ]
-        self._assign_ids(entities)
+        lineage, gone = self._assign_ids(entities)
         _relate(entities)
         self._previous = entities
+        self.lineage = lineage + gone
         return entities
 
-    def _assign_ids(self, entities: list[Entity]) -> None:
-        """Greedy best-first matching against the previous frame. Same colour, always.
+    def _assign_ids(self, entities: list[Entity]) -> tuple[list[str], list[str]]:
+        """Match against the previous frame, and KEEP AN ID ONLY WHEN THE EVIDENCE IS EXACT.
 
-        Exact cell-set equality is taken first and unconditionally: an object that did not
-        move is the same object, and letting a scored match outrank that could swap two
-        identical shapes for each other across a frame in which neither did anything.
+        An id is a claim that two components in two frames are the same thing. The earlier
+        version of this matcher would keep an id across a CHANGE OF SHAPE on the strength of
+        area and proximity, while the prompt told the model an id denotes the same entity —
+        so a reshape, a split or an unrelated same-colour object drifting past could all be
+        presented to the model as continuity. That is invented evidence, in the one place the
+        record is supposed to be conservative.
+
+        Two tiers keep an id, and both are exact:
+
+          exact       identical cell set. It did not move; it is the same thing.
+          translated  identical NORMALIZED SHAPE and the same colour, matched nearest-first.
+                      A rigid translation of the same cell set is the strongest signal a grid
+                      game offers, and the lineage line reports the vector.
+
+        Anything else gets a FRESH id. Where a plausible partner exists — same colour, at
+        least half the area, nearby — the lineage line SAYS SO and explicitly does not assert
+        it. Returns `(lineage, unmatched)`: the events to print, and the ids that vanished.
         """
         available = list(self._previous)
         taken: set[int] = set()
-        by_cells = {entity.cells: entity for entity in available}
+        lineage: list[str] = []
+
+        by_cells: dict[frozenset, Entity] = {}
+        for entity in available:
+            by_cells.setdefault(entity.cells, entity)
         pending: list[Entity] = []
         for entity in entities:
             match = by_cells.get(entity.cells)
             if match is not None and match.colour == entity.colour and id(match) not in taken:
                 entity.eid = match.eid
+                entity.match = "exact"
                 taken.add(id(match))
             else:
                 pending.append(entity)
 
-        scored: list[tuple[float, int, Entity, Entity]] = []
+        # tier 2: same colour AND same normalized shape, nearest first
+        candidates: list[tuple[float, int, Entity, Entity]] = []
         for index, entity in enumerate(pending):
             for candidate in available:
-                if candidate.colour != entity.colour or id(candidate) in taken:
+                if (
+                    candidate.colour != entity.colour
+                    or candidate.shape_key != entity.shape_key
+                    or id(candidate) in taken
+                ):
                     continue
                 distance = abs(entity.centre[0] - candidate.centre[0]) + abs(
                     entity.centre[1] - candidate.centre[1]
                 )
-                area_ratio = min(entity.area, candidate.area) / max(entity.area, candidate.area)
-                # Identical shape dominates: a translated copy of the same cell set is the
-                # single most reliable signal a grid game offers. Then area, then distance.
-                score = (
-                    (0.0 if entity.shape_key == candidate.shape_key else 1.0)
-                    + (1.0 - area_ratio)
-                    + distance / 128.0
-                )
-                scored.append((score, index, entity, candidate))
-        scored.sort(key=lambda row: (row[0], row[1]))
-        for score, _, entity, candidate in scored:
+                candidates.append((distance, index, entity, candidate))
+        candidates.sort(key=lambda row: (row[0], row[1]))
+        for distance, _, entity, candidate in candidates:
             if entity.eid != -1 or id(candidate) in taken:
                 continue
-            # A match worse than "different shape and half the area" is not a match. An id
-            # forced onto an unrelated component is worse than a new id: it would assert a
-            # movement or a reshape that nothing observed.
-            if score >= 2.0:
-                continue
             entity.eid = candidate.eid
+            entity.match = "translated"
             taken.add(id(candidate))
+            dr = entity.bbox[0] - candidate.bbox[0]
+            dc = entity.bbox[1] - candidate.bbox[1]
+            lineage.append(f"#{entity.eid} moved by ({dr:+d},{dc:+d}), same shape")
+
+        leftovers = [entity for entity in available if id(entity) not in taken]
         for entity in entities:
-            if entity.eid == -1:
-                entity.eid = self._next_eid
-                self._next_eid += 1
+            if entity.eid != -1:
+                continue
+            entity.eid = self._next_eid
+            entity.match = "new"
+            self._next_eid += 1
+            partner = None
+            for other in leftovers:
+                if other.colour != entity.colour:
+                    continue
+                ratio = min(entity.area, other.area) / max(entity.area, other.area)
+                distance = abs(entity.centre[0] - other.centre[0]) + abs(
+                    entity.centre[1] - other.centre[1]
+                )
+                if ratio >= 0.5 and distance <= 8:
+                    partner = other
+                    break
+            if partner is not None:
+                lineage.append(
+                    f"#{partner.eid} is gone and #{entity.eid} is new — same colour c"
+                    f"{entity.colour}, {partner.area} cells then {entity.area} now, nearby. "
+                    f"POSSIBLY the same thing changing shape; NOT asserted, which is why it "
+                    f"has a new id"
+                )
+            else:
+                lineage.append(f"#{entity.eid} is new — c{entity.colour}, {entity.area} cells")
+        gone = [
+            f"#{entity.eid} is gone (c{entity.colour}, {entity.area} cells)"
+            for entity in leftovers
+            if not any(
+                line.startswith(f"#{entity.eid} is gone and ") for line in lineage
+            )
+        ]
+        return lineage, gone
 
 
 def _relate(entities: list[Entity]) -> None:
