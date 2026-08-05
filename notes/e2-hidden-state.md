@@ -166,17 +166,22 @@ added as a declared deviation.
 
 Per-arm separation over those 3 groups, reported for completeness and trusted for nothing:
 
-| arm | separates | conflicts remaining under `(digest, feature)` |
-|---|---:|---:|
-| baseline (digest only) | — | 3 |
-| `c1_global` | 0/3 | 3 |
-| `c2_episode` | 2/3 | 1 |
-| `c2_episode_incl` | 2/3 | 1 |
-| `c1_global_m4` | 1/3 | 2 |
-| `c1_global_m3` | 3/3 | 0 |
+| arm | cells | separates | conflicts remaining under `(digest, feature)` |
+|---|---:|---:|---:|
+| baseline (digest only) | — | — | 3 |
+| `c1_global` | 1 | 0/3 | 3 |
+| `c2_episode` | 2 | 2/3 | 1 |
+| `c2_episode_incl` | 2 | 2/3 | 1 |
+| `c1_global_m4` | 2 | 1/3 | 2 |
+| `c1_global_m3` | 2 | 3/3 | 0 |
+| `c2_episode_m3` | 3 | 3/3 | 0 |
+| `c2_episode_m4` | 3 | 3/3 | 0 |
+| **`rand4`, `rand5`** (control) | 2 | **2/3** | **1** |
+| `rand1`–`rand3` (control) | 2 | 1/3 | 2 |
 
-`c1_global_m3` "winning" on n=3 with 2–3 observations per group is the multiple-comparisons
-hazard the note warned about, in miniature: more cells separate more by arithmetic alone.
+The controls settle it: two of the five seeded random bits **tie `c2_episode` exactly**, and
+`c1_global_m3` "wins" on n=3 only because more cells separate more by arithmetic alone. This
+census is not evidence for anything, which is why the probe exists.
 
 ## 2. Rerun gate — passed, on all 24 games
 
@@ -189,7 +194,7 @@ Then, beyond the note's ask, the same rerun was run for all 24 games (`--stage r
 the whole public set at ~66k actions, not just m0r0. Rerun census across games — aliased
 groups: g50t 43, cn04 4, m0r0 3, sc25 3, cd82 1, all others 0. g50t and sc25 having live
 aliasing matches their E1 records; g50t is the only game where the store holds enough repeated
-observations for a passive census to mean anything.
+observations for a passive census to mean anything — §7 runs it there.
 
 ## 3. The probe (declared deviation) — what the latent actually is
 
@@ -300,7 +305,73 @@ As the note requires: m0r0 is the only game whose digest *showed* alias-conflict
 model answered from real evidence in its context. This is not evidence of discovery from
 nothing, and it should not be cited as such.
 
-## 7. Verdict on the template
+## 7. Addendum — g50t, the one game where the passive census works
+
+Follow-up, same day, operator-requested. Numbers: `logs/e2_hidden_state_g50t.json`. g50t is the
+only game whose store holds enough repeated `(pre, action)` observations for step 1 as written
+to mean anything: **89 repeated groups, 43 aliased**, against m0r0's 6 and 3. Its explorer run
+is routing-heavy (1544 routing vs 1455 test actions, against m0r0's 37) and logged **654** live
+alias conflicts over 43 conflicted edges and 40 suspect nodes. The passive census over the
+transitions log is still **0 repeated / 0 aliased** — same construction, same emptiness; all 43
+come from the rerun's routing actions.
+
+**Passive census, 43 aliased groups, full control set:**
+
+| arm | cells | separates | conflicts remaining |
+|---|---:|---:|---:|
+| baseline (digest only) | — | — | 43 |
+| **`c2_episode`** | 2 | **40/43 (0.930)** | **3** |
+| `c2_episode_incl` | 2 | 40/43 | 3 |
+| `c2_episode_m3` / `_m4` | 3 / 4 | 40/43 | 3 |
+| `c1_global_m4` | 4 | 26/43 (0.605) | 17 |
+| `c1_global_m3` | 3 | 25/43 (0.581) | 18 |
+| `rand1`–`rand5` (control) | 2 | 18–22/43 (0.419–0.512) | 21–26 |
+| `c1_global` | 2 | 17/43 (0.395) | 26 |
+
+This is what a passive census looks like when it has the power to say something. The
+in-episode count separates 40 of 43 and collapses conflicts from 43 to 3; the five binary
+random controls reach 18–22; and **global parity (17/43) performs *below* the random controls**
+— so it is specifically the in-episode count doing the work, not "any alternating feature".
+Adding cells to the episode base buys nothing (m3 and m4 also 40/43), so the binary split
+already captures everything the finer ones do — but see the falsifiability caveat below before
+reading that as "parity".
+
+**Active probes on g50t** (P1 55 targets / 36 usable; P2 24 states, 48 targets, 250 executions):
+
+- **P1: 0/36 vary with the count since environment creation**, parity falsifiable on all 36.
+  The counter does not survive RESET here either — consistent with the census, where global
+  parity sank below the random controls.
+- **P2: 48/48 targets vary with the in-episode count.** The count matters, causally, not just
+  associationally.
+- **But the content control fails on 5 of 48.** Distinct routes of the *same* length to the
+  same board give *different* outcomes on 4 targets, and 1 more has no length with two routes
+  to test. So on g50t the outcome is **not** a function of `(board, in-episode count)` alone —
+  43/48 are, and the remaining 5 carry hidden state this pair does not capture. That is a
+  weaker structural result than m0r0's clean 72/72 with 0 disagreements.
+- **Parity is unfalsifiable on g50t: 0/48 targets.** The path search finds no digest reachable
+  at three lengths even at depth 14 (282 digests, 207 at exactly two, band never wider than
+  adjacent), and with counts like `{2, 3}` every function separating them agrees with parity.
+  The raw `parity_explains 44/48` is therefore **not** a parity finding and must not be cited
+  as one.
+
+**A metric error found and fixed here, which changes nothing about §3 but would have.** The
+first version of `parity_falsifiable` counted any parity class holding two or more
+observations — but repeated observations at the *same* count are the route-content control,
+not a parity test. Corrected to require two *distinct* counts in one class. m0r0 is unaffected
+(still 72/72 falsifiable, 0/72 explained, because its band is `[6, 7, 8]` and 6 and 8 share a
+class); g50t drops from an apparent 47/48 falsifiable to **0**.
+
+**g50t verdict.** Half A holds, and more legibly than on m0r0: a hidden in-episode action
+counter gates the outcome, it is zeroed by RESET, and it separates 40 of 43 genuinely aliased
+outcomes against controls that reach 22. Its functional form is unresolved — the instrument
+cannot offer two same-parity counts — and unlike m0r0 the `(board, count)` pair is not the
+whole hidden state. Half B was not run for g50t: the note scopes the mining test to m0r0, and
+m0r0's result (zero effect at full dose on every arm, and zero cross-game delta for
+`c2_episode` **including g50t's own row**) already says what this rule model does with the
+feature. That cross-game zero is worth restating with §5 in view: g50t is the game where the
+counter demonstrably gates the environment, and injecting it *still* moved nothing.
+
+## 8. Verdict on the template
 
 **The loop closes, and its value is in the disagreement.** "Model proposes latent → machinery
 encodes → measured acceptance" ran end to end and returned a verdict finer than the proposal:

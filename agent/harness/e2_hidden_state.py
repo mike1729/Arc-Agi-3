@@ -363,10 +363,15 @@ def rerun(game: str = GAME, *, budget: int, wall: float, cap: int) -> dict[str, 
     repeated = {k: v for k, v in groups.items() if len(v) > 1}
     aliased = {k: v for k, v in repeated.items() if len({r["post"] for r in v}) > 1}
 
+    # Every arm, controls included. The binary random bits are the fair match for a binary
+    # parity feature -- the mod-3/mod-4 arms have more cells and separate more by arithmetic
+    # alone, so they bound the artifact rather than competing on equal terms. Cell count is
+    # reported per arm for exactly that reason.
     per_arm: dict[str, dict[str, Any]] = {}
-    for arm in ("c1_global", "c2_episode", "c2_episode_incl", "c1_global_m3", "c1_global_m4"):
+    for arm in ARMS:
         separated = 0
         computable = 0
+        cells_used: set = set()
         for observations in aliased.values():
             values = [arm_values(r["counters"], r["index"]).get(arm) for r in observations]
             if any(value is None for value in values):
@@ -375,12 +380,14 @@ def rerun(game: str = GAME, *, budget: int, wall: float, cap: int) -> dict[str, 
             cells: dict[Any, set[str]] = defaultdict(set)
             for value, row in zip(values, observations, strict=True):
                 cells[value].add(row["post"])
+            cells_used.update(cells)
             if all(len(posts) == 1 for posts in cells.values()) and len(cells) > 1:
                 separated += 1
         per_arm[arm] = {
             "aliased_groups_computable": computable,
             "separated_perfectly": separated,
             "fraction": round(separated / computable, 4) if computable else None,
+            "distinct_feature_values": len(cells_used),
         }
 
     # state-level restatement: conflicts remaining when the hash is (digest, feature)
@@ -533,7 +540,12 @@ def verified_paths(
 
 
 def parity_probe(
-    game: str = GAME, *, targets: int = 12, max_path: int = 10, path_width: int = 400
+    game: str = GAME,
+    *,
+    targets: int = 12,
+    max_path: int = 10,
+    path_width: int = 400,
+    p2_min_lengths: int = 3,
 ) -> dict[str, Any]:
     """Two probe families, each varying ONE counter with the pre-state digest held fixed.
 
@@ -606,8 +618,13 @@ def parity_probe(
             "parity_explains": (
                 len(posts) > 1 and len(cells) > 1 and all(len(v) == 1 for v in cells.values())
             ),
+            # Falsifiable only when one parity class holds two DISTINCT counts. Repeated
+            # observations at the same count are the route-content control, not a parity
+            # test: with counts {2, 3} every function that separates 2 from 3 agrees with
+            # parity, so "parity explains it" is unfalsifiable however many routes are run.
+            # Counts {6, 8} in one class is what lets parity be wrong.
             "parity_falsifiable": any(
-                sum(1 for o in live if o[field] % 2 == value) > 1 for value in cells
+                len({o[field] for o in live if o[field] % 2 == value}) > 1 for value in cells
             ),
             "mod3_also_explains": (
                 len(posts) > 1 and len(cells3) > 1 and all(len(v) == 1 for v in cells3.values())
@@ -666,8 +683,14 @@ def parity_probe(
         )
 
     # ---- P2: in-episode counter, board held fixed ---------------------------------------
+    # `p2_min_lengths = 3` is the default because two counts of the SAME parity are what make
+    # the parity question falsifiable. Where the game offers only two lengths at a shared
+    # digest, dropping to 2 still answers the prior question -- does the count matter at all,
+    # and is it the count rather than the route content -- and the tally reports how many
+    # targets could have refuted parity, which is then zero. Never read a parity verdict off a
+    # run whose `targets_where_parity_was_falsifiable` is 0.
     multi = sorted(
-        (state for state, lengths in paths.items() if len(lengths) > 2),
+        (state for state, lengths in paths.items() if len(lengths) >= p2_min_lengths),
         key=lambda state: (-len(paths[state]), min(paths[state]), state),
     )
     p2: list[dict[str, Any]] = []
@@ -784,6 +807,7 @@ def parity_probe(
                 "RESET; path; target over EXECUTED paths of different length to one digest "
                 "-- board identical, in-episode count = path length"
             ),
+            "min_lengths_required": p2_min_lengths,
             "conflicted_probed": sum(1 for r in p2 if r["conflicted_in_store"]),
             "outcome_is_a_function_of_length": sum(
                 1 for r in p2 if r["same_length_control"]["outcome_is_a_function_of_length"]
@@ -1196,6 +1220,13 @@ def main() -> int:
     parser.add_argument("--wall", type=float, default=1200.0)
     parser.add_argument("--cap", type=int, default=96)
     parser.add_argument("--jobs", type=int, default=6)
+    parser.add_argument(
+        "--p2-min-lengths",
+        type=int,
+        default=3,
+        dest="p2_min_lengths",
+        help="distinct path lengths a digest needs to enter P2; 3 makes parity falsifiable",
+    )
     parser.add_argument("--vocab", choices=("v1", "v2"), default="v2")
     parser.add_argument("--out", type=Path, default=OUTPUT)
     args = parser.parse_args()
@@ -1255,7 +1286,9 @@ def main() -> int:
                 "games_run": len(rows),
             }
         elif stage == "probe":
-            document["probe"] = parity_probe(args.game)
+            document["probe"] = parity_probe(
+                args.game, p2_min_lengths=args.p2_min_lengths
+            )
             search = document["probe"]["path_search"]
             print(
                 f"probe paths: digests={search['digests_reached']} "
