@@ -257,22 +257,36 @@ before the clear), **ISSUER** (the turn whose tool call fired it; the action eve
 (how the model read the completion). All 42 ref first-clears and all 4 local clears were read.
 Quotes are from S1's own traces.
 
+> **Corrected 2026-08-05 after the full ft09/sb26 read (§6).** The first pass of this table
+> was produced with `clearctx`'s 1700-char cap applied to the *whole* turn, which truncated
+> the `[ASSISTANT]` block — the one place a turn states its World/Goal/Plan. **Five of 42
+> clears were misclassified as `accidental` because their goal statement was cut off**
+> (lp85/v2, re86/v2, m0r0/v3, r11l/v4 → `prior-match`; ft09/v3 → `evidence-derived`). The
+> script now prints `[ASSISTANT]` untruncated. Corrected counts below; the superseded row
+> is kept in the table.
+
 **Ref corpus, 42 first-clears (all L1):**
 
-| class | n | share |
-|---|---:|---:|
-| `accidental` | 20 | 48% |
-| `prior-match` | 17 | 40% |
-| `evidence-derived` | 5 | 12% |
+| class | n | share | (first pass, superseded) |
+|---|---:|---:|---:|
+| `prior-match` | 21 | 50% | 17 |
+| `accidental` | 15 | 36% | 20 |
+| `evidence-derived` | 6 | 14% | 5 |
 
-`accidental` — lf52/v2, lp85/v2, r11l/v2, re86/v2, sp80/v2, vc33/v2, ar25/v3, bp35/v3,
-cd82/v3, ft09/v3, lp85/v3, m0r0/v3, r11l/v3, s5i5/v3, ar25/v4, cd82/v4, lp85/v4, r11l/v4,
-sp80/v4, tn36/v4.
-`prior-match` — bp35/v2, ka59/v2, su15/v2, tu93/v2, ka59/v3, re86/v3, sp80/v3, su15/v3,
-tu93/v3, vc33/v3, bp35/v4, lf52/v4, re86/v4, s5i5/v4, su15/v4, tu93/v4, vc33/v4.
-`evidence-derived` — ft09/v2, ft09/v4, sb26/v2, sb26/v3, sb26/v4.
+`accidental` — lf52/v2, r11l/v2, sp80/v2, vc33/v2, ar25/v3, bp35/v3, cd82/v3, lp85/v3,
+r11l/v3, s5i5/v3, ar25/v4, cd82/v4, lp85/v4, sp80/v4, tn36/v4.
+`prior-match` — bp35/v2, ka59/v2, **lp85/v2**, **re86/v2**, su15/v2, tu93/v2, ka59/v3,
+**m0r0/v3**, re86/v3, sp80/v3, su15/v3, tu93/v3, vc33/v3, bp35/v4, lf52/v4, re86/v4,
+**r11l/v4**, s5i5/v4, su15/v4, tu93/v4, vc33/v4.
+`evidence-derived` — ft09/v2, **ft09/v3**, ft09/v4, sb26/v2, sb26/v3, sb26/v4.
+(Bold = reclassified.)
 
-**Local corpus, 4 clears:** vc33 `prior-match`; ar25, sp80, tn36 `accidental`.
+**ft09 and sb26 are now 3/3 each** — every pass of both games reaches the goal by inference,
+with no exceptions. That is a much stronger result than the first pass reported, and it is
+what makes the two games worth the M-phase's attention.
+
+**Local corpus, 4 clears:** vc33 `prior-match`; ar25, sp80, tn36 `accidental` (re-checked
+untruncated; unchanged).
 
 ### `accidental` — the model did not know what it had done
 
@@ -356,39 +370,44 @@ position (cols 24-43) by wandering and cleared on a blind SPACE.
 
 **Efficiency split** (actions before the goal statement / after it), for the clears where the
 articulating turn is unambiguous: vc33/v4 4/3 · vc33/v3 9/1 · vc33 local 7/1 · bp35/v4 114/1 ·
-ka59/v3 29/1 · sb26/v2 8/1 · ft09/v2 14/3. The pattern is uniform: near-all actions precede
-articulation, and the clear follows within 1–3 actions of it. Where a goal is stated, it
-converts almost immediately; the cost is entirely in the undirected phase before it.
+ka59/v3 29/1. Within `prior-match` the pattern is uniform: near-all actions precede
+articulation, and the clear follows within 1–3 actions of it. Where a prior-shaped goal is
+stated, it converts almost immediately; the cost is entirely in the undirected phase before it.
+
+> **Corrected 2026-08-05.** This paragraph originally also gave sb26/v2 as 8/1 and ft09/v2 as
+> 14/3, and generalised the pattern to the `evidence-derived` class. Both figures were wrong
+> and the generalisation does not hold — sb26/v2 is **0 before / 9 after** (the goal is stated
+> before the first action) and ft09/v2's goal is fixed at ~action 5, about ten actions before
+> the clear. See §6.
 
 ### `evidence-derived` — the two games where the model read a goal off the board
 
-Only two games produce this class, and both display the target.
+Only two games produce this class, both 3/3, and both display the target. **Summarised here;
+the full six-episode read and its corrections are §6, which supersedes any timing claim in
+this subsection's first version.**
 
-**ft09** (v2 and v4) is the strongest instance in the corpus. After 13 clicks with no board
-change the model stops probing and treats the grid centre decorations as an encoding:
-
-> "Maybe the center decorations indicate which cells should be red. … Plan: Extract and analyze
-> the center cell patterns from all 4 grids to understand what they encode."
-
-then decodes the 6×6 centre as a 2×-scaled 3×3 pattern —
+**ft09** (all three passes) decodes an on-board encoding. It treats the grid centre
+decorations as a specification rather than decoration —
 
 > "Maybe these patterns represent the 3x3 grid pattern itself! The 6x6 center could be a
 > scaled-up version of the 3x3 grid, where each cell is 2x2 pixels."
 
-and in v4 uses the decoded pattern to pick which of three reference grids to replicate:
+— verifies the mapping against three grids it can check, and reads the target off the fourth:
 
-> "The bottom-right center cell has a similar pattern to the bottom-left center cell. Maybe the
-> bottom-right grid should match the bottom-left grid's pattern? … To match bottom-left, I need
-> to change (38,38) = R ✓ (already done), (46,38) = R (need to click)…"
+> "The center cell decorations encode the grid pattern! Each 2x2 block in the 6x6 center maps
+> to one cell in the 3x3 grid (gg=blue, WW=red, RR=red). Goal model: The bottom-right center
+> cell encodes the TARGET pattern: R b b / R R R / R b b" — ft09/v3, the turn that cleared
 
-It then clicks exactly those cells and clears. This is a goal *inferred from in-context
-evidence*, and it survives the reliability test: it is the same route in two independent
-passes (v2 a17, v4 a17) with the same intermediate reasoning. See §5 for what it does and does
-not license. (ft09/v3 is classified `accidental`: the same decoding was under way but the clear
-landed mid-decode before a click plan was stated.)
+It then clicks exactly the cells the decode names. Same route, same intermediate reasoning, in
+three independent passes (v2 a17, v3 a31, v4 a17).
 
-**sb26** (all three passes) reads the required order off a reference strip, fills the slots to
-match, and then reasons that the state must be *committed*:
+**sb26** (all three passes) infers the goal from static layout **before taking any action**:
+
+> "Hypothesis: drag bottom colors to match top order into gray slots. Top order: b, N, Y, p.
+> Need to place: blue at col22, green at col28, yellow at col34, purple at col40"
+> — sb26/v2, analysis step 1, action count 0
+
+and then, once the board matches, reasons that the state must be *committed*:
 
 > "All 4 slots filled correctly (blue, green, yellow, purple) matching the top pattern. Level
 > not yet completed - need to submit. Plan: Press SPACE to submit the solution."
@@ -484,13 +503,23 @@ exit tile, the only correct goal inference in that corpus). tu93 is therefore a 
 case, not an anti-example: the two harnesses agree, and they agree on the game whose goal is
 the most prior-compatible in the set.
 
-**m0r0** — survives as an anti-example, and it is the sharpest one. The deployed agent stalled
-in 2 of 3 passes with `goal_unknown` primary at 206 and 219 actions (baseline 30); the one
-clear (v3, a47) is `accidental` — the ISSUER turn is "The RIGHT command moved something. Let me
-check where both eyes are now." Meanwhile the slice channel identified m0r0's hidden state 4/4
-and got the goal only *partially* (repositioning the right objects, no notion of pairing-off).
-Both harnesses, same model, fail on the same object — the pairing predicate — while succeeding
-on the perception around it.
+**m0r0** — survives as an anti-example, but the correction in §1 sharpens it in the opposite
+direction to what was first reported. The deployed agent stalled in 2 of 3 passes with
+`goal_unknown` primary at 206 and 219 actions (baseline 30). The one clear (v3, a47) was first
+labelled `accidental` on a truncated turn; read untruncated it is **`prior-match` and fully
+deliberate** —
+
+> "World model updated: RIGHT moves left eye RIGHT and right eye LEFT (towards each other).
+> LEFT moves them apart. … Plan: Send RIGHT twice to bring eyes to same columns (34-38), then
+> UP to bring right eye to head."
+
+— which is the mirror-linked movement rule learned from evidence, aimed at bringing the two
+movers together, i.e. m0r0's actual advance condition (movers paired off). So m0r0's model
+*did* solve it once, on purpose, and then failed the same game twice at 7× the human baseline.
+Meanwhile the slice channel identified m0r0's hidden state 4/4 and got the goal only
+*partially*. The anti-example is therefore about **reproducibility, not capability**: the same
+model on the same game finds the mechanism in one pass out of three and never recovers it in
+the other two.
 
 ### The cases that decide H
 
@@ -524,40 +553,87 @@ matches the true goal":
 - **Refutes the stronger claim inside H** ("the reference never discovers goals"): **ft09** and
   **sb26** contain genuine in-context goal discovery, reproducibly, across independent passes.
 - **Neither** (cleared by accident on prior-compatible games, i.e. the prior was not the
-  mechanism): lp85 3/3, r11l 3/3, cd82 2/3, tn36 1/3, m0r0 1/3.
+  mechanism): lp85 2/3, r11l 2/3, cd82 2/3, tn36 1/3.
 
 The single-sentence verdict: **the reference does not "never discover goals, occasionally get
-one for free" — it does all three things (48% of its clears are accidental, 40% are the default
-prior firing correctly, 12% are real in-context goal discovery), and, decisively, the default
+one for free" — it does all three things (36% of its clears are accidental, 50% are the default
+prior firing correctly, 14% are real in-context goal discovery), and, decisively, the default
 prior fails to fire on the two games where it most obviously applies, so "where the prior
 fails" does not define the target set.**
 
 ### The refuting mechanism (required subsection): ft09 and sb26
 
-Both instances share one move, and it is the move nothing else in the corpus makes: **the model
-stops treating an on-board object as scenery and starts treating it as a specification.**
+> **Substantially revised 2026-08-05 by the full read (§6).** The first version of this
+> subsection claimed both discoveries were *triggered by negative evidence* and that ft09's
+> switch cost "14 actions before, 3 after". Both are wrong. sb26 states the correct goal
+> before its first action, with no negative evidence of any kind, in all three passes; ft09
+> fixes its goal at ~action 5 and then cannot act on it for ten more actions. The corrected
+> account follows.
 
-*ft09.* Trigger: 13 consecutive clicks with `board_changed: false`. Under that pressure the
-model re-reads the board looking for something it has been ignoring — "Each grid has a unique
-center cell with a small pattern. These might be clues about what the target pattern should
-be." Reasoning move: it hypothesises an *encoding relation* between a small object and a large
-one (6×6 centre = 2×-scaled 3×3 grid), tests the hypothesis by decoding all four centres, then
-uses the decoded value to select which reference grid the editable grid must match. Cost: 14
-actions of undirected probing before the switch, 3 actions after it (v2); 14/3 in v4. The
-switch itself consumed no actions — it happened inside one analysis turn, off a *null* result,
-not a positive one.
+Both games share one move, and it is the move nothing else in the corpus makes: **the model
+stops treating an on-board object as scenery and starts treating it as a specification.** What
+differs is when, and what the remaining cost is.
 
-*sb26.* Trigger: the board matches the reference strip and the level does not advance.
-Reasoning move: the model distinguishes *board state* from *win predicate* — "Level not yet
-completed - need to submit" — and searches for a commit action rather than re-editing the
-board. Cost: 8 actions to fill, 1 to commit.
+*sb26 — specification read from static layout, zero actions in.* At analysis step 1, before
+touching anything, the model notices the top strip and the bottom palette hold the same four
+colours in different orders, and infers that the strip is the target and the palette the
+supply. It emits the full assignment (which colour to which slot) as its first output. All
+three passes do this; none needs a probe. Cost: **0 actions before articulation, 9–10 after**
+(v2 cleared in 9, v4 in 10 with one wasted SPACE probe). This is the cheapest clear in the
+corpus and the only goal in it that was correct before any interaction.
 
-Two properties matter for the M phase. (1) **Both switches were triggered by negative
-evidence** — a run of null actions, or a satisfied-looking board that did not advance. Nothing
-positive pointed at the goal. (2) **Both switches were free in actions and expensive in
-context**: they happened inside a single analysis turn that had the whole failed history
-available. That is the shape a batch synthesizer over a saturated store can reproduce and a
-per-action few-shot actor cannot.
+*ft09 — specification decoded from an encoding, then stranded.* The encoding hypothesis appears
+at analysis step 5, after only four null clicks, and the mapping is verified against the three
+grids whose answer is checkable. By analysis step 12 the model has decoded the target exactly
+and written it down. **It then spends ten more actions unable to act on it**, because it cannot
+find which element is clickable. What finally unblocks it is not a goal insight at all — it is
+bookkeeping: the model prints its own action history, reads the list, and notices a gap.
+
+> "13 clicks, all no change. I've tried clicking on red cells, center cells, borders,
+> background, corner pieces, and the orange bar. **I have NOT tried clicking on the blue cells
+> in the bottom-right grid.**" — ft09/v2, the turn that cleared
+
+So ft09 splits cleanly into two failures with different causes: the goal was solved early and
+cheaply; the **action model** cost ten actions and was solved by exhaustive coverage
+bookkeeping, not by reasoning.
+
+Three properties matter for the M phase, and they are not the ones first reported.
+
+1. **Goal inference did not need pressure.** sb26 needed no evidence at all; ft09 needed four
+   null clicks. Neither is the "accumulate failure until the model re-specifies" story. The
+   trigger for treating an object as a specification was the object's *form* — a strip of
+   distinct colours, a small patterned cell inside every grid — not the failure history.
+2. **Knowing the goal is not the same as being able to pursue it.** ft09 held a correct,
+   written-down target for ten actions while flailing on action semantics. A goal channel that
+   emits correct predicates buys nothing unless the action model can be interrogated in the
+   same breath. This is the single most transferable finding in the read.
+3. **The cheapest fix in either trace was a coverage ledger.** ft09's unblock was "print what
+   I have tried, find the gap" — mechanical, no model insight, and it is exactly the kind of
+   state a store maintains for free and a per-turn actor forgets.
+
+### What the discovery costs later: L1 success anchors and then traps
+
+The full read covered these games past L1, and this is the finding with the largest
+implication. **sb26 never cleared L2 in any pass** (156, 252, 203 actions; baselines 28).
+Its L2 condition is an ordered instruction *program* run by ACTION5 — a different kind of
+object from L1's fill-the-slots. All three passes carried the L1 schema forward unchanged
+("arrange the colours, then SPACE to submit") and burned their entire budget enumerating
+*orderings* within it — top-row order, bottom-row order, warm/cool split, reverse order,
+rainbow/hue order:
+
+> "New hypothesis: rainbow/hue order split - Red=[R, O, Y], Green=[N, b, p, M]"
+> — sb26/v2 at action 156, still searching orderings
+
+The L1 discovery fixed the goal *schema* and the model never questioned the schema again, only
+its parameters. ft09 shows both outcomes of the same anchoring: v2 and v3 carried the
+encode/decode scheme into L2, hit a contradiction ("This matches my decoded pattern, but the
+level is not complete. So my pattern decoding is wrong"), **re-derived the encoding** and
+cleared L2. v4 instead lost the channel, concluded only two cells were toggleable, and spent
+its remaining budget on a 16-state brute force, timing out at state 15 of 16.
+
+The distinguishing move in the passes that recovered is explicit: *the decode was treated as
+falsifiable and refuted by the level not advancing.* That is the same discrimination sb26 never
+made at L2 and the same one §5 recommends scoring for.
 
 ## 5. Implications for the slice-2 goal channel (recommendation, not a decision)
 
@@ -569,12 +645,61 @@ dc22 and vc33; m0r0 splits (hidden state 4/4, goal partial). The common factor i
 is not "the prior didn't match" but that neither harness ever tries to *specify* the win
 condition — the one exception being ft09/sb26, where the specification was printed on the
 board. So I would score the slice-2 goal channel not on whether the emitted goal is correct but
-on whether it commits to a **falsifiable predicate plus the probe that would refute it**, and I
-would seed it with the ft09/sb26 trigger explicitly — that a run of null-effect actions, or a
-board that looks solved but did not advance, is the evidence that should force a
-re-specification rather than another probe. Note the reverse risk this creates: dc22 and sc25
-say a prior-compatible goal is not self-executing, so a channel that only re-specifies when the
-prior visibly fails will still miss them.
+on whether it commits to a **falsifiable predicate plus the probe that would refute it**.
+
+> **Revised 2026-08-05 by the full read.** This paragraph originally also recommended seeding
+> the channel with "the ft09/sb26 trigger" — a run of null-effect actions, or a board that
+> looks solved but did not advance. **There is no such trigger.** sb26 infers its goal before
+> acting, and ft09's decode starts after four null clicks and is complete ten actions before it
+> can be used. Seeding on accumulated failure would have produced neither discovery. Three
+> replacements, in order of how much the read supports them:
+>
+> 1. **Score the goal channel and the action channel jointly, not separately.** ft09's ten
+>    stranded actions are the whole cost of that episode, and they are invisible to any metric
+>    that only asks whether the emitted goal is right. A cell that emits a correct predicate
+>    and no way to test it should score at or near zero.
+> 2. **Score re-specification under contradiction, not first-shot correctness.** The passes
+>    that cleared ft09's L2 are the ones that treated their own decode as refuted when the
+>    level did not advance; sb26 never did this at L2 and lost 156–252 actions per pass inside
+>    a schema it never re-opened. This is the sharpest measurable difference in the corpus and
+>    it is a *second-goal* property, invisible at L1.
+> 3. **Give the channel a coverage ledger.** ft09's actual unblock was reading back its own
+>    action history and finding an untried target class. That is cheap, mechanical, and the
+>    kind of state the accumulated store already holds.
+>
+> The reverse risk in the original still stands and is now better supported: dc22 and sc25 say
+> a prior-compatible goal is not self-executing, so a channel gated on visible prior-failure
+> will still miss them.
+
+## 6. Full read of the ft09 and sb26 traces (2026-08-05)
+
+Requested after the classification pass, because these six episodes are the only observed
+instances of the capability the M phase has to reproduce. **What was read in full:** all six
+L1 episodes (ft09 v2/v3/v4, sb26 v2/v3/v4) — every analysis turn, tool call and result from
+RESET to the L1 clear, ~305k chars. **What was read selectively:** the L2/L3 continuations
+(~1.3M chars) — sb26's three L2 stalls sampled at entry, mid-search and terminal turns; ft09's
+L2 sampled at the decode-transfer turns, v2's L2 clear, and v4's terminal brute-force. Nothing
+below rests on an unread turn, but the L2 characterisations are from samples, not a full pass.
+
+Four things the full read changed, all now folded into the sections above:
+
+1. **Five of 42 clears were misclassified** because the reporting script truncated the
+   `[ASSISTANT]` block that states each turn's goal (§1). Corrected counts: prior-match 21,
+   accidental 15, evidence-derived 6. ft09 and sb26 are 3/3 each. Script fixed.
+2. **ft09's goal is solved early, not late** (§4). Encoding hypothesis at analysis step 5,
+   target decoded by step 12, clear at action 17 — the gap is action semantics, and it closes
+   on a coverage ledger, not an insight.
+3. **sb26's goal is solved at step 1 with zero actions** (§4), in all three passes. There is
+   no failure-pressure trigger for goal inference in either game — the claim that there was is
+   retracted in §4 and §5.
+4. **L1 discovery anchors and then traps** (§4, new subsection). sb26 carried its L1 schema
+   into L2 and burned every pass inside it; ft09 v2/v3 re-derived under contradiction and
+   cleared L2, v4 did not and brute-forced. This is the highest-value finding for the M phase
+   and it is only visible past L1 — which is exactly the scope the first pass excluded.
+
+**Reading note for anyone re-running this.** Post-hoc REACT turns are unreliable (§1), and
+`[ASSISTANT]` blocks must never be truncated. Both failure modes bit this analysis; the second
+one produced wrong numbers that survived a commit.
 
 ## Deviations from the task note
 
@@ -582,8 +707,10 @@ prior visibly fails will still miss them.
    analysed rather than only `logs/runs/`. The ref corpus carries the analysis; the local split
    is reported and reproduces the note's numbers exactly.
 2. **Scope of step 1.** 42 ref clears + 4 local clears were read, not 4 — the positive set is
-   an order of magnitude larger on the correct corpus. Only the *first* (L1) clear of each pass
-   was read; the 5 L2 clears were not.
+   an order of magnitude larger on the correct corpus. For 40 of them only the clearing context
+   was read; **ft09 and sb26 were later read end-to-end (§6)**, which corrected 5 labels and
+   changed the mechanism account. The other 40 have not had that treatment and their labels
+   rest on the three diagnostic turns only.
 3. `logs/kaggle-reference` could not enter step 1 (no transcripts) and is reported for context
    only.
 4. Step 2 used the existing `s2_goal_predicates_labelled.json` extraction rather than re-reading

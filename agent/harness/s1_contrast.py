@@ -204,6 +204,12 @@ def cmd_clearctx(corpus: str, cap: int = 1800, only_first: bool = True) -> None:
       PRIOR   — last transcript before i (the goal state going in)
       ISSUER  — first transcript after i (the turn whose tool call fired the clear)
       REACT   — next transcript after that (how the model read the completion)
+
+    `cap` truncates the [THINKING] block ONLY. The [ASSISTANT] block is always printed
+    in full: it carries the turn's explicit World/Goal/Plan summary, and truncating it
+    misreads deliberate clears as accidental ones. Five of 42 ref clears were
+    misclassified that way on 2026-08-05 before this was fixed — see the note's
+    results §1 correction.
     """
     for run, arm, _, _ in iter_runs(corpus):
         for path in sorted((run / "artifacts").glob("*_events.jsonl")):
@@ -225,9 +231,13 @@ def cmd_clearctx(corpus: str, cap: int = 1800, only_first: bool = True) -> None:
                     if i is None:
                         print(f"\n--- {name}: (none)")
                         continue
-                    body = _strip_tools(model_text(ev[i]["transcript"]))
+                    t = ev[i]["transcript"]
+                    think = _strip_tools(model_text(t, keep=("[THINKING]",)))
+                    asst = _strip_tools(model_text(t, keep=("[ASSISTANT]",)))
                     print(f"\n--- {name} [{i}] a{ev[i].get('action_num')} "
-                          f"step{ev[i].get('analysis_step')}\n{body[:cap]}")
+                          f"step{ev[i].get('analysis_step')}\n{think[:cap]}")
+                    if asst:
+                        print(asst)  # never truncated — carries World/Goal/Plan
 
 
 def cmd_goals(corpus: str, arm: str, game: str, cap: int = 900) -> None:
