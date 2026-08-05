@@ -397,15 +397,46 @@ def _members(term: dict[str, Any], objects: _Objects) -> list[dict[str, Any]] | 
 
 
 def _shape(member: dict[str, Any]) -> frozenset:
-    rows = [row for row, _ in member["cells"]]
-    cols = [col for _, col in member["cells"]]
-    top, left = min(rows), min(cols)
-    return frozenset((row - top, col - left) for row, col in member["cells"])
+    """Cell set normalized to the origin, memoized ON THE MEMBER.
+
+    Contexts are built once and shared across every candidate, so a per-member cache is
+    paid once per object per grid instead of once per (candidate, object, grid). The prior
+    library evaluates hundreds of candidates against thousands of transitions; without this
+    the per-object geometry dominates everything else the module does.
+    """
+    cached = member.get("_shape")
+    if cached is None:
+        rows = [row for row, _ in member["cells"]]
+        cols = [col for _, col in member["cells"]]
+        top, left = min(rows), min(cols)
+        cached = frozenset((row - top, col - left) for row, col in member["cells"])
+        member["_shape"] = cached
+    return cached
+
+
+def _dilated(member: dict[str, Any]) -> frozenset:
+    """The member's cells grown by one step in each orthogonal direction, memoized.
+
+    Turns `adjacent` from a scan over one object's cells per PAIR into a set intersection.
+    Same predicate: some cell of `a` is 4-adjacent to some cell of `b` iff `a`'s dilation
+    meets `b`'s cells. The property test against `es_candidates` covers it.
+    """
+    cached = member.get("_dilated")
+    if cached is None:
+        cached = frozenset(
+            (row + dr, col + dc)
+            for row, col in member["cells"]
+            for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1))
+        )
+        member["_dilated"] = cached
+    return cached
 
 
 def _holds(name: str, a: dict[str, Any], b: dict[str, Any]) -> bool:
     if name == "same_shape":
         return _shape(a) == _shape(b)
+    if name == "adjacent":
+        return bool(_dilated(a) & b["cells"])
     return _relation_holds(name, a, b)
 
 
@@ -484,8 +515,32 @@ def predict_transition(node: dict[str, Any], pre_grid: list, post_grid: list) ->
     )
 
 
+def transition_contexts(transitions: list) -> list[dict[str, Any]]:
+    """One evaluation context per transition, built ONCE.
+
+    Componentizing a 64x64 grid — and, in `rs_completion.ObjectCache`, hashing it to find
+    the cached componentization — costs more than evaluating a predicate against the result.
+    A filter that builds contexts inside its candidate loop pays that cost once per
+    (candidate, transition) instead of once per transition, which on the larger stores is
+    the difference between seconds and hours. Consecutive transitions share a frame, so the
+    post of one is usually the pre of the next and is reused here by identity.
+    """
+    contexts: list[dict[str, Any]] = []
+    previous_grid = None
+    previous_objects = None
+    for transition in transitions:
+        if previous_grid is transition.pre and previous_objects is not None:
+            pre_objects = previous_objects
+        else:
+            pre_objects = _Objects(transition.pre)
+        post_objects = _Objects(transition.post)
+        contexts.append({"objects": post_objects, "pre_objects": pre_objects})
+        previous_grid, previous_objects = transition.post, post_objects
+    return contexts
+
+
 def consistent_with(
-    node: dict[str, Any], transitions: list, *, cache: Any = None
+    node: dict[str, Any], transitions: list, *, contexts: list | None = None
 ) -> dict[str, Any]:
     """Row-C survivorship over a transition list: definite-and-wrong kills.
 
@@ -494,14 +549,13 @@ def consistent_with(
     not `survived`. Returns the three-way outcome plus its counts, because collapsing
     vacuous into survived is exactly the failure row C was written to avoid.
     """
+    if contexts is None:
+        contexts = transition_contexts(transitions)
     definite_correct = 0
+    positives_matched = 0
     contradicted_at = None
-    for index, transition in enumerate(transitions):
-        if cache is not None:
-            context = cache.context(transition.pre, transition.post)
-            value = evaluate(node, context)
-        else:
-            value = predict_transition(node, transition.pre, transition.post)
+    for index, (transition, context) in enumerate(zip(transitions, contexts, strict=True)):
+        value = evaluate(node, context)
         if value == UNKNOWN:
             continue
         truth = TRUE if transition.completed else FALSE
@@ -509,6 +563,8 @@ def consistent_with(
             contradicted_at = index
             break
         definite_correct += 1
+        if transition.completed:
+            positives_matched += 1
     if contradicted_at is not None:
         outcome = "falsified"
     elif definite_correct:
@@ -519,14 +575,10 @@ def consistent_with(
         "outcome": outcome,
         "definite_correct": definite_correct,
         "contradicted_at": contradicted_at,
-        "positives_matched": sum(
-            1
-            for transition in transitions
-            if transition.completed
-            and predict_transition(node, transition.pre, transition.post) == TRUE
-        )
-        if outcome != "falsified"
-        else 0,
+        # A candidate that reached the end without contradiction and matched a completion
+        # is definite-and-correct there by construction, so this is a count of the
+        # positives it actually fired on — not a second evaluation pass.
+        "positives_matched": 0 if outcome == "falsified" else positives_matched,
     }
 
 
