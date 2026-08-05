@@ -13,6 +13,11 @@ of the games it actually cleared. A quick scan (re-derive in step 0) says S1 cle
 least one level on **4 of 18 games it ran — ar25, sp80, tn36, vc33** — and never scored
 on 14, including five of the six slice iteration games.
 
+> **Superseded 2026-08-05 — kept because H was framed on it.** Those figures are the
+> *local MLX replication*. On the reference stack the positive set is **17 of 25 games,
+> 42 of 75 passes**. The success side is an order of magnitude larger than this paragraph
+> assumes, and "never scored on 14" is false of the reference. See Inputs and results §0.
+
 **The hypothesis under test (H):** the cleared set is exactly the set where the default
 goal prior — the "clear the board"/obvious-visual-goal shape that the slice autopsy
 showed dominating Qwen's goal channel (2 right / 8 wrong) — happens to match the true
@@ -31,15 +36,41 @@ only — no design decisions in this note.
 
 ## Inputs (verified to exist)
 
-- **Runs**: `logs/runs/` — 29 directories, each with `artifacts/*_events.jsonl` (+
-  `*_viewer_data.json`), `transcripts/`, `prompts/`, `requests.jsonl`, `run_config.json`,
-  `deploy_meta.json`, `stdout.log`. Anything under `logs/quarantine/` is excluded.
-- **Working split (w)** — derived by a quick scan of the `score` field in events.jsonl;
-  re-derive before use and verify the semantics (score increment = level completed)
-  against viewer_data or stdout on one known case:
-  cleared: ar25, sp80, tn36, vc33 (max score 1 each) · stalled at 0: bp35, cn04, ft09,
-  g50t, ka59, lf52, lp85, ls20, m0r0, r11l, re86, tr87, tu93, wa30 · ~7 public games
-  never ran in these dirs (incl. dc22).
+> **Lineage corrected 2026-08-05.** As first written, this section named `logs/runs/` as
+> "the runs" and gave its 4-of-18 split as the working split for S1. That is the **local
+> MLX replication line, not the reference stack** — the error is corrected in place below
+> because the note had not yet been acted on, and the superseded claim plus its
+> consequences are recorded in results §0. The task's own step 0 lineage check is what
+> caught it.
+
+- **Runs — two corpora, not one. `ref` carries the analysis.**
+  - **`ref` (reference stack, use this):** `logs/kaggle_v2`, `logs/kaggle_v3`,
+    `logs/kaggle_v4` — duck-harness on Kaggle, vLLM **FP8**, reasoning parser on
+    (`[THINKING]` present in every turn). 3 passes × 25 games = 75 game-passes. Each dir
+    has `artifacts/*_events.jsonl` (+ `*_viewer_data.json`), `transcripts/`, `prompts/`,
+    per-game `*_requests.jsonl`, `benchmark.json`, `summary.txt`, `per_game_analysis.json`,
+    `vllm-openai-server.log`. No `run_config.json`/`deploy_meta.json` in these dirs.
+    **This is the corpus the standing `goal_unknown` result is keyed to** — every episode
+    id in the s1d corpus is `kaggle_v{2,3,4}::<game>_p0::L<n>`.
+  - **`local` (replication, report but do not generalize from):** `logs/runs/` — 29
+    directories with `artifacts/`, `transcripts/`, `prompts/`, `requests.jsonl`,
+    `run_config.json`, `deploy_meta.json`, `stdout.log`; 36 game-passes over 18 games.
+    `run_config.json` names local MLX weights (`Qwen3.6-27B-4bit`, 28 passes;
+    `-8bit`, 8 passes) and `deploy_meta.json` gives
+    `target_class: taaf.deploy_inline.InlineTarget` on the laptop. Arms are heterogeneous
+    (`a6c1`, `8bit`, `kb2`, `c2`, `d13c2`, `l2c2`) and passes per game are uneven (1–4).
+  - `logs/quarantine/` excluded. `logs/kaggle-reference` (2026-07-26, the first
+    duck-harness measurement) is **summary only — no event artifacts, no transcripts**, so
+    it cannot enter step 1; cite it for context only.
+- **Working split (w)** — derive from the `score` field in events.jsonl and verify the
+  semantics (score increment = level completed) against viewer_data on one known case:
+  - **ref:** 17 of 25 games clear L1 in ≥1 of 3 passes; 42 of 75 passes clear L1 (5 also
+    clear L2). Never cleared in any pass: cn04, dc22, g50t, ls20, sc25, sk48, tr87, wa30.
+  - **local:** cleared ar25, sp80, tn36, vc33 (max score 1 each) · stalled at 0: bp35,
+    cn04, ft09, g50t, ka59, lf52, lp85, ls20, m0r0, r11l, re86, tr87, tu93, wa30 · 7
+    public games never ran in these dirs (cd82, dc22, s5i5, sb26, sc25, sk48, su15).
+  - ⚠ The two disagree on more than volume: tu93 clears 3/3 in `ref` and 0/2 in `local`.
+    Never carry a `local` outcome into a claim about the reference.
 - **Stall labels**: `s1d_*` files in `logs/` (draw, pass2, worksheet, result lock) and
   the labeling harness on the archive branch. Inventory what the final labeled corpus is;
   read the archive via `git show archive/screening-line-2026-08-04:<path>` — **do not
@@ -54,12 +85,15 @@ only — no design decisions in this note.
 
 ## Step 0 — verify the split, name the arms
 
-Re-derive per-game outcomes from `events.jsonl` across all 29 runs (script it — a small
-committed `agent/harness/s1_contrast.py` is welcome; tables from scripts, not by hand).
-Group runs by prompt variant from `run_config.json` (kb2, a6c1, d13, dense, supervisor,
-…) and report coverage per arm — passes per game are uneven (1–4). Confirm from
-`deploy_meta.json` that analyzed runs are the reference-stack lineage; flag any that are
-not rather than silently including them.
+Re-derive per-game outcomes from `events.jsonl` across **both** corpora — the 3 `ref` runs
+and the 29 `local` run dirs (script it — a small committed
+`agent/harness/s1_contrast.py` is welcome; tables from scripts, not by hand). For `local`,
+group runs by prompt variant from `run_config.json` (kb2, a6c1, d13, dense, supervisor, …)
+and report coverage per arm — passes per game are uneven (1–4); for `ref` the arm is the
+run dir. Confirm the lineage of everything analyzed — `run_config.json`/`deploy_meta.json`
+where present, the server log otherwise — and flag anything that is not the reference stack
+rather than silently including it. **This check is what caught the Inputs error above; do
+not skip it on the assumption that the section is now right.**
 
 ## Step 1 — the positive set (the new work)
 
@@ -79,8 +113,8 @@ classification is the heart of the task; support every label with trace text.
 
 ## Step 2 — true-goal shapes
 
-From game source, classify the true L1 completion condition of **all 18 run games** (not
-just the cleared 4) as prior-compatible ("clear/remove/fill all X"-shaped or visually
+From game source, classify the true L1 completion condition of **all 25 games in `ref`**
+(not just the ones that cleared) as prior-compatible ("clear/remove/fill all X"-shaped or visually
 self-announcing) or not. Both directions matter: a **prior-compatible game that
 stalled** weakens H unless its stall label says the block was mechanics, not goal —
 check the label.
@@ -95,6 +129,13 @@ primary stall cause (existing s1d labels; no re-labeling) × slice goal-channel 
   where the slice goal channel ever reasoned to a correct goal (colour-14 inertness).
 - **m0r0** — stalled after 36 events; the game whose hidden state the slice channel
   identified 4/4.
+
+> **Both figures corrected 2026-08-05, same lineage error.** They are `local` counts.
+> In `ref`, tu93 clears L1 in **all three passes** (and L2 in two) and is never labelled
+> `goal_unknown` — so it is a *concordance* case with the slice channel, not an
+> anti-example. m0r0's 36 events is one local pass; in `ref` it stalls with
+> `goal_unknown` at 206 and 219 actions and clears once, accidentally. m0r0 survives as
+> the anti-example; tu93 does not. Details in results §3.
 
 ## Step 4 — verdict
 
