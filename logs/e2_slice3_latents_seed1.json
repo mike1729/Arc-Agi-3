@@ -1,0 +1,17 @@
+{
+  "generated_by": "agent/harness/e2_slice.py --seed 1",
+  "specs": [
+    {
+      "as_written": "actions_total",
+      "definition": "actions_total",
+      "game": "m0r0",
+      "name": "global_step"
+    },
+    {
+      "as_written": "actions_since_reset[reset_excluded]",
+      "definition": "actions_since_reset[reset_excluded]",
+      "game": "m0r0",
+      "name": "session_step"
+    }
+  ]
+}

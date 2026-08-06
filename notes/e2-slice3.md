@@ -598,3 +598,177 @@ before — tu93 has 71 tokens of headroom — because the lineage lines and the 
 are real additions, and because the chat template is now counted rather than approximated.
 
 Slice-2 prompt reproduction **8/8 byte-for-byte**. Contamination **0 hits across 8 prompts**.
+
+---
+
+# RUN RESULTS — night of 2026-08-05/06
+
+Ran in worktree `/Users/michal/Workspace/ship-slice3` pinned at **`1f76bbc`**, as the
+assertion required. 16 F cells + 5 FB turns, ~7.5 h wall. Outputs
+`logs/e2_slice3_seed{1,2}.json` (`format_version 3`), latents specs
+`logs/e2_slice3_latents_seed{1,2}.json`, verified
+`logs/e2_slice3_latents_seed{1,2}_verified.json`. The result JSONs carry counts and the
+model's structured answer only — **no prompts, no think text, no grids** — so they are
+committed; raw traces stayed in the worktree, per the tightened PUBLISHING rule.
+
+**Pre-flight deviation, accepted:** the run agent re-ran the think-budget probe on
+**tu93** (the largest cell, 39,929 F tokens) rather than m0r0, and overwrote
+`logs/e2_slice3_budget_probe.json`. Stricter than specified and it passed — think closed
+at token 6,376 with 9,674 spare of 16,384. The m0r0 probe it replaced is in git history.
+
+## Instrument — held, and that is a real result
+
+16/16 mechanical thinking verdicts pass (opened · closed · substantive · answer
+non-empty · no prefilled empty think). **0 voids, 0 extract retries** (`extract_attempts`
+= 1 on every cell). Parse 15/16 — one `prose_rejected` (sp80 seed 2, `col_aligned(c9, c4)`,
+a two-object form the grammar does not take).
+
+Think length 19.8k–36.7k chars (slice 2: 19.6k–27.4k) — **up ~15% at the median under 5×
+the prompt.** Decode 8.3–8.6 tok/s, prefill 335–379 tok/s, mean 1,317 s/cell.
+
+> **The context-length cost is not a capability cost.** At ~100k-char prompts the
+> instrument did not degrade: no truncation, no void, no retry, thinking longer rather
+> than shorter. Whatever slice 3 failed at, it did not fail because 40k tokens broke the
+> decode path.
+
+## Channel A — **0/16 on clause 1. Dead, same as slice 2.**
+
+| | slice 2 (~19.4k, no boards) | slice 3 (~39k, boards + record) |
+|---|---:|---:|
+| store-survived | 7/16 | **9/16** |
+| ∧ novel (outside prior library and its shape space) | 2/16 | **4/16** |
+| ∧ source-correct | **0/16** | **0/16** |
+
+The mechanical numbers moved; the verdict did not. Adjudication against source (labels
+and paraphrase only) killed all four survivors:
+
+- **ft09** (`count(c9) = 12`, both seeds) — the real condition is a **per-tile
+  constraint-satisfaction check**: every tile carries, in its own pixel pattern, a
+  same/different requirement for each of its 8 neighbours, and the level clears when
+  every tile satisfies all eight. A global colour count is not close.
+- **vc33** (`count(c7) = 32`) — the real condition is a **cross-class relational match**
+  (each object of one class must be matched by an object of another sharing a colour and
+  a coordinate relation, with a reachability side-condition).
+- **sp80** (`count(c14) = 30`) — real condition is a **containment property of a spreading
+  region**. Also the one predicate the completion frames could grade positively, and it
+  is **false at the true completion** (`false_negative: true`).
+- **lf52** (`empty(c14)`) — in the prior library, and also `false_negative: true`.
+
+### The two findings that matter more than the verdict
+
+**1. The DSL cannot express roughly half of these goals.** Adjudicated per game — real
+condition vs the row-C predicate grammar:
+
+| game | real completion condition (paraphrase) | expressible? |
+|---|---|---|
+| tu93 | every token stands exactly on an exit tile | yes (as `all…exists…bbox_overlap`) |
+| dc22 | the player sprite coincides with the goal sprite | **approximable only** — grammar has overlap, not coincidence |
+| ls20 | every collectible walked onto and removed | approximable (`empty`) |
+| m0r0 | every target collected / made intangible | approximable (`empty`) |
+| ft09 | per-tile 8-neighbour same/different constraints all satisfied | **no** |
+| vc33 | cross-class relational match + reachability | **no** |
+| sp80 | spreading region contained in an allowed set | **no** |
+| lf52 | flag set by an internal state machine | unresolved (likely no) |
+
+Zero-tolerance grading against a language that cannot state the answer measures the
+language. **Three of eight games were unwinnable by construction**, and this was not
+known when the caps and the grader were pre-registered.
+
+**2. Zero-tolerance killed a structurally correct answer.** dc22 seed 2 answered
+`all x in c14: exists y in c8: bbox_overlap(x, y)` with the free-form gloss "the green
+block must be maneuvered until it overlaps the red block" — that **is** the real
+condition (player-onto-goal coincidence), and it is the closest the grammar can get.
+Graded **falsified**: 3 false positives in 2,939 transitions (0.10%), first at step 1578
+— exactly the gap between *overlap* and *coincidence*. A contradiction **rate** would
+have reported this as the near-miss it is; the binary reported it as a failure
+indistinguishable from `count(c0) = 11`.
+
+### Free-form goal — the understanding diagnostic (never a control win)
+
+Given on 13/16 (missing: ft09 s2, sp80 s2, lf52 s2 — a slot the model silently skipped).
+Adjudicated against source: **3/13 correct in kind** (dc22 s2, ls20 both), **3 partial**
+(tu93 both — right objects and right mechanism, wrong relation: *adjacent* where the
+truth is *coincident*, and *exists* where the truth is *all*), 7 wrong.
+
+> **The prose is better than the predicate.** 3 right and 3 near-right in prose against
+> 0/16 in the DSL, on identical evidence in the same generation. The bottleneck exposed
+> tonight is **expression, not perception.** Slice 2 had no such slot, so this has no
+> baseline — but it is the first positive signal from Qwen3.6 in this line.
+
+## Channel B — 5/5 latents rejected, and **the rejection is about m0r0, not about Qwen**
+
+m0r0 is the only slice game with an alias exhibit, so the request fired there and was
+suppressed on the other seven, as designed. 5 latents proposed across seeds, **0
+`prose_rejected`** — all five parsed in the counter grammar. All five lose to at least
+one of the 5 seeded random controls (`logs/e2_slice3_latents_seed{1,2}_verified.json`).
+
+But seed 2's first proposal was `actions_since_reset[reset_excluded] mod 2` — **verbatim
+the `c2_episode` arm** that `e2_hidden_state` was built to test, i.e. the hypothesis a
+human expert wrote down by hand. It is rejected on the same criterion. So the honest
+reading is: **the model produced the right hypothesis and the environment does not reward
+it.** Channel B as specified cannot distinguish "the model proposes badly" from "m0r0 has
+no load-bearing latent to propose", and on this evidence it is the latter.
+
+## Channel C — **the one channel that measurably improved**
+
+Proposals naming a genuinely unresolved forward-model key:
+
+| | slice 2 | slice 3 |
+|---|---:|---:|
+| targeting a real unresolved key | 6/31 (19%) | **16/31 (52%)** |
+
+Seed 1 6/16, seed 2 10/15. **Not pooled for the two budget-starved games**, per the
+pre-committed caveat: sp80 was shown 3 of its 12 unresolved keys (its 1 hit is out of 2
+proposals) and dc22 12 of 14 (1 of 2). The other six were shown their keys in full and
+carry the result.
+
+Nothing over the cap; 0 malformed. Implementation queue (distinct, worth building):
+`min_row/min_col` of the moving object (m0r0, ls20, tu93 — four independent proposals),
+`size(clicked)` (lf52), `enclosed_by(c4)` (ft09), `col_aligned(c9, c6)` (sp80).
+
+## Arm FB — mechanically 3/5, substantively **0/5**
+
+| game | before | after | mechanical | what actually happened |
+|---|---|---|---|---|
+| dc22 | `count(c0) = 11` falsified, 49 fp | `empty(c0)` survived | repaired | **into the prior library** |
+| m0r0 | quantified form, 2,943 fp (true everywhere) | `exactly_one(c10)` survived | repaired | **into the prior library** |
+| sp80 | `count(c14) = 30`, false at completion | `empty(c11)` survived | repaired | **into the prior library** |
+| ls20 | `empty(c0) and empty(c1)`, 13 fp | `empty(c11)`, 90 fp | not repaired | worse |
+| lf52 | `empty(c14)` survived, false at completion | `empty(c2)`, 91 fp | not repaired | **survived → falsified** |
+
+Every "repair" is a retreat to a stock shape that survives because it is nearly never
+true. The counterexample turn as specified teaches *avoid contradiction*, not *be right*
+— and with no positive example to satisfy, the vacuous predicate is the optimal play.
+**The arm is not neutral, it is anti-correlated with correctness. Do not carry it
+forward unchanged.**
+
+## The structural defect this night exposed
+
+**Six of eight games have no captured completion**, so `store_consistency` only ever
+checked the negative direction — "never true at a non-terminal state". A predicate that
+is essentially never true passes. Of the 9/16 "survived" cells, **7 were graded on the
+negative direction alone.** The two that could be graded both ways — sp80 and lf52 — are
+**both false at the real completion**, caught only by the new mechanical falsification.
+
+That is the finding: on every cell where the grader could actually check correctness,
+the model was wrong, and on every cell where it could not, the model "passed".
+`e3_completion_capture.py` has completions for sp80, lf52, lp85, r11l. **Extending it to
+the remaining six is zero-model, and it is the highest-value single change available.**
+
+## Evidence ids
+
+Cited 3–11 per cell; resolvable 55/64 seed 1 and near-total seed 2; 0 malformed. The
+unresolvable ones are category names rather than ids ("OBJECT CENSUS", "negative
+evidence", "causal episode"). m0r0 seed 1 is the outlier — 0 of 4 resolvable, all four
+prose descriptions. The check is existence, not support; no cell fabricated an id.
+
+## Verdicts, one line each, each against its control
+
+- **Channel A: dead** — 0/16 source-correct, unchanged from slice 2 under 5× the context.
+  But the verdict is **partly uninterpretable**: 3 of 8 games could not be answered in the
+  grammar, and one structurally correct answer was failed by a binary threshold.
+- **Channel B: no verdict available** — 5/5 rejected, but the expert hypothesis is among
+  the rejected, so the control is measuring the game.
+- **Channel C: alive** — 52% vs 19% targeting, on the same games and the same key lists.
+- **Instrument: passed** — 16/16 verdicts, 0 voids, longer thinking at 5× context.
+- **Arm FB: harmful as specified** — 0/5 substantive repairs, 1 regression.

@@ -1,0 +1,23 @@
+{
+  "generated_by": "agent/harness/e2_slice.py --seed 2",
+  "specs": [
+    {
+      "as_written": "actions_since_reset[reset_excluded] mod 2",
+      "definition": "actions_since_reset[reset_excluded] mod 2",
+      "game": "m0r0",
+      "name": "actions_since_reset[reset_excluded] mod 2"
+    },
+    {
+      "as_written": "actions_of(1)_since_reset[reset_excluded] mod 2",
+      "definition": "actions_of(1)_since_reset[reset_excluded] mod 2",
+      "game": "m0r0",
+      "name": "actions_of(1)_since_reset[reset_excluded] mod 2"
+    },
+    {
+      "as_written": "actions_total mod 2",
+      "definition": "actions_total mod 2",
+      "game": "m0r0",
+      "name": "actions_total mod 2"
+    }
+  ]
+}

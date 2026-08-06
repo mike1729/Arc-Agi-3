@@ -1,13 +1,13 @@
 {
-  "game": "m0r0",
+  "game": "tu93",
   "gate": "PASS",
   "generation": {
-    "answer_chars": 1010,
-    "closing_tag_at_token": 6178,
-    "spare_tokens": 9930,
-    "think_chars": 21284,
-    "think_tokens": 6177,
-    "total_tokens": 6454
+    "answer_chars": 1187,
+    "closing_tag_at_token": 6376,
+    "spare_tokens": 9674,
+    "think_chars": 19782,
+    "think_tokens": 6375,
+    "total_tokens": 6710
   },
   "model": "/Users/michal/models/mlx/Qwen3.6-27B-8bit",
   "note": "notes/e2-slice3.md build item 6; protocol notes/think-budget-recheck.md",
@@ -17,29 +17,29 @@
       "alias_examples": 2,
       "completion_diffs": 12,
       "completion_frames": 3,
-      "diff_cells": 6,
-      "entity_columns": "compact",
-      "episode_steps": 12,
-      "gallery_examples": 1,
-      "gallery_keys": 5,
-      "global_examples": 1,
-      "key_examples": 1,
+      "diff_cells": 10,
+      "entity_columns": "full",
+      "episode_steps": 45,
+      "gallery_examples": 2,
+      "gallery_keys": 8,
+      "global_examples": 2,
+      "key_examples": 2,
       "max_entities": 80,
       "refuted_examples": 2,
-      "snapshots": 1,
+      "snapshots": 2,
       "unresolved_keys": 12
     },
-    "chars": 101240,
-    "fb_chat_tokens": 41510,
-    "tokens": 38315,
-    "trim_step": 9
+    "chars": 109831,
+    "fb_chat_tokens": 42901,
+    "tokens": 39929,
+    "trim_step": 1
   },
   "seed": 1,
   "think_budget": 16384,
   "timing": {
-    "generation_tps": 8.408893353738351,
-    "prompt_tps": 331.1977411230408,
-    "wall_seconds": 883.5
+    "generation_tps": 8.281682910896091,
+    "prompt_tps": 295.933741506512,
+    "wall_seconds": 945.4
   },
   "verdict": {
     "answer_nonempty": true,
