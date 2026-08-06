@@ -1,0 +1,430 @@
+{
+ "format_version": 1,
+ "generated_by": "agent/harness/e2_regrade_slice3.py",
+ "note": "notes/e2-slice3.md RUN RESULTS \u2014 the night re-graded under the fixed grader",
+ "level": 1,
+ "corpus": "human_replays (positives and negatives); the night graded negatives on the explorer store",
+ "tally": {
+  "vacuous": 10,
+  "unreachable": 4,
+  "prose_rejected": 1,
+  "correct": 1
+ },
+ "cells": [
+  {
+   "game": "dc22",
+   "as_written": "count(c0) = 11",
+   "night_status": "parsed",
+   "night_outcome": "falsified",
+   "free_form": "The level completes when the bottom-most row (row 63) is entirely converted to dark gray (colour 3), eliminating the bottom white strip and leaving exactly 11 white (colour 0) components on the board.",
+   "status": "parsed",
+   "canonical": "count(c0) = 11",
+   "human": {
+    "positives": 9,
+    "fires_at": 0,
+    "positive_unknown": 0,
+    "negatives_decidable": 631,
+    "false_positives": 0,
+    "negative_error_rate": 0.0,
+    "holds_at_every_completion": false,
+    "fires_only_at_completions": true
+   },
+   "target": {
+    "expressible": true,
+    "simplest": "empty(c11)",
+    "separators": 145,
+    "best_rate": 0.0
+   },
+   "verdict": "vacuous",
+   "seed": 1
+  },
+  {
+   "game": "ft09",
+   "as_written": "count(c9) = 12",
+   "night_status": "parsed",
+   "night_outcome": "survived",
+   "free_form": "The level completes when all blue blocks enclosed by the large off-black frame have been converted to red, leaving exactly 12 blue blocks on the board.",
+   "status": "parsed",
+   "canonical": "count(c9) = 12",
+   "human": {
+    "positives": 4,
+    "fires_at": 0,
+    "positive_unknown": 0,
+    "negatives_decidable": 456,
+    "false_positives": 28,
+    "negative_error_rate": 0.061404,
+    "holds_at_every_completion": false,
+    "fires_only_at_completions": false
+   },
+   "target": {
+    "expressible": false,
+    "simplest": null,
+    "separators": 0,
+    "best_rate": 0.129386
+   },
+   "verdict": "unreachable",
+   "seed": 1
+  },
+  {
+   "game": "ls20",
+   "as_written": "empty(c0) and empty(c1)",
+   "night_status": "parsed",
+   "night_outcome": "falsified",
+   "free_form": "The goal is reached when the moving orange/blue (c12/c9) block has passed over the white (c0) and off-white (c1) objects, causing them to disappear permanently from the play area.",
+   "status": "parsed",
+   "canonical": "empty(c0) and empty(c1)",
+   "human": {
+    "positives": 9,
+    "fires_at": 0,
+    "positive_unknown": 0,
+    "negatives_decidable": 469,
+    "false_positives": 45,
+    "negative_error_rate": 0.095949,
+    "holds_at_every_completion": false,
+    "fires_only_at_completions": false
+   },
+   "target": {
+    "expressible": true,
+    "simplest": "count(c9) = 3",
+    "separators": 16,
+    "best_rate": 0.0
+   },
+   "verdict": "vacuous",
+   "seed": 1
+  },
+  {
+   "game": "m0r0",
+   "as_written": "all x in c10: exists y in c10: col_aligned(x, y)",
+   "night_status": "parsed",
+   "night_outcome": "falsified",
+   "free_form": "The level completes when both light blue 5\u00d75 squares are positioned in the same column.",
+   "status": "parsed",
+   "canonical": "all x in c10: exists y in c10: col_aligned(x, y)",
+   "human": {
+    "positives": 11,
+    "fires_at": 11,
+    "positive_unknown": 0,
+    "negatives_decidable": 332,
+    "false_positives": 332,
+    "negative_error_rate": 1.0,
+    "holds_at_every_completion": true,
+    "fires_only_at_completions": false
+   },
+   "target": {
+    "expressible": false,
+    "simplest": null,
+    "separators": 0,
+    "best_rate": 0.03012
+   },
+   "verdict": "unreachable",
+   "seed": 1
+  },
+  {
+   "game": "tu93",
+   "as_written": "exists x in c4: exists y in c14: adjacent(x, y)",
+   "night_status": "parsed",
+   "night_outcome": "survived",
+   "free_form": "The off-black 1\u00d71 token must be maneuvered until it occupies a cell directly 4-adjacent to the green 3\u00d73 target block.",
+   "status": "parsed",
+   "canonical": "exists x in c4: exists y in c14: adjacent(x, y)",
+   "human": {
+    "positives": 5,
+    "fires_at": 0,
+    "positive_unknown": 0,
+    "negatives_decidable": 257,
+    "false_positives": 0,
+    "negative_error_rate": 0.0,
+    "holds_at_every_completion": false,
+    "fires_only_at_completions": true
+   },
+   "target": {
+    "expressible": true,
+    "simplest": "empty(c14)",
+    "separators": 87,
+    "best_rate": 0.0
+   },
+   "verdict": "vacuous",
+   "seed": 1
+  },
+  {
+   "game": "vc33",
+   "as_written": "count(c7) = 32",
+   "night_status": "parsed",
+   "night_outcome": "survived",
+   "free_form": "The goal is to reduce the top pink bar (c7) to exactly half its initial width (32 cells).",
+   "status": "parsed",
+   "canonical": "count(c7) = 32",
+   "human": {
+    "positives": 8,
+    "fires_at": 0,
+    "positive_unknown": 0,
+    "negatives_decidable": 128,
+    "false_positives": 0,
+    "negative_error_rate": 0.0,
+    "holds_at_every_completion": false,
+    "fires_only_at_completions": true
+   },
+   "target": {
+    "expressible": true,
+    "simplest": "none x in c0: exists y in c11: col_aligned(x, y)",
+    "separators": 4,
+    "best_rate": 0.0
+   },
+   "verdict": "vacuous",
+   "seed": 1
+  },
+  {
+   "game": "sp80",
+   "as_written": "count(c14) = 30",
+   "night_status": "parsed",
+   "night_outcome": "survived",
+   "free_form": "The level completes when the green horizontal bar at the top of the grid has been reduced to exactly 30 cells in length.",
+   "status": "parsed",
+   "canonical": "count(c14) = 30",
+   "human": {
+    "positives": 8,
+    "fires_at": 0,
+    "positive_unknown": 0,
+    "negatives_decidable": 301,
+    "false_positives": 0,
+    "negative_error_rate": 0.0,
+    "holds_at_every_completion": false,
+    "fires_only_at_completions": true
+   },
+   "target": {
+    "expressible": true,
+    "simplest": "empty(c9)",
+    "separators": 323,
+    "best_rate": 0.0
+   },
+   "verdict": "vacuous",
+   "seed": 1
+  },
+  {
+   "game": "lf52",
+   "as_written": "empty(c14)",
+   "night_status": "parsed",
+   "night_outcome": "survived",
+   "free_form": "The level completes when all green (colour 14) objects have been removed from the play area.",
+   "status": "parsed",
+   "canonical": "empty(c14)",
+   "human": {
+    "positives": 10,
+    "fires_at": 0,
+    "positive_unknown": 0,
+    "negatives_decidable": 302,
+    "false_positives": 31,
+    "negative_error_rate": 0.102649,
+    "holds_at_every_completion": false,
+    "fires_only_at_completions": false
+   },
+   "target": {
+    "expressible": true,
+    "simplest": "count(c1) = 37",
+    "separators": 4,
+    "best_rate": 0.0
+   },
+   "verdict": "vacuous",
+   "seed": 1
+  },
+  {
+   "game": "dc22",
+   "as_written": "all x in c14: exists y in c8: bbox_overlap(x, y)",
+   "night_status": "parsed",
+   "night_outcome": "falsified",
+   "free_form": "The 2x2 green block (c14) must be maneuvered using the directional simple actions until it overlaps the red block (c8) in the upper-left quadrant.",
+   "status": "parsed",
+   "canonical": "all x in c14: exists y in c8: bbox_overlap(x, y)",
+   "human": {
+    "positives": 9,
+    "fires_at": 0,
+    "positive_unknown": 0,
+    "negatives_decidable": 631,
+    "false_positives": 133,
+    "negative_error_rate": 0.210777,
+    "holds_at_every_completion": false,
+    "fires_only_at_completions": false
+   },
+   "target": {
+    "expressible": true,
+    "simplest": "empty(c11)",
+    "separators": 145,
+    "best_rate": 0.0
+   },
+   "verdict": "vacuous",
+   "seed": 2
+  },
+  {
+   "game": "ft09",
+   "as_written": "count(c9) = 12",
+   "night_status": "parsed",
+   "night_outcome": "survived",
+   "free_form": "",
+   "status": "parsed",
+   "canonical": "count(c9) = 12",
+   "human": {
+    "positives": 4,
+    "fires_at": 0,
+    "positive_unknown": 0,
+    "negatives_decidable": 456,
+    "false_positives": 28,
+    "negative_error_rate": 0.061404,
+    "holds_at_every_completion": false,
+    "fires_only_at_completions": false
+   },
+   "target": {
+    "expressible": false,
+    "simplest": null,
+    "separators": 0,
+    "best_rate": 0.129386
+   },
+   "verdict": "unreachable",
+   "seed": 2
+  },
+  {
+   "game": "ls20",
+   "as_written": "empty(c0) and empty(c1)",
+   "night_status": "parsed",
+   "night_outcome": "falsified",
+   "free_form": "The level is complete when all white and off-white blocks have been collected and removed from the board.",
+   "status": "parsed",
+   "canonical": "empty(c0) and empty(c1)",
+   "human": {
+    "positives": 9,
+    "fires_at": 0,
+    "positive_unknown": 0,
+    "negatives_decidable": 469,
+    "false_positives": 45,
+    "negative_error_rate": 0.095949,
+    "holds_at_every_completion": false,
+    "fires_only_at_completions": false
+   },
+   "target": {
+    "expressible": true,
+    "simplest": "count(c9) = 3",
+    "separators": 16,
+    "best_rate": 0.0
+   },
+   "verdict": "vacuous",
+   "seed": 2
+  },
+  {
+   "game": "m0r0",
+   "as_written": "all x in c10: exists y in c0: adjacent(x, y)",
+   "night_status": "parsed",
+   "night_outcome": "survived",
+   "free_form": "The level completes when both light blue (c10) squares are moved to the top row of the grid, making them 4-adjacent to the white (c0) counter strip that grows along row 0.",
+   "status": "parsed",
+   "canonical": "all x in c10: exists y in c0: adjacent(x, y)",
+   "human": {
+    "positives": 11,
+    "fires_at": 0,
+    "positive_unknown": 0,
+    "negatives_decidable": 332,
+    "false_positives": 0,
+    "negative_error_rate": 0.0,
+    "holds_at_every_completion": false,
+    "fires_only_at_completions": true
+   },
+   "target": {
+    "expressible": false,
+    "simplest": null,
+    "separators": 0,
+    "best_rate": 0.03012
+   },
+   "verdict": "unreachable",
+   "seed": 2
+  },
+  {
+   "game": "tu93",
+   "as_written": "exists x in c9: exists y in c14: adjacent(x, y)",
+   "night_status": "parsed",
+   "night_outcome": "survived",
+   "free_form": "The blue 3x3 token must be navigated through the gray wall maze until it is directly adjacent to the stationary green 3x3 target block.",
+   "status": "parsed",
+   "canonical": "exists x in c9: exists y in c14: adjacent(x, y)",
+   "human": {
+    "positives": 5,
+    "fires_at": 0,
+    "positive_unknown": 0,
+    "negatives_decidable": 257,
+    "false_positives": 0,
+    "negative_error_rate": 0.0,
+    "holds_at_every_completion": false,
+    "fires_only_at_completions": true
+   },
+   "target": {
+    "expressible": true,
+    "simplest": "empty(c14)",
+    "separators": 87,
+    "best_rate": 0.0
+   },
+   "verdict": "vacuous",
+   "seed": 2
+  },
+  {
+   "game": "vc33",
+   "as_written": "all x in c11: exists y in c9: bbox_overlap(x, y)",
+   "night_status": "parsed",
+   "night_outcome": "survived",
+   "free_form": "The goal is to repeatedly click the blue (c9) blocks to shift the yellow (c11) blocks rightward until both yellow blocks overlap the blue blocks at the right edge of the board.",
+   "status": "parsed",
+   "canonical": "all x in c11: exists y in c9: bbox_overlap(x, y)",
+   "human": {
+    "positives": 8,
+    "fires_at": 0,
+    "positive_unknown": 0,
+    "negatives_decidable": 128,
+    "false_positives": 0,
+    "negative_error_rate": 0.0,
+    "holds_at_every_completion": false,
+    "fires_only_at_completions": true
+   },
+   "target": {
+    "expressible": true,
+    "simplest": "none x in c0: exists y in c11: col_aligned(x, y)",
+    "separators": 4,
+    "best_rate": 0.0
+   },
+   "verdict": "vacuous",
+   "seed": 2
+  },
+  {
+   "game": "sp80",
+   "as_written": "col_aligned(c9, c4)",
+   "night_status": "prose_rejected",
+   "night_outcome": null,
+   "free_form": "",
+   "status": "prose_rejected",
+   "verdict": "prose_rejected",
+   "seed": 2
+  },
+  {
+   "game": "lf52",
+   "as_written": "count(c14) = 1",
+   "night_status": "parsed",
+   "night_outcome": "survived",
+   "free_form": "",
+   "status": "parsed",
+   "canonical": "count(c14) = 1",
+   "human": {
+    "positives": 10,
+    "fires_at": 10,
+    "positive_unknown": 0,
+    "negatives_decidable": 302,
+    "false_positives": 0,
+    "negative_error_rate": 0.0,
+    "holds_at_every_completion": true,
+    "fires_only_at_completions": true
+   },
+   "target": {
+    "expressible": true,
+    "simplest": "count(c1) = 37",
+    "separators": 4,
+    "best_rate": 0.0
+   },
+   "verdict": "correct",
+   "seed": 2
+  }
+ ]
+}

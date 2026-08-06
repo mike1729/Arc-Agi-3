@@ -1,0 +1,1235 @@
+{
+ "format_version": 1,
+ "generated_by": "agent/harness/e2_expressibility.py",
+ "note": "notes/e2-slice3.md RUN RESULTS \u2014 is the goal sayable in the goal grammar",
+ "level": 1,
+ "results": [
+  {
+   "game": "dc22",
+   "level": 1,
+   "vocab": "v1",
+   "searched": true,
+   "positives": 9,
+   "negatives": 631,
+   "colours": [
+    0,
+    2,
+    3,
+    4,
+    5,
+    8,
+    9,
+    11,
+    13,
+    14
+   ],
+   "candidates": 1825,
+   "true_at_every_completion": 376,
+   "separators": 46,
+   "expressible": true,
+   "simplest": {
+    "predicate": "empty(c11)",
+    "skeleton": "empty(c0)",
+    "clauses": 1,
+    "false_positives": 0,
+    "negatives_decidable": 631,
+    "negatives_unknown": 0,
+    "contradiction_rate": 0.0
+   },
+   "examples": [
+    {
+     "predicate": "empty(c11)",
+     "skeleton": "empty(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 631,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c11) = 0",
+     "skeleton": "count(c0) = 0",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 631,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "disappears(c11)",
+     "skeleton": "disappears(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 631,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c11: exists y in c0: adjacent(x, y)",
+     "skeleton": "all x in c0: exists y in c1: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 631,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c11: exists y in c3: adjacent(x, y)",
+     "skeleton": "all x in c0: exists y in c1: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 611,
+     "negatives_unknown": 20,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c11: exists y in c4: adjacent(x, y)",
+     "skeleton": "all x in c0: exists y in c1: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 409,
+     "negatives_unknown": 222,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c11: exists y in c5: adjacent(x, y)",
+     "skeleton": "all x in c0: exists y in c1: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 242,
+     "negatives_unknown": 389,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c11: exists y in c8: adjacent(x, y)",
+     "skeleton": "all x in c0: exists y in c1: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 631,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    }
+   ],
+   "closest_miss": null,
+   "seconds": 24.6
+  },
+  {
+   "game": "dc22",
+   "level": 1,
+   "vocab": "v2",
+   "searched": true,
+   "positives": 9,
+   "negatives": 631,
+   "colours": [
+    0,
+    2,
+    3,
+    4,
+    5,
+    8,
+    9,
+    11,
+    13,
+    14
+   ],
+   "candidates": 4325,
+   "true_at_every_completion": 1156,
+   "separators": 145,
+   "expressible": true,
+   "simplest": {
+    "predicate": "empty(c11)",
+    "skeleton": "empty(c0)",
+    "clauses": 1,
+    "false_positives": 0,
+    "negatives_decidable": 631,
+    "negatives_unknown": 0,
+    "contradiction_rate": 0.0
+   },
+   "examples": [
+    {
+     "predicate": "empty(c11)",
+     "skeleton": "empty(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 631,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c11) = 0",
+     "skeleton": "count(c0) = 0",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 631,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "disappears(c11)",
+     "skeleton": "disappears(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 631,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c11: exists y in c0: covers(x, y)",
+     "skeleton": "all x in c0: exists y in c1: covers(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 631,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c11: exists y in c0: covers(y, x)",
+     "skeleton": "all x in c0: exists y in c1: covers(y, x)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 631,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c11: exists y in c2: covers(x, y)",
+     "skeleton": "all x in c0: exists y in c1: covers(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 631,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c11: exists y in c2: covers(y, x)",
+     "skeleton": "all x in c0: exists y in c1: covers(y, x)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 631,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c11: exists y in c3: covers(x, y)",
+     "skeleton": "all x in c0: exists y in c1: covers(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 611,
+     "negatives_unknown": 20,
+     "contradiction_rate": 0.0
+    }
+   ],
+   "closest_miss": null,
+   "seconds": 18.6
+  },
+  {
+   "game": "ft09",
+   "level": 1,
+   "vocab": "v1",
+   "searched": true,
+   "positives": 4,
+   "negatives": 456,
+   "colours": [
+    0,
+    2,
+    4,
+    8,
+    9,
+    11,
+    12
+   ],
+   "candidates": 1113,
+   "true_at_every_completion": 332,
+   "separators": 0,
+   "expressible": false,
+   "simplest": null,
+   "examples": [],
+   "closest_miss": {
+    "predicate": "all x in c8: exists y in c9: col_aligned(x, y) and count(c8) = 20",
+    "skeleton": "all x in c0: exists y in c1: col_aligned(x, y) and count(c0) = 20",
+    "clauses": 2,
+    "false_positives": 59,
+    "negatives_decidable": 456,
+    "negatives_unknown": null,
+    "contradiction_rate": 0.129386
+   },
+   "seconds": 26.1
+  },
+  {
+   "game": "ft09",
+   "level": 1,
+   "vocab": "v2",
+   "searched": true,
+   "positives": 4,
+   "negatives": 456,
+   "colours": [
+    0,
+    2,
+    4,
+    8,
+    9,
+    11,
+    12
+   ],
+   "candidates": 2338,
+   "true_at_every_completion": 845,
+   "separators": 0,
+   "expressible": false,
+   "simplest": null,
+   "examples": [],
+   "closest_miss": {
+    "predicate": "all x in c8: exists y in c9: col_aligned(x, y) and count(c8) = 20",
+    "skeleton": "all x in c0: exists y in c1: col_aligned(x, y) and count(c0) = 20",
+    "clauses": 2,
+    "false_positives": 59,
+    "negatives_decidable": 456,
+    "negatives_unknown": null,
+    "contradiction_rate": 0.129386
+   },
+   "seconds": 42.3
+  },
+  {
+   "game": "ls20",
+   "level": 1,
+   "vocab": "v1",
+   "searched": true,
+   "positives": 9,
+   "negatives": 469,
+   "colours": [
+    0,
+    1,
+    3,
+    5,
+    8,
+    9,
+    11,
+    12
+   ],
+   "candidates": 1084,
+   "true_at_every_completion": 336,
+   "separators": 8,
+   "expressible": true,
+   "simplest": {
+    "predicate": "count(c9) = 3",
+    "skeleton": "count(c0) = 3",
+    "clauses": 1,
+    "false_positives": 0,
+    "negatives_decidable": 469,
+    "negatives_unknown": 0,
+    "contradiction_rate": 0.0
+   },
+   "examples": [
+    {
+     "predicate": "count(c9) = 3",
+     "skeleton": "count(c0) = 3",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c9: exists y in c5: adjacent(x, y)",
+     "skeleton": "all x in c0: exists y in c1: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c9: exists y in c9: adjacent(x, y)",
+     "skeleton": "all x in c0: exists y in c0: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c9: exists y in c5: bbox_overlap(x, y)",
+     "skeleton": "all x in c0: exists y in c1: bbox_overlap(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c9: exists y in c5: bbox_contains(y, x)",
+     "skeleton": "all x in c0: exists y in c1: bbox_contains(y, x)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c12: exists y in c5: bbox_contains(y, x)",
+     "skeleton": "all x in c0: exists y in c1: bbox_contains(y, x)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "exists x in c5: exists y in c12: bbox_contains(x, y)",
+     "skeleton": "exists x in c0: exists y in c1: bbox_contains(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "exists x in c12: exists y in c5: bbox_contains(y, x)",
+     "skeleton": "exists x in c0: exists y in c1: bbox_contains(y, x)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    }
+   ],
+   "closest_miss": null,
+   "seconds": 23.9
+  },
+  {
+   "game": "ls20",
+   "level": 1,
+   "vocab": "v2",
+   "searched": true,
+   "positives": 9,
+   "negatives": 469,
+   "colours": [
+    0,
+    1,
+    3,
+    5,
+    8,
+    9,
+    11,
+    12
+   ],
+   "candidates": 2684,
+   "true_at_every_completion": 1020,
+   "separators": 16,
+   "expressible": true,
+   "simplest": {
+    "predicate": "count(c9) = 3",
+    "skeleton": "count(c0) = 3",
+    "clauses": 1,
+    "false_positives": 0,
+    "negatives_decidable": 469,
+    "negatives_unknown": 0,
+    "contradiction_rate": 0.0
+   },
+   "examples": [
+    {
+     "predicate": "count(c9) = 3",
+     "skeleton": "count(c0) = 3",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c9: exists y in c5: adjacent(x, y)",
+     "skeleton": "all x in c0: exists y in c1: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c9: exists y in c9: adjacent(x, y)",
+     "skeleton": "all x in c0: exists y in c0: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "none x in c3: exists y in c9: adjacent(x, y)",
+     "skeleton": "none x in c0: exists y in c1: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "none x in c9: exists y in c3: adjacent(x, y)",
+     "skeleton": "none x in c0: exists y in c1: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "none x in c3: exists y in c12: adjacent(x, y)",
+     "skeleton": "none x in c0: exists y in c1: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "none x in c12: exists y in c3: adjacent(x, y)",
+     "skeleton": "none x in c0: exists y in c1: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c9: exists y in c5: bbox_overlap(x, y)",
+     "skeleton": "all x in c0: exists y in c1: bbox_overlap(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 469,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    }
+   ],
+   "closest_miss": null,
+   "seconds": 11.1
+  },
+  {
+   "game": "m0r0",
+   "level": 1,
+   "vocab": "v1",
+   "searched": true,
+   "positives": 11,
+   "negatives": 332,
+   "colours": [
+    0,
+    10,
+    11,
+    12
+   ],
+   "candidates": 286,
+   "true_at_every_completion": 118,
+   "separators": 0,
+   "expressible": false,
+   "simplest": null,
+   "examples": [],
+   "closest_miss": {
+    "predicate": "exactly_one(c10)",
+    "skeleton": "exactly_one(c0)",
+    "clauses": 1,
+    "false_positives": 10,
+    "negatives_decidable": 332,
+    "negatives_unknown": 0,
+    "contradiction_rate": 0.03012
+   },
+   "seconds": 24.3
+  },
+  {
+   "game": "m0r0",
+   "level": 1,
+   "vocab": "v2",
+   "searched": true,
+   "positives": 11,
+   "negatives": 332,
+   "colours": [
+    0,
+    10,
+    11,
+    12
+   ],
+   "candidates": 686,
+   "true_at_every_completion": 280,
+   "separators": 0,
+   "expressible": false,
+   "simplest": null,
+   "examples": [],
+   "closest_miss": {
+    "predicate": "exactly_one(c10)",
+    "skeleton": "exactly_one(c0)",
+    "clauses": 1,
+    "false_positives": 10,
+    "negatives_decidable": 332,
+    "negatives_unknown": 0,
+    "contradiction_rate": 0.03012
+   },
+   "seconds": 7.9
+  },
+  {
+   "game": "tu93",
+   "level": 1,
+   "vocab": "v1",
+   "searched": true,
+   "positives": 5,
+   "negatives": 257,
+   "colours": [
+    0,
+    2,
+    4,
+    6,
+    9,
+    14
+   ],
+   "candidates": 963,
+   "true_at_every_completion": 275,
+   "separators": 28,
+   "expressible": true,
+   "simplest": {
+    "predicate": "empty(c14)",
+    "skeleton": "empty(c0)",
+    "clauses": 1,
+    "false_positives": 0,
+    "negatives_decidable": 257,
+    "negatives_unknown": 0,
+    "contradiction_rate": 0.0
+   },
+   "examples": [
+    {
+     "predicate": "empty(c14)",
+     "skeleton": "empty(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c0) = 31",
+     "skeleton": "count(c0) = 31",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c14) = 0",
+     "skeleton": "count(c0) = 0",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c0) >= 31",
+     "skeleton": "count(c0) >= 31",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "disappears(c14)",
+     "skeleton": "disappears(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c14: exists y in c0: adjacent(x, y)",
+     "skeleton": "all x in c0: exists y in c1: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c14: exists y in c4: adjacent(x, y)",
+     "skeleton": "all x in c0: exists y in c1: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c14: exists y in c6: adjacent(x, y)",
+     "skeleton": "all x in c0: exists y in c1: adjacent(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    }
+   ],
+   "closest_miss": null,
+   "seconds": 19.6
+  },
+  {
+   "game": "tu93",
+   "level": 1,
+   "vocab": "v2",
+   "searched": true,
+   "positives": 5,
+   "negatives": 257,
+   "colours": [
+    0,
+    2,
+    4,
+    6,
+    9,
+    14
+   ],
+   "candidates": 1863,
+   "true_at_every_completion": 718,
+   "separators": 87,
+   "expressible": true,
+   "simplest": {
+    "predicate": "empty(c14)",
+    "skeleton": "empty(c0)",
+    "clauses": 1,
+    "false_positives": 0,
+    "negatives_decidable": 257,
+    "negatives_unknown": 0,
+    "contradiction_rate": 0.0
+   },
+   "examples": [
+    {
+     "predicate": "empty(c14)",
+     "skeleton": "empty(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c0) = 31",
+     "skeleton": "count(c0) = 31",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c14) = 0",
+     "skeleton": "count(c0) = 0",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c0) >= 31",
+     "skeleton": "count(c0) >= 31",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "disappears(c14)",
+     "skeleton": "disappears(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c14: exists y in c0: covers(x, y)",
+     "skeleton": "all x in c0: exists y in c1: covers(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c14: exists y in c0: covers(y, x)",
+     "skeleton": "all x in c0: exists y in c1: covers(y, x)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "all x in c14: exists y in c2: covers(x, y)",
+     "skeleton": "all x in c0: exists y in c1: covers(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 257,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    }
+   ],
+   "closest_miss": null,
+   "seconds": 14.7
+  },
+  {
+   "game": "vc33",
+   "level": 1,
+   "vocab": "v1",
+   "searched": true,
+   "positives": 8,
+   "negatives": 128,
+   "colours": [
+    0,
+    4,
+    5,
+    7,
+    9,
+    11
+   ],
+   "candidates": 603,
+   "true_at_every_completion": 198,
+   "separators": 0,
+   "expressible": false,
+   "simplest": null,
+   "examples": [],
+   "closest_miss": {
+    "predicate": "all x in c5: exists y in c4: col_aligned(x, y)",
+    "skeleton": "all x in c0: exists y in c1: col_aligned(x, y)",
+    "clauses": 1,
+    "false_positives": 6,
+    "negatives_decidable": 128,
+    "negatives_unknown": 0,
+    "contradiction_rate": 0.046875
+   },
+   "seconds": 5.8
+  },
+  {
+   "game": "vc33",
+   "level": 1,
+   "vocab": "v2",
+   "searched": true,
+   "positives": 8,
+   "negatives": 128,
+   "colours": [
+    0,
+    4,
+    5,
+    7,
+    9,
+    11
+   ],
+   "candidates": 1503,
+   "true_at_every_completion": 591,
+   "separators": 4,
+   "expressible": true,
+   "simplest": {
+    "predicate": "none x in c0: exists y in c11: col_aligned(x, y)",
+    "skeleton": "none x in c0: exists y in c1: col_aligned(x, y)",
+    "clauses": 1,
+    "false_positives": 0,
+    "negatives_decidable": 128,
+    "negatives_unknown": 0,
+    "contradiction_rate": 0.0
+   },
+   "examples": [
+    {
+     "predicate": "none x in c0: exists y in c11: col_aligned(x, y)",
+     "skeleton": "none x in c0: exists y in c1: col_aligned(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 128,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "none x in c5: exists y in c11: col_aligned(x, y)",
+     "skeleton": "none x in c0: exists y in c1: col_aligned(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 128,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "none x in c11: exists y in c0: col_aligned(x, y)",
+     "skeleton": "none x in c0: exists y in c1: col_aligned(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 128,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "none x in c11: exists y in c5: col_aligned(x, y)",
+     "skeleton": "none x in c0: exists y in c1: col_aligned(x, y)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 128,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    }
+   ],
+   "closest_miss": null,
+   "seconds": 3.0
+  },
+  {
+   "game": "sp80",
+   "level": 1,
+   "vocab": "v1",
+   "searched": true,
+   "positives": 8,
+   "negatives": 301,
+   "colours": [
+    0,
+    1,
+    4,
+    6,
+    8,
+    9,
+    11,
+    13,
+    14
+   ],
+   "candidates": 1296,
+   "true_at_every_completion": 383,
+   "separators": 180,
+   "expressible": true,
+   "simplest": {
+    "predicate": "empty(c9)",
+    "skeleton": "empty(c0)",
+    "clauses": 1,
+    "false_positives": 0,
+    "negatives_decidable": 301,
+    "negatives_unknown": 0,
+    "contradiction_rate": 0.0
+   },
+   "examples": [
+    {
+     "predicate": "empty(c9)",
+     "skeleton": "empty(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "empty(c11)",
+     "skeleton": "empty(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "changes(c6)",
+     "skeleton": "changes(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "appears(c8)",
+     "skeleton": "appears(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "nonempty(c8)",
+     "skeleton": "nonempty(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "appears(c13)",
+     "skeleton": "appears(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c8) = 1",
+     "skeleton": "count(c0) = 1",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c9) = 0",
+     "skeleton": "count(c0) = 0",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    }
+   ],
+   "closest_miss": null,
+   "seconds": 13.3
+  },
+  {
+   "game": "sp80",
+   "level": 1,
+   "vocab": "v2",
+   "searched": true,
+   "positives": 8,
+   "negatives": 301,
+   "colours": [
+    0,
+    1,
+    4,
+    6,
+    8,
+    9,
+    11,
+    13,
+    14
+   ],
+   "candidates": 3321,
+   "true_at_every_completion": 1459,
+   "separators": 323,
+   "expressible": true,
+   "simplest": {
+    "predicate": "empty(c9)",
+    "skeleton": "empty(c0)",
+    "clauses": 1,
+    "false_positives": 0,
+    "negatives_decidable": 301,
+    "negatives_unknown": 0,
+    "contradiction_rate": 0.0
+   },
+   "examples": [
+    {
+     "predicate": "empty(c9)",
+     "skeleton": "empty(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "empty(c11)",
+     "skeleton": "empty(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "changes(c6)",
+     "skeleton": "changes(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "appears(c8)",
+     "skeleton": "appears(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "nonempty(c8)",
+     "skeleton": "nonempty(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "appears(c13)",
+     "skeleton": "appears(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c8) = 1",
+     "skeleton": "count(c0) = 1",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c9) = 0",
+     "skeleton": "count(c0) = 0",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 301,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    }
+   ],
+   "closest_miss": null,
+   "seconds": 6.4
+  },
+  {
+   "game": "lf52",
+   "level": 1,
+   "vocab": "v1",
+   "searched": true,
+   "positives": 10,
+   "negatives": 302,
+   "colours": [
+    0,
+    1,
+    2,
+    3,
+    5,
+    9,
+    14,
+    15
+   ],
+   "candidates": 1644,
+   "true_at_every_completion": 405,
+   "separators": 4,
+   "expressible": true,
+   "simplest": {
+    "predicate": "count(c1) = 37",
+    "skeleton": "count(c0) = 37",
+    "clauses": 1,
+    "false_positives": 0,
+    "negatives_decidable": 302,
+    "negatives_unknown": 0,
+    "contradiction_rate": 0.0
+   },
+   "examples": [
+    {
+     "predicate": "count(c1) = 37",
+     "skeleton": "count(c0) = 37",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 302,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c14) = 1",
+     "skeleton": "count(c0) = 1",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 302,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "exactly_one(c14)",
+     "skeleton": "exactly_one(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 302,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c5) = count(c14)",
+     "skeleton": "count(c0) = count(c1)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 302,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    }
+   ],
+   "closest_miss": null,
+   "seconds": 22.8
+  },
+  {
+   "game": "lf52",
+   "level": 1,
+   "vocab": "v2",
+   "searched": true,
+   "positives": 10,
+   "negatives": 302,
+   "colours": [
+    0,
+    1,
+    2,
+    3,
+    5,
+    9,
+    14,
+    15
+   ],
+   "candidates": 3244,
+   "true_at_every_completion": 1212,
+   "separators": 4,
+   "expressible": true,
+   "simplest": {
+    "predicate": "count(c1) = 37",
+    "skeleton": "count(c0) = 37",
+    "clauses": 1,
+    "false_positives": 0,
+    "negatives_decidable": 302,
+    "negatives_unknown": 0,
+    "contradiction_rate": 0.0
+   },
+   "examples": [
+    {
+     "predicate": "count(c1) = 37",
+     "skeleton": "count(c0) = 37",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 302,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c14) = 1",
+     "skeleton": "count(c0) = 1",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 302,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "exactly_one(c14)",
+     "skeleton": "exactly_one(c0)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 302,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    },
+    {
+     "predicate": "count(c5) = count(c14)",
+     "skeleton": "count(c0) = count(c1)",
+     "clauses": 1,
+     "false_positives": 0,
+     "negatives_decidable": 302,
+     "negatives_unknown": 0,
+     "contradiction_rate": 0.0
+    }
+   ],
+   "closest_miss": null,
+   "seconds": 15.9
+  }
+ ]
+}

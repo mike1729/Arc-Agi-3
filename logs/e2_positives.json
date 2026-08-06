@@ -1,0 +1,319 @@
+{
+ "format_version": 1,
+ "generated_by": "agent/harness/e2_positives.py",
+ "corpus": "data/human_replays/kaggle_mirror/public_games-dataset",
+ "note": "Completion states for goal grading. Counts and digests only \u2014 the grids are competition data and stay in data/. See notes/e2-slice3.md RUN RESULTS.",
+ "max_level": 2,
+ "games": [
+  {
+   "game": "dc22",
+   "available": true,
+   "transitions": 1655,
+   "sessions": 11,
+   "by_level": {
+    "1": {
+     "completions": 10,
+     "distinct_boards": 9,
+     "sessions": 10,
+     "post_digests": [
+      "d6251ffedd2e",
+      "a3b44edad6c3",
+      "0530187e0c0d",
+      "c971d995c682",
+      "af415e52ddb2",
+      "fa5c2bdd1eda",
+      "e7a96587c789",
+      "7f6a8023ae8d",
+      "68819f386447"
+     ],
+     "non_completing": 631
+    },
+    "2": {
+     "completions": 10,
+     "distinct_boards": 10,
+     "sessions": 10,
+     "post_digests": [
+      "4e5fc8110ede",
+      "9f8dbf32e274",
+      "5482fa8ad306",
+      "32d95f7cb802",
+      "f175503c6d1a",
+      "ba3faab57f3d",
+      "d30042989424",
+      "4cb3ee667cef",
+      "f026c53975fe",
+      "241b3f7570e0"
+     ],
+     "non_completing": 1004
+    }
+   }
+  },
+  {
+   "game": "ft09",
+   "available": true,
+   "transitions": 577,
+   "sessions": 10,
+   "by_level": {
+    "1": {
+     "completions": 8,
+     "distinct_boards": 4,
+     "sessions": 8,
+     "post_digests": [
+      "0ab2306df9fe",
+      "e1cf76637ad5",
+      "fc85d5179960",
+      "68d69b5ffd4a"
+     ],
+     "non_completing": 456
+    },
+    "2": {
+     "completions": 7,
+     "distinct_boards": 6,
+     "sessions": 7,
+     "post_digests": [
+      "4a4d30fe2f64",
+      "fb6aab21fc06",
+      "e75ea101b1d1",
+      "0e5b41dfcc95",
+      "a44c0a854906",
+      "85caa4d68c80"
+     ],
+     "non_completing": 106
+    }
+   }
+  },
+  {
+   "game": "ls20",
+   "available": true,
+   "transitions": 2442,
+   "sessions": 13,
+   "by_level": {
+    "1": {
+     "completions": 11,
+     "distinct_boards": 9,
+     "sessions": 11,
+     "post_digests": [
+      "a9da8f9e3a3d",
+      "afd473a779ff",
+      "0a565d8616ca",
+      "d8f3f9bc4731",
+      "c43be7535f5d",
+      "6c0464e37636",
+      "eb86861025d4",
+      "c558d39c4a15",
+      "8bdf532a8993"
+     ],
+     "non_completing": 469
+    },
+    "2": {
+     "completions": 9,
+     "distinct_boards": 2,
+     "sessions": 9,
+     "post_digests": [
+      "e0f5d901a9ab",
+      "5232387cb77e"
+     ],
+     "non_completing": 1953
+    }
+   }
+  },
+  {
+   "game": "m0r0",
+   "available": true,
+   "transitions": 2073,
+   "sessions": 11,
+   "by_level": {
+    "1": {
+     "completions": 11,
+     "distinct_boards": 11,
+     "sessions": 11,
+     "post_digests": [
+      "a5164755694d",
+      "c26fb0eb3bba",
+      "1b549bacec7a",
+      "7f076f10a042",
+      "2575626c5ddf",
+      "61665c8a4a31",
+      "cd9fb79e5726",
+      "ea4018ba9769",
+      "22d339032eca",
+      "3731b5a92c47",
+      "980a802c23d1"
+     ],
+     "non_completing": 332
+    },
+    "2": {
+     "completions": 9,
+     "distinct_boards": 9,
+     "sessions": 9,
+     "post_digests": [
+      "6357933bbcce",
+      "ac060e55c57f",
+      "044b30ab5d49",
+      "ac425f69b1b9",
+      "3dbdb98543ec",
+      "bee4c17c77fc",
+      "eeee313d810a",
+      "09093435248b",
+      "c5d000c83a39"
+     ],
+     "non_completing": 1721
+    }
+   }
+  },
+  {
+   "game": "tu93",
+   "available": true,
+   "transitions": 537,
+   "sessions": 13,
+   "by_level": {
+    "1": {
+     "completions": 13,
+     "distinct_boards": 5,
+     "sessions": 13,
+     "post_digests": [
+      "b4720a4bf331",
+      "3ebaf85acdcb",
+      "d6fef502f422",
+      "3a7c3506a7d9",
+      "74292f3a1255"
+     ],
+     "non_completing": 257
+    },
+    "2": {
+     "completions": 13,
+     "distinct_boards": 3,
+     "sessions": 13,
+     "post_digests": [
+      "12b40813a6e0",
+      "308e7ce52a49",
+      "e12d90f7c4eb"
+     ],
+     "non_completing": 254
+    }
+   }
+  },
+  {
+   "game": "vc33",
+   "available": true,
+   "transitions": 344,
+   "sessions": 10,
+   "by_level": {
+    "1": {
+     "completions": 9,
+     "distinct_boards": 8,
+     "sessions": 9,
+     "post_digests": [
+      "1e07c52f3e1c",
+      "c8a175f40897",
+      "f73f54918048",
+      "7bf499273bff",
+      "845838c82172",
+      "e59c74e72c09",
+      "db6e395d2016",
+      "341f75ee2ae8"
+     ],
+     "non_completing": 128
+    },
+    "2": {
+     "completions": 9,
+     "distinct_boards": 9,
+     "sessions": 9,
+     "post_digests": [
+      "fee4ee19b9d4",
+      "5ca3f0f4e5db",
+      "dd2d83da93cc",
+      "0b8fed6e1aba",
+      "58b26d244051",
+      "8d9e53810de2",
+      "b2617d5599b1",
+      "fa2d4193d482",
+      "c93ce9952f80"
+     ],
+     "non_completing": 198
+    }
+   }
+  },
+  {
+   "game": "sp80",
+   "available": true,
+   "transitions": 1322,
+   "sessions": 11,
+   "by_level": {
+    "1": {
+     "completions": 10,
+     "distinct_boards": 8,
+     "sessions": 10,
+     "post_digests": [
+      "9cde757d8255",
+      "187e992363e2",
+      "031ca3875d83",
+      "30054be68947",
+      "7ae403f73bf8",
+      "a624e4ed1b3c",
+      "0428385081a8",
+      "7fc1e85f73aa"
+     ],
+     "non_completing": 301
+    },
+    "2": {
+     "completions": 7,
+     "distinct_boards": 7,
+     "sessions": 7,
+     "post_digests": [
+      "0d4f7e311786",
+      "c8c74ed0c647",
+      "d12783db5b54",
+      "3ac657bd7e4e",
+      "a1127c500931",
+      "45c2366eb0bf",
+      "f85a8efd0656"
+     ],
+     "non_completing": 1004
+    }
+   }
+  },
+  {
+   "game": "lf52",
+   "available": true,
+   "transitions": 1073,
+   "sessions": 10,
+   "by_level": {
+    "1": {
+     "completions": 10,
+     "distinct_boards": 10,
+     "sessions": 10,
+     "post_digests": [
+      "ac37a0a5683a",
+      "72a07e629981",
+      "72503b147a3f",
+      "48780c085cf7",
+      "63e483fdb4e7",
+      "b4152e701c87",
+      "01cdc85127c0",
+      "91a86c6cbb5f",
+      "a54c5be31d64",
+      "fad42dbe70a6"
+     ],
+     "non_completing": 302
+    },
+    "2": {
+     "completions": 8,
+     "distinct_boards": 8,
+     "sessions": 8,
+     "post_digests": [
+      "0ce2e526f181",
+      "fc959c9c0e21",
+      "60d4b6785889",
+      "291f2ebeb32d",
+      "1cb46098318f",
+      "e02fb161dcd0",
+      "86b5fb50510a",
+      "c158aa700ff7"
+     ],
+     "non_completing": 753
+    }
+   }
+  }
+ ]
+}

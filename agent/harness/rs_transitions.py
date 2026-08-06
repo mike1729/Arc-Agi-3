@@ -119,8 +119,11 @@ ORTHOGONAL = {"up": (-1, 0), "down": (1, 0), "left": (0, -1), "right": (0, 1)}
 VOCAB_ENV = "RS_GUARD_VOCAB"
 
 
+VOCABULARIES = ("v1", "v2", "v3")
+
+
 def set_vocab(version: str) -> None:
-    if version not in ("v1", "v2"):
+    if version not in VOCABULARIES:
         raise ValueError(f"unknown guard vocabulary: {version}")
     os.environ[VOCAB_ENV] = version
 
@@ -290,6 +293,43 @@ def guard_features(pre: list, pre_objects: _Objects, action_id: int, data: dict)
                 "edge" if edge and not met else (min(met) if met else None)
             )
 
+    # v3 — the channel-C implementation queue. These are the features Qwen proposed on the
+    # slice-3 night, and channel C was the one channel that measurably improved there (6/31
+    # -> 16/31 proposals naming a genuinely unresolved key). `notes/e2-slice3.md` RUN RESULTS.
+    #
+    # Every one is restricted to colours denoting EXACTLY ONE object, the same restriction
+    # `adj:` carries: a positional feature for a colour with six components has no referent,
+    # and the pairwise forms would otherwise be O(colours^2) of mostly-noise.
+    #
+    # `min_row`/`min_col` are HIGH-CARDINALITY and that is the known risk: a tier-1 selector
+    # looking for a feature that partitions the training evidence will always find one with
+    # 64 possible values, and it will not transfer. They are included because four
+    # independent proposals across three games named exactly this, and excluded from adoption
+    # unless the measurement against the v2 floors says otherwise. The risk is the finding to
+    # look for, not a reason to skip the arm.
+    if vocab() == "v3":
+        singles = {
+            colour: members[0]
+            for colour, members in pre_objects.by_colour.items()
+            if len(members) == 1
+        }
+        for colour, member in singles.items():
+            top, left, bottom, right = member["bbox"]
+            guards[f"min_row:{colour}"] = top
+            guards[f"min_col:{colour}"] = left
+            guards[f"size:{colour}"] = len(member["cells"])
+        for colour, member in singles.items():
+            ar1, ac1, ar2, ac2 = member["bbox"]
+            for other, target in singles.items():
+                if other == colour:
+                    continue
+                br1, bc1, br2, bc2 = target["bbox"]
+                guards[f"row_aligned:{colour}:{other}"] = ar1 <= br2 and br1 <= ar2
+                guards[f"col_aligned:{colour}:{other}"] = ac1 <= bc2 and bc1 <= ac2
+                guards[f"enclosed_by:{colour}:{other}"] = (
+                    br1 < ar1 and bc1 < ac1 and ar2 < br2 and ac2 < bc2
+                )
+
     if action_id == 6:
         row, col = data.get("y"), data.get("x")
         if isinstance(row, int) and isinstance(col, int) and 0 <= row < height and 0 <= col < width:
@@ -305,7 +345,7 @@ def guard_features(pre: list, pre_objects: _Objects, action_id: int, data: dict)
             # Background clicks make K the canvas and the feature near-vacuously True for
             # most C. Not special-cased: the tier-1 selection either finds it separating or
             # it does not, and the guard-quality count below reports which.
-            if vocab() == "v2":
+            if vocab() in ("v2", "v3"):
                 own, cells = _clicked_component(pre, row, col)
                 touched: set[int] = set()
                 for r, c in cells:
@@ -317,6 +357,11 @@ def guard_features(pre: list, pre_objects: _Objects, action_id: int, data: dict)
                                 touched.add(value)
                 for colour in sorted({int(v) for line in pre for v in line} - {own}):
                     guards[f"clicked_adjacent_to:{colour}"] = colour in touched
+                # v3 — `size(clicked)`, proposed for lf52. The clicked component's cell
+                # count, which `clicked_adjacent_to` does not carry and `count:C` (objects
+                # of a colour) is not.
+                if vocab() == "v3":
+                    guards["clicked_size"] = len(cells)
         else:
             guards["click_colour"] = None
             guards["click_on_background"] = None

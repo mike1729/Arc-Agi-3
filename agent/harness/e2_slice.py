@@ -1035,10 +1035,12 @@ A. GOAL — what must be true of the board for this level to be complete.
      from the vocabulary above, or `none`. The click target is a colour for ACTION6 and
      `n/a` otherwise. A goal with no action attached to it is not yet usable: read the
      COVERAGE LEDGER and prefer an action that has NOT been tried.
-   * IF THE GRAMMAR CANNOT SAY IT: the grammar is small and this level's real condition may
-     not be expressible in it. If so, still give your best predicate above, and ALSO state
-     the real condition in one plain sentence. Say it plainly and concretely — name the
-     colours, the entities and the relation. This is read separately and costs you nothing.
+   * PLAIN SENTENCE — ALWAYS, not only when the grammar fails you. State the completion
+     condition in one plain sentence: name the colours, the entities and the relation, and
+     say what has to become true. Write it even when your predicate above says the same
+     thing; write it especially when it does not, because the grammar is small and this
+     level's real condition may not be expressible in it. This is read separately from the
+     predicate and costs you nothing. An answer with no sentence is an incomplete answer.
 
 {latents_request}
 C. VOCABULARY — at most 2 proposals for a feature the guard vocabulary is MISSING. Each as:
@@ -1391,6 +1393,14 @@ def build_prompt(digest: dict[str, Any]) -> str:
     )
 
 
+def _missing_free_form(payload: dict[str, Any] | None) -> bool:
+    goal = (payload or {}).get("goal")
+    if not isinstance(goal, dict):
+        return False  # a payload with no goal at all is a different failure, reported as one
+    text = goal.get("free_form")
+    return not (isinstance(text, str) and text.strip())
+
+
 def extract_payload(
     qwen: Qwen, answer: str, tag: str, seed: int, template: str = EXTRACT
 ) -> tuple[dict[str, Any] | None, list[dict[str, Any]]]:
@@ -1399,18 +1409,37 @@ def extract_payload(
     Thinking off by design — it re-reads, it does not reason — and greedy, because a sampled
     transcription can lose a proposal the analysis actually made and a parse failure costs
     the whole cell.
+
+    Two things trigger a second pass, and the retry prompt differs between them. Invalid
+    JSON is the original one. The second was added after the slice-3 night: `free_form` came
+    back empty on 3 of 16 cells, and it is the field the model is BEST at — 3 correct in
+    kind and 3 near-right against 0/16 in the DSL. Losing it in transcription is losing the
+    channel's only positive signal.
+
+    The retry is still transcription and never invention: it asks for the sentence only if
+    the analysis contains one, and says in as many words to leave the field empty otherwise.
+    `free_form_absent_in_analysis` distinguishes the two outcomes, so a missing sentence is
+    reported as the model's silence rather than as the extractor's loss.
     """
     attempts: list[dict[str, Any]] = []
     payload = None
-    for attempt in range(2):
+    for attempt in range(3):
         # Greedy decoding makes a bare retry a no-op — attempt 1 would reproduce attempt 0
         # byte for byte. The second attempt therefore changes the PROMPT, not the sampler,
         # so the retry can actually pay out while staying deterministic given the transcript.
         content = template.format(answer=answer)
-        if attempt:
+        if attempt == 1 and payload is None:
             content = (
                 "Your previous reply was not valid JSON. Emit the JSON object only — no "
                 "prose, no code fence, no trailing text.\n\n" + content
+            )
+        elif attempt and payload is not None:
+            content = (
+                "Your previous reply left `goal.free_form` empty. The analysis below may "
+                "state the completion condition in words somewhere other than under the "
+                "PREDICATE heading — look through all of it, and if it does, copy that "
+                "sentence into `goal.free_form` verbatim. If the analysis genuinely never "
+                "says it in words, leave the field empty; do not compose one.\n\n" + content
             )
         extract = qwen.generate(
             [{"role": "user", "content": content}],
@@ -1421,9 +1450,13 @@ def extract_payload(
         )
         attempts.append(extract)
         (TRACES / f"{tag}.extract{attempt}.json").write_text(json.dumps(extract, indent=2))
-        payload = parse_json(extract["answer"])
-        if payload is not None:
-            break
+        parsed = parse_json(extract["answer"])
+        if parsed is not None:
+            payload = parsed
+            if not _missing_free_form(payload):
+                break
+        elif payload is not None:
+            break  # the recovery pass returned junk; keep the good payload we already have
     return payload, attempts
 
 
@@ -1674,6 +1707,100 @@ def falsification(
     return out
 
 
+def graded_verdict(
+    node: dict[str, Any], game: str, usable: list, contexts: list, *, level: int = 1
+) -> dict[str, Any]:
+    """The slice-3 fix: how wrong, on both directions, against two corpora.
+
+    Three things were wrong with the verdict slices 2 and 3 produced, and this is all three.
+
+    ONE DIRECTION. `consistent_with` grades "never true where nothing happened". Being FALSE
+    at the actual completion — the other way to be wrong — needed a completion, and the
+    explorer store has one on two of eight games. `e2_positives` supplies 4-11 distinct
+    solved boards per game from the human corpus, so the positive direction is now askable
+    everywhere. On the slice-3 night both cells that COULD be graded positively were false
+    at the real completion while seven of nine "survivors" were never checked at all.
+
+    A BINARY. `falsified` was the same word for dc22 seed 2 — the structurally correct
+    condition, wrong on 3 of 2,939 — and for a predicate true at all 2,943 transitions of
+    m0r0. `contradiction_scan` walks the whole list and returns the rate.
+
+    NO CEILING. A predicate was graded against perfection on games where the grammar cannot
+    state the answer. `e2_expressibility` supplies, per game, whether a separator exists at
+    all and the simplest one; `distance_to_target` puts the model's rate beside the best
+    achievable rate rather than beside zero.
+    """
+    import e2_positives as positives  # noqa: PLC0415
+
+    out: dict[str, Any] = {
+        "store": dsl.contradiction_scan(node, usable, contexts=contexts),
+    }
+    try:
+        out["human"] = positives.grade(node, game, level=level)
+    except (ValueError, FileNotFoundError, KeyError) as error:
+        out["human"] = {"measurable": False, "reason": f"{type(error).__name__}: {error}"}
+
+    target = _expressibility_target(game, level)
+    out["target"] = target
+    human = out["human"]
+    if target.get("known") and human.get("measurable"):
+        achievable = 0.0 if target["expressible"] else target.get("best_rate")
+        mine = human["negative"]["error_rate"]
+        out["distance_to_target"] = {
+            "model_negative_error_rate": mine,
+            "best_achievable_rate": achievable,
+            "positives_missed": human["positive"]["wrong"],
+            # The verdict the readout should quote. `correct` only when the model matched a
+            # separator's behaviour on both directions; `unreachable` when nothing in the
+            # grammar could have, which is not a failure of the model and is never counted
+            # as one.
+            "verdict": (
+                "unreachable"
+                if not target["expressible"]
+                else "correct"
+                if human["holds_at_every_completion"] and human["fires_only_at_completions"]
+                else "wrong"
+            ),
+        }
+    return out
+
+
+_EXPRESSIBILITY_CACHE: dict[str, Any] | None = None
+
+
+def _expressibility_target(game: str, level: int) -> dict[str, Any]:
+    """The oracle's row for this game, read from the committed sweep. Never recomputed here.
+
+    Grading must not silently re-run a 25-second-per-game search inside a scoring loop, and
+    a missing sweep must not be scored as "no separator exists" — the two are different
+    claims and only one of them is a result.
+    """
+    global _EXPRESSIBILITY_CACHE
+    if _EXPRESSIBILITY_CACHE is None:
+        path = ROOT / "logs/e2_expressibility.json"
+        try:
+            _EXPRESSIBILITY_CACHE = json.loads(path.read_text())
+        except (OSError, ValueError):
+            _EXPRESSIBILITY_CACHE = {"results": []}
+    rows = [
+        row
+        for row in _EXPRESSIBILITY_CACHE.get("results", [])
+        if row.get("game") == game and row.get("level") == level and row.get("vocab") == "v2"
+    ]
+    if not rows or not rows[0].get("searched"):
+        return {"known": False, "reason": "no expressibility sweep for this game and level"}
+    row = rows[0]
+    miss = row.get("closest_miss") or {}
+    return {
+        "known": True,
+        "expressible": bool(row["expressible"]),
+        "separators": row["separators"],
+        "simplest": (row.get("simplest") or {}).get("predicate"),
+        "best_rate": 0.0 if row["expressible"] else miss.get("contradiction_rate"),
+        "closest_miss": miss.get("predicate"),
+    }
+
+
 def evidence_validity(ids: Any, steps: set[int], entities: set[int]) -> dict[str, Any]:
     """Do the cited ids exist in the record? Computed, never counted from prose.
 
@@ -1786,6 +1913,11 @@ def channel_a_v4(
     out["falsification"] = falsification(
         predicate["ast"], usable, contexts, load_completion(game)
     )
+    # The slice-3 fix: both directions, a rate rather than a boolean, and a ceiling to be
+    # graded against. `store_consistency` above is kept unchanged and unmoved so the
+    # slice-2/slice-3 comparison stays like for like — this is an addition, not a
+    # replacement, and the readout quotes both.
+    out["graded"] = graded_verdict(predicate["ast"], game, usable, contexts)
     out["evidence"] = evidence_validity(
         goal.get("evidence_ids"), {t.step for t in used}, entity_ids
     )
@@ -1996,6 +2128,27 @@ def feedback_counterexample(
             f"and your condition is FALSE of the board that completed it. Whatever the "
             f"completion condition is, it is true of that board — the solved board shown in "
             f"the record above — so it is not this."
+        )
+
+    # The slice-3 fix. Measured on that night: FB repaired 3 of 5 mechanically and 0 of 5
+    # substantively, and every single repair retreated into the prior library —
+    # `count(c0) = 11` became `empty(c0)`, a quantified form became `exactly_one(c10)`.
+    # That is not the model failing to reason. Given only "here is a board your condition
+    # was wrongly true of", a condition that is almost never true is the OPTIMAL answer, and
+    # the arm was rewarding exactly that. The turn now carries the other constraint too, so
+    # the vacuous escape is closed by the instructions rather than by hoping.
+    human = (scored.get("graded") or {}).get("human") or {}
+    if human.get("measurable"):
+        positive = human["positive"]
+        parts.append(
+            f"AND IT MUST STILL FIRE. Human players solved this level from "
+            f"{human['sessions']} independent sessions; {positive['rows']} distinct solved "
+            f"boards are on record for it. Your replacement condition has to be TRUE of "
+            f"every one of them. A condition that is merely never wrongly true — `empty` of "
+            f"a colour that never empties, a count no board ever reaches — satisfies the "
+            f"counterexample above and is still not the completion condition, and it is "
+            f"scored as a failure, not as a repair. Your current condition is true of "
+            f"{positive['correct']} of those {positive['rows']} solved boards."
         )
     if not parts:
         return None
@@ -2217,7 +2370,44 @@ def run_cell(
         # is CORRECT is adjudication, and adjudication is not done here.
         "repaired": after == "survived" and not checks_after.get("false_negative"),
     }
+    block["repair"].update(_repair_quality(scored_a, block["channel_a"]))
     return cell
+
+
+def _repair_quality(before: dict[str, Any], after: dict[str, Any]) -> dict[str, Any]:
+    """Did the revision get closer to the answer, or just further from the counterexample?
+
+    Every one of the slice-3 night's three mechanical repairs landed on a predicate that was
+    already in the prior library, and the readout only noticed because someone read the five
+    rows by hand. `retreat_into_library` is that observation made into a field: a revision
+    whose new predicate is a stock shape the control already produces has not demonstrated
+    goal capability whatever the mechanical bar says.
+
+    `positives_before/after` is the substantive measure the mechanical bar is missing —
+    the count of real solved boards the condition actually fires on, which a vacuous
+    predicate drives to zero and a correct one drives to all of them.
+    """
+    before_novelty = before.get("novelty") or {}
+    after_novelty = after.get("novelty") or {}
+    before_human = ((before.get("graded") or {}).get("human") or {}).get("positive") or {}
+    after_human = ((after.get("graded") or {}).get("human") or {}).get("positive") or {}
+    out: dict[str, Any] = {
+        "retreat_into_library": bool(
+            after_novelty.get("in_prior_library") and not before_novelty.get("in_prior_library")
+        ),
+        "positives_before": before_human.get("correct"),
+        "positives_after": after_human.get("correct"),
+        "positives_available": after_human.get("rows") or before_human.get("rows"),
+    }
+    if out["positives_available"]:
+        gained = (out["positives_after"] or 0) - (out["positives_before"] or 0)
+        out["substantively_repaired"] = (
+            out["positives_after"] == out["positives_available"] and gained >= 0
+        )
+        out["positives_delta"] = gained
+    else:
+        out["substantively_repaired"] = None
+    return out
 
 
 def main() -> int:

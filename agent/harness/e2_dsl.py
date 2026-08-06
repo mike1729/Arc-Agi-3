@@ -104,9 +104,49 @@ EXPECTED_GRAMMAR_HASH = "49c0cc3e4abc74186edbc65665f65fd68e1faa7e9e3678d58ce5334
 CARDINALITY = ec.CARDINALITY_FORMS  # empty, nonempty, exactly_one
 TEMPORAL = ec.TEMPORAL_EVENTS
 VISUAL_RELATIONS = ec.VISUAL_RELATIONS
-EXTENSION_RELATIONS = ("same_shape",)
+
+# v2, 2026-08-06. Added after the slice-3 readout adjudicated all eight games' real
+# completion conditions against source and found the grammar could not state three of them,
+# and could only approximate a fourth. `notes/e2-slice3.md` → RUN RESULTS. The additions are
+# exactly what that adjudication showed missing, and no more:
+#
+#   coincident       dc22's real condition is the player sprite AT the goal sprite. The
+#                    grammar had `bbox_overlap`, which over-approximates — seed 2 wrote the
+#                    structurally correct answer with it and was falsified on 3 of 2,939
+#                    transitions, which is precisely the overlap/coincidence gap.
+#   covers           sp80's is a containment property of a spreading region: every cell of
+#                    the region lies in an allowed set. `bbox_contains` is a bounding-box
+#                    test and a region is not its bounding box.
+#   strictly_inside  ft09's blocks are INSIDE a frame, not touching it. `bbox_contains` is
+#                    non-strict and holds for an object flush against the frame's inner wall.
+#   same_size        the weakest of the four, and the one the `same_shape` family was
+#                    missing: equal cell counts without equal geometry.
+#
+# What this still cannot say is recorded rather than papered over: components are
+# SINGLE-COLOUR by construction, so a condition that reads an attribute stored inside a
+# multi-colour sprite — vc33's cross-class match on a sprite's own corner pixel, ft09's
+# per-tile 8-neighbour requirement encoded in the tile's pixel pattern — is outside this
+# representation, not just outside this grammar. Widening the relation vocabulary does not
+# reach it and `e2_expressibility.py` reports it as inexpressible rather than as a miss.
+EXTENSION_RELATIONS = (
+    "same_shape",
+    "coincident",
+    "covers",
+    "strictly_inside",
+    "same_size",
+)
 RELATIONS = tuple(VISUAL_RELATIONS) + EXTENSION_RELATIONS
-SYMMETRIC = frozenset(ec.SYMMETRIC_RELATIONS) | {"same_shape"}
+SYMMETRIC = frozenset(ec.SYMMETRIC_RELATIONS) | {
+    "same_shape",
+    "coincident",
+    "same_size",
+}
+
+# Outer quantifiers. `none` is the negative direction the grammar had no way to write: "no
+# object of this colour stands in R to any object of that colour". A completion condition
+# is very often the ABSENCE of a relation (nothing left uncollected, nothing outside its
+# bounds) and until now that could only be reached obliquely through `empty`.
+OUTER_QUANTIFIERS = ("exists", "all", "none")
 
 MAX_CLAUSES = ec.MAX_CLAUSES  # 2 — the frozen row-C bound, inherited not chosen
 MAX_MODULUS = 8  # (w) the note's bound on `mod k`
@@ -125,7 +165,7 @@ _IDENT = re.compile(r"^[A-Za-z_][A-Za-z_0-9]*$")
 _CALL = re.compile(r"^([a-z_]+)\((.*)\)$", re.S)
 _COUNT = re.compile(r"^count\(\s*c(\d+)\s*\)$")
 _QUANT = re.compile(
-    r"^(exists|all)\s+([A-Za-z_][A-Za-z_0-9]*)\s+in\s+(c\d+)\s*:\s*(.+)$", re.S
+    r"^(exists|all|none)\s+([A-Za-z_][A-Za-z_0-9]*)\s+in\s+(c\d+)\s*:\s*(.+)$", re.S
 )
 
 
@@ -251,7 +291,8 @@ def _parse_quantified(match: re.Match) -> dict[str, Any]:
     if inner_op != "exists":
         raise DSLError(
             "the inner quantifier must be `exists` — row-C's universe has exactly the "
-            "exists/exists and all/exists skeletons and the grammars are pinned together"
+            "exists/exists and all/exists skeletons, and `none x: exists y` already gives "
+            "the negative direction, so an inner `all` or `none` adds nothing reachable"
         )
     if outer_var == inner_var:
         raise DSLError(f"the two quantifiers reuse the variable {outer_var!r}")
@@ -306,7 +347,7 @@ def unparse(node: dict[str, Any]) -> str:
             str(right) if isinstance(right, int) else f"count({_unparse_term(right)})"
         )
         return f"count({_unparse_term(node['left'])}) {node['cmp']} {right_text}"
-    if op in ("exists", "all"):
+    if op in OUTER_QUANTIFIERS:
         inner = node["satisfies"]
         relation = inner["satisfies"]
         arguments = ", ".join(argument["name"] for argument in relation["args"])
@@ -350,7 +391,7 @@ def normalize(node: dict[str, Any]) -> dict[str, Any]:
             if right["colour"] < left["colour"]:
                 out["left"], out["right"] = right, left
         return out
-    if op in ("exists", "all"):
+    if op in OUTER_QUANTIFIERS:
         inner = node["satisfies"]
         relation = inner["satisfies"]
         names = {node["var"]: "x", inner["var"]: "y"}
@@ -461,6 +502,19 @@ def _holds(name: str, a: dict[str, Any], b: dict[str, Any]) -> bool:
         return _shape(a) == _shape(b)
     if name == "adjacent":
         return bool(_dilated(a) & b["cells"])
+    # --- the v2 extension. Cell-set predicates, not bounding-box ones; that distinction is
+    # the whole reason they exist (see EXTENSION_RELATIONS).
+    if name == "coincident":
+        return a["cells"] == b["cells"]
+    if name == "covers":
+        return b["cells"] <= a["cells"]
+    if name == "same_size":
+        return len(a["cells"]) == len(b["cells"])
+    if name == "strictly_inside":
+        ar1, ac1, ar2, ac2 = a["bbox"]
+        br1, bc1, br2, bc2 = b["bbox"]
+        # a strictly within b: contained, and sharing no boundary line with it.
+        return br1 < ar1 and bc1 < ac1 and ar2 < br2 and ac2 < bc2
     return _relation_holds(name, a, b)
 
 
@@ -502,7 +556,7 @@ def evaluate(node: dict[str, Any], context: dict[str, Any]) -> str:
         if node["cmp"] == "=":
             return TRUE if len(left) == right else FALSE
         return TRUE if len(left) >= right else FALSE
-    if op in ("exists", "all"):
+    if op in OUTER_QUANTIFIERS:
         members = _members(node["in"], objects)
         if members is None:
             return UNKNOWN
@@ -516,6 +570,12 @@ def evaluate(node: dict[str, Any], context: dict[str, Any]) -> str:
             if TRUE in values:
                 return TRUE
             return UNKNOWN if UNKNOWN in values else FALSE
+        if op == "none":
+            # Strong three-valued negation of `exists`, not `all` of a negated body: one
+            # definite witness kills it, and unknowns only block a TRUE.
+            if TRUE in values:
+                return FALSE
+            return UNKNOWN if UNKNOWN in values else TRUE
         if FALSE in values:
             return FALSE
         return UNKNOWN if UNKNOWN in values else TRUE
@@ -603,6 +663,55 @@ def consistent_with(
         # is definite-and-correct there by construction, so this is a count of the
         # positives it actually fired on — not a second evaluation pass.
         "positives_matched": 0 if outcome == "falsified" else positives_matched,
+    }
+
+
+def contradiction_scan(
+    node: dict[str, Any], transitions: list, *, contexts: list | None = None
+) -> dict[str, Any]:
+    """`consistent_with` without the early exit — how WRONG, not merely whether wrong.
+
+    Row-C survivorship stops at the first contradiction because for its purpose one is
+    enough. For grading a model it is not: on the slice-3 night dc22 seed 2 wrote the
+    structurally correct completion condition — the closest the grammar could get to "the
+    player sprite is at the goal sprite" — and was reported `falsified`, in the same word
+    and the same column as a predicate that was true at all 2,943 transitions of m0r0. One
+    was three false positives in 2,939; the other was a tautology. A binary that cannot
+    tell those apart is not measuring the model.
+
+    So this walks the whole list and returns the rate. `unknown` is excluded from the
+    denominator rather than counted as correct — the denominator is what was decidable.
+    """
+    if contexts is None:
+        contexts = transition_contexts(transitions)
+    false_positive_steps: list[int] = []
+    false_negative_steps: list[int] = []
+    definite = unknown = 0
+    for transition, context in zip(transitions, contexts, strict=True):
+        value = evaluate(node, context)
+        if value == UNKNOWN:
+            unknown += 1
+            continue
+        definite += 1
+        truth = TRUE if transition.completed else FALSE
+        if value == truth:
+            continue
+        step = getattr(transition, "step", None)
+        if transition.completed:
+            false_negative_steps.append(step)
+        else:
+            false_positive_steps.append(step)
+    wrong = len(false_positive_steps) + len(false_negative_steps)
+    return {
+        "decidable": definite,
+        "unknown": unknown,
+        "wrong": wrong,
+        "false_positives": len(false_positive_steps),
+        "false_negatives": len(false_negative_steps),
+        "false_positive_steps": false_positive_steps[:10],
+        "false_negative_steps": false_negative_steps[:10],
+        # None when nothing was decidable — a rate over zero rows is not zero, it is absent.
+        "contradiction_rate": None if not definite else round(wrong / definite, 6),
     }
 
 
@@ -807,6 +916,7 @@ colour N" (4-connected same-colour components, measured against the state's back
   appears(cN) | disappears(cN) | changes(cN) | persists(cN) | splits(cN) | merges(cN)
   exists x in cA: exists y in cB: R(x, y)
   all x in cA: exists y in cB: R(x, y)
+  none x in cA: exists y in cB: R(x, y)            no cA object stands in R to any cB object
   <clause> and <clause>                            at most {MAX_CLAUSES} clauses in total
 
 R is one of: {', '.join(RELATIONS)}.
@@ -815,6 +925,14 @@ R is one of: {', '.join(RELATIONS)}.
   bbox_contains   x's bounding box contains y's
   row_aligned     their row intervals overlap; col_aligned likewise for columns
   same_shape      their cell sets are equal up to translation
+  coincident      their cell sets are EQUAL — same shape, same place. Strictly stronger
+                  than bbox_overlap: use it when a thing must be ON another thing, not
+                  merely touching or crossing it.
+  covers          every cell of y is a cell of x. x may be larger; y must be entirely
+                  within it. This is containment of the actual cells, not of boxes.
+  strictly_inside x's bounding box is inside y's and shares no edge with it — x is within
+                  y's interior, not flush against it.
+  same_size       x and y have the same number of cells (nothing about shape or place)
 
 EITHER ARGUMENT ORDER IS LEGAL. `R(x, y)` and `R(y, x)` are both accepted, and for the
 asymmetric relations they say different things. This is how you write "every X is INSIDE
@@ -826,10 +944,18 @@ Examples of well-formed predicates:
   empty(c4)
   count(c7) = 3
   all x in c2: exists y in c9: bbox_overlap(x, y)
+  all x in c2: exists y in c9: coincident(x, y)        every c2 object sits exactly on a c9
+  none x in c5: exists y in c1: adjacent(x, y)         no c5 object touches any c1 object
   exists x in c3: exists y in c3: same_shape(x, y) and empty(c8)
 
+Choose the STRONGEST relation the evidence supports. `bbox_overlap` is true whenever two
+boxes cross at all; if what the board shows is one object arriving exactly on another,
+`coincident` is the claim and `bbox_overlap` is a weaker one that will also be true in
+positions where nothing happens.
+
 Anything that does not parse in this grammar scores zero and is recorded as rejected.
-Do not write prose. Do not invent relations, negation, "or", or arithmetic."""
+Do not write prose. Do not invent relations, "or", or arithmetic. `none` is the only
+negation there is."""
 
 COUNTER_GRAMMAR_TEXT = f"""A LATENT DEFINITION is a counter expression in this grammar and nothing else:
 
@@ -1025,6 +1151,13 @@ def _selftest_rejection() -> dict[str, Any]:
         "exists x in c3: exists y in c5: touches(x, y)",
         "all x in c3: exists y in c5: adjacent(x, z)",
         "empty(blue)",
+        # The v2 extension widened the OUTER quantifier and the relation vocabulary and
+        # nothing else. An inner `none` or `all` is still not a form, and `not` is still
+        # not negation — `none x: exists y` is the only negation the grammar has.
+        "none x in c3: none y in c5: adjacent(x, y)",
+        "none x in c3: all y in c5: adjacent(x, y)",
+        "not none x in c3: exists y in c5: adjacent(x, y)",
+        "exists x in c3: exists y in c5: encloses(x, y)",
     ]
     must_accept = [
         "empty(c4)",
@@ -1040,6 +1173,13 @@ def _selftest_rejection() -> dict[str, Any]:
         # grammar text that omitted it gave the library an expressive reach the channel was
         # never told it had.
         "all x in c2: exists y in c9: bbox_contains(y, x)",
+        # The v2 extension. Each of the four new relations and the new outer quantifier.
+        "all x in c2: exists y in c9: coincident(x, y)",
+        "all x in c2: exists y in c9: covers(y, x)",
+        "exists x in c2: exists y in c9: strictly_inside(x, y)",
+        "exists x in c2: exists y in c9: same_size(x, y)",
+        "none x in c5: exists y in c1: adjacent(x, y)",
+        "none x in c5: exists y in c1: coincident(x, y) and empty(c4)",
     ]
     counters_reject = [
         "a hidden counter whose parity drives a mode switch",
@@ -1092,6 +1232,83 @@ def _selftest_rejection() -> dict[str, Any]:
     }
 
 
+def _selftest_extension(game: str = "dc22") -> dict[str, Any]:
+    """The v2 relations must REFINE the ones they were added to sharpen, not restate them.
+
+    A new relation earns its place only by being strictly stronger than the relation it
+    replaces on some real board — otherwise the extension is decoration and the slice-3
+    diagnosis ("bbox_overlap over-approximates, and that cost 3 false positives") was wrong.
+    So this checks the implications hold everywhere AND that each is strict somewhere, on
+    the actual object pairs of a real game rather than on constructed ones.
+
+    It also checks `none` against `exists` on definite values, which is the only semantic
+    claim the new quantifier makes.
+    """
+    import rs_transitions as rs  # noqa: PLC0415
+
+    transitions = rs.load_game(game, max_level=1)[:400]
+    pairs = 0
+    strict = {"coincident": 0, "covers": 0, "strictly_inside": 0}
+    wrong: list[str] = []
+    for transition in transitions:
+        objects = _Objects(transition.post)
+        members = [m for group in objects.by_colour.values() for m in group]
+        for a in members:
+            for b in members:
+                if a is b:
+                    continue
+                pairs += 1
+                if _holds("coincident", a, b):
+                    if not _holds("bbox_overlap", a, b):
+                        wrong.append("coincident without bbox_overlap")
+                    if not _holds("same_shape", a, b) or not _holds("same_size", a, b):
+                        wrong.append("coincident without same_shape/same_size")
+                elif _holds("bbox_overlap", a, b):
+                    strict["coincident"] += 1
+                if _holds("covers", a, b):
+                    if not _holds("bbox_contains", a, b):
+                        wrong.append("covers without bbox_contains")
+                elif _holds("bbox_contains", a, b):
+                    strict["covers"] += 1
+                if _holds("strictly_inside", a, b):
+                    if not _holds("bbox_contains", b, a):
+                        wrong.append("strictly_inside without the containing bbox_contains")
+                elif _holds("bbox_contains", b, a):
+                    strict["strictly_inside"] += 1
+        if wrong:
+            break
+    for name, count in strict.items():
+        if not count:
+            wrong.append(f"{name} never differs from the relation it refines — no evidence it is stronger")
+
+    # `none` is `exists` negated wherever `exists` is definite.
+    contexts = transition_contexts(transitions[:120])
+    checked = 0
+    for a in (0, 1, 4, 9):
+        for b in (0, 1, 4, 9):
+            exists_node = parse_predicate(f"exists x in c{a}: exists y in c{b}: adjacent(x, y)")
+            none_node = parse_predicate(f"none x in c{a}: exists y in c{b}: adjacent(x, y)")
+            for context in contexts:
+                left = evaluate(exists_node, context)
+                right = evaluate(none_node, context)
+                if left == UNKNOWN or right == UNKNOWN:
+                    if left != right:
+                        wrong.append(f"none/exists disagree on unknown for c{a}/c{b}")
+                    continue
+                checked += 1
+                if (left == TRUE) == (right == TRUE):
+                    wrong.append(f"none is not the negation of exists for c{a}/c{b}")
+                    break
+    return {
+        "passed": not wrong,
+        "game": game,
+        "object_pairs": pairs,
+        "strictness_witnesses": strict,
+        "none_vs_exists_checked": checked,
+        "failures": wrong[:5],
+    }
+
+
 SLICE2_GAMES = ("dc22", "ft09", "ls20", "m0r0", "tu93", "vc33", "sp80", "lf52")
 
 
@@ -1134,6 +1351,16 @@ def main() -> int:
     for failure in rejection["failures"]:
         print(f"  {failure}", flush=True)
 
+    extension = _selftest_extension()
+    print(
+        f"v2 extension: {'PASS' if extension['passed'] else 'FAIL'} "
+        f"({extension['object_pairs']} object pairs, strictness witnesses "
+        f"{extension['strictness_witnesses']}, {extension['none_vs_exists_checked']} none/exists)",
+        flush=True,
+    )
+    for failure in extension["failures"]:
+        print(f"  {failure}", flush=True)
+
     predicates = _selftest_predicates(args.games)
     for row in predicates["games"]:
         if "skipped" in row:
@@ -1159,7 +1386,12 @@ def main() -> int:
     if not counters["passed"]:
         print(json.dumps(counters, indent=1, sort_keys=True, default=str))
 
-    passed = rejection["passed"] and predicates["passed"] and counters["passed"]
+    passed = (
+        rejection["passed"]
+        and extension["passed"]
+        and predicates["passed"]
+        and counters["passed"]
+    )
     print(f"\nSELFTEST {'PASS' if passed else 'FAIL'}")
     return 0 if passed else 1
 

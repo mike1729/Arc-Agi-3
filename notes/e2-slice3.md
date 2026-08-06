@@ -772,3 +772,169 @@ prose descriptions. The check is existence, not support; no cell fabricated an i
 - **Channel C: alive** — 52% vs 19% targeting, on the same games and the same key lists.
 - **Instrument: passed** — 16/16 verdicts, 0 voids, longer thinking at 5× context.
 - **Arm FB: harmful as specified** — 0/5 substantive repairs, 1 regression.
+
+---
+
+# FIXES — 2026-08-06, and what they overturned
+
+Everything below is zero-model. The night's answers are on disk, so the corrected verdicts
+are computed, not re-run.
+
+## 1 · Positives exist for every game (`agent/harness/e2_positives.py`)
+
+Not from the engine — from the corpus the miner already reads. `rs_transitions` marks
+`completed` on the transition whose response incremented `levels_completed` and keeps the
+`solved_terminal` frame as its `post`. Measured, distinct L1 boards after dedup by grid
+digest:
+
+| dc22 | ft09 | ls20 | m0r0 | tu93 | vc33 | sp80 | lf52 |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 9 | 4 | 9 | 11 | 5 | 8 | 8 | 10 |
+
+8–13 independent sessions each. `e3_completion_capture.py` could never have reached six of
+these — it replays what the *explorer* walked, and the explorer completed a level on two
+games. The positive half of goal grading was available the whole time in a file we were
+already loading.
+
+## 2 · The grammar was mostly adequate. **My source-read adjudication was wrong.**
+
+`agent/harness/e2_expressibility.py` enumerates the grammar and asks whether ANY predicate
+is definite-true at every solved board and definite-false at every non-completing
+transition. Per game, at L1, against the human corpus:
+
+| game | v1 (as graded) | v2 (extended) | simplest separator | closest miss |
+|---|---|---|---|---|
+| dc22 | **expressible** (46) | expressible (145) | `empty(c11)` | — |
+| ls20 | **expressible** (8) | expressible (16) | `count(c9) = 3` | — |
+| tu93 | **expressible** (28) | expressible (87) | `empty(c14)` | — |
+| sp80 | **expressible** (180) | expressible (323) | `empty(c9)` | — |
+| lf52 | **expressible** (4) | expressible (4) | `count(c1) = 37` | — |
+| vc33 | inexpressible | **expressible** (4) | `none x in c0: exists y in c11: col_aligned(x, y)` | 4.7% under v1 |
+| ft09 | inexpressible | inexpressible | — | 12.9% |
+| m0r0 | inexpressible | inexpressible | — | 3.0% |
+
+**Six of eight were expressible under the vocabulary that graded slices 2 and 3.** The
+readout above claimed ft09, vc33 and sp80 were unwinnable by construction and dc22
+approximable only; the machine check says sp80 had 180 separators and dc22 46. Reading the
+win condition out of source gives the *mechanism*; it does not tell you what the board
+LOOKS like when the mechanism fires, and a much simpler observable often separates. Only
+ft09 stands as claimed. That correction cuts against the model, not for it.
+
+**Read the two directions differently.** `inexpressible` is the strong result — nothing in
+the grammar fits even this evidence. `expressible` is the weak one: it says the evidence
+does not rule the grammar out. sp80's 180 separators over 8 positives is a statement about
+how little 8 boards constrain, not about how well the goal is identified.
+
+The DSL extension is measured, not asserted: `none` is what flipped vc33, and it is the only
+game it flipped.
+
+## 3 · The night re-graded: **1 correct, and the grader could not see it**
+
+`agent/harness/e2_regrade_slice3.py` re-grades the predicate each cell actually wrote,
+character for character, in both directions against the human corpus.
+
+| verdict | cells |
+|---|---:|
+| **correct** — fires at every solved board, no false positives | **1** |
+| vacuous — fires at **no** solved board | 10 |
+| unreachable — no separator exists in the grammar | 4 |
+| prose_rejected | 1 |
+
+**lf52 seed 2 was right.** It fires at 10 of 10 solved boards with 0 false positives over
+302 human transitions. The night recorded it as `survived` — the same word, the same column,
+as the ten answers that fire on nothing at all. Channel A was not 0/16 on the night; it was
+**1/11 on the cells that were answerable**, and the instrument could not tell the difference.
+
+And the shape of the failure is now visible: **ten of sixteen predicates are true at no
+solved board.** Not subtly wrong — never true at the goal. The one-directional grader scored
+six of those ten as `survived`, because a condition that is never true is never wrongly true.
+
+## 4 · The channel-C queue was built, and it makes the miner **worse**
+
+`rs_transitions` vocab **v3** implements exactly the six features Qwen proposed —
+`min_row`/`min_col`, `size(clicked)`, `enclosed_by`, `row_aligned`/`col_aligned` — and
+`agent/harness/miner_vocab_v3.py` measures them under the rule v2 was adopted by (zero
+losses anywhere, gains somewhere).
+
+**39 of 48 arms clean → v3 fails adoption. `v2` stays the floor of record and the default.**
+
+| game | full/L1 | full/L2 | verdict |
+|---|---:|---:|---|
+| bp35 | −0.085 | −0.191 | large loss (moveset/L2 −0.452) |
+| sp80 | **+0.015** | **−0.243** | trains up, transfers down |
+| ft09 | −0.041 | −0.035 | loss |
+| cn04 | −0.005 | 0.000 | loss |
+| dc22 | 0.000 | −0.001 | loss |
+| ar25 | +0.014 | 0.000 | the only real gain |
+| lf52 | 0.000 | +0.007 (moveset) | marginal gain |
+
+The overfitting signature named in advance appeared exactly where predicted — sp80 gains on
+held-out L1 and loses a quarter of L2 — but the positional features are not the main
+culprit: dropping `min_row`/`min_col` only halves sp80's damage (−0.160) and changes bp35
+and ft09 not at all. The pairwise alignment and containment guards do most of it, and
+positional features were selected in only 6 of 48 arms.
+
+> **Channel C's verdict splits.** As a *targeting* signal it is alive — 52% vs 19%, that
+> number stands. As a *value* signal it is dead: the features it named, built faithfully and
+> measured under the pre-committed rule, lose. Naming a plausible missing feature and naming
+> a useful one are different capabilities and slice 3 only measured the first.
+
+## 5 · The other four fixes
+
+- **Grader** (`e2_slice.graded_verdict`): both directions on the human corpus,
+  `dsl.contradiction_scan` for a rate instead of a first-contradiction boolean, and
+  `distance_to_target` against the oracle's ceiling. `store_consistency` is unchanged and
+  unmoved so the slice-2/3 comparison stays like for like.
+- **Arm FB**: the counterexample turn now carries the solved boards and states that a
+  condition true of none of them is scored a failure, not a repair — the vacuous escape the
+  night's 3/5 "repairs" all took. `_repair_quality` adds `retreat_into_library` and
+  `positives_before/after`, so a retreat into a stock shape is a field rather than something
+  someone notices by reading five rows.
+- **Free-form**: no longer conditional on the model admitting the grammar failed it. It was
+  requested only under "IF THE GRAMMAR CANNOT SAY IT", which is why 3 of 16 cells skipped
+  the field the model is *best* at. Now always required, with a targeted second extraction
+  pass that re-reads the analysis for the sentence and is told in as many words not to
+  compose one.
+- **Channel B**: `REFERENCE_ARMS` runs the hand-written `c2_episode` hypothesis in the same
+  table under the same controls. It is rejected too, and the verifier now says so on its own
+  line — the bar rejects the expert, so a model latent failing it is not evidence about the
+  model.
+
+## 6 · What this changes about the plan
+
+The bottleneck is not context and it is not, mostly, the language. Six of eight goals were
+sayable and the model said something true at no solved board on ten of sixteen tries. The
+one it got right, it got right — so the capability is not zero, and the instrument that
+could not distinguish it from vacuity was the thing most in need of repair.
+
+Still worth doing, in order: the **prose→DSL search** (13 free-form sentences and a
+separator enumerator now exist on the same disk — this is a zero-model experiment), then
+**re-run slice 3's protocol on 3.8** with this grader, which will report a number that means
+something.
+
+`--selftest` extended: strictness witnesses for the new relations (`coincident` differs from
+`bbox_overlap` on 17,818 real object pairs, `covers` from `bbox_contains` on 8,909,
+`strictly_inside` on 1,971) and 1,572 `none`/`exists` negation checks. Row-C agreement and
+the counter reproduction are unchanged and still pass.
+
+## 7 · Cost of the fixes to the prompt — re-asserted, and one cell moved
+
+The grammar text gained the four relations, the `none` form and the strongest-relation
+instruction; the free-form request is no longer conditional. That is **+351 tokens on every
+cell**, and the pre-launch assertion was re-run against it:
+
+| game | F was | F now | FB was | FB now | trim ladder |
+|---|---:|---:|---:|---:|---|
+| dc22 | 39,617 | 39,968 | 42,786 | 43,137 | 9 → 9 |
+| ft09 | 28,574 | 28,925 | 31,682 | 32,033 | 0 → 0 |
+| ls20 | 38,622 | 38,973 | 41,691 | 42,042 | 1 → 1 |
+| m0r0 | 39,288 | 39,639 | 42,496 | 42,847 | 9 → 9 |
+| **tu93** | 39,929 | **36,751** | 42,901 | 39,723 | **1 → 2** |
+| vc33 | 38,811 | 39,162 | 42,518 | 42,869 | 3 → 3 |
+| sp80 | 37,571 | 37,922 | 41,259 | 41,610 | 11 → 11 |
+| lf52 | 39,018 | 39,369 | 42,767 | 43,118 | 10 → 10 |
+
+All eight still fit both ceilings. **tu93 paid for it**: it had 71 tokens of headroom, the
++351 pushed it over, and the ladder took another step — its causal episode drops from 45
+steps to 30. Seven cells absorbed the addition unchanged. That is the trade recorded rather
+than discovered later: the relations that flipped vc33 cost tu93 fifteen episode steps.

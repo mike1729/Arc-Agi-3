@@ -118,6 +118,26 @@ REPRODUCTION_SPEC = {
 
 FEATURE_PREFIX = "latent:"
 
+# The expert reference arm, run alongside the model's proposals on every game that has one.
+#
+# WHY. The slice-3 night rejected all five of the model's latents against the five random
+# controls, and the readout could not say what that meant — because seed 2's first proposal
+# was `actions_since_reset[reset_excluded] mod 2`, which is `c2_episode` VERBATIM: the
+# hypothesis a human wrote by hand and built `e2_hidden_state.py` to test. It loses to a
+# control too. An acceptance bar that fails the expert hypothesis is not measuring the
+# model's proposals, it is measuring the game, and reporting "0/5 accepted" without that row
+# beside it reads as a verdict on Qwen that the evidence does not support.
+#
+# So the reference is not a check that runs on `--verify` and is absent from real runs; it
+# runs in the same table, under the same controls, and the readout quotes both.
+REFERENCE_ARMS = {
+    "m0r0": {
+        "name": "REFERENCE:c2_episode",
+        "definition": "actions_since_reset[reset_excluded] mod 2",
+        "source": "e2_hidden_state.py ARMS — the hand-written expert hypothesis",
+    }
+}
+
 
 # ======================================================================================
 # Counters — both sides, gated against the authorities
@@ -712,6 +732,16 @@ def main() -> int:
     by_game: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for spec in document_spec["specs"]:
         by_game[spec["game"]].append(spec)
+    # The expert arm joins the table wherever one exists for the game, unless the spec
+    # already names that definition — a model that proposes it should be scored as itself,
+    # not silently deduplicated into the reference row.
+    if not args.verify:
+        for game, specs in by_game.items():
+            reference = REFERENCE_ARMS.get(game)
+            if reference and not any(
+                spec.get("name") == reference["name"] for spec in specs
+            ):
+                specs.append({"game": game, **reference})
 
     rows = []
     for game, specs in sorted(by_game.items()):
@@ -748,12 +778,22 @@ def main() -> int:
             full = arm["full"]["doses"]["full"]
             accepted = row["acceptance"][name]["accepted"]
             print(
-                f"  {name:20s} L1={full['on_human_l1']['accuracy_over_all']:.4f} "
+                f"  {name:24s} L1={full['on_human_l1']['accuracy_over_all']:.4f} "
                 f"L2={full['on_human_l2']['accuracy_over_all']:.4f} "
                 f"selected={full['guard_selected']} "
                 f"-> {'ACCEPTED' if accepted else 'rejected (loses to a control)'}",
                 flush=True,
             )
+        # The line the slice-3 readout needed and did not have.
+        reference = REFERENCE_ARMS.get(game)
+        if reference and reference["name"] in row.get("acceptance", {}):
+            if not row["acceptance"][reference["name"]]["accepted"]:
+                print(
+                    f"  ^ the EXPERT arm is rejected here too. On this game the bar rejects "
+                    f"the hand-written hypothesis, so a model latent failing it is not "
+                    f"evidence about the model.",
+                    flush=True,
+                )
 
     document = {
         "format_version": FORMAT_VERSION,
