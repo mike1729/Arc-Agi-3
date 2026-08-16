@@ -306,3 +306,32 @@ distinction with the paper-citable-contrast requirement.
    per-game sizing under medium is the operative count (~40–60 tokens lighter per
    cell). If medium reads flat in the morning, an xhigh one-off contrast is a possible
    day-after decision — it is not tonight's question.
+
+6. **Medium also failed the gate (23:38), and the effort ladder was measured to closure
+   (00:4x).** The full m0r0 series, one cell, one prompt (39,681 tokens), all measured
+   tonight — Qwen3.6's same-cell baseline: closed at 6,177 tokens / 21,284 chars:
+
+   | regime | at 16,384-token cutoff | closure |
+   |---|---|---|
+   | 3.8 xhigh (default) | think open at 55,674 chars | not reached |
+   | 3.8 medium | think open at 46,823 chars | not reached |
+   | 3.8 low | — | **CLOSED at 15,735 tokens** / 49,856 chars, answer 6,143 chars |
+
+   **The knob works but weakly, and even brevity-instructed 3.8 thinks 2.4× 3.6's
+   volume.** The suppression worry that made `low` "fallback only" is empirically
+   retired for this content — 49,856 chars is not a suppressed think. Escalating to
+   `low` executes the operator's affordability directive at its own next step; the
+   deviation from "medium, low as fallback" is this record.
+7. **THINK_BUDGET re-pinned 16,384 → 19,669** = measured closure × 1.25, the note's own
+   phase-1 remedy. 15,735 against 16,384 is 4% headroom; per-cell variance (3.6's
+   thinks spanned ±40% around their median) would void cells all night.
+8. **Relaunch (~00:5x, pin `<this commit>`) uses `SKIP_GATES=1`**: the thinking probe
+   passed twice tonight on these weights, and the low-regime closure measurement IS the
+   budget-gate evidence — re-running the gate would re-prove tonight's own record at
+   ~45 min a pass. Chain edit records this in its log line.
+9. **Envelope caution (w, inferred, morning must confirm from the cells' recorded
+   `prompt_tps`):** the gate cycles' wall times imply warm prefill ≈ **44 tok/s** on
+   this conversion — ~7.5× slower than 3.6's measured 331 tok/s. If real, per-cell wall
+   ≈ ~15 min prefill + ~30 min decode ≈ **~45–50 min**, seed 1 with FB lands
+   mid-morning and seed 2 is a day continuation, not a night one. The denominator rules
+   already cover every completion level; nothing is decided tonight on projected walls.

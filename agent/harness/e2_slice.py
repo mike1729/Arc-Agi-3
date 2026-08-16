@@ -109,16 +109,21 @@ SLICE2_GAMES = dsl.SLICE2_GAMES
 # none of the three channels has a dose hypothesis, so it buys nothing and costs half a night.
 DOSES = (None,)
 MODE = "full"  # the layer the miner is weakest on, and the one Qwen is being asked for
-THINK_BUDGET = 16384  # (w) >=16k; a 5k budget produced an unclosed block in bring-up
-# Qwen3.8's chat template adds a reasoning_effort knob (xhigh default / medium / low) and
-# injects an instruction sentence for xhigh and low; medium injects NOTHING, which also
-# keeps the 3.8 prompt closest to the 3.6 interface. Pinned "medium" by operator decision
-# 2026-08-16 (night 1): xhigh is unaffordable at ARC evaluation, and on the m0r0 budget
-# probe it overran the whole 16,384 budget with the think still open at 55,674 chars
-# (3.6: closed at 6,177 tokens / 21,284 chars). "low" is the fallback, not the pin — it
-# instructs brevity, and suppressed thinking is the July failure mode. 3.6's template
-# ignores the kwarg, so passing it unconditionally is generation-safe.
-REASONING_EFFORT = "medium"
+# (w) Night-1 pin, 2026-08-17 00:5x, measured basis: under reasoning_effort=low the m0r0
+# probe (39,681-token prompt, the largest cell) closed its think at token 15,735 — the
+# note's closure*1.25 remedy gives 19,669. The prior 16,384 (3.6-era) left 4% headroom
+# against 3.8-low's own closure point, which per-cell variance would eat. A raised
+# ceiling costs nothing when unused; generation stops at the answer.
+THINK_BUDGET = 19669
+# Qwen3.8's chat template adds a reasoning_effort knob (xhigh default / medium / low).
+# Night-1 escalation, measured on the same m0r0 cell where Qwen3.6 closed at 6,177
+# tokens / 21,284 chars: xhigh blew the 16,384 budget still open at 55,674 chars;
+# medium blew it too at 46,823 (the knob works but weakly); low CLOSED at 15,735 tokens
+# with 49,856 chars of real thinking and a 6,143-char answer — brevity-instructed 3.8
+# still thinks 2.4x the volume 3.6 did, so the July suppression worry does not apply.
+# Pinned "low" per the operator's affordability directive (xhigh/medium-scale thinking
+# is unaffordable at ARC evaluation). 3.6's template byte-ignores the kwarg.
+REASONING_EFFORT = "low"
 EXTRACT_BUDGET = 4096
 TEMP = 0.6  # (w) Qwen thinking defaults
 TOP_P = 0.95

@@ -34,7 +34,7 @@ say "weights ready (waited ${waited}s)"
 # already ran once tonight — probe PASS on the same weights, budget measured to closure —
 # so re-running them would spend an hour of the window re-proving tonight's own record.
 if [ "${SKIP_GATES:-0}" = "1" ]; then
-  say "gates SKIPPED by relaunch: probe PASS + budget closure already measured tonight (logs/e2_probe_38_8bit.json, logs/e2_slice38_budget_probe_32k.json)"
+  say "gates SKIPPED by relaunch: probe PASS twice tonight on these weights (logs/e2_probe_38_8bit.json) + low-regime closure measured PASS at 15,735 of 32,768 (logs/e2_slice38_budget_probe_low32k.json) — the measurement is the budget-gate evidence for the 19,669 pin"
 else
 
 # 1. Thinking probe, the July gate: real thinking on the real load path or no night.
