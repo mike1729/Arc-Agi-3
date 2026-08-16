@@ -335,3 +335,12 @@ distinction with the paper-citable-contrast requirement.
    ≈ ~15 min prefill + ~30 min decode ≈ **~45–50 min**, seed 1 with FB lands
    mid-morning and seed 2 is a day continuation, not a night one. The denominator rules
    already cover every completion level; nothing is decided tonight on projected walls.
+
+10. **Deviation 9's prefill inference was WRONG — corrected same-night (01:33).** The
+    medium gate cycle's own JSON records warm **prefill 274.7 tok/s** (0.83× of 3.6's
+    331) and long-context **decode 6.67 tok/s** (3.6: 8.4). The ~44 tok/s figure
+    inferred from wall times is retracted; the extra cycle time was load/overhead, not
+    prefill. Revised per-cell wall (w): ~2.5 min prefill + ~40 min decode ≈ **~45
+    min/cell** → seed 1's eight F cells land ~06:30, FB follows, seed 2 runs into the
+    day. First-cell health at 01:33: 0 voids, dc22 in flight at F 39,998/40,000 —
+    trim step 9, one step lighter than the xhigh render, all 12 unresolved keys shown.
