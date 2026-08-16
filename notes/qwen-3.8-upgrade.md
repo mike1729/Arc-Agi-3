@@ -1,5 +1,12 @@
 # Qwen 3.8-27B upgrade — bring-up gate and rerun plan
 
+> **2026-08-16: the model is out** (`mlx-community/Qwen3.8-27B-{8bit,4bit}` — ⚠ it is a
+> VLM and the conversions are mlx-vlm-made; the bring-up gate matters more, not less).
+> **Execution plan for night 1: [`notes/qwen-3.8-night1.md`](qwen-3.8-night1.md).** It
+> supersedes this note's P1 in one respect: slice 3 + the fixed two-directional grader
+> (built after this note) replace slice 1.1R as the rerun vehicle; the priorities and the
+> gate below otherwise stand.
+
 **2026-08-05. Status: pre-release plan; nothing here is runnable yet.** Qwen3.8-27B is
 expected **~2026-08-12 (w) [verify]** with materially better capabilities
 (operator-reported expectation, not a measurement). This note exists so that when it
