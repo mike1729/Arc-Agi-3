@@ -110,6 +110,15 @@ SLICE2_GAMES = dsl.SLICE2_GAMES
 DOSES = (None,)
 MODE = "full"  # the layer the miner is weakest on, and the one Qwen is being asked for
 THINK_BUDGET = 16384  # (w) >=16k; a 5k budget produced an unclosed block in bring-up
+# Qwen3.8's chat template adds a reasoning_effort knob (xhigh default / medium / low) and
+# injects an instruction sentence for xhigh and low; medium injects NOTHING, which also
+# keeps the 3.8 prompt closest to the 3.6 interface. Pinned "medium" by operator decision
+# 2026-08-16 (night 1): xhigh is unaffordable at ARC evaluation, and on the m0r0 budget
+# probe it overran the whole 16,384 budget with the think still open at 55,674 chars
+# (3.6: closed at 6,177 tokens / 21,284 chars). "low" is the fallback, not the pin — it
+# instructs brevity, and suppressed thinking is the July failure mode. 3.6's template
+# ignores the kwarg, so passing it unconditionally is generation-safe.
+REASONING_EFFORT = "medium"
 EXTRACT_BUDGET = 4096
 TEMP = 0.6  # (w) Qwen thinking defaults
 TOP_P = 0.95
@@ -1132,7 +1141,11 @@ class Qwen:
         if seed is not None:
             mx.random.seed(seed)
         prompt = self.tokenizer.apply_chat_template(
-            messages, add_generation_prompt=True, enable_thinking=thinking, tokenize=False
+            messages,
+            add_generation_prompt=True,
+            enable_thinking=thinking,
+            tokenize=False,
+            reasoning_effort=REASONING_EFFORT,
         )
         opens_think = prompt.rstrip().endswith("<think>")
         prefilled = "<think>\n\n</think>" in prompt
@@ -1223,7 +1236,11 @@ def chat_tokens(messages: list[dict[str, str]], model: Path = MODEL) -> int:
     return len(
         tokenizer(model).encode(
             tokenizer(model).apply_chat_template(
-                messages, add_generation_prompt=True, enable_thinking=True, tokenize=False
+                messages,
+                add_generation_prompt=True,
+                enable_thinking=True,
+                tokenize=False,
+                reasoning_effort=REASONING_EFFORT,
             )
         )
     )

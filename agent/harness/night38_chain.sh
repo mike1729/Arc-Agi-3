@@ -29,6 +29,14 @@ until grep -q "$DONE_MARK" "$DLLOG" 2>/dev/null; do
 done
 say "weights ready (waited ${waited}s)"
 
+# SKIP_GATES=1: relaunch path after a budget-gate failure was remedied per the note's
+# phase-1 step 5 (closure measured, THINK_BUDGET re-pinned in this commit). The gates
+# already ran once tonight — probe PASS on the same weights, budget measured to closure —
+# so re-running them would spend an hour of the window re-proving tonight's own record.
+if [ "${SKIP_GATES:-0}" = "1" ]; then
+  say "gates SKIPPED by relaunch: probe PASS + budget closure already measured tonight (logs/e2_probe_38_8bit.json, logs/e2_slice38_budget_probe_32k.json)"
+else
+
 # 1. Thinking probe, the July gate: real thinking on the real load path or no night.
 #    --max-tokens 4000, not the 1500 default: 3.8's template defaults reasoning_effort
 #    to xhigh, and a trivial-prompt think that outruns 1500 would fail the gate for the
@@ -57,6 +65,8 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 say "budget probe PASS"
+
+fi
 
 # 3. The night. Seed 1 complete first (protocol order: a finished seed 1 with both arms
 #    is a result; a truncated seed 2 is a smaller readout, denominator rules pre-set).

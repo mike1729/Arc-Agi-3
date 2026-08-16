@@ -274,3 +274,35 @@ pre-committed denominators for truncated nights, and the frozen-GRADER-vs-interf
 distinction with the paper-citable-contrast requirement.
 
 **In-worktree gates and dispatch log follow in the morning readout.**
+
+---
+
+# NIGHT-OF DEVIATIONS — 2026-08-16 22:27–23:0x, recorded as they happened
+
+1. **Budget gate FAILED under xhigh (22:27).** m0r0: the think block was still open at
+   **55,674 chars** when the 16,384-token budget exhausted; no answer was reached. The
+   same cell on 3.6: closed at 6,177 tokens / 21,284 chars. First real 3.8 behavioral
+   datum of the night: **xhigh-default thinking is ≥2.6× 3.6's volume on identical
+   input, and does not fit the slice-3 envelope.**
+2. Closure re-measurement at 32,768 was launched per phase-1 step 5, then **stopped
+   before completion** — superseded by the operator decision below; no output written.
+3. **Operator decision (awake, ~22:45): pin `reasoning_effort="medium"`.** Rationale:
+   xhigh is unaffordable at ARC evaluation regardless of what it would score tonight,
+   so the measured regime should be the affordable one. Supersedes phase-0's "leave the
+   knob at template default (w)". Bonus recorded at pin time: **medium injects no
+   instruction sentence** (xhigh and low both do), so the phase-0 injected-system-turn
+   confound disappears — medium is the 3.8 interface closest to what 3.6 ran. `low`
+   is fallback only: it instructs brevity, and suppressed thinking is the July failure
+   direction. Implemented as `REASONING_EFFORT = "medium"` passed at both template call
+   sites (`Qwen.generate`, `chat_tokens` — accounting and generation stay consistent).
+   Verified before commit: medium renders no system turn and still opens `<think>`;
+   the 3.6 template is byte-identical with and without the kwarg.
+4. **THINK_BUDGET stays 16,384, un-raised.** The relaunch runs the FULL chain — the
+   budget gate must re-pass under medium; `SKIP_GATES` exists but is not used, because
+   the knob changed the thinking regime and tonight's earlier gate results describe
+   xhigh. The thinking probe's envelope numbers (4,554-char think) are xhigh-era too.
+5. **Model column for every number tonight: (3.8, 8bit, medium effort).** The xhigh
+   dry-run table above records a superseded render; the relaunched budget probe's
+   per-game sizing under medium is the operative count (~40–60 tokens lighter per
+   cell). If medium reads flat in the morning, an xhigh one-off contrast is a possible
+   day-after decision — it is not tonight's question.
