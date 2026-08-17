@@ -275,6 +275,8 @@ def decode_board(plate: Plate) -> np.ndarray:
 
 
 def selftest() -> int:
+    import ast
+
     import e2_probe_vlm
 
     # Probe v2 carries no palette copy — it must render through THIS module, which is
@@ -285,6 +287,22 @@ def selftest() -> int:
     import s4_render as canonical
 
     assert e2_probe_vlm.sr is canonical, "probe does not render through s4_render"
+
+    # Keep the renderer's copied-by-value palette pinned to the reference harness
+    # without importing that module (it brings the full inference runtime with it).
+    reference = (
+        Path(__file__).resolve().parents[1]
+        / "reference/taaf/src/ARC3-Inference/inference/agent/vision_context.py"
+    )
+    tree = ast.parse(reference.read_text(), filename=str(reference))
+    palette_node = next(
+        node.value
+        for node in tree.body
+        if isinstance(node, ast.AnnAssign)
+        and isinstance(node.target, ast.Name)
+        and node.target.id == "ARC_COLOR_MAP"
+    )
+    assert ARC_COLOR_MAP == ast.literal_eval(palette_node), "palette drift vs reference harness"
 
     rng = np.random.default_rng(4)
     grid = rng.integers(0, 16, size=(64, 64), dtype=np.uint8)

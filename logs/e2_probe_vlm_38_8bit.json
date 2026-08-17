@@ -1,276 +1,733 @@
 {
- "note": "notes/qwen-3.8-slice4-design.md -> Gates; four gates, direct mlx_vlm path",
- "model": "/Users/michal/models/mlx/Qwen3.8-27B-8bit",
- "config_sha256_16": "8f80874ac3ad8fa3",
- "versions": {
-  "mlx-vlm": "0.6.8",
-  "mlx": "0.32.0",
-  "mlx-lm": "0.31.3",
-  "transformers": "5.14.1"
+ "note": "notes/qwen-3.8-slice4-design.md -> Gates + REVIEW ROUND 1; probe v2",
+ "fingerprint": {
+  "model_path": "/Users/michal/models/mlx/Qwen3.8-27B-8bit",
+  "model_files": {
+   "config.json": "8f80874ac3ad8fa3",
+   "generation_config.json": "e70c136c1b78ddc1",
+   "tokenizer.json": "06b9509352d2af50",
+   "tokenizer_config.json": "792fa3f0cb88b111",
+   "chat_template.jinja": "c3cf9e34abf4f9e3",
+   "preprocessor_config.json": "27225450ac9c6529",
+   "processor_config.json": "45fc17c8dd2474af",
+   "model.safetensors.index.json": "4301ca600788afb2"
+  },
+  "weight_shards_bytes": {
+   "model-00001-of-00006.safetensors": 5317707581,
+   "model-00002-of-00006.safetensors": 5354102610,
+   "model-00003-of-00006.safetensors": 5354184694,
+   "model-00004-of-00006.safetensors": 5337309653,
+   "model-00005-of-00006.safetensors": 5292848464,
+   "model-00006-of-00006.safetensors": 2845065477
+  },
+  "script_sha": "80d7b7b1a08b9264",
+  "renderer_sha": "3d6c58890e73cb54",
+  "versions": {
+   "mlx-vlm": "0.6.8",
+   "mlx": "0.32.0",
+   "mlx-lm": "0.31.3",
+   "transformers": "5.14.1"
+  },
+  "git": {
+   "commit": "054996dfa02c65ad16c557a7bc588c46952a2114",
+   "dirty": true
+  },
+  "command": "agent/harness/e2_probe_vlm.py --out logs/e2_probe_vlm_38_8bit.json --force",
+  "timestamp_utc": "2026-08-17T14:13:46.449856+00:00"
  },
- "sampler": {
+ "wiring_sampler": {
+  "temperature": 0.0,
+  "top_p": 1.0
+ },
+ "production_sampler": {
   "temperature": 1.0,
   "top_p": 0.95,
   "top_k": 20
  },
  "reasoning_effort": "xhigh",
- "cell_px": 32,
+ "seed_base": 4,
+ "run_dir": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z",
+ "status": "done",
  "gate1_palette": {
   "call": {
+   "tag": "g1_palette",
+   "seed": 4001,
+   "sampler": {
+    "temperature": 0.0,
+    "top_p": 1.0
+   },
    "images": [
     {
-     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_boards/gate1_board.png",
-     "sha256_16": "b8d24938675c7e2d",
+     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g1_board.png",
+     "sha256_16": "d53b605699d03fa1",
      "size": [
-      512,
-      512
+      1024,
+      1024
+     ]
+    },
+    {
+     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g1_marker.png",
+     "sha256_16": "e3a6bb2d2a20ddbf",
+     "size": [
+      1024,
+      1056
      ]
     }
    ],
    "image_grid_thw": [
     [
      1,
-     32,
-     32
+     64,
+     64
+    ],
+    [
+     1,
+     66,
+     64
     ]
    ],
-   "expanded_prompt_tokens": 396,
-   "prompt_opens_think": true,
-   "prefilled_empty_think": false,
-   "think_opened": true,
-   "think_closed": true,
-   "think_chars": 3566,
-   "answer": "Looking at the 16\u00d716 grid, I located each coloured cell:\n\n- **Red cells (3):** top\u2011left, upper\u2011right, lower\u2011left\n- **Blue cells (5):** top\u2011middle, mid\u2011left, far\u2011left, far\u2011right, bottom\u2011middle\n- **Centre cell (row 8, col 8):** yellow\n\n{\"red_count\": 3, \"blue_count\": 5, \"centre_colour\": \"yellow\"}",
+   "expanded_prompt_tokens": 2270,
+   "generator_prompt_tokens": 2270,
+   "prompt_tokens_match": true,
+   "stats": {
+    "prompt_tokens": 2270,
+    "generation_tokens": 2161,
+    "prompt_tps": 298.6640146691119,
+    "generation_tps": 9.606615226353023,
+    "peak_memory": 34.455469154
+   },
+   "completion_contains_close": true,
+   "prompt_opened_think": true,
+   "think_chars": 5385,
+   "completeness": "complete",
    "payload": {
     "red_count": 3,
-    "blue_count": 5,
-    "centre_colour": "yellow"
-   },
-   "wall_seconds": 214.8
-  },
-  "checks": {
-   "no_prefill": true,
-   "red_count": true,
-   "blue_count": true,
-   "centre_colour": true
-  },
-  "expected": {
-   "red": 3,
-   "blue": 5,
-   "centre": "yellow"
-  }
- },
- "gate2_ordering": {
-  "first": {
-   "images": [
-    {
-     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_boards/gate2_a.png",
-     "sha256_16": "c4402e4c4bade43b",
-     "size": [
-      512,
-      512
-     ]
-    },
-    {
-     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_boards/gate2_b.png",
-     "sha256_16": "4eef8c9991ea3a58",
-     "size": [
-      512,
-      512
-     ]
-    }
-   ],
-   "image_grid_thw": [
-    [
-     1,
-     32,
-     32
-    ],
-    [
-     1,
-     32,
-     32
-    ]
-   ],
-   "expanded_prompt_tokens": 612,
-   "prompt_opens_think": true,
-   "prefilled_empty_think": false,
-   "think_opened": true,
-   "think_closed": true,
-   "think_chars": 1059,
-   "answer": "{\"image1_top_left\": \"red\", \"image2_top_left\": \"green\"}",
-   "payload": {
-    "image1_top_left": "red",
-    "image2_top_left": "green"
-   },
-   "wall_seconds": 46.4
-  },
-  "second": {
-   "images": [
-    {
-     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_boards/gate2_b.png",
-     "sha256_16": "4eef8c9991ea3a58",
-     "size": [
-      512,
-      512
-     ]
-    },
-    {
-     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_boards/gate2_a.png",
-     "sha256_16": "c4402e4c4bade43b",
-     "size": [
-      512,
-      512
-     ]
-    }
-   ],
-   "image_grid_thw": [
-    [
-     1,
-     32,
-     32
-    ],
-    [
-     1,
-     32,
-     32
-    ]
-   ],
-   "expanded_prompt_tokens": 612,
-   "prompt_opens_think": true,
-   "prefilled_empty_think": false,
-   "think_opened": true,
-   "think_closed": true,
-   "think_chars": 716,
-   "answer": "Looking at each image, the only colored element is a small square in the top\u2011left corner; the rest of the canvas is a near\u2011white background.\n\n- Image 1: the top\u2011left square is a bright lime/green hue.\n- Image 2: the top\u2011left square is a vivid red hue.\n\nTherefore the colour words are \"green\" for image 1 and \"red\" for image 2.\n\n{\"image1_top_left\": \"green\", \"image2_top_left\": \"red\"}",
-   "payload": {
-    "image1_top_left": "green",
-    "image2_top_left": "red"
-   },
-   "wall_seconds": 46.4
-  },
-  "checks": {
-   "forward": true,
-   "reversed": true
-  }
- },
- "gate3_substitution": {
-  "blank": {
-   "images": [
-    {
-     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_boards/gate3_blank.png",
-     "sha256_16": "b4d63041dafe3244",
-     "size": [
-      512,
-      512
-     ]
-    }
-   ],
-   "image_grid_thw": [
-    [
-     1,
-     32,
-     32
-    ]
-   ],
-   "expanded_prompt_tokens": 396,
-   "prompt_opens_think": true,
-   "prefilled_empty_think": false,
-   "think_opened": true,
-   "think_closed": true,
-   "think_chars": 1065,
-   "answer": "Looking carefully at the provided image, the entire 16\u00d716 grid is uniformly white. There are no red cells and no blue cells anywhere in the grid. Consequently, the cell at the exact centre (row 8, column 8) is also white.\n\n{\"red_count\": 0, \"blue_count\": 0, \"centre_colour\": \"white\"}",
-   "payload": {
-    "red_count": 0,
-    "blue_count": 0,
-    "centre_colour": "white"
-   },
-   "wall_seconds": 54.9
-  },
-  "substituted": {
-   "images": [
-    {
-     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_boards/gate3_substituted.png",
-     "sha256_16": "ba4dbdf06c21daa2",
-     "size": [
-      512,
-      512
-     ]
-    }
-   ],
-   "image_grid_thw": [
-    [
-     1,
-     32,
-     32
-    ]
-   ],
-   "expanded_prompt_tokens": 396,
-   "prompt_opens_think": true,
-   "prefilled_empty_think": false,
-   "think_opened": true,
-   "think_closed": true,
-   "think_chars": 2434,
-   "answer": "Looking at the grid (16\u00d716, 32 px per cell), I located each coloured cell:\n\n- Red at (0,5)\n- Red at (3,3)\n- Blue at (5,5)\n- Red at (7,10)\n- Yellow at (8,8) \u2190 centre\n- Blue at (10,10)\n- Red at (12,2)\n\nTotals: pure red = 4, pure blue = 2, centre cell = yellow.\n\n{\"red_count\": 4, \"blue_count\": 2, \"centre_colour\": \"yellow\"}",
-   "payload": {
-    "red_count": 4,
     "blue_count": 2,
-    "centre_colour": "yellow"
+    "green_count": 4,
+    "marked_cell_colour": "purple",
+    "top_row_colour": "yellow"
    },
-   "wall_seconds": 164.1
+   "wall_seconds": 232.6
   },
   "checks": {
-   "blank_red": true,
-   "blank_blue": true,
-   "blank_centre": true,
-   "substituted_red": true,
-   "substituted_blue": true
+   "complete": true,
+   "tokens_match": true,
+   "red": true,
+   "blue": true,
+   "green": true,
+   "marked": true,
+   "top_row": true
+  },
+  "truth": {
+   "red_count": 3,
+   "blue_count": 2,
+   "green_count": 4,
+   "marked_cell_colour": "purple",
+   "top_row_colour": "yellow"
   }
  },
- "gate4_thinking": {
+ "gate2_greys": {
+  "diff": {
+   "call": {
+    "tag": "g2_greys_diff",
+    "seed": 4002,
+    "sampler": {
+     "temperature": 0.0,
+     "top_p": 1.0
+    },
+    "images": [
+     {
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g2_board_False.png",
+      "sha256_16": "82c4ba254f96035f",
+      "size": [
+       1024,
+       1024
+      ]
+     },
+     {
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g2_a_False.png",
+      "sha256_16": "96074c42adb205f9",
+      "size": [
+       1024,
+       1056
+      ]
+     },
+     {
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g2_b_False.png",
+      "sha256_16": "170608a4992fec28",
+      "size": [
+       1024,
+       1056
+      ]
+     }
+    ],
+    "image_grid_thw": [
+     [
+      1,
+      64,
+      64
+     ],
+     [
+      1,
+      66,
+      64
+     ],
+     [
+      1,
+      66,
+      64
+     ]
+    ],
+    "expanded_prompt_tokens": 3283,
+    "generator_prompt_tokens": 3283,
+    "prompt_tokens_match": true,
+    "stats": {
+     "prompt_tokens": 3283,
+     "generation_tokens": 436,
+     "prompt_tps": 341.62260547446266,
+     "generation_tps": 9.648560959454441,
+     "peak_memory": 37.073374976
+    },
+    "completion_contains_close": true,
+    "prompt_opened_think": true,
+    "think_chars": 1552,
+    "completeness": "complete",
+    "payload": {
+     "same_fill_colour": false
+    },
+    "wall_seconds": 54.9
+   },
+   "correct": true
+  },
+  "same": {
+   "call": {
+    "tag": "g2_greys_same",
+    "seed": 4003,
+    "sampler": {
+     "temperature": 0.0,
+     "top_p": 1.0
+    },
+    "images": [
+     {
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g2_board_True.png",
+      "sha256_16": "425d72c4e48d2711",
+      "size": [
+       1024,
+       1024
+      ]
+     },
+     {
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g2_a_True.png",
+      "sha256_16": "edb92366e2725a33",
+      "size": [
+       1024,
+       1056
+      ]
+     },
+     {
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g2_b_True.png",
+      "sha256_16": "d8cde41c87a380b9",
+      "size": [
+       1024,
+       1056
+      ]
+     }
+    ],
+    "image_grid_thw": [
+     [
+      1,
+      64,
+      64
+     ],
+     [
+      1,
+      66,
+      64
+     ],
+     [
+      1,
+      66,
+      64
+     ]
+    ],
+    "expanded_prompt_tokens": 3283,
+    "generator_prompt_tokens": 3283,
+    "prompt_tokens_match": true,
+    "stats": {
+     "prompt_tokens": 3283,
+     "generation_tokens": 355,
+     "prompt_tps": 296.8995005815907,
+     "generation_tps": 9.628146070520462,
+     "peak_memory": 37.073374976
+    },
+    "completion_contains_close": true,
+    "prompt_opened_think": true,
+    "think_chars": 1361,
+    "completeness": "complete",
+    "payload": {
+     "same_fill_colour": true
+    },
+    "wall_seconds": 48.0
+   },
+   "correct": true
+  }
+ },
+ "gate3_binding": {
   "call": {
+   "tag": "g3_binding",
+   "seed": 4004,
+   "sampler": {
+    "temperature": 0.0,
+    "top_p": 1.0
+   },
    "images": [
     {
-     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_boards/gate4_relation.png",
-     "sha256_16": "4c3a7c1e97bdc940",
+     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g3_p1.png",
+     "sha256_16": "ef35fec30a4abb36",
      "size": [
-      512,
-      512
+      1024,
+      1024
+     ]
+    },
+    {
+     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g3_p2.png",
+     "sha256_16": "ec73c3035f9e6055",
+     "size": [
+      1024,
+      1024
+     ]
+    },
+    {
+     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g3_p3.png",
+     "sha256_16": "04d7cc5f60bceb12",
+     "size": [
+      256,
+      256
+     ]
+    },
+    {
+     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g3_p4.png",
+     "sha256_16": "8296065a8aeacdaa",
+     "size": [
+      1024,
+      1056
+     ]
+    },
+    {
+     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g3_p5.png",
+     "sha256_16": "4d7099af2b14f6b9",
+     "size": [
+      1024,
+      1024
+     ]
+    },
+    {
+     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g3_p6.png",
+     "sha256_16": "f167b35accc2a71d",
+     "size": [
+      800,
+      288
      ]
     }
    ],
    "image_grid_thw": [
     [
      1,
-     32,
-     32
+     64,
+     64
+    ],
+    [
+     1,
+     64,
+     64
+    ],
+    [
+     1,
+     16,
+     16
+    ],
+    [
+     1,
+     66,
+     64
+    ],
+    [
+     1,
+     64,
+     64
+    ],
+    [
+     1,
+     18,
+     50
     ]
    ],
-   "expanded_prompt_tokens": 352,
-   "prompt_opens_think": true,
-   "prefilled_empty_think": false,
-   "think_opened": true,
-   "think_closed": true,
-   "think_chars": 432,
-   "answer": "{\"relation\": \"left\"}",
-   "payload": {
-    "relation": "left"
+   "expanded_prompt_tokens": 4552,
+   "generator_prompt_tokens": 4552,
+   "prompt_tokens_match": true,
+   "stats": {
+    "prompt_tokens": 4552,
+    "generation_tokens": 391,
+    "prompt_tps": 298.727915041248,
+    "generation_tps": 9.604816832760518,
+    "peak_memory": 37.491462074
    },
-   "wall_seconds": 17.9
+   "completion_contains_close": true,
+   "prompt_opened_think": true,
+   "think_chars": 1308,
+   "completeness": "complete",
+   "payload": {
+    "green_square_page": 1,
+    "orange_square_page": 2,
+    "diff_mask_page": 5
+   },
+   "wall_seconds": 56.0
   },
   "checks": {
-   "no_prefill": true,
-   "think_opened": true,
-   "think_closed": true,
-   "think_substantive": true,
-   "relation": true
+   "complete": true,
+   "green": true,
+   "orange": true,
+   "diff": true
   }
  },
+ "gate4_spatial_grounding": {
+  "left": {
+   "call": {
+    "tag": "g4_left",
+    "seed": 4005,
+    "sampler": {
+     "temperature": 0.0,
+     "top_p": 1.0
+    },
+    "images": [
+     {
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g4_left.png",
+      "sha256_16": "1e32704a85dae383",
+      "size": [
+       1024,
+       1024
+      ]
+     }
+    ],
+    "image_grid_thw": [
+     [
+      1,
+      64,
+      64
+     ]
+    ],
+    "expanded_prompt_tokens": 1133,
+    "generator_prompt_tokens": 1133,
+    "prompt_tokens_match": true,
+    "stats": {
+     "prompt_tokens": 1133,
+     "generation_tokens": 152,
+     "prompt_tps": 277.97161159209014,
+     "generation_tps": 9.73440684892448,
+     "peak_memory": 37.491462074
+    },
+    "completion_contains_close": true,
+    "prompt_opened_think": true,
+    "think_chars": 574,
+    "completeness": "complete",
+    "payload": {
+     "relation": "left"
+    },
+    "wall_seconds": 19.7
+   },
+   "correct": true,
+   "think_chars_diagnostic": 574
+  },
+  "right": {
+   "call": {
+    "tag": "g4_right",
+    "seed": 4006,
+    "sampler": {
+     "temperature": 0.0,
+     "top_p": 1.0
+    },
+    "images": [
+     {
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g4_right.png",
+      "sha256_16": "26b8043679d58c42",
+      "size": [
+       1024,
+       1024
+      ]
+     }
+    ],
+    "image_grid_thw": [
+     [
+      1,
+      64,
+      64
+     ]
+    ],
+    "expanded_prompt_tokens": 1133,
+    "generator_prompt_tokens": 1133,
+    "prompt_tokens_match": true,
+    "stats": {
+     "prompt_tokens": 1133,
+     "generation_tokens": 196,
+     "prompt_tps": 270.18329961838265,
+     "generation_tps": 9.488771037974887,
+     "peak_memory": 37.491462074
+    },
+    "completion_contains_close": true,
+    "prompt_opened_think": true,
+    "think_chars": 684,
+    "completeness": "complete",
+    "payload": {
+     "relation": "right"
+    },
+    "wall_seconds": 24.9
+   },
+   "correct": true,
+   "think_chars_diagnostic": 684
+  },
+  "blank": {
+   "call": {
+    "tag": "g4_blank",
+    "seed": 4007,
+    "sampler": {
+     "temperature": 0.0,
+     "top_p": 1.0
+    },
+    "images": [
+     {
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g4_blank.png",
+      "sha256_16": "2eaf0540caf1ec7e",
+      "size": [
+       1024,
+       1024
+      ]
+     }
+    ],
+    "image_grid_thw": [
+     [
+      1,
+      64,
+      64
+     ]
+    ],
+    "expanded_prompt_tokens": 1133,
+    "generator_prompt_tokens": 1133,
+    "prompt_tokens_match": true,
+    "stats": {
+     "prompt_tokens": 1133,
+     "generation_tokens": 139,
+     "prompt_tps": 265.93836796131814,
+     "generation_tps": 9.509863543169232,
+     "peak_memory": 37.491462074
+    },
+    "completion_contains_close": true,
+    "prompt_opened_think": true,
+    "think_chars": 595,
+    "completeness": "complete",
+    "payload": {
+     "relation": "none"
+    },
+    "wall_seconds": 18.9
+   },
+   "correct": true,
+   "think_chars_diagnostic": 595
+  }
+ },
+ "gate5_stability": [
+  {
+   "call": {
+    "tag": "g5_stability_0",
+    "seed": 4008,
+    "sampler": {
+     "temperature": 1.0,
+     "top_p": 0.95,
+     "top_k": 20
+    },
+    "images": [
+     {
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g1_board.png",
+      "sha256_16": "d53b605699d03fa1",
+      "size": [
+       1024,
+       1024
+      ]
+     },
+     {
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g1_marker.png",
+      "sha256_16": "e3a6bb2d2a20ddbf",
+      "size": [
+       1024,
+       1056
+      ]
+     }
+    ],
+    "image_grid_thw": [
+     [
+      1,
+      64,
+      64
+     ],
+     [
+      1,
+      66,
+      64
+     ]
+    ],
+    "expanded_prompt_tokens": 2270,
+    "generator_prompt_tokens": 2270,
+    "prompt_tokens_match": true,
+    "stats": {
+     "prompt_tokens": 2270,
+     "generation_tokens": 3154,
+     "prompt_tps": 282.478146558889,
+     "generation_tps": 9.35369169570214,
+     "peak_memory": 37.491462074
+    },
+    "completion_contains_close": true,
+    "prompt_opened_think": true,
+    "think_chars": 7589,
+    "completeness": "complete",
+    "payload": {
+     "red_count": 3,
+     "blue_count": 2,
+     "green_count": 4,
+     "marked_cell_colour": "purple",
+     "top_row_colour": "yellow"
+    },
+    "wall_seconds": 345.3
+   },
+   "correct": true
+  },
+  {
+   "call": {
+    "tag": "g5_stability_1",
+    "seed": 4009,
+    "sampler": {
+     "temperature": 1.0,
+     "top_p": 0.95,
+     "top_k": 20
+    },
+    "images": [
+     {
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g1_board.png",
+      "sha256_16": "d53b605699d03fa1",
+      "size": [
+       1024,
+       1024
+      ]
+     },
+     {
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g1_marker.png",
+      "sha256_16": "e3a6bb2d2a20ddbf",
+      "size": [
+       1024,
+       1056
+      ]
+     }
+    ],
+    "image_grid_thw": [
+     [
+      1,
+      64,
+      64
+     ],
+     [
+      1,
+      66,
+      64
+     ]
+    ],
+    "expanded_prompt_tokens": 2270,
+    "generator_prompt_tokens": 2270,
+    "prompt_tokens_match": true,
+    "stats": {
+     "prompt_tokens": 2270,
+     "generation_tokens": 4000,
+     "prompt_tps": 345.4537090635945,
+     "generation_tps": 9.364701140648709,
+     "peak_memory": 37.491462074
+    },
+    "completion_contains_close": false,
+    "prompt_opened_think": true,
+    "think_chars": 10931,
+    "completeness": "truncated",
+    "payload": null,
+    "wall_seconds": 433.8
+   },
+   "correct": false
+  },
+  {
+   "call": {
+    "tag": "g5_stability_2",
+    "seed": 4010,
+    "sampler": {
+     "temperature": 1.0,
+     "top_p": 0.95,
+     "top_k": 20
+    },
+    "images": [
+     {
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g1_board.png",
+      "sha256_16": "d53b605699d03fa1",
+      "size": [
+       1024,
+       1024
+      ]
+     },
+     {
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T141346Z/boards/g1_marker.png",
+      "sha256_16": "e3a6bb2d2a20ddbf",
+      "size": [
+       1024,
+       1056
+      ]
+     }
+    ],
+    "image_grid_thw": [
+     [
+      1,
+      64,
+      64
+     ],
+     [
+      1,
+      66,
+      64
+     ]
+    ],
+    "expanded_prompt_tokens": 2270,
+    "generator_prompt_tokens": 2270,
+    "prompt_tokens_match": true,
+    "stats": {
+     "prompt_tokens": 2270,
+     "generation_tokens": 2659,
+     "prompt_tps": 311.2753834199863,
+     "generation_tps": 9.252945124896312,
+     "peak_memory": 37.491462074
+    },
+    "completion_contains_close": true,
+    "prompt_opened_think": true,
+    "think_chars": 7461,
+    "completeness": "complete",
+    "payload": {
+     "red_count": 3,
+     "blue_count": 2,
+     "green_count": 4,
+     "marked_cell_colour": "purple",
+     "top_row_colour": "yellow"
+    },
+    "wall_seconds": 294.7
+   },
+   "correct": true
+  }
+ ],
+ "gate5_pass_fraction": "2/3",
  "results": {
-  "gate1_palette": true,
-  "gate2_ordering": true,
-  "gate3_substitution": true,
-  "gate4_thinking": true
+  "gate1_palette_production": true,
+  "gate2_grey_fill_colour": true,
+  "gate3_packet_binding": true,
+  "gate4_spatial_grounding": true,
+  "gate5_sampler_stability": true
  },
  "passed": true
 }
