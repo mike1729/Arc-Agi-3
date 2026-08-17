@@ -344,3 +344,26 @@ distinction with the paper-citable-contrast requirement.
     min/cell** → seed 1's eight F cells land ~06:30, FB follows, seed 2 runs into the
     day. First-cell health at 01:33: 0 voids, dc22 in flight at F 39,998/40,000 —
     trim step 9, one step lighter than the xhigh render, all 12 unresolved keys shown.
+
+11. **FB turns void on an instrument false-positive under 3.8's template — found at the
+    first FB turn (02:19), diagnosed from the trace, no mid-night code change.**
+    3.8's template renders the HISTORY assistant turn as
+    `<|im_start|>assistant\n<think>\n\n</think>\n\nanswer` (3.6 never inserted that
+    block — its five FB turns ran clean); `Qwen.generate`'s prefilled check scans the
+    whole prompt string, flags the history block, and voids the turn before extraction.
+    **The generation itself is unaffected** — dc22's FB trace holds a complete
+    57,626-char think, closed, with a 1,871-char answer; the generation tail correctly
+    opened `<think>`. Every FB turn tonight will void this way, each SAVING its full
+    think+answer to `logs/e2_slice_traces/*.fb.think.json`. Morning tasks, in order:
+    fix the check to scan only the region after the last `<|im_start|>assistant`;
+    re-verdict the saved FB traces (zero-GPU); extract + score the saved FB answers
+    (GPU, ~2 min each). The FB repair-rate line is DELAYED, not lost, and F cells are
+    untouched (single-turn prompts carry no history block).
+    Two more numbers from the same trace: FB wall ≈ 50 min (prefill 295 tok/s, decode
+    6.6 — consistent with the F-cell envelope), and the FB think ran to ≈18.7k tokens,
+    1,013 under the 19,669 ceiling — **FB turns press the budget edge; a real
+    truncation void (think_closed=false in the trace) remains possible and is
+    distinguishable from this false-positive kind.** Revised wall (w): a cell that
+    fires FB costs ~100 min; seed 1 with FB runs well past dawn; morning likely holds
+    5–6 F cells + their FB traces, "descriptive only" under the denominator rules
+    until the seed completes.
