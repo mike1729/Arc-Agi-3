@@ -121,3 +121,55 @@ implemented from `validate_run_document` / `validate_model_ceiling_execution_tra
 Serving-config honesty gate: the frozen ceiling_spec's serving_config (xhigh, temp 1.0
 / top-p 0.95 / top-k 20, 20,000 out, mlx-vlm runtime) is checked against the actual
 runtime constants at startup — the spec must describe reality, not merely name it.
+
+## 01:00 — dry-run: all 16 cells assemble
+
+T cells 22,955–27,502 chars text, 0 images; V/O/P cells 8,466–11,891 chars + 10 images.
+No wiring errors. (Runner permits `--dry-run` pre-freeze by design.)
+
+## 01:30 — probe verdict: gate 3 SEMANTIC_FAIL — diagnosed, one gate defect found
+
+Gates 1 (palette production), 2 (grey fill, counterbalanced), 4 (spatial grounding,
+16px), 5 (production-sampler stability 3/3) all PASS. Gate 3 (16-page permuted packet
+binding): **all ten page bindings correct across both counter-permutations, frame
+index 23 correct in both** — only the yellow event's cell coordinates wrong, and
+**identically wrong in both runs: (row 55, col 12) vs truth (row 37, col 11)**.
+
+Mechanical verification of the gate (pixel-level, scratchpad): exactly one yellow
+[255,220,0] 4×4-px cell on the whole 1,856×1,152 canvas; tile geometry gives frame
+top y=848, left x=536 → truth (37, 11) 0-based exact; target unique; frame labels
+0-based and correctly read by the model. The gate's truth is sound.
+
+The think trace is the smoking gun (call A, `call_06`): the model could not read the
+4px cell's coordinates from pixels; it found a **printed annotation "(12,55)" on a
+different marker page**, inferred the format, and transplanted those coordinates to
+the animation answer — then confabulated visual confirmation ("row 55/64 = 0.859 of
+height … Yes, matches!"; the actual cell sits at 58% of height, not 86%). Determinism
+(temp-0 wiring sampler) makes both permutations produce the same anchored answer.
+
+**Gate defect found (third of its kind after the round-2 gate-2/gate-3 fixes): the
+request never pinned the coordinate convention.** Truth is 0-based; a perfect 1-based
+reader would fail both checks — and the model's col 12 is exactly the correct 1-based
+column. Per the standing adjudication rule ("do not treat a run under a defective
+gate definition as negative evidence"), tonight's SEMANTIC_FAIL is **not yet** a
+certified capability negative.
+
+**Fix applied under the operator's calibration loop** ("if gate-night calibration
+changes any budget, code, runtime, or configuration, repeat tests → commit →
+rebuild → recertify"): the request now pins "Rows and columns are 0-indexed from the
+top-left of the 64x64 board, so each runs 0-63; the frame index is the frame's
+printed label." Regression assertion added inside the fake-VLM gate-3 branch (delivery
+refused if the pin is absent). All 86 tests + 22 subtests green. Rebuild not required:
+packets bind checkpoint serving files, not the probe script (verified s4_packet:894,
+s4_grade:701–717). The anchoring-distractor marker page **stays** — annotations are
+part of the packet contract, and anchoring-instead-of-reading is exactly what the
+gate must detect if it recurs under a pinned convention.
+
+If the rerun still fails on coordinates with the convention pinned, that is a clean
+4px-readout negative — and it lands on the design, not just the gate: raw-carrier
+causal pairs and probe storyboards lean on 4px/cell. An 8px floor quadruples
+per-board visual tokens (64→256; the 28-frame storyboard 1,792→7,168 tokens vs the
+2,112 probe-result reserve) — a structural redesign only the operator can order.
+Throughput note for morning planning: xhigh generation measured at 7.2 tok/s
+(packet-scale prompt, 39.3 GB peak) — a full 20k-token cell answer is ~46 min of
+generation; the 16-cell estimate revises upward accordingly.

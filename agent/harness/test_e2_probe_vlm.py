@@ -279,6 +279,8 @@ class FakeVlm:
                 raise AssertionError(f"Gate 3 image count: {len(images)}")
             if len([item for item in items if item.get("type") == "image"]) != 16:
                 raise AssertionError("Gate 3 placeholder count")
+            if "0-indexed from the top-left" not in items[-1].get("text", ""):
+                raise AssertionError("Gate 3 request does not pin the coordinate convention")
             for path in images:
                 with Image.open(path) as image:
                     if image.width % 32 or image.height % 32:

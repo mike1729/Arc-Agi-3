@@ -852,7 +852,9 @@ def run_gates(
         '"animation_yellow_row": <int>, "animation_yellow_col": <int>, '
         '"orange_marker_page": <int>, '
         '"green_board_page": <int>, "three_change_diff_page": <int>, '
-        '"purple_crop_page": <int>}. The requested pages are: the storyboard with '
+        '"purple_crop_page": <int>}. Rows and columns are 0-indexed from the '
+        "top-left of the 64x64 board, so each runs 0-63; the frame index is the "
+        "frame's printed label. The requested pages are: the storyboard with "
         "exactly 28 indexed frames, plus the internal frame index and 64x64 board "
         "row/column of its unique one-cell yellow event; the annotated board whose orange square is "
         "ringed; the raw full board whose only non-white object is green; the diff "
