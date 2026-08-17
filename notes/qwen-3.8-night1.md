@@ -403,3 +403,33 @@ distinction with the paper-citable-contrast requirement.
     **Medium-cap measurement queued after** (m0r0 + the worst low-thinker, ceiling
     32,768) — the operator asked for low AND medium; medium re-enters if its measured
     cap prices affordably. Then the day's GPU decision: mini-S1 vs seed 2.
+
+14. **Operator review (~13:1x) — five gaps found; the completion run was killed
+    mid-sp80 on the stop order.** Findings, recorded as given:
+    1. **The FB arm was invalid for dc22 and ft09** — feedback fired with no actual
+       counterexample to render (the night log's blank counterexample type against
+       m0r0's `false_positive` corroborates). Their FB results and runtime are
+       **discarded**; the redesign gates FB on counterexample existence.
+    2. **The record is built on v2 histories** — not the best autonomous evidence the
+       project holds. A failure on v2 does not establish failure on "our data and
+       histories" as they currently exist.
+    3. **The primary grader is too permissive for the goal-inference role.** A finite
+       L1 terminal-state separator need not be the causal objective: the recovered
+       ls20 predicate (`exists c12 … adjacent … c5`, 9/9 solved) separates L1 — and
+       L2 — replay states while omitting the source-required shape, colour and
+       rotation constraints. **Reframed: ls20 is correlation discovery, not goal
+       understanding**, and does not count as success for the role that must guide
+       reliable play.
+    4. **The proposed test action is never executed.** The harness records the model's
+       discriminating experiment and drops it; a capable component would execute it
+       (REPLAY-DET branch-and-deviate exists for exactly this) and be scored on
+       whether it resolves the ambiguity.
+    5. **Conclusions are configuration-specific**: tonight can close (3.8-27B, 8-bit,
+       text-only, low effort) as a deployable configuration — nothing broader.
+    **What stands from the night regardless:** the effort-ladder closures and the
+    fleet spread (10,293–25,114, ×1.25 → ~31.4k provisional low cap), the FB
+    history-prefill instrument fix, the envelope (prefill ~275–360, decode ~6.4–7.4,
+    ~50–80 min/cell), and the failure-shape isomorphism with 3.6 on dc22/ft09/m0r0.
+    **Next: a redesigned experiment including the vision tower** (operator direction —
+    3.8's vision is reportedly much improved; the slice-3-era "vision out of scope"
+    instrument pin is explicitly lifted for the redesign).
