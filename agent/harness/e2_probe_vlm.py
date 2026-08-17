@@ -1,22 +1,30 @@
 #!/usr/bin/env python3
-"""Slice-4 vision bring-up probe — the four gates, direct mlx_vlm path.
+"""Slice-4 vision bring-up probe v2 — production-regime gates, direct mlx_vlm path.
 
-`notes/qwen-3.8-slice4-design.md` → Gates. No slice-4 number is trusted before all four
-PASS on the serving configuration that will run the night:
+`notes/qwen-3.8-slice4-design.md` → Gates + REVIEW ROUND 1 (probe findings, all
+adopted). v1 tested an easier token regime than production (16x16 boards at 512^2 =
+one merged visual token per cell; production is 64x64 at 1024^2 = one token per 2x2
+cells) and its PASS was neither reproducible nor bound to the tested configuration.
+v2:
 
-  1. synthetic palette board — exact colours, counts, locations;
-  2. two-image ordering — reverse the images, the answer must reverse;
-  3. blank/substituted image — the answer must track the pixels, not priors;
-  4. image-conditioned thinking — substantive open/closed think + a correct relation.
+  - every board rendered by the SHARED production renderer (`s4_render`);
+  - fixtures: 64x64 boards, one-cell objects, all 16 palette ids, similar greys,
+    exact coordinates via marker plates, packet-scale multi-image binding;
+  - deterministic wiring gates (temperature 0) separated from a production-sampler
+    stability panel (1.0/0.95/20), with `mx.random.seed` immediately before EVERY
+    generation on a recorded schedule — mlx-vlm 0.6.8 with top_k=20 uses the global
+    MLX RNG, so nothing else is a seed;
+  - hard template invariants inside `ask` (assistant marker present, open-think tail,
+    whitespace-tolerant prefill scan, placeholder count == images, serialized
+    text->placeholder binding);
+  - full per-call traces on disk, truncation classified apart from formatting and
+    visual-semantic failures, expanded-token cross-check against the generator;
+  - gate-4 chance control (left / right / none, swapped + blank variants);
+  - PASS bound to the full serving fingerprint; per-call atomic checkpointing;
+    overwrite refused without --force; destination preflighted before model load.
 
-Serving pins (operator, rev 2): direct `mlx_vlm.load`/`generate` — never the server,
-never `mlx_lm` (it discards the vision weights). The checkpoint processor's chat
-template is called DIRECTLY with interleaved image/text items — the mlx-vlm helper
-prepends anonymous images. `enable_thinking=True` explicitly on every call (0.6.x
-defaults to the pre-filled non-thinking path — the July mechanism); the generation
-region is asserted prefill-free every call. Sampler: temperature 1.0, top-p 0.95,
-top-k 20. Effort xhigh (capability upper bound). NEVER constrain the first decoded
-token: the model thinks free-form; the JSON asked for arrives after `</think>`.
+NEVER constrain the first decoded token: think free-form; JSON arrives after
+`</think>`.
 
 Run:
   .venv/bin/python agent/harness/e2_probe_vlm.py --out logs/e2_probe_vlm_38_8bit.json
@@ -25,9 +33,12 @@ Run:
 from __future__ import annotations
 
 import argparse
+import datetime as _dt
 import hashlib
 import json
+import os
 import re
+import subprocess
 import sys
 import time
 from importlib.metadata import version as pkg_version
@@ -35,74 +46,84 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from PIL import Image
+
+HARNESS = Path(__file__).resolve().parent
+if str(HARNESS) not in sys.path:
+    sys.path.insert(0, str(HARNESS))
+
+import s4_render as sr  # noqa: E402  (shared production renderer — the point)
 
 ROOT = Path(__file__).resolve().parents[2]
 MODEL = Path.home() / "models/mlx/Qwen3.8-27B-8bit"
 
-# Canonical ARC palette, copied by value from the reference vision harness
-# (agent/reference/taaf/src/ARC3-Inference/inference/agent/vision_context.py:14,
-# ARC_COLOR_MAP). The slightly different gi2_observation.render_crop palette is NOT
-# used — rev 2 pins this one for every slice-4 render, and the probe must see the same
-# colours the packets will use.
-ARC_COLOR_MAP: dict[int, tuple[int, int, int]] = {
-    0: (255, 255, 255),
-    1: (204, 204, 204),
-    2: (153, 153, 153),
-    3: (102, 102, 102),
-    4: (51, 51, 51),
-    5: (0, 0, 0),
-    6: (229, 58, 163),
-    7: (255, 123, 204),
-    8: (249, 60, 49),
-    9: (30, 147, 255),
-    10: (136, 216, 241),
-    11: (255, 220, 0),
-    12: (255, 133, 27),
-    13: (146, 18, 49),
-    14: (79, 204, 48),
-    15: (163, 86, 214),
-}
-# Names the checks accept in answers, for the four maximally-nameable colours + white.
-COLOR_WORDS = {8: "red", 9: "blue", 11: "yellow", 14: "green", 0: "white"}
-
-SAMPLER = {"temperature": 1.0, "top_p": 0.95, "top_k": 20}
+WIRING_SAMPLER = {"temperature": 0.0, "top_p": 1.0}          # deterministic gates
+PRODUCTION_SAMPLER = {"temperature": 1.0, "top_p": 0.95, "top_k": 20}
 REASONING_EFFORT = "xhigh"
-CELL_PX = 32  # gate boards are 16x16 cells -> 512x512, a multiple of 32
+VISION_PAD = "<|image_pad|>"
+
+# Colour words the checks accept, for maximally nameable palette entries.
+WORDS = {8: "red", 9: "blue", 11: "yellow", 14: "green", 15: "purple", 12: "orange"}
 
 
-def render(cells: np.ndarray, path: Path) -> Path:
-    rgb = np.zeros((*cells.shape, 3), dtype=np.uint8)
-    for value, colour in ARC_COLOR_MAP.items():
-        rgb[cells == value] = colour
-    img = Image.fromarray(np.kron(rgb, np.ones((CELL_PX, CELL_PX, 1), dtype=np.uint8)))
-    assert img.size[0] % 32 == 0 and img.size[1] % 32 == 0
-    img.save(path)
-    return path
+def sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()[:16]
 
 
-def board(spec: dict[int, list[tuple[int, int]]], size: int = 16) -> np.ndarray:
-    cells = np.zeros((size, size), dtype=np.uint8)
-    for value, positions in spec.items():
-        for r, c in positions:
-            cells[r, c] = value
-    return cells
-
-
-def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()[:16]
+def fingerprint(model: Path) -> dict[str, Any]:
+    """Bind PASS to the exact serving configuration (review finding 6)."""
+    named = [
+        "config.json", "generation_config.json", "tokenizer.json",
+        "tokenizer_config.json", "chat_template.jinja", "preprocessor_config.json",
+        "processor_config.json", "model.safetensors.index.json",
+    ]
+    files = {n: sha256_file(model / n) for n in named if (model / n).exists()}
+    shards = {
+        p.name: p.stat().st_size for p in sorted(model.glob("model*.safetensors"))
+    }
+    git = {}
+    try:
+        git["commit"] = subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True
+        ).stdout.strip()
+        git["dirty"] = bool(
+            subprocess.run(
+                ["git", "status", "--porcelain"], cwd=ROOT, capture_output=True, text=True
+            ).stdout.strip()
+        )
+    except Exception as exc:  # fingerprint must never abort the probe
+        git["error"] = repr(exc)
+    return {
+        "model_path": str(model),
+        "model_files": files,
+        "weight_shards_bytes": shards,
+        "script_sha": sha256_file(Path(__file__)),
+        "renderer_sha": sha256_file(HARNESS / "s4_render.py"),
+        "versions": {
+            p: pkg_version(p) for p in ("mlx-vlm", "mlx", "mlx-lm", "transformers")
+        },
+        "git": git,
+        "command": " ".join(sys.argv),
+        "timestamp_utc": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+    }
 
 
 def extract_json(answer: str) -> dict[str, Any] | None:
-    """Last {...} block in the post-think answer; fences tolerated. Free text first,
-    JSON after — the first decoded token is never constrained."""
-    matches = re.findall(r"\{[^{}]*\}", answer, re.S)
-    for candidate in reversed(matches):
+    for candidate in reversed(re.findall(r"\{[^{}]*\}", answer, re.S)):
         try:
             return json.loads(candidate)
         except json.JSONDecodeError:
             continue
     return None
+
+
+def atomic_write(path: Path, payload: dict[str, Any]) -> None:
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload, indent=1))
+    tmp.replace(path)
 
 
 class Vlm:
@@ -111,15 +132,26 @@ class Vlm:
 
         self.path = path
         self.model, self.processor = load(str(path))
+        self.calls = 0
 
     def ask(
-        self, items: list[dict[str, str]], images: list[Path], max_tokens: int
+        self,
+        items: list[dict[str, str]],
+        images: list[Path],
+        *,
+        seed: int,
+        sampler: dict[str, Any],
+        max_tokens: int,
+        run_dir: Path,
+        tag: str,
     ) -> dict[str, Any]:
-        """items: interleaved [{"type": "text"|"image", ...}] for ONE user turn.
-        Image order in `images` must match the image items' order — that alignment is
-        the point of calling the processor template directly."""
+        """One user turn of interleaved text/image items. Hard invariants raise —
+        a wiring defect must kill the probe, not lower a score."""
+        import mlx.core as mx
+        from PIL import Image
         from mlx_vlm import generate
 
+        self.calls += 1
         messages = [{"role": "user", "content": items}]
         prompt = self.processor.apply_chat_template(
             messages,
@@ -128,12 +160,47 @@ class Vlm:
             enable_thinking=True,
             reasoning_effort=REASONING_EFFORT,
         )
-        generation_region = prompt[prompt.rfind("<|im_start|>assistant") :]
-        opens = prompt.rstrip().endswith("<think>")
-        prefilled = "<think>\n\n</think>" in generation_region
+        # --- invariants (review probe-finding 3) ---
+        marker = prompt.rfind("<|im_start|>assistant")
+        assert marker != -1, "assistant marker missing from serialized prompt"
+        generation_region = prompt[marker:]
+        assert prompt.rstrip().endswith("<think>"), "generation tail does not open <think>"
+        assert not re.search(r"<think>\s*</think>", generation_region), (
+            "pre-filled (whitespace-equivalent) empty think block in generation region"
+        )
+        pads = prompt.count(VISION_PAD)
+        image_items = [i for i in items if i.get("type") == "image"]
+        assert len(image_items) == len(images), "image items != images supplied"
+        # one pad RUN per image; count contiguous runs, not tokens
+        pad_runs = len(re.findall(rf"(?:{re.escape(VISION_PAD)})+", prompt))
+        assert pad_runs == len(images), f"placeholder runs {pad_runs} != images {len(images)}"
+        # serialized binding: each text item that precedes an image item must appear
+        # before that image's pad run in the rendered prompt.
+        cursor, pad_iter = 0, [m.start() for m in re.finditer(rf"(?:{re.escape(VISION_PAD)})+", prompt)]
+        seen_images = 0
+        for item in items:
+            if item.get("type") == "text":
+                idx = prompt.find(item["text"], cursor)
+                assert idx != -1, f"text item lost from serialized prompt: {item['text'][:40]!r}"
+                cursor = idx + len(item["text"])
+                if seen_images < len(pad_iter):
+                    assert idx < pad_iter[seen_images] or seen_images == len(images), (
+                        "text/image interleaving order broken in serialized prompt"
+                    )
+            else:
+                assert pad_iter[seen_images] >= cursor, "image pad precedes its label"
+                cursor = pad_iter[seen_images]
+                seen_images += 1
+
         pil = [Image.open(p) for p in images]
+        for p, im in zip(images, pil):
+            assert im.width % 32 == 0 and im.height % 32 == 0, f"{p.name}: dims not %32"
+            assert im.width * im.height >= 65536, f"{p.name}: below processor pixel minimum"
         inputs = self.processor(text=prompt, images=pil or None, return_tensors="np")
         grid_thw = inputs.get("image_grid_thw")
+        expanded = int(np.asarray(inputs["input_ids"]).shape[-1])
+
+        mx.random.seed(seed)  # the ONLY effective seed under top_k sampling
         start = time.monotonic()
         out = generate(
             self.model,
@@ -142,181 +209,327 @@ class Vlm:
             image=[str(p) for p in images],
             max_tokens=max_tokens,
             verbose=False,
-            **SAMPLER,
+            **sampler,
         )
         text = out.text if hasattr(out, "text") else str(out)
-        full = ("<think>" + text) if opens else text
+        stats = {
+            k: getattr(out, k, None)
+            for k in ("prompt_tokens", "generation_tokens", "prompt_tps",
+                      "generation_tps", "peak_memory")
+        }
+        full = "<think>" + text
         closed = "</think>" in full
-        think = full.split("<think>", 1)[-1].split("</think>", 1)[0] if "<think>" in full else ""
+        think = full.split("<think>", 1)[-1].split("</think>", 1)[0]
         answer = full.split("</think>", 1)[-1].strip() if closed else ""
-        return {
+        payload = extract_json(answer) if closed else None
+        gen_tokens = stats.get("generation_tokens")
+        truncated = (not closed) and (gen_tokens is None or gen_tokens >= max_tokens - 1)
+        completeness = (
+            "complete" if closed and payload is not None
+            else "truncated" if truncated
+            else "no_json" if closed
+            else "unclosed"
+        )
+        record = {
+            "tag": tag,
+            "seed": seed,
+            "sampler": sampler,
             "images": [
-                {"path": str(p), "sha256_16": sha256(p), "size": Image.open(p).size}
+                {"path": str(p), "sha256_16": sha256_file(p),
+                 "size": list(Image.open(p).size)}
                 for p in images
             ],
             "image_grid_thw": None if grid_thw is None else np.asarray(grid_thw).tolist(),
-            "expanded_prompt_tokens": int(np.asarray(inputs["input_ids"]).shape[-1]),
-            "prompt_opens_think": opens,
-            "prefilled_empty_think": prefilled,
-            "think_opened": "<think>" in full,
-            "think_closed": closed,
+            "expanded_prompt_tokens": expanded,
+            "generator_prompt_tokens": stats.get("prompt_tokens"),
+            "prompt_tokens_match": stats.get("prompt_tokens") in (None, expanded),
+            "stats": stats,
+            "completion_contains_close": closed,   # generated evidence
+            "prompt_opened_think": True,           # asserted above, by construction
             "think_chars": len(think.strip()),
-            "answer": answer,
-            "payload": extract_json(answer),
+            "completeness": completeness,
+            "payload": payload,
             "wall_seconds": round(time.monotonic() - start, 1),
         }
+        trace = dict(record)
+        trace["raw_completion"] = text
+        trace["think"] = think
+        trace["answer"] = answer
+        atomic_write(run_dir / f"call_{self.calls:02d}_{tag}.json", trace)
+        return record
 
 
-COUNT_REQUEST = (
-    "Think first, carefully. Then answer with ONLY a JSON object on the last line: "
-    '{"red_count": <int>, "blue_count": <int>, "centre_colour": "<colour word>"} — '
-    "the number of pure red cells, the number of pure blue cells, and the colour of "
-    "the cell at the exact centre of the grid (row 8, column 8 of 16, 0-indexed)."
+# ---------------------------------------------------------------------------------
+# Fixtures — 64x64 production boards through s4_render only.
+# ---------------------------------------------------------------------------------
+
+
+def fixture_palette() -> tuple[np.ndarray, dict[str, Any]]:
+    """One-cell objects of every palette id on a white board; known counts for three
+    nameable colours; a yellow singleton alone in row 0; a purple singleton to mark."""
+    g = np.zeros((64, 64), dtype=np.uint8)
+    singles = {
+        1: (12, 5), 2: (20, 50), 3: (33, 14), 4: (47, 8), 5: (5, 27), 6: (52, 44),
+        7: (26, 37), 10: (39, 58), 12: (58, 21), 13: (9, 47), 15: (7, 55),
+    }
+    for value, (r, c) in singles.items():
+        g[r, c] = value
+    g[0, 41] = 11                                   # the only non-white cell in row 0
+    for r, c in ((15, 15), (44, 30), (61, 3)):      # red x3
+        g[r, c] = 8
+    for r, c in ((28, 6), (36, 49)):                # blue x2
+        g[r, c] = 9
+    for r, c in ((3, 3), (17, 60), (50, 55), (62, 40)):  # green x4
+        g[r, c] = 14
+    truth = {"red_count": 3, "blue_count": 2, "green_count": 4,
+             "marked_cell_colour": "purple", "top_row_colour": "yellow",
+             "marked_cell": singles[15]}
+    return g, truth
+
+
+def fixture_greys(same: bool) -> tuple[np.ndarray, tuple[int, int], tuple[int, int]]:
+    g = np.zeros((64, 64), dtype=np.uint8)
+    a, b = (18, 14), (18, 46)
+    g[16:21, 12:17] = 2
+    g[16:21, 44:49] = 2 if same else 3
+    return g, a, b
+
+
+def fixture_relation(red_left: bool) -> np.ndarray:
+    g = np.zeros((64, 64), dtype=np.uint8)
+    left, right = (slice(30, 33), slice(10, 13)), (slice(30, 33), slice(50, 53))
+    g[left if red_left else right] = 8
+    g[right if red_left else left] = 9
+    return g
+
+
+PALETTE_REQUEST = (
+    "Image 1 is a 64x64 board. Image 2 is the SAME board with one cell ringed by a "
+    "magenta marker. Think first, carefully. Then answer with ONLY a JSON object on "
+    'the last line: {"red_count": <int>, "blue_count": <int>, "green_count": <int>, '
+    '"marked_cell_colour": "<colour word>", "top_row_colour": "<colour word>"} — '
+    "counts of pure-red, pure-blue and pure-green cells on the board, the colour of "
+    "the ringed cell, and the colour of the only non-white cell in the top row."
 )
 
 
-def gate1_palette(vlm: Vlm, work: Path, out: dict[str, Any]) -> bool:
-    """Exact colours, counts, locations on a canonical-palette board."""
-    spec = {8: [(1, 2), (4, 12), (13, 3)], 9: [(2, 9), (6, 6), (9, 1), (11, 13), (14, 8)], 11: [(8, 8)]}
-    img = render(board(spec), work / "gate1_board.png")
+def run_gates(vlm: Vlm, work: Path, run_dir: Path, args, doc: dict[str, Any]) -> dict[str, bool]:
+    results: dict[str, bool] = {}
+    call_no = iter(range(1, 100))
+    seed_for = lambda: args.seed * 1000 + next(call_no)
+
+    def save(grid, name):
+        return sr.render_board(grid).save(work / name)
+
+    # Gate 1 — production palette/coordinates (deterministic wiring).
+    grid, truth = fixture_palette()
+    board_png = save(grid, "g1_board.png")
+    marker_png = sr.render_marker(grid, truth["marked_cell"], "MARKED CELL").save(
+        work / "g1_marker.png"
+    )
     call = vlm.ask(
-        [{"type": "image"}, {"type": "text", "text": COUNT_REQUEST}], [img], 4000
+        [{"type": "text", "text": "Image 1:"}, {"type": "image"},
+         {"type": "text", "text": "Image 2:"}, {"type": "image"},
+         {"type": "text", "text": PALETTE_REQUEST}],
+        [board_png, marker_png],
+        seed=seed_for(), sampler=WIRING_SAMPLER, max_tokens=args.max_tokens,
+        run_dir=run_dir, tag="g1_palette",
     )
     p = call["payload"] or {}
     checks = {
-        "no_prefill": not call["prefilled_empty_think"],
-        "red_count": p.get("red_count") == 3,
-        "blue_count": p.get("blue_count") == 5,
-        "centre_colour": str(p.get("centre_colour", "")).strip().lower() == "yellow",
+        "complete": call["completeness"] == "complete",
+        "tokens_match": call["prompt_tokens_match"],
+        "red": p.get("red_count") == truth["red_count"],
+        "blue": p.get("blue_count") == truth["blue_count"],
+        "green": p.get("green_count") == truth["green_count"],
+        "marked": str(p.get("marked_cell_colour", "")).strip().lower() == "purple",
+        "top_row": str(p.get("top_row_colour", "")).strip().lower() == "yellow",
     }
-    out["gate1_palette"] = {"call": call, "checks": checks, "expected": {"red": 3, "blue": 5, "centre": "yellow"}}
-    return all(checks.values())
+    doc["gate1_palette"] = {"call": call, "checks": checks, "truth": {k: v for k, v in truth.items() if k != "marked_cell"}}
+    results["gate1_palette_production"] = all(checks.values())
 
+    # Gate 2 — similar greys, marked pair. Review round 1 rerun fix: the first wording
+    # ("same or different") was semantically ambiguous — the model correctly read both
+    # marker positions and answered that the CELLS were different (different positions),
+    # which was true. The question is now about fill colour only, boolean.
+    grey_checks = {}
+    for same in (False, True):
+        grid, a, b = fixture_greys(same)
+        board = save(grid, f"g2_board_{same}.png")
+        ma = sr.render_marker(grid, a, "MARK A").save(work / f"g2_a_{same}.png")
+        mb = sr.render_marker(grid, b, "MARK B").save(work / f"g2_b_{same}.png")
+        call = vlm.ask(
+            [{"type": "text", "text": "Image 1 (board):"}, {"type": "image"},
+             {"type": "text", "text": "Image 2 (mark A):"}, {"type": "image"},
+             {"type": "text", "text": "Image 3 (mark B):"}, {"type": "image"},
+             {"type": "text", "text": (
+                 "Compare the FILL COLOUR of the cell inside the magenta ring in "
+                 "Image 2 with the fill colour of the cell inside the magenta ring "
+                 "in Image 3. Ignore the rings themselves and ignore where the "
+                 "cells are on the board. Think first. Then answer with ONLY a "
+                 'JSON object: {"same_fill_colour": true or false}.'
+             )}],
+            [board, ma, mb],
+            seed=seed_for(), sampler=WIRING_SAMPLER, max_tokens=args.max_tokens,
+            run_dir=run_dir, tag=f"g2_greys_{'same' if same else 'diff'}",
+        )
+        got = (call["payload"] or {}).get("same_fill_colour")
+        grey_checks["same" if same else "diff"] = {"call": call, "correct": got is same}
+    doc["gate2_greys"] = grey_checks
+    results["gate2_grey_fill_colour"] = all(v["correct"] for v in grey_checks.values())
 
-def gate2_ordering(vlm: Vlm, work: Path, out: dict[str, Any]) -> bool:
-    """Reverse the images; the answer must reverse."""
-    a = render(board({8: [(0, 0)]}), work / "gate2_a.png")  # red top-left
-    b = render(board({14: [(0, 0)]}), work / "gate2_b.png")  # green top-left
-    request = (
-        "Think first. Then answer with ONLY a JSON object on the last line: "
-        '{"image1_top_left": "<colour word>", "image2_top_left": "<colour word>"}.'
-    )
-    items = [
-        {"type": "text", "text": "Image 1:"},
-        {"type": "image"},
-        {"type": "text", "text": "Image 2:"},
-        {"type": "image"},
-        {"type": "text", "text": request},
+    # Gate 3 — packet-scale multi-image binding (6 pages). Review round 1 rerun fix:
+    # the first fixture repeated the green board across pages 3/4/6, making the
+    # queried targets non-unique — the model detected the ill-posedness in its think
+    # and truncated deliberating it. Pages are now built from DISJOINT boards: each
+    # queried object exists on exactly one page by construction.
+    g_green = np.zeros((64, 64), dtype=np.uint8); g_green[40:44, 8:12] = 14
+    g_orange = np.zeros((64, 64), dtype=np.uint8); g_orange[10:14, 30:34] = 12
+    g_purple = np.zeros((64, 64), dtype=np.uint8); g_purple[24:28, 24:28] = 15
+    g_yellow = np.zeros((64, 64), dtype=np.uint8); g_yellow[55, 12] = 11
+    g_blue_pre = np.zeros((64, 64), dtype=np.uint8)
+    g_blue_post = g_blue_pre.copy(); g_blue_post[20, 20] = 9
+    g_grey1 = np.zeros((64, 64), dtype=np.uint8); g_grey1[5:9, 5:9] = 2
+    g_grey2 = np.zeros((64, 64), dtype=np.uint8); g_grey2[50:54, 50:54] = 3
+    pages = [
+        save(g_green, "g3_p1.png"),
+        save(g_orange, "g3_p2.png"),
+        sr.render_crop(g_purple, (24, 24, 27, 27)).save(work / "g3_p3.png"),
+        sr.render_marker(g_yellow, (55, 12), "ACTION6(12,55)").save(work / "g3_p4.png"),
+        sr.render_diff_mask(g_blue_pre, g_blue_post).save(work / "g3_p5.png"),
+        sr.storyboard([g_grey1, g_grey2, g_grey1], cols=3).save(work / "g3_p6.png"),
     ]
-    first = vlm.ask(items, [a, b], 4000)
-    second = vlm.ask(items, [b, a], 4000)
-    p1, p2 = first["payload"] or {}, second["payload"] or {}
-    norm = lambda d, k: str(d.get(k, "")).strip().lower()
-    checks = {
-        "forward": norm(p1, "image1_top_left") == "red" and norm(p1, "image2_top_left") == "green",
-        "reversed": norm(p2, "image1_top_left") == "green" and norm(p2, "image2_top_left") == "red",
-    }
-    out["gate2_ordering"] = {"first": first, "second": second, "checks": checks}
-    return all(checks.values())
-
-
-def gate3_substitution(vlm: Vlm, work: Path, out: dict[str, Any]) -> bool:
-    """Blank and substituted boards under gate 1's question — track the pixels."""
-    blank = render(board({}), work / "gate3_blank.png")
-    substituted = render(
-        board({8: [(0, 5), (3, 3), (7, 10), (12, 2)], 9: [(5, 5), (10, 10)], 11: [(8, 8)]}),
-        work / "gate3_substituted.png",
-    )
-    call_blank = vlm.ask([{"type": "image"}, {"type": "text", "text": COUNT_REQUEST}], [blank], 4000)
-    call_sub = vlm.ask([{"type": "image"}, {"type": "text", "text": COUNT_REQUEST}], [substituted], 4000)
-    pb, ps = call_blank["payload"] or {}, call_sub["payload"] or {}
-    checks = {
-        "blank_red": pb.get("red_count") == 0,
-        "blank_blue": pb.get("blue_count") == 0,
-        "blank_centre": str(pb.get("centre_colour", "")).strip().lower() == "white",
-        "substituted_red": ps.get("red_count") == 4,
-        "substituted_blue": ps.get("blue_count") == 2,
-    }
-    out["gate3_substitution"] = {"blank": call_blank, "substituted": call_sub, "checks": checks}
-    return all(checks.values())
-
-
-def gate4_thinking(vlm: Vlm, work: Path, out: dict[str, Any]) -> bool:
-    """Substantive image-conditioned thinking + a correct simple relation."""
-    cells = board({})
-    cells[6:9, 2:5] = 8   # red 3x3, left
-    cells[6:9, 11:14] = 9  # blue 3x3, right
-    img = render(cells, work / "gate4_relation.png")
-    call = vlm.ask(
-        [
-            {"type": "image"},
-            {
-                "type": "text",
-                "text": (
-                    "Think first. Then answer with ONLY a JSON object on the last "
-                    'line: {"relation": "left" or "right"} — is the red square to '
-                    "the left or to the right of the blue square?"
-                ),
-            },
-        ],
-        [img],
-        4000,
-    )
+    items: list[dict[str, str]] = []
+    for i in range(6):
+        items.append({"type": "text", "text": f"Page {i + 1}:"})
+        items.append({"type": "image"})
+    items.append({"type": "text", "text": (
+        "Think first. Then answer with ONLY a JSON object: "
+        '{"green_square_page": <int>, "orange_square_page": <int>, '
+        '"diff_mask_page": <int>} — the diff mask is the black image with white '
+        "marks."
+    )})
+    call = vlm.ask(items, pages, seed=seed_for(), sampler=WIRING_SAMPLER,
+                   max_tokens=max(args.max_tokens, 8000), run_dir=run_dir,
+                   tag="g3_binding")
     p = call["payload"] or {}
     checks = {
-        "no_prefill": not call["prefilled_empty_think"],
-        "think_opened": call["think_opened"],
-        "think_closed": call["think_closed"],
-        "think_substantive": call["think_chars"] >= 200,
-        "relation": str(p.get("relation", "")).strip().lower() == "left",
+        "complete": call["completeness"] == "complete",
+        "green": p.get("green_square_page") == 1,
+        "orange": p.get("orange_square_page") == 2,
+        "diff": p.get("diff_mask_page") == 5,
     }
-    out["gate4_thinking"] = {"call": call, "checks": checks}
-    return all(checks.values())
+    doc["gate3_binding"] = {"call": call, "checks": checks}
+    results["gate3_packet_binding"] = all(checks.values())
+
+    # Gate 4 — CONTROLLED SPATIAL GROUNDING: left / right(swapped) / none(blank).
+    # What a pass proves is that the relation answer tracks the pixels under swap and
+    # ablation — not "substantive thinking"; think length is diagnostic only.
+    rel_request = (
+        "Think first. Then answer with ONLY a JSON object: "
+        '{"relation": "left" or "right" or "none"} — is the red square to the left '
+        "or to the right of the blue square? If there is no red or blue square, "
+        'answer "none".'
+    )
+    rel_checks = {}
+    for tag, grid, want in (
+        ("left", fixture_relation(True), "left"),
+        ("right", fixture_relation(False), "right"),
+        ("blank", np.zeros((64, 64), dtype=np.uint8), "none"),
+    ):
+        img = save(grid, f"g4_{tag}.png")
+        call = vlm.ask(
+            [{"type": "image"}, {"type": "text", "text": rel_request}], [img],
+            seed=seed_for(), sampler=WIRING_SAMPLER, max_tokens=args.max_tokens,
+            run_dir=run_dir, tag=f"g4_{tag}",
+        )
+        got = str((call["payload"] or {}).get("relation", "")).strip().lower()
+        rel_checks[tag] = {"call": call, "correct": got == want,
+                          "think_chars_diagnostic": call["think_chars"]}
+    doc["gate4_spatial_grounding"] = rel_checks
+    results["gate4_spatial_grounding"] = all(v["correct"] for v in rel_checks.values())
+
+    # Gate 5 — production-sampler stability panel on the gate-1 item.
+    stability = []
+    for rep in range(args.stability):
+        call = vlm.ask(
+            [{"type": "text", "text": "Image 1:"}, {"type": "image"},
+             {"type": "text", "text": "Image 2:"}, {"type": "image"},
+             {"type": "text", "text": PALETTE_REQUEST}],
+            [board_png, marker_png],
+            seed=seed_for(), sampler=PRODUCTION_SAMPLER, max_tokens=args.max_tokens,
+            run_dir=run_dir, tag=f"g5_stability_{rep}",
+        )
+        p = call["payload"] or {}
+        ok = (
+            call["completeness"] == "complete"
+            and p.get("red_count") == 3 and p.get("blue_count") == 2
+            and p.get("green_count") == 4
+            and str(p.get("marked_cell_colour", "")).strip().lower() == "purple"
+        )
+        stability.append({"call": call, "correct": ok})
+    doc["gate5_stability"] = stability
+    passes = sum(1 for s in stability if s["correct"])
+    doc["gate5_pass_fraction"] = f"{passes}/{args.stability}"
+    results["gate5_sampler_stability"] = passes * 3 >= args.stability * 2  # >= 2/3 (w)
+
+    return results
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model", type=Path, default=MODEL)
     parser.add_argument("--out", type=Path, default=None)
+    parser.add_argument("--seed", type=int, default=4, help="base of the recorded seed schedule")
+    parser.add_argument("--stability", type=int, default=3, help="production-sampler replicates")
+    parser.add_argument("--max-tokens", type=int, default=4000)
+    parser.add_argument("--force", action="store_true", help="allow overwriting an existing --out")
     args = parser.parse_args()
+
     out_path = args.out or ROOT / f"logs/e2_probe_vlm_{args.model.name}.json"
+    if out_path.exists() and not args.force:
+        print(f"REFUSED: {out_path} exists (pass --force to overwrite)", file=sys.stderr)
+        return 2
+    stamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    run_dir = ROOT / f"logs/e2_probe_vlm_runs/{stamp}"
+    run_dir.mkdir(parents=True, exist_ok=False)
+    work = run_dir / "boards"
+    work.mkdir()
+    # preflight the destination BEFORE the model eats 30 GB of memory
+    atomic_write(out_path, {"status": "preflight", "run_dir": str(run_dir)})
 
-    work = ROOT / "logs/e2_probe_vlm_boards"
-    work.mkdir(parents=True, exist_ok=True)
-
-    config_fingerprint = hashlib.sha256(
-        (args.model / "config.json").read_bytes()
-    ).hexdigest()[:16]
+    doc: dict[str, Any] = {
+        "note": "notes/qwen-3.8-slice4-design.md -> Gates + REVIEW ROUND 1; probe v2",
+        "fingerprint": fingerprint(args.model),
+        "wiring_sampler": WIRING_SAMPLER,
+        "production_sampler": PRODUCTION_SAMPLER,
+        "reasoning_effort": REASONING_EFFORT,
+        "seed_base": args.seed,
+        "run_dir": str(run_dir),
+        "status": "loading",
+    }
+    atomic_write(out_path, doc)
 
     print(f"loading {args.model.name} ...", flush=True)
     vlm = Vlm(args.model)
+    doc["status"] = "loaded"
+    atomic_write(out_path, doc)
 
-    document: dict[str, Any] = {
-        "note": "notes/qwen-3.8-slice4-design.md -> Gates; four gates, direct mlx_vlm path",
-        "model": str(args.model),
-        "config_sha256_16": config_fingerprint,
-        "versions": {p: pkg_version(p) for p in ("mlx-vlm", "mlx", "mlx-lm", "transformers")},
-        "sampler": SAMPLER,
-        "reasoning_effort": REASONING_EFFORT,
-        "cell_px": CELL_PX,
-    }
-    results: dict[str, bool] = {}
-    for name, gate in (
-        ("gate1_palette", gate1_palette),
-        ("gate2_ordering", gate2_ordering),
-        ("gate3_substitution", gate3_substitution),
-        ("gate4_thinking", gate4_thinking),
-    ):
-        passed = gate(vlm, work, document)
-        results[name] = passed
-        print(f"{name}: {'PASS' if passed else 'FAIL'}", flush=True)
+    try:
+        results = run_gates(vlm, work, run_dir, args, doc)
+    finally:
+        doc["status"] = "finished_or_aborted"
+        atomic_write(out_path, doc)
 
-    document["results"] = results
-    document["passed"] = all(results.values())
-    out_path.write_text(json.dumps(document, indent=1))
-    print(f"ALL GATES: {'PASS' if document['passed'] else 'FAIL'}")
-    print(f"wrote {out_path}")
-    return 0 if document["passed"] else 1
+    doc["results"] = results
+    doc["passed"] = all(results.values())
+    doc["status"] = "done"
+    atomic_write(out_path, doc)
+    for name, ok in results.items():
+        print(f"{name}: {'PASS' if ok else 'FAIL'}", flush=True)
+    print(f"ALL GATES: {'PASS' if doc['passed'] else 'FAIL'}")
+    print(f"wrote {out_path}  (traces: {run_dir})")
+    return 0 if doc["passed"] else 1
 
 
 if __name__ == "__main__":

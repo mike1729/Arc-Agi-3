@@ -277,7 +277,9 @@ def decode_board(plate: Plate) -> np.ndarray:
 def selftest() -> int:
     import e2_probe_vlm
 
-    assert e2_probe_vlm.ARC_COLOR_MAP == ARC_COLOR_MAP, "palette drift vs probe"
+    # Probe v2 carries no palette copy — it must render through THIS module, which is
+    # the stronger property the old palette-identity assertion approximated.
+    assert e2_probe_vlm.sr is sys.modules[__name__], "probe does not render through s4_render"
 
     rng = np.random.default_rng(4)
     grid = rng.integers(0, 16, size=(64, 64), dtype=np.uint8)
