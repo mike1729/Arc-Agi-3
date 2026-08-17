@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Slice-4 vision bring-up probe v2 — production-regime gates, direct mlx_vlm path.
+"""Slice-4 vision bring-up probe v2.2 — production-regime gates, direct mlx_vlm path.
 
 `notes/qwen-3.8-slice4-design.md` → Gates + REVIEW ROUND 1 (probe findings, all
 adopted). v1 tested an easier token regime than production (16x16 boards at 512^2 =
 one merged visual token per cell; production is 64x64 at 1024^2 = one token per 2x2
 cells) and its PASS was neither reproducible nor bound to the tested configuration.
-v2:
+v2.2:
 
   - every board rendered by the SHARED production renderer (`s4_render`);
   - fixtures: 64x64 boards, one-cell objects, all 16 palette ids, similar greys,
-    exact coordinates via marker plates, packet-scale multi-image binding;
+    exact coordinates via marker plates, 16-page binding under two permutations;
   - deterministic wiring gates (temperature 0) separated from a production-sampler
     stability panel (1.0/0.95/20), with `mx.random.seed` immediately before EVERY
     generation on a recorded schedule — mlx-vlm 0.6.8 with top_k=20 uses the global
@@ -20,8 +20,8 @@ v2:
   - full per-call traces on disk, truncation classified apart from formatting and
     visual-semantic failures, expanded-token cross-check against the generator;
   - gate-4 chance control (left / right / none, swapped + blank variants);
-  - PASS bound to the full serving fingerprint; per-call atomic checkpointing;
-    overwrite refused without --force; destination preflighted before model load.
+  - PASS bound to full local hashes + serving identity; per-call atomic checkpointing;
+    one global run lock; overwrite refused without --force; pre-load manifests.
 
 NEVER constrain the first decoded token: think free-form; JSON arrives after
 `</think>`.
@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as _dt
+import fcntl
 import hashlib
 import json
 import os
@@ -45,7 +46,7 @@ import time
 import traceback
 from importlib.metadata import version as pkg_version
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import numpy as np
 
@@ -73,10 +74,6 @@ PINNED_VERSIONS = {
     "mlx-lm": "0.31.3",
     "transformers": "5.14.1",
 }
-
-# Colour words the checks accept, for maximally nameable palette entries.
-WORDS = {8: "red", 9: "blue", 11: "yellow", 14: "green", 15: "purple", 12: "orange"}
-
 
 def sha256_file(path: Path) -> str:
     h = hashlib.sha256()
@@ -310,6 +307,11 @@ def classify_gate(passed: bool, calls: list[dict[str, Any]]) -> str:
     return "SEMANTIC_FAIL"
 
 
+def is_page_number(value: Any) -> bool:
+    """JSON booleans are Python ints; reject them as malformed page numbers."""
+    return type(value) is int and 1 <= value <= MAX_PACKET_IMAGES
+
+
 def seed_for(base_seed: int, tag: str) -> int:
     """Stable uint64 seed: adding or reordering another gate cannot change this call."""
     digest = hashlib.sha256(f"{base_seed}:{tag}".encode()).digest()
@@ -346,6 +348,26 @@ def uint64_seed(raw: str) -> int:
 def canonical_sha256(payload: dict[str, Any]) -> str:
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(encoded).hexdigest()
+
+
+def acquire_run_lock(path: Path):
+    """Hold a process-scoped nonblocking lock across hashing, load, and all gates."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    handle = open(path, "a+", encoding="utf-8")
+    try:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError as exc:
+        handle.close()
+        raise RuntimeError("another e2_probe_vlm process holds the global run lock") from exc
+    handle.seek(0)
+    handle.truncate()
+    handle.write(json.dumps({
+        "pid": os.getpid(),
+        "acquired_utc": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+    }))
+    handle.flush()
+    os.fsync(handle.fileno())
+    return handle
 
 
 def atomic_write(path: Path, payload: dict[str, Any]) -> None:
@@ -416,7 +438,11 @@ class Vlm:
         require(pad_runs == len(images), f"placeholder runs {pad_runs} != images {len(images)}")
         # serialized binding: each text item that precedes an image item must appear
         # before that image's pad run in the rendered prompt.
-        cursor, pad_iter = 0, [m.start() for m in re.finditer(rf"(?:{re.escape(VISION_PAD)})+", prompt)]
+        cursor = 0
+        pad_iter = [
+            match.start()
+            for match in re.finditer(rf"(?:{re.escape(VISION_PAD)})+", prompt)
+        ]
         seen_images = 0
         for item in items:
             if item.get("type") == "text":
@@ -592,7 +618,6 @@ def fixture_fill_pair(
     """Counterbalance grey identity independently of position and marker label."""
     g = np.zeros((64, 64), dtype=np.uint8)
     a, b = (18, 14), (42, 46)
-    g[16:21, 12:17] = 2
     g[16:21, 12:17] = a_id
     g[40:45, 44:49] = b_id
     return g, a, b
@@ -626,10 +651,18 @@ PALETTE_REQUEST = (
 )
 
 
-def run_gates(vlm: Vlm, work: Path, run_dir: Path, args, doc: dict[str, Any]) -> dict[str, bool]:
+def run_gates(
+    vlm: Vlm,
+    work: Path,
+    run_dir: Path,
+    args,
+    doc: dict[str, Any],
+    persist: Callable[[], None] | None = None,
+) -> dict[str, bool]:
     results: dict[str, bool] = {}
     gate_statuses: dict[str, str] = {}
     doc["gate_statuses"] = gate_statuses
+    checkpoint = persist or (lambda: None)
 
     def record_result(name: str, passed: bool, calls: list[dict[str, Any]]) -> None:
         results[name] = passed
@@ -663,14 +696,20 @@ def run_gates(vlm: Vlm, work: Path, run_dir: Path, args, doc: dict[str, Any]) ->
         "marked": str(p.get("marked_cell_colour", "")).strip().lower() == "purple",
         "top_row": str(p.get("top_row_colour", "")).strip().lower() == "yellow",
     }
-    doc["gate1_palette"] = {"call": call, "checks": checks, "truth": {k: v for k, v in truth.items() if k != "marked_cell"}}
+    doc["gate1_palette"] = {
+        "call": call,
+        "checks": checks,
+        "truth": {key: value for key, value in truth.items() if key != "marked_cell"},
+    }
     record_result("gate1_palette_production", all(checks.values()), [call])
+    checkpoint()
 
     # Gate 2 — similar greys, marked pair. Review round 1 rerun fix: the first wording
     # ("same or different") was semantically ambiguous — the model correctly read both
     # marker positions and answered that the CELLS were different (different positions),
     # which was true. The question is now about fill colour only, boolean.
     grey_checks = {}
+    doc["gate2_greys"] = grey_checks
     grey_cases = (
         ("same_light", 2, 2, True),
         ("same_dark", 3, 3, True),
@@ -717,12 +756,13 @@ def run_gates(vlm: Vlm, work: Path, run_dir: Path, args, doc: dict[str, Any]) ->
                                       "same_fill_colour": same},
             "checks": checks, "correct": all(checks.values()),
         }
-    doc["gate2_greys"] = grey_checks
+        checkpoint()
     record_result(
         "gate2_grey_fill_colour",
         all(v["correct"] for v in grey_checks.values()),
         [value["call"] for value in grey_checks.values()],
     )
+    checkpoint()
 
     # Gate 3 — a production-scale 16-page mixed packet. Targets span early, middle,
     # and final pages and cover every plate type. Palette IDs 14/15/12 are each
@@ -812,10 +852,11 @@ def run_gates(vlm: Vlm, work: Path, run_dir: Path, args, doc: dict[str, Any]) ->
         "five_frame_storyboard_page": 15,
     }
     permutations = {
-        "a": [10, 0, 14, 5, 8, 3, 12, 6, 1, 15, 9, 4, 13, 2, 7, 11],
-        "b": [3, 11, 6, 1, 15, 8, 0, 13, 5, 9, 2, 14, 7, 4, 10, 12],
+        "a": [10, 0, 14, 5, 8, 3, 12, 1, 6, 4, 13, 2, 9, 7, 11, 15],
+        "b": [3, 11, 1, 14, 15, 8, 0, 13, 5, 2, 10, 6, 7, 4, 12, 9],
     }
     binding_runs = {}
+    doc["gate3_binding"] = binding_runs
     previous_expected: dict[str, int] | None = None
     for variant, permutation in permutations.items():
         require(sorted(permutation) == list(range(MAX_PACKET_IMAGES)), (
@@ -843,16 +884,13 @@ def run_gates(vlm: Vlm, work: Path, run_dir: Path, args, doc: dict[str, Any]) ->
             run_dir=run_dir, tag=tag,
         )
         p = call["payload"] or {}
-        typed_pages = all(
-            type(p.get(key)) is int and 1 <= p[key] <= MAX_PACKET_IMAGES
-            for key in expected
-        )
+        typed_pages = all(is_page_number(p.get(key)) for key in expected)
         checks = {
             "complete": call["completeness"] == "complete",
             "sixteen_images": len(call["image_grid_thw"]) == MAX_PACKET_IMAGES,
             "within_visual_budget": call["visual_tokens"] <= MAX_VISUAL_TOKENS,
             "typed_page_numbers": typed_pages,
-            **{key: type(p.get(key)) is int and p[key] == value
+            **{key: is_page_number(p.get(key)) and p[key] == value
                for key, value in expected.items()},
             "distinct_pages": typed_pages and len({p[key] for key in expected}) == len(expected),
         }
@@ -862,12 +900,13 @@ def run_gates(vlm: Vlm, work: Path, run_dir: Path, args, doc: dict[str, Any]) ->
             "call": call,
             "checks": checks,
         }
-    doc["gate3_binding"] = binding_runs
+        checkpoint()
     record_result(
         "gate3_packet_binding",
         all(all(run["checks"].values()) for run in binding_runs.values()),
         [run["call"] for run in binding_runs.values()],
     )
+    checkpoint()
 
     # Gate 4 — CONTROLLED SPATIAL GROUNDING: left / right(swapped) / none(blank).
     # What a pass proves is that the relation answer tracks the pixels under swap and
@@ -879,6 +918,7 @@ def run_gates(vlm: Vlm, work: Path, run_dir: Path, args, doc: dict[str, Any]) ->
         'answer "none".'
     )
     rel_checks = {}
+    doc["gate4_spatial_grounding"] = rel_checks
     for tag, grid, want in (
         ("left", fixture_relation(True), "left"),
         ("right", fixture_relation(False), "right"),
@@ -896,18 +936,20 @@ def run_gates(vlm: Vlm, work: Path, run_dir: Path, args, doc: dict[str, Any]) ->
                           "complete": call["completeness"] == "complete",
                           "correct": call["completeness"] == "complete" and got == want,
                           "think_chars_diagnostic": call["think_chars"]}
-    doc["gate4_spatial_grounding"] = rel_checks
+        checkpoint()
     record_result(
         "gate4_spatial_grounding",
         all(v["correct"] for v in rel_checks.values()),
         [value["call"] for value in rel_checks.values()],
     )
+    checkpoint()
 
     # Gate 5 — production-sampler stability panel on the complete Gate-1 item.
     # Every replicate must pass. At the preregistered p<=0.5 null, the maximum
     # false-pass probability is 0.5**n (12.5% at the minimum n=3), not 50% as
     # under the old 2-of-3 rule.
     stability = []
+    doc["gate5_stability"] = stability
     for rep in range(args.stability):
         call = vlm.ask(
             [{"type": "text", "text": "Image 1:"}, {"type": "image"},
@@ -927,7 +969,7 @@ def run_gates(vlm: Vlm, work: Path, run_dir: Path, args, doc: dict[str, Any]) ->
             and str(p.get("top_row_colour", "")).strip().lower() == "yellow"
         )
         stability.append({"call": call, "correct": ok})
-    doc["gate5_stability"] = stability
+        checkpoint()
     passes = sum(1 for s in stability if s["correct"])
     doc["gate5_pass_fraction"] = f"{passes}/{args.stability}"
     doc["gate5_null_false_pass_upper_bound"] = 0.5 ** args.stability
@@ -935,6 +977,7 @@ def run_gates(vlm: Vlm, work: Path, run_dir: Path, args, doc: dict[str, Any]) ->
         "gate5_sampler_stability", passes == args.stability,
         [value["call"] for value in stability],
     )
+    checkpoint()
 
     return results
 
@@ -964,8 +1007,35 @@ def main() -> int:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     if not os.access(out_path.parent, os.W_OK):
         parser.error(f"output directory is not writable: {out_path.parent}")
+
+    try:
+        _run_lock = acquire_run_lock(ROOT / "logs/.e2_probe_vlm.lock")
+    except RuntimeError as exc:
+        print(f"REFUSED: {exc}", file=sys.stderr)
+        return 2
+
+    # --force may replace only a completed artifact. It must never clobber an active
+    # canonical run, including an older probe version that predates the flock above.
+    canonical_out = (ROOT / f"logs/e2_probe_vlm_{args.model.name}.json").resolve()
+    active_statuses = {"fingerprinting", "loading", "loaded"}
+    for candidate in {out_path, canonical_out}:
+        if not candidate.exists():
+            continue
+        try:
+            existing = json.loads(candidate.read_text())
+        except (OSError, json.JSONDecodeError):
+            existing = {}
+        if existing.get("status") in active_statuses:
+            print(
+                f"REFUSED: active probe status={existing['status']} at {candidate} "
+                f"(run_dir={existing.get('run_dir', 'unknown')})",
+                file=sys.stderr,
+            )
+            _run_lock.close()
+            return 2
     if out_path.exists() and not args.force:
         print(f"REFUSED: {out_path} exists (pass --force to overwrite)", file=sys.stderr)
+        _run_lock.close()
         return 2
 
     # Capture repository state before this run writes a potentially tracked output.
@@ -1041,17 +1111,29 @@ def main() -> int:
         vlm = Vlm(args.model)
         doc["status"] = "loaded"
         persist()
-        results = run_gates(vlm, work, run_dir, args, doc)
-    except BaseException as exc:
-        doc["status"] = (
-            "indeterminate_budget" if isinstance(exc, IndeterminateBudget) else "aborted"
-        )
+        results = run_gates(vlm, work, run_dir, args, doc, persist=persist)
+    except IndeterminateBudget as exc:
+        doc["status"] = "indeterminate_budget"
+        doc["verdict"] = "INDETERMINATE_BUDGET"
         doc["error"] = {
             "type": type(exc).__name__,
             "message": str(exc),
             "traceback": traceback.format_exc(),
         }
         persist()
+        print(f"INDETERMINATE_BUDGET: {exc}", file=sys.stderr)
+        _run_lock.close()
+        return 3
+    except BaseException as exc:
+        doc["status"] = "aborted"
+        doc["verdict"] = "ABORTED_INSTRUMENT"
+        doc["error"] = {
+            "type": type(exc).__name__,
+            "message": str(exc),
+            "traceback": traceback.format_exc(),
+        }
+        persist()
+        _run_lock.close()
         raise
 
     doc["results"] = results
@@ -1069,6 +1151,7 @@ def main() -> int:
         print(f"{name}: {doc['gate_statuses'][name]}", flush=True)
     print(f"ALL GATES: {doc['verdict']}")
     print(f"wrote {out_path}  (traces: {run_dir})")
+    _run_lock.close()
     return 0 if doc["passed"] else 1
 
 

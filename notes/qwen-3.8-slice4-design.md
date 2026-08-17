@@ -308,5 +308,21 @@ truncation classified apart from vision/format failures, prompt-token cross-chec
 gate-4 chance control (left/right/none with swapped + blank variants; think length
 diagnostic only) · PASS bound to the full serving fingerprint (weights index + shard
 manifest, tokenizer/template/processor/generation configs, script + renderer + git
-state, seeds, command, timestamp; the runner refuses a mismatched gate artifact) ·
+state, seeds, command, timestamp; the probe refuses a mismatched local checkpoint) ·
 per-call atomic checkpointing with overwrite refusal.
+
+**Probe v2.2 validity hardening:** grey equality is four-way counterbalanced and
+requires both fill IDs plus equality; packet binding uses 16 mixed-format pages
+(~10.7k measured visual tokens) under two frozen permutations, with mechanically
+unique targets and post-permutation truth; every target must move correctly. The
+processor must preserve every source dimension and stay within image/token caps.
+Termination comes only from mlx-vlm's `finish_reason`; length exhaustion is
+`INDETERMINATE_BUDGET`, never a model failure. Gate verdicts distinguish protocol
+from semantic failure. The exact six local shards are streamed through SHA-256 and
+checked against the pinned HF revision/LFS manifest; model, processor, quantization,
+runtime, prompt, image, seed and token provenance are recorded. Stability requires
+all of at least three production-sampler replicates and scores the full payload.
+
+The historical v1 PASS above does **not** certify v2.2; this instrument requires a
+fresh run. The Slice-4 runner must still compare its serving-compatibility identity
+with the resulting PASS artifact and refuse a mismatch before any goal-inference run.
