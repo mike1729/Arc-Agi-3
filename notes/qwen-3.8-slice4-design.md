@@ -241,3 +241,72 @@ every conclusion.
   stratum** (duck completed it; the explorer had not). Duck rows keep settled
   endpoint boards only — animation recapture (task 4) remains the source of
   transformation strips.
+
+---
+
+# REVIEW ROUND 1 (operator, 2026-08-17) — closure-grade requirements. All adopted.
+
+Run unchanged, a null would have justified only: *"this pinned Qwen/MLX configuration
+failed on these four selected games under this packet and probe budget."* The following
+amend rev 2 wherever they conflict:
+
+1. **The four games are a diagnostic pilot, never the closure sample.** The inferential
+   unit is the game (n=4, hand-picked, previously studied). Stage A freezes the
+   instrument on them; **Stage B confirms on unused stratified games with multiple
+   generation seeds nested within game.** Without Stage B, every conclusion is
+   restricted to the four cases; incomplete primary cells stay descriptive.
+2. **Endpoints defined before inference.** Primary endpoint: per-game source-correct
+   causal goal (axis 2), binary, against **gold facts + counterfactuals frozen before
+   any generation**. Pre-registered: per-game pass rule, seed-aggregation rule,
+   missing-output policy, closure threshold. Plans execute from **fresh fixed starts
+   under a fixed action budget**. Ceiling preselected; **closure requires a
+   transcript-matched ceiling** — it receives exactly Qwen's evidence, including
+   Qwen's probe outcomes; an independently-probing ceiling is only a policy upper
+   bound. Prior-exposure control: public games — ceiling humans/models must declare
+   familiarity; blind game IDs everywhere.
+3. **The arms are re-cut for matching.** Passive carriers share IDENTICAL initial
+   evidence IDs: A-text · B-raw-visual · C-visual+overlays (same selected evidence,
+   carrier only). Then, separately, best-passive vs +retrieval and vs +active-probes,
+   with **fixed or seeded-random probe controls** for the probe-value comparison. The
+   full system remains as the best-shot arm, labelled a system result, never a
+   modality effect. A truncated night is not a matched experiment.
+4. **Kaggle separation is a blocking leakage gate, not an inventory.** Measured: 3,833
+   action rows + 25 initial rows interleaved with **1,379 analysis rows carrying
+   prior-model transcripts and goal guesses.** A separate export process emits a
+   field-allowlisted observation schema (reject free text and unknown fields), hashes
+   the normalized log, and the selector runs with ONLY that artifact mounted
+   read-only. Uncertain provenance → abort, never build.
+5. **ft09 is completion-exposed in the admitted data** (kaggle history:
+   `level_completed=true` at action 17, enters L2). It leaves the strict no-success
+   stratum: **labelled completion-exposed** (option chosen over truncate/omit — best
+   evidence stays, stratum is honest). Every cell records a **pre-probe answer**, and
+   final answers classify as: terminal evidence initially present / acquired through
+   Qwen's own probes / never present.
+6. **Seeding is explicit or it is fiction.** mlx-vlm 0.6.8 with `top_k=20` bypasses
+   the positioned seeded sampler and uses the global MLX RNG. Therefore:
+   `mx.random.seed(s)` immediately before EVERY generation, deterministic
+   game/arm/turn/replicate schedule, every effective seed recorded.
+7. **Image spec is processor-real.** The checkpoint declares a 65,536-pixel minimum —
+   a 128×128 crop still gets bicubic enlargement. Small crops compose onto a ≥256×256
+   canvas or NN-upscale further; **assert processed dims == source dims** per image.
+   Hard manifest caps per cell: image count AND measured `image_grid_thw` tokens
+   (12–16 full 1024² pages ≈ 12.3–16.4k tokens before copies and strips).
+
+**Scope guard (verbatim intent):** this experiment measures *causal goal inference*.
+A null may close the wider project only because goal inference is a declared necessary
+capability; it does **not** demonstrate weak mechanics understanding unless held-out
+transition prediction or executed-plan performance is added.
+
+**Probe findings (7, all P1) folded into `e2_probe_vlm.py` v2:** production-regime
+fixtures (64×64 @1024², one-cell objects, all 16 palette IDs, similar greys, exact
+coordinates via marker plates, packet-scale multi-image binding) · explicit seed panel
+with per-call `mx.random.seed` + deterministic greedy wiring gates separated from a
+production-sampler stability panel · hard template invariants in `ask` (marker exists,
+open-think tail, whitespace-tolerant prefill scan, placeholder count/order == images,
+serialized label→placeholder binding) · full trace retention (raw text, think, stats,
+truncation classified apart from vision/format failures, prompt-token cross-check) ·
+gate-4 chance control (left/right/none with swapped + blank variants; think length
+diagnostic only) · PASS bound to the full serving fingerprint (weights index + shard
+manifest, tokenizer/template/processor/generation configs, script + renderer + git
+state, seeds, command, timestamp; the runner refuses a mismatched gate artifact) ·
+per-call atomic checkpointing with overwrite refusal.
