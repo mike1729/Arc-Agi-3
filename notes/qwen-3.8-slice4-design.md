@@ -326,3 +326,52 @@ all of at least three production-sampler replicates and scores the full payload.
 The historical v1 PASS above does **not** certify v2.2; this instrument requires a
 fresh run. The Slice-4 runner must still compare its serving-compatibility identity
 with the resulting PASS artifact and refuse a mismatch before any goal-inference run.
+
+---
+
+## PROPOSED PRE-REGISTRATION — draft for operator freeze (NOT yet binding)
+
+Review round 1, finding 2 requires these before any pilot generation. Every number
+below is (w) and operator-adjustable until the freeze commit; after that, changes are
+dated errata. The freeze commit must land BEFORE the first pilot cell renders.
+
+- **Primary endpoint**: per-game binary — the final `best_goal` (post-probes) is
+  source-correct *in kind* AND contains every required constraint component
+  (shape / colour / rotation / relation, per the sealed checklist). Adjudicated
+  against `sealed_ground_truth/` only after answers freeze.
+- **Gold freeze**: per game, sealed before generation: causal completion condition
+  (paraphrase + constraint checklist from source read), the counterfactual set, and
+  the per-axis rubric. Hashes committed; contents local-only.
+- **Pre-probe answer** recorded per cell; final answers classified
+  {terminal-evidence-initially-present · probe-acquired · never-present}.
+- **Per-game pass**: primary endpoint true. Partial credit recorded, never passing.
+- **Stage A (pilot, 4 games, seed 1)**: descriptive only — instrument freeze, no
+  capability verdict. **Stage B (closure sample)**: 6 unused games (w) stratified
+  3 completion-exposed / 3 no-autonomous-completion × 3 seeds nested within game;
+  a game passes at ≥2/3 seeds (w).
+- **Missing outputs**: refusal / malformed / budget-indeterminate cells are missing
+  observations — outside every denominator; a game-seed with a missing primary cell
+  is indeterminate and reruns once under the preregistered budget remedy before it
+  may count.
+- **Closure rule (w)**: the goal-inference role closes for the configuration family
+  (Qwen3.8-27B, 8-bit, MLX, packet interface) only if Qwen passes **0/6** Stage-B
+  games AND the transcript-matched ceiling passes **≥4/6** on identical evidence.
+  Ceiling below 4/6 → the packet, not the model, is indicted: no closure either way.
+  Any Qwen pass → the role stays open and characterization continues.
+- **Plan endpoint (secondary, axis 5)**: the `goal_directed_plan` executes from a
+  fresh fixed start under an action budget of 2× the autonomous completion length
+  where one exists, else 150 actions (w); success = level completion.
+- **Ceiling (operator to pick at freeze)**: PROPOSED both — human transcript-matched
+  ceiling on all Stage-B games (receives exactly Qwen's packet + probe outcomes;
+  familiarity declared per game), and optionally a stronger-model ceiling (API;
+  local-experiment use does not touch competition sandbox rules — flag for explicit
+  approval).
+- **Probe budget**: ≤3 active probes per cell; invalid or redundant probes consume
+  budget; no silent repair (unchanged from rev 2, restated to be frozen with this
+  block).
+
+*Store inventory for the builders (measured today): `e1_store_v3` = 24 games ×
+{performs.jsonl (step-ordered actions, digest refs), states.json (digest → full
+64×64 grid; e.g. ar25: 602 states), transitions.jsonl, graph.json}. Recapture =
+replay an episode's action list live, gate on settled frames matching stored
+digests, keep every intermediate frame.*
