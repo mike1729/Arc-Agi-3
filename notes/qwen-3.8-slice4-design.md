@@ -217,3 +217,27 @@ every conclusion.
 - With the kwarg: think opens/closes, and read-back passes exactly (8×8 synthetic
   grid, corner colours + background). Board-scale fidelity on real 64×64 renders is
   gate item 1.
+
+---
+
+## Build log — 2026-08-17
+
+- **Serving**: `mlx-vlm` 0.6.7 → **0.6.8** (conversion-matched, no dep churn). Direct
+  interleaved processor template verified on 0.6.8: thinking + ordering + grid_thw.
+- **`e2_probe_vlm.py` — all four gates PASS** on 3.8-8bit (commit `14ec420`):
+  palette-exact read · ordering reversal · blank/substituted pixel-tracking ·
+  image-conditioned thinking. xhigh thinks on trivial boards: 432–3,566 chars.
+  512×512 plates = 256 LM tokens ([1,32,32] grid) — the ~1,024/full-board estimate
+  confirmed on-curve.
+- **`s4_render.py`** (commit `33161c2`): canonical palette (identity-asserted against
+  the probe's copy), 1024×1024 boards, ≥32 px/cell crops, %32 dims, five-panel
+  exhibits with annotations on copies only, storyboards, exact decode round-trip.
+- **kaggle_v4 inventory (task 5): usable and separable.** 25 games × events.jsonl
+  (`board` grids + action/level/score/state/level_completed/reward per row — pure
+  observations) + viewer_data.json. **Strip `transcript` and `analysis_step`** (the
+  old model's analyses) and redundant `board_ascii`. **15/25 games carry ≥1
+  autonomous completion** (re86 reaches L3) — the self-earned completion page exists
+  far beyond sp80/lf52. Pilot impact: **ft09 moves out of the no-autonomous-completion
+  stratum** (duck completed it; the explorer had not). Duck rows keep settled
+  endpoint boards only — animation recapture (task 4) remains the source of
+  transformation strips.
