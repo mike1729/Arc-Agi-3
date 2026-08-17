@@ -278,8 +278,13 @@ def selftest() -> int:
     import e2_probe_vlm
 
     # Probe v2 carries no palette copy — it must render through THIS module, which is
-    # the stronger property the old palette-identity assertion approximated.
-    assert e2_probe_vlm.sr is sys.modules[__name__], "probe does not render through s4_render"
+    # the stronger property the old palette-identity assertion approximated. Compare
+    # against the canonical `s4_render` module object, not `sys.modules[__name__]`:
+    # under `python s4_render.py --selftest` this file runs as `__main__`, a distinct
+    # module object from the `s4_render` the probe imports.
+    import s4_render as canonical
+
+    assert e2_probe_vlm.sr is canonical, "probe does not render through s4_render"
 
     rng = np.random.default_rng(4)
     grid = rng.integers(0, 16, size=(64, 64), dtype=np.uint8)
