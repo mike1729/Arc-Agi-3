@@ -791,6 +791,18 @@ def run_gates(
     sb_black = fixture_block(5, (20, 50, 25, 53))
     sb_red = fixture_block(8, (30, 5, 33, 8))
     sb_yellow = fixture_block(11, (4, 30, 7, 33))
+    # Match the densest observed live intervention: 28 exact 64x64 frames at four
+    # pixels/cell on one page.  One unique one-cell event tests that this compact
+    # representation is model-readable, not merely byte-exact.
+    animation_target_frame = 23
+    animation_target_row = 37
+    animation_target_col = 11
+    animation_frames = []
+    for frame_index in range(28):
+        frame = fixture_block(2, (8 + frame_index % 8, 44, 10 + frame_index % 8, 46))
+        if frame_index == animation_target_frame:
+            frame[animation_target_row, animation_target_col] = 11
+        animation_frames.append(frame)
 
     pages: list[Path] = []
     page_sources: list[list[np.ndarray]] = []
@@ -817,8 +829,7 @@ def run_gates(
              [sb_grey_a, sb_black, sb_grey_b])                            # 14
     add_page(sr.storyboard([sb_red, sb_grey_a, sb_yellow, sb_black], cols=2),
              [sb_red, sb_grey_a, sb_yellow, sb_black])                    # 15
-    add_page(sr.storyboard([sb_grey_a, sb_grey_b, sb_black, sb_red, sb_yellow], cols=3),
-             [sb_grey_a, sb_grey_b, sb_black, sb_red, sb_yellow])         # 16 target storyboard
+    add_page(sr.storyboard(animation_frames, cols=7, cell_px=4), animation_frames)  # 16
 
     require(len(pages) == MAX_PACKET_IMAGES, f"Gate 3 built {len(pages)} pages")
     page_colours = [
@@ -833,13 +844,17 @@ def run_gates(
     request = (
         "These are distinct outer pages. They include raw full boards, magnified "
         "crops, annotated boards with magenta rings, black-and-white changed-cell "
-        "masks, and multi-frame storyboards. Report OUTER PAGE numbers, never a "
-        "frame index printed inside a storyboard. Think first. Then answer with ONLY "
+        "masks, and multi-frame storyboards. Report OUTER PAGE numbers for every "
+        "page field; only animation_frame_index uses the index printed inside its "
+        "storyboard. Think first. Then answer with ONLY "
         "a JSON object: "
-        '{"five_frame_storyboard_page": <int>, "orange_marker_page": <int>, '
+        '{"animation_storyboard_page": <int>, "animation_frame_index": <int>, '
+        '"animation_yellow_row": <int>, "animation_yellow_col": <int>, '
+        '"orange_marker_page": <int>, '
         '"green_board_page": <int>, "three_change_diff_page": <int>, '
         '"purple_crop_page": <int>}. The requested pages are: the storyboard with '
-        "exactly five indexed frames; the annotated board whose orange square is "
+        "exactly 28 indexed frames, plus the internal frame index and 64x64 board "
+        "row/column of its unique one-cell yellow event; the annotated board whose orange square is "
         "ringed; the raw full board whose only non-white object is green; the diff "
         "mask with exactly three white changed cells; and the magnified crop of a "
         "purple square."
@@ -849,7 +864,7 @@ def run_gates(
         "purple_crop_page": 3,
         "orange_marker_page": 6,
         "three_change_diff_page": 9,
-        "five_frame_storyboard_page": 15,
+        "animation_storyboard_page": 15,
     }
     permutations = {
         "a": [10, 0, 14, 5, 8, 3, 12, 1, 6, 4, 13, 2, 9, 7, 11, 15],
@@ -885,6 +900,11 @@ def run_gates(
         )
         p = call["payload"] or {}
         typed_pages = all(is_page_number(p.get(key)) for key in expected)
+        animation_checks = {
+            "animation_frame_index": p.get("animation_frame_index") == animation_target_frame,
+            "animation_yellow_row": p.get("animation_yellow_row") == animation_target_row,
+            "animation_yellow_col": p.get("animation_yellow_col") == animation_target_col,
+        }
         checks = {
             "complete": call["completeness"] == "complete",
             "sixteen_images": len(call["image_grid_thw"]) == MAX_PACKET_IMAGES,
@@ -892,11 +912,19 @@ def run_gates(
             "typed_page_numbers": typed_pages,
             **{key: is_page_number(p.get(key)) and p[key] == value
                for key, value in expected.items()},
+            **animation_checks,
             "distinct_pages": typed_pages and len({p[key] for key in expected}) == len(expected),
         }
         binding_runs[variant] = {
             "permutation_zero_based": permutation,
             "expected": expected,
+            "animation_truth": {
+                "frame_index": animation_target_frame,
+                "row": animation_target_row,
+                "col": animation_target_col,
+                "cell_px": 4,
+                "frame_count": len(animation_frames),
+            },
             "call": call,
             "checks": checks,
         }

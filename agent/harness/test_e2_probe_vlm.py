@@ -232,14 +232,20 @@ class FakeVlm:
             "purple_crop_page": 6,
             "orange_marker_page": 9,
             "three_change_diff_page": 13,
-            "five_frame_storyboard_page": 16,
+            "animation_storyboard_page": 16,
+            "animation_frame_index": 23,
+            "animation_yellow_row": 37,
+            "animation_yellow_col": 11,
         },
         "g3_binding_b": {
             "green_board_page": 7,
             "purple_crop_page": 1,
             "orange_marker_page": 12,
             "three_change_diff_page": 16,
-            "five_frame_storyboard_page": 5,
+            "animation_storyboard_page": 5,
+            "animation_frame_index": 23,
+            "animation_yellow_row": 37,
+            "animation_yellow_col": 11,
         },
     }
 

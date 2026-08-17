@@ -1,8 +1,11 @@
 # Slice 4 — Autonomous Multimodal Evidence Packet (Qwen3.8, vision-first)
 
-**REV 2, 2026-08-17 — operator proposal adopted as the operative spec.** Rev 1 (this
+**REV 3, 2026-08-17 — implementation contract, pending operator freeze.** Rev 1 (this
 file's git history) is superseded where it conflicts; the instrument pre-check and the
-night-1 linkage stand. One-line intent: give Qwen3.8's actual vision tower its best
+night-1 linkage stand. Review-round-1 requirements are implemented in this revision,
+but no capability run or closure claim is authorized until the sealed gold,
+pre-registration, ceiling choice, PASS certificate, and exact runtime are frozen.
+One-line intent: give Qwen3.8's actual vision tower its best
 shot at *causal* goal inference from *purely autonomous* experience, with active
 probing, sealed grading, and a ceiling control — so that a null, if it comes, closes
 the role justifiably.
@@ -64,12 +67,11 @@ supervision from human success even with the boards hidden).
   frame the engine returns — the stores mostly retain settled endpoints, while
   animations expose movement, rotation, recolouring, consumption.
 
-## 3 · Visual packet — 12–16 numbered pages per game
+## 3 · Visual packet — exactly 10 matched evidence pages per carrier
 
 | Page | Evidence |
 |---|---|
-| Opening scene | Clean initial board at high resolution |
-| Component overlay | Separate non-occluding segmentation, IDs and bounding boxes |
+| Opening + components | Clean 8px/cell initial board in raw; matched non-occluding boxes in overlay |
 | State atlas | 12–16 structurally diverse autonomous states as thumbnails |
 | Causal episode | One consecutive episode maximizing action/effect diversity |
 | Action atlas | ≥1 effect and 1 no-effect observation per action |
@@ -81,25 +83,45 @@ supervision from human success even with the boards hidden).
 | Coverage sheet | Tried/untested actions, omitted branches, conflicting observations |
 | Random reserve | One seeded random transition against curator cherry-picking |
 
-Every before/after exhibit:
-`full-board context | magnified pre-crop | action/click marker | magnified post-crop |
-binary diff mask`. **Raw evidence and annotations are separate images** — never draw
-boxes over the only copy of a one-cell object.
+Every raw before/after contrast contains clean 4px/cell pre and settled-post boards.
+Its matched overlay contains a 4px/cell marked pre, a clean 4px/cell settled post,
+and a 4px/cell binary diff mask. Specialized magnified crops may supplement these,
+but never replace the full-board causal pair. **Raw evidence and annotations remain
+separate carriers** — never draw boxes over the only copy of a one-cell object.
+
+The text, raw-visual, and overlay-visual carriers share the same ordered
+`evidence_id` set. The initial packet is exactly 10 pages, leaving six image slots:
+three independently rendered probe results and one visual retrieval result in each
+of three rounds. Carrier matching is never repaired by dropping evidence from only
+one arm. Multiple action contrasts may share a numbered page, but retain every
+constituent transition/action reference and exact text-carrier board.
 
 ## 4 · Rendering specification
 
 - **Canonical ARC palette** from the reference vision harness
   (`agent/reference/taaf/src/ARC3-Inference/inference/agent/vision_context.py:14`) —
   not `gi2_observation.render_crop`'s slightly different one.
-- Full boards: 16× nearest-neighbour → 1024×1024 PNG. Crops: dynamic NN scale, ≥16–32
-  px per game cell. All dimensions multiples of 32. Never feed raw 64×64 (the
-  processor upscales bicubically). PNG frames/storyboards, not MP4 — video sampling
-  can miss one-frame events and is harder to audit.
-- ~1,024 LM image tokens per 1024×1024 board; a 12-page mixed-resolution packet fits.
+- Standalone gate boards use 16px/cell (1024×1024). In the fixed packet envelope,
+  the opening/component page uses 8px/cell and every full-board action panel,
+  atlas, causal sequence, temporal summary, and live storyboard uses **at least
+  4px/cell**, always exact nearest-neighbour. Crops remain magnified to ≥16–32
+  px/cell. All outer images are ≥65,536 pixels and both dimensions are multiples of
+  32, so the processor must preserve their dimensions. Never feed a raw 64×64 image.
+  Use PNG frames/storyboards, not MP4: sampling can miss one-frame events and is
+  harder to audit.
+- ~1,024 LM image tokens per 1024×1024 board; mixed-resolution composition is used.
   **Record the actual expanded count from `image_grid_thw`** — text-tokenizer counting
   is insufficient.
-- Budget shape replacing the 36–40k ASCII record: **8–12k structured text + 8–12k
-  measured visual tokens + reasoning/output reserve**.
+- Hard per-cell limits: **12,000 checkpoint-tokenizer evidence tokens; 14,000 initial
+  prompt text tokens including instructions/template; 16,384 measured visual tokens;
+  16 images; 20,000 generated tokens per turn.** Initial visual evidence is capped at
+  **6,448 tokens**, reserving **3 × 2,112** for one all-frame probe storyboard per
+  probe and **3 × 1,200** for one composite visual retrieval per round. Compact
+  storyboards use no less than 4 px/game-cell; this exception is covered by the
+  packet-scale readability gate. If an action emits too many frames to fit one
+  2,112-token storyboard at 4 px/cell, the cell is budget-indeterminate/instrument
+  failure; the renderer must never silently fall back to 2 px or 1 px. These are
+  caps, not targets; every carrier remains lossless below them.
 
 ## 5 · Text ledger — compact, exact, semantics-free
 
@@ -130,10 +152,18 @@ and encourages observational shortcuts.
 ## 7 · Bounded retrieval and active probing
 
 - Retrieval over stored autonomous evidence: `SHOW_FRAME`, `SHOW_TRANSITION`,
-  `SHOW_EPISODE`, `SHOW_ACTION_CONTRAST`, `SHOW_COMPONENT_HISTORY`.
+  `SHOW_EPISODE`, `SHOW_ACTION_CONTRAST`, `SHOW_COLOUR_HISTORY` (the last accepts an
+  ARC colour ID 0–15, never a `Cxxx` component ID).
+- Retrieval is one request/result per round. Every successful result is one bounded
+  visual composite: episode/history frame indices are mapped visibly to exact
+  transition/action/click records, and action contrasts use the same deterministic
+  minimum-pre-Hamming selector as the packet and show pre, settled post, and diff.
 - **≤3 active probes**: replay a verified autonomous prefix, perform Qwen's requested
   action, return all raw response frames. Invalid or redundant probes consume budget;
-  **no silent repair of Qwen's request**.
+  **no silent repair of Qwen's request**. Before any intervention, the live engine's
+  exact game-source path, byte count, and SHA-256 must match the source identity bound
+  into the recapture manifest; the replay driver, recapture script, and arcengine
+  version must match as well. Matching only the replay prefix is insufficient.
 
 Capable goal inference under underdetermination = naming the ambiguity and buying the
 discriminating observation — not confident guessing.
@@ -156,34 +186,83 @@ Direct `mlx_vlm.load` + `stream_generate` — never the server, never `mlx_lm`.
 - Record: checkpoint revision, runtime versions, image hashes + order + dimensions,
   `image_grid_thw`, expanded prompt tokens, sampler, reasoning effort.
 
-## Gates (all four before any night)
+## Gates (all five before any capability run)
 
 1. **Synthetic palette board**: exact colours, counts, locations.
-2. **Two-image ordering**: reverse the images, the answer must reverse.
-3. **Blank/substituted image**: the answer must track the pixels.
-4. **Image-conditioned thinking**: substantive open/closed think + a correct simple
-   board relation.
+2. **Grey/fill discrimination**: four counterbalanced equality and palette-ID cases.
+3. **Packet binding and compact-storyboard readability**: 16 mixed pages under two
+   permutations; every page target must move correctly, and a unique one-cell event
+   must be localized by frame index and board coordinate inside the exact 28-frame,
+   4-px/cell live-probe composition regime.
+4. **Spatial grounding**: counterbalanced relation and marker tasks must track the
+   image-conditioned truth.
+5. **Production-sampler stability**: the packet-scale task must pass every frozen
+   replicate under the serving sampler.
 
 Plus fleet-calibrated budget per arm (night-1 lesson: never one cell) and the
 wall model from measured envelope with images in context.
 
-## Decisive pilot — 4 games × 4 arms, matched
+## Full diagnostic design — 4 games × 7 arms, matched
 
 Games: **ls20** (visual containment vs shape/colour/rotation objective) · **ft09**
 (old-DSL-inexpressible, no explorer completion) · **m0r0** (history-dependent) ·
 **sp80** (autonomous-completion positive control).
 
-Arms: compact text-only · raw visual · raw visual + deterministic overlays · full
-visual + retrieval/probes. Selected evidence, seed, decoding, grading matched.
+Arms (frozen identifiers): **T** compact exact text · **V** raw visual · **O** visual
+with deterministic overlays · **R** O + stored-evidence retrieval · **A** O + up to
+three model-selected live probes · **C** O + three seeded control probes · **P** O +
+retrieval + model-selected probes. T/V/O compare matched passive evidence IDs across
+carriers. O↔R and O↔A estimate the **incremental system effects** of enabling retrieval
+or active intervention, including the additional realized context; A↔C contrasts
+model-selected and seeded-control probe policies, whose realized evidence may differ.
+P is the best-shot system result. All arms use the same selected initial evidence IDs,
+**four-call generation schedule** (initial answer plus exactly three updates), per-call
+20,000-token output cap, generation seeds, decoding, and grading. Matching call count
+removes the extra-compute/self-refinement confound. The neutral updates are deliberately
+short and deterministic, not token- or image-length matched to realized feedback, so
+these are not pure information-only causal contrasts. Missing cells inside the
+declared arm set break matching; a preregistered arm subset is instead a narrower
+design and cannot support claims about the omitted contrasts.
+
+**Selected Stage-A pilot (pending freeze)**:
+`notes/qwen-3.8-slice4-pilot-preregistration.json` fixes games
+`{ls20,ft09,m0r0,sp80}`, arms `{T,V,O,P}`, and the single seed list `[2]`. Qwen runs
+the complete 4 games × 4 arms matrix (16 cells). A transcript-matched model comparator
+using the same pinned local checkpoint runs only the primary `P` arm (4 further
+cells); it receives the mechanically reconstructed evidence from each corresponding
+Qwen `P` cell and must provide the strict hashed execution trace. Because this is the
+same model rather than an independently capable or exposure-screened respondent, its
+scores are descriptive pipeline/repeatability diagnostics only and can never satisfy
+a ceiling adequacy or closure condition. Omitting `R`, `A`, and `C` means this pilot
+does not estimate their retrieval/probe-policy contrasts.
+
+Every cell receives all three update calls. Passive T/V/O rounds receive the same
+deterministic, 256-character-bounded `NO NEW OBSERVATION` message. An interactive
+round receives that identical neutral message whenever it has no request or no valid,
+fully deliverable result; it never stops early or substitutes a different request.
+Interactive cells allow at most one retrieval request per round and at most three
+live probes total. Every successful retrieval is one composite image of at most 1,200
+visual tokens. Invalid, malformed, redundant, or unavailable requests consume the
+applicable budget and are recorded exactly; unsuccessful results are not leaked as
+arm-specific diagnostic hints. A successful zero-frame live execution delivers only
+its exact observed response metadata. A visual result is delivered transactionally —
+all pages or none — so an over-budget result makes the cell budget-indeterminate while
+the remaining matched update calls receive the neutral message. Fatal serving or
+instrument exceptions abort the run and are never shown as environmental evidence.
 
 Sealed grading, five axes: 1 consistency with supplied observations · 2 source-correct
 causal goal · 3 counterfactual validity · 4 confidence calibration · 5 success of the
 proposed goal-directed plan.
 
-**Ceiling control**: the same packet run through a human or stronger-model ceiling.
-A Qwen null **with** a succeeding ceiling justifies closing the goal-inference role;
-without the ceiling, a null is a packet claim. *(Open: which ceiling — operator to
-pick before grading day; both is cheapest at 4 games.)*
+**Ceiling control**: a transcript-matched human or model comparator receives
+the exact evidence delivered to the corresponding Qwen cell, including retrieved and
+probe-result images, but never hidden paths or state. Its input artifact is assembled
+and hashed mechanically rather than self-attested.
+Only a succeeding, exposure-screened blinded human in a separately valid Stage-B
+design can make a Qwen null closure-eligible; the Stage-A model comparator cannot.
+Without that human control, a null is a packet/configuration diagnostic. Stage B
+cannot freeze until the operator preselects and hashes the exact ceiling identity and
+aggregation rule; the ceiling cannot be shopped after Qwen's results are visible.
 
 ## Standing from rev 1 / night 1
 
@@ -329,11 +408,13 @@ with the resulting PASS artifact and refuse a mismatch before any goal-inference
 
 ---
 
-## PROPOSED PRE-REGISTRATION — draft for operator freeze (NOT yet binding)
+## PRE-REGISTRATION TEMPLATE — operator freeze required (NOT yet binding)
 
-Review round 1, finding 2 requires these before any pilot generation. Every number
-below is (w) and operator-adjustable until the freeze commit; after that, changes are
-dated errata. The freeze commit must land BEFORE the first pilot cell renders.
+Review round 1, finding 2 requires these before any pilot generation. The Stage-B
+sample shape, primary arm, seed aggregation, closure thresholds, rerun count, and
+plan budgets below are enforced protocol constants; changing one requires a reviewed
+new revision and fresh certificate before freeze. The freeze commit must land BEFORE
+the first pilot cell renders.
 
 - **Primary endpoint**: per-game binary — the final `best_goal` (post-probes) is
   source-correct *in kind* AND contains every required constraint component
@@ -342,30 +423,112 @@ dated errata. The freeze commit must land BEFORE the first pilot cell renders.
 - **Gold freeze**: per game, sealed before generation: causal completion condition
   (paraphrase + constraint checklist from source read), the counterfactual set, and
   the per-axis rubric. Hashes committed; contents local-only.
-- **Pre-probe answer** recorded per cell; final answers classified
-  {terminal-evidence-initially-present · probe-acquired · never-present}.
+- **Pre-probe answer** is recorded in every Qwen cell. It is withheld from the
+  Stage-B closure adjudication packet because its presence would distinguish Qwen
+  from the one-shot human ceiling. The three-way timing classification
+  {terminal-evidence-initially-present · probe-acquired · never-present} remains a
+  secondary diagnostic until a separately frozen, role-matched blind protocol is
+  available; it cannot affect closure.
 - **Per-game pass**: primary endpoint true. Partial credit recorded, never passing.
-- **Stage A (pilot, 4 games, seed 1)**: descriptive only — instrument freeze, no
-  capability verdict. **Stage B (closure sample)**: 6 unused games (w) stratified
+- **Stage A (pilot, 4 games, one frozen seed)**: descriptive only — instrument freeze, no
+  capability verdict. **Stage B (closure sample)**: exactly 6 unused games stratified
   3 completion-exposed / 3 no-autonomous-completion × 3 seeds nested within game;
-  a game passes at ≥2/3 seeds (w).
+  a game passes at exactly the predeclared ≥2/3 seeds rule.
+
+  **Blocking exposure correction (2026-08-17): no current Stage-B holdout exists.**
+  `notes/s1-clear-vs-stall.md` records source/true-goal analysis for all 25 public
+  games. The earlier eight-game exposure assumption and its retrospective v1 draw
+  (`tn36,ar25,cd82` / `cn04,sk48,ka59`) are therefore **void** and cannot support
+  closure. The reviewed exposure cohort is now all 25 normalized-manifest games;
+  all 24 games with complete `e1_store_v3` inputs are exposed, while `s5i5` is also
+  exposed but lacks the complete store bundle. Consequently the live derivation
+  fails closed with fewer than three unused games in each stratum.
+
+  `s4-stage-b-holdout-selection-v2` remains prospective infrastructure for a future
+  genuinely untouched inventory. The source side is deliberately two-stage: first
+  `s4_grade.py --commit-stage-b-inventory --out SOURCE_COMMITMENT` atomically freezes
+  every complete store game, the SHA-bound normalized-Kaggle cutoff, live allowlist
+  exporter, exact canonical row schema, source identities and rederived completion
+  strata. This commitment binds the candidate pool, but does **not** on its own prove
+  that an operator did not inspect deterministic rankings before choosing which pool
+  to commit. Therefore the public selector is intentionally non-operational and fails
+  closed until a reviewed protocol pins an externally authenticated, unpredictable
+  beacon released after the source commitment. Internal deterministic rankings are
+  explicitly non-authorizing previews; `s4_grade.py --derive-stage-b-selection
+  EXPOSURE_REGISTRY --source-inventory-commitment SOURCE_COMMITMENT --out MANIFEST`
+  cannot currently create a freeze-authorizing manifest even for a large untouched
+  future inventory. The
+  completeness-attested registry must list exactly the reviewed 25 exposed public
+  games with per-game reasons; changing that cohort requires a reviewed protocol
+  revision. Once beacon admission is specified, ranking will cover every inventory
+  game using a domain-separated SHA-256 of protocol + committed inventory + beacon +
+  stratum + game, then filter the frozen exposure set and take the first three
+  genuinely untouched games per stratum. Reason wording is audited but cannot perturb
+  rank. The three ordered generation seeds derive only from the protocol constant.
+  Freeze must rederive the authenticated selection, require the exact selected game
+  order, and packet-bind the same producer lineage, store, and normalized-export
+  bytes; any source, game, stratum, plan-length, seed or manifest drift is rejected.
+- **Stage-B adjudication (authenticated v2 only)**: closure requires two
+  independently committed human adjudicators. Before freeze,
+  `adjudication_protocol` pins two distinct identity commitments and Ed25519 public
+  keys, the private HMAC rejoin-key commitment, the blinding contract, complete-leaf
+  requirement, and unanimous aggregation. V1 or unsigned material fails closed.
+  Given frozen answers, the grader creates two separate, mode-0600, independently
+  ordered worksheets whose HMAC-derived item IDs conceal role, logical cell, game,
+  arm, and seed. The asymmetric pre-probe field is absent. Judge-facing files expose
+  only keyed opaque answer commitments—never raw answer or bundle hashes—and must be
+  distributed through isolated channels so each judge sees only their own file.
+  The rejoin-key custodian is not an adjudicator and must not disclose item mappings
+  or the other worksheet before the two-signature receipt exists; filesystem mode
+  bits do not replace that custody rule.
+  Each judge fills every `VERDICT_*` leaf and signs the full opaque verdict tree,
+  worksheet binding, and frozen independence declaration with their private key.
+  A separate **no-rejoin-key** phase verifies both signatures and writes an
+  append-only two-artifact commitment receipt. Only then may the official scoring
+  path load the HMAC key, validate answer/gold bindings, and rejoin items to cells.
+  Exact agreement on the complete verdict tree is required; any missing value or
+  component-level disagreement prevents closure. Stage A retains one role-visible
+  worksheet for diagnostics only. Operationally: generate with
+  `--answers ... --adjudication-key REJOIN_KEY`; each judge signs with
+  `--seal-adjudication FILLED --adjudicator-signing-key JUDGE_KEY --out SIGNED`;
+  commit with `--commit-adjudications SIGNED_A SIGNED_B --out RECEIPT` (this command
+  accepts no rejoin key); and score only with
+  `--adjudications SIGNED_A SIGNED_B --adjudication-receipt RECEIPT
+  --adjudication-key REJOIN_KEY`.
 - **Missing outputs**: refusal / malformed / budget-indeterminate cells are missing
   observations — outside every denominator; a game-seed with a missing primary cell
   is indeterminate and reruns once under the preregistered budget remedy before it
   may count.
-- **Closure rule (w)**: the goal-inference role closes for the configuration family
-  (Qwen3.8-27B, 8-bit, MLX, packet interface) only if Qwen passes **0/6** Stage-B
-  games AND the transcript-matched ceiling passes **≥4/6** on identical evidence.
-  Ceiling below 4/6 → the packet, not the model, is indicted: no closure either way.
-  Any Qwen pass → the role stays open and characterization continues.
+- **Closure rule**: the operational gate returns
+  `FAILS_REQUIRED_GOAL_INFERENCE_GATE` for the exact frozen checkpoint, runtime,
+  packet and interaction interface only if Qwen passes **0/6** Stage-B
+  games AND the transcript-matched ceiling passes **≥4/6 overall and ≥2/3 in each
+  completion stratum** on identical evidence. The scored artifact reports Qwen and
+  ceiling counts plus a verdict separately for completion-exposed and
+  no-autonomous-completion games. Ceiling below either adequacy threshold makes
+  closure indeterminate and indicts the packet, not the model. Any Qwen pass → the
+  role stays open and characterization continues. This is a preregistered project
+  go/no-go result, not a population-level claim that the model family is incapable;
+  the scored artifact reports the one-sided 95% upper bound implied by 0/6.
 - **Plan endpoint (secondary, axis 5)**: the `goal_directed_plan` executes from a
   fresh fixed start under an action budget of 2× the autonomous completion length
-  where one exists, else 150 actions (w); success = level completion.
-- **Ceiling (operator to pick at freeze)**: PROPOSED both — human transcript-matched
-  ceiling on all Stage-B games (receives exactly Qwen's packet + probe outcomes;
-  familiarity declared per game), and optionally a stronger-model ceiling (API;
-  local-experiment use does not touch competition sandbox rules — flag for explicit
-  approval).
+  where one exists, else 150 actions; success = level completion.
+- **Ceiling (operator must preselect before freeze)**: one immutable `ceiling_spec`
+  pins either an exact model/checkpoint/serving configuration or one screened,
+  blinded human selected under a SHA-bound roster commitment and pre-evidence rule.
+  Only the blinded-human path is closure-grade: before *any* matched evidence is
+  released, an append-only familiarity commitment binds the frozen manifest,
+  preregistration, ceiling spec, respondent ID, and an `unfamiliar` or
+  `no_prior_exposure` declaration for every primary cell. The subsequently released
+  input binds that artifact by path and full SHA-256, records the later release time
+  and declarations, and hashes each cell's exact Qwen-visible evidence. Each human
+  answer document binds the same respondent and commitment; a per-cell delivery
+  receipt binds the input/evidence/familiarity/final-answer hashes and attests that no
+  extra evidence was delivered. A model ceiling cannot credibly attest training
+  familiarity and is therefore a descriptive upper-bound diagnostic only, never a
+  closure control. Its execution trace must bind, per cell, the ceiling-input and
+  evidence hashes, exact serialized prompt/messages, provider/model/run identity,
+  immutable raw response plus run metadata, and parsed final answer.
 - **Probe budget**: ≤3 active probes per cell; invalid or redundant probes consume
   budget; no silent repair (unchanged from rev 2, restated to be frozen with this
   block).
