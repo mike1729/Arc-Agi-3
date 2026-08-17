@@ -123,3 +123,18 @@ correlation-discovery exhibit. Discarded: dc22/ft09 FB results and runtime; any
 PUBLISHING (rendered boards in prompts/traces — local only) · trace tags get a run
 suffix (`_s4…`) so completion reruns never overwrite · configuration column in every
 table · working numbers (w) until the gate measures them.
+
+---
+
+## Instrument pre-check — 2026-08-17, build item 1's core risks retired same-day
+
+- **`mlx_vlm` 0.6.7 loads the 0.6.8-made 8-bit conversion and generates with an image.**
+- ⚠ **Its `apply_chat_template` DEFAULTS to the non-thinking path** — the rendered
+  prompt carried the pre-filled empty think block, the exact July mechanism, caught by
+  the smoke test in five minutes. **Pin: `enable_thinking=True` (and
+  `reasoning_effort`) must be passed explicitly on every mlx_vlm template call, and
+  `e2_probe_vlm.py` asserts no-prefill on the generation region as its first check.**
+- With the kwarg: think opens, closes (558 chars on a trivial task), and **read-back
+  passes exactly** (8×8 synthetic grid, corner colours named correctly, background
+  identified unprompted). Board-scale fidelity sweep on real 64×64 renders remains a
+  gate item; the go/no-go facts are in hand.
