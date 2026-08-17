@@ -367,3 +367,39 @@ distinction with the paper-citable-contrast requirement.
     fires FB costs ~100 min; seed 1 with FB runs well past dawn; morning likely holds
     5–6 F cells + their FB traces, "descriptive only" under the denominator rules
     until the seed completes.
+
+12. **Operator stop-order (~08:15): the run was killed mid-sp80 — "no point letting
+    this run finish; redetermine the token cap for 3.8 low/medium first."** Right on
+    the data: 3 of 6 completed F cells (ls20, tu93, vc33) plus m0r0's FB turn voided
+    at exactly 19,669 tokens, thinks still open — the cap, calibrated on ONE draw, was
+    the broken instrument, and seed 1 was already descriptive-only (>2 missing).
+    **Exact closure table (tokenized from saved thinks, 3.8-8bit-low, seed 1):**
+
+    | cell | F think | FB think |
+    |---|---|---|
+    | m0r0 | **10,293 closed** | >19,669 truncated |
+    | ft09 | 13,498 closed | 8,202 closed |
+    | dc22 | 15,734 closed | 18,092 closed |
+    | ls20 / tu93 / vc33 | all >19,669 truncated (58–62k chars) | — |
+
+    **Correction to deviations 6/7: the low-closure calibration ran on dc22, not m0r0**
+    (driver log: low-render sizing made dc22 the largest at 39,998; the run's dc22 F
+    think is the identical generation, 15,734). The corrected one-cell ladder on m0r0 —
+    xhigh >16,384 · medium >16,384 · **low 10,293 closed** — shows the effort knob
+    working strongly there; deviation 6's "works but weakly" compared truncated char
+    counts across different cells. The real lesson: the low-regime spread is 10,293 to
+    >19,669 across cells, so closure×1.25 **of a single cell** was structurally doomed.
+13. **Recovery design (running):** `max_tokens` is pure truncation — identical
+    prompt+seed+sampler reproduce the identical token stream — so rerunning voided
+    cells at a raised ceiling completes the same generations. Completion run: games
+    ls20, tu93, vc33, sp80, lf52 + m0r0 (last — its F redo is the price of its FB
+    turn), seed 1, **measurement ceiling 32,768** (worst lower bound +66%), FB check
+    fixed (generation-region scan; history is not prefill), `--out
+    logs/e2_slice38_seed1b.json`. Each completed cell doubles as a closure
+    measurement; the **production cap re-pins afterward as max-closure ×1.25 over the
+    completed fleet**, per regime. dc22/ft09 FB thinks are closed on disk and recover
+    by re-verdict + extraction (no re-generation). Watch the first cell for memory
+    pressure (40k prompt + up to 32,768 think ≈ 73k KV, above the night's 59k max).
+    **Medium-cap measurement queued after** (m0r0 + the worst low-thinker, ceiling
+    32,768) — the operator asked for low AND medium; medium re-enters if its measured
+    cap prices affordably. Then the day's GPU decision: mini-S1 vs seed 2.

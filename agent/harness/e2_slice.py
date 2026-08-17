@@ -109,12 +109,17 @@ SLICE2_GAMES = dsl.SLICE2_GAMES
 # none of the three channels has a dose hypothesis, so it buys nothing and costs half a night.
 DOSES = (None,)
 MODE = "full"  # the layer the miner is weakest on, and the one Qwen is being asked for
-# (w) Night-1 pin, 2026-08-17 00:5x, measured basis: under reasoning_effort=low the m0r0
-# probe (39,681-token prompt, the largest cell) closed its think at token 15,735 — the
-# note's closure*1.25 remedy gives 19,669. The prior 16,384 (3.6-era) left 4% headroom
-# against 3.8-low's own closure point, which per-cell variance would eat. A raised
-# ceiling costs nothing when unused; generation stops at the answer.
-THINK_BUDGET = 19669
+# (w) MEASUREMENT CEILING, 2026-08-17 morning (operator stop-order): the 19,669 pin was
+# closure*1.25 of ONE draw (dc22 — the low-render's largest cell, mislabelled m0r0 in
+# the night note), and the fleet promptly voided 3 of 6 F cells plus an FB turn at
+# exactly 19,669 tokens, thinks still open. Measured low-regime spread across seed-1
+# cells: closed 10,293 / 13,498 / 15,734 (m0r0 / ft09 / dc22); truncated >19,669
+# (ls20, tu93, vc33, m0r0-FB). 32,768 covers the worst observed lower bound +66%. The
+# ceiling is pure truncation — same prompt+seed+sampler reproduce the identical token
+# stream, so completion reruns of voided cells are the same generations, completed.
+# The PRODUCTION cap gets re-pinned from the completed spread (max closure * 1.25);
+# never calibrate a fleet cap from a single cell again.
+THINK_BUDGET = 32768
 # Qwen3.8's chat template adds a reasoning_effort knob (xhigh default / medium / low).
 # Night-1 escalation, measured on the same m0r0 cell where Qwen3.6 closed at 6,177
 # tokens / 21,284 chars: xhigh blew the 16,384 budget still open at 55,674 chars;
@@ -1153,7 +1158,13 @@ class Qwen:
             reasoning_effort=REASONING_EFFORT,
         )
         opens_think = prompt.rstrip().endswith("<think>")
-        prefilled = "<think>\n\n</think>" in prompt
+        # Scan only the turn being GENERATED. Qwen3.8's template re-renders history
+        # assistant turns with an empty think block (3.6's stripped them instead), so a
+        # whole-prompt scan false-positives on every multi-turn chat — it voided all of
+        # seed 1's FB turns on 2026-08-17 before being caught. History is not prefill.
+        marker = prompt.rfind("<|im_start|>assistant")
+        generation_region = prompt[marker:] if marker != -1 else prompt
+        prefilled = "<think>\n\n</think>" in generation_region
         # Phase 2 is transcription, so it decodes GREEDILY (temp=0): a sampled transcription
         # can lose a rule the analysis actually stated, and a parse failure costs the whole
         # ~20-minute cell.
