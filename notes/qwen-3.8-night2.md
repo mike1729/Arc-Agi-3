@@ -201,3 +201,58 @@ run dir under `logs/e2_probe_vlm_runs/` — NOT a certificate): the same 28-fram
 storyboard at **8px/cell**, plus the event frame **alone** at 4px and at 8px. It
 answers the two questions the redesign hinges on: is 8px above the floor in dense
 tiling, and is 4px dead everywhere or only when tiled.
+
+## 04:00 — resolution ladder measured (diagnostic, not a certificate)
+
+Same fixture, same pinned convention, wiring sampler, truth (frame 23, row 37, col 11):
+
+| condition | visual tokens | answer | verdict |
+|---|---:|---|---|
+| 8px, 28-frame storyboard | 7,752 | frame ✓, row **37 ✓**, col 12 | row exact, col ±1 |
+| 4px, event frame alone | 81 | row 38, col **11 ✓** | ±1 both axes |
+| 8px, event frame alone | 289 | **row 37 ✓, col 11 ✓** | **exact** |
+| 16px boards (gate 4, certified) | — | — | exact |
+| 4px, 28-frame storyboard (gate 3) | 7,364 | (47,12)/(22,10) | refuted |
+
+Cell size and tiling density degrade readout **multiplicatively**: 8px isolated is
+exact; 8px tiled and 4px isolated are ±1; 4px tiled is unusable. Wall-clock at xhigh:
+the 8px-storyboard call thought for 27 min; even 81-visual-token calls ran ~12 min —
+generation time is dominated by thinking, not input size.
+
+## Morning brief — where the night ended and the decision menu
+
+**Delivered:** sealed gold (verified 32/32 completions, 1,558/1,558 negatives) ·
+overhaul + prereg committed (`5a09167`) · recaptures v2 + three-carrier packets
+rebuilt · ceiling executor `s4_ceiling.py` built, self-verifying, committed
+(`ede73c9`) · 16-cell dry-run clean · one real gate defect found, fixed,
+regression-tested (`e3a6ec0`) · certification run twice; final verdict
+SEMANTIC_FAIL on 4px coordinate readout under a sound gate (`53c4e6b`) · resolution
+ladder measured. **Not run (structurally blocked without PASS):** freeze, 16 Qwen
+cells, ceiling comparator, grading. Everything built tonight is reusable unchanged
+except the rendering floors and the gate bar.
+
+**Decision menu (with the measured ladder):**
+
+- **(a) Raise the raw-carrier floor to 8px** and keep coordinate-precision claims on
+  isolated exhibits. Costs: full board 64→256 visual tokens; the current packets'
+  initial visual (3,991–6,128) likely exceeds the 6,448 cap after ×4 on causal
+  pages → page trims; probe-result storyboards fit ≤7 frames per 2,112-token
+  reserve (7×256=1,792) or go multi-page/subsampled with the budget-indeterminate
+  rule intact.
+- **(b) Re-scope the certification to what the carriers actually claim** (minimal
+  change): 4px pages remain for structure/binding — which the gate PASSED at packet
+  scale both runs — while every cell-precise claim rides on crops (≥16px, certified),
+  overlay labels, and the text carrier's exact RLE. The gate's animation bar then
+  tests frame binding + coarse localization, or precision via a follow-up crop.
+  Requires your semantic sign-off on the re-scoped claim and gate text.
+- **(c) Read tonight as the raw-channel null** — premature on the evidence: binding
+  at 4px is solid; the pilot's question (goal inference) was never reached.
+
+(a) and (b) compose. Throughput reality for any revised plan: at xhigh the model
+thinks 12–27 min per call regardless of input size, so a P cell (4 generations,
+20k-token budget) is plausibly 1.5–3 h — the 16-cell pilot is a ~24–40 h GPU affair
+at current budgets, not one night. Worth deciding alongside the floor: whether the
+pilot's effort tier stays xhigh (capability upper bound) or the budget shrinks.
+
+Nothing in tonight's negatives touches the actor-regime signal (Kaggle LB jump on
+3.8 actor swaps); mini-S1 remains pinned behind slice-4 readout per your decision.
