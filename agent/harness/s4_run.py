@@ -161,21 +161,36 @@ def canonical_sha256(payload: dict[str, Any]) -> str:
     return probe.canonical_sha256(payload)
 
 
+_TRAILING_FENCE = re.compile(r"(?s)^.*```(?:json)?[ \t]*\r?\n(.*?)\r?\n?```\s*$")
+
+
 def extract_final_json(answer: str) -> dict[str, Any] | None:
     """Decode the complete final JSON object, including arbitrarily nested values.
 
     The vision probe's regex parser is intentionally for its flat gate payloads and
     must never be reused here.  A candidate is accepted only when nothing but
     whitespace follows it, so an earlier object in a truncated response cannot pass.
+
+    Calibration v4 (operator decision 2026-08-18): an answer whose final JSON
+    object sits inside exactly one trailing markdown code fence is unwrapped
+    deterministically before the same strict scan.  This is read-side
+    interpretation like whitespace stripping — the raw answer is never
+    modified, prose after the closing fence still invalidates, and every
+    content rule stays fatal.
     """
+    candidates = [answer]
+    fenced = _TRAILING_FENCE.match(answer.rstrip())
+    if fenced:
+        candidates.append(fenced.group(1))
     decoder = json.JSONDecoder()
-    for start in (m.start() for m in reversed(list(re.finditer(r"\{", answer)))):
-        try:
-            value, used = decoder.raw_decode(answer[start:])
-        except json.JSONDecodeError:
-            continue
-        if isinstance(value, dict) and not answer[start + used:].strip():
-            return value
+    for text in candidates:
+        for start in (m.start() for m in reversed(list(re.finditer(r"\{", text)))):
+            try:
+                value, used = decoder.raw_decode(text[start:])
+            except json.JSONDecodeError:
+                continue
+            if isinstance(value, dict) and not text[start + used:].strip():
+                return value
     return None
 
 

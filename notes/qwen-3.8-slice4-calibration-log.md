@@ -109,3 +109,31 @@ v3 seed: derived from the sealed v2 terminal artifact once it exists, via the
 enforced chain — no manual choice remains anywhere in the path. Sampler,
 xhigh, preserved thinking, budgets, KAGGLE_EVAL_BUDGET=0 all unchanged; no
 per-call salvage.
+
+## v2/v3 terminations and protocol v4, 2026-08-18
+
+Operator killed v2 mid-run to accelerate the loop; sealed as EXCEPTION
+(KeyboardInterrupt, 1 completed trace). v3 (candidate `ff89b439…`, seed
+1890377725877075312 from v2's receipt) failed on call 2: the model produced a
+**fully valid answer** — parses, passes every schema rule, ranking compliant —
+but wrapped it in a ```json markdown fence with a prose preamble;
+`extract_final_json` required the answer to end with the bare object, so the
+call classified `no_json`. Operator decision: **A — deterministic fence
+unwrapping** (`r4-qwen-calibration-v4`), then kill v3 (sealed EXCEPTION, 2
+completed traces) and rerun.
+
+Contract v4: if the final JSON object sits inside exactly one trailing
+markdown code fence, extraction unwraps it before the same strict scan.
+Read-side interpretation only — the raw answer is sealed unmodified, prose
+after the closing fence still invalidates, truncated objects inside fences
+still fail, and every content rule stays fatal. Single point of change:
+every consumer (runner, grader reparse, sentinel projections, calibration
+projections) routes through `s4_run.extract_final_json`, so parity holds by
+construction; regression tests cover the exact observed shape.
+
+Compliance-rate observation for the record: across candidates, ~2
+presentation-layer slips in ~26 model calls at temperature 1.0 (a tail sort
+transposition; a markdown fence). Content quality was unaffected in both.
+The v4 contract makes both nonfatal without touching any content rule.
+
+v4 seed: derived from v3's sealed EXCEPTION receipt via the enforced chain.

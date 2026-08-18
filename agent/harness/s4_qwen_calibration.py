@@ -50,7 +50,7 @@ import s4_sentinels as sentinels  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 FORMAT_VERSION = 1
-PROTOCOL_VERSION = "r4-qwen-calibration-v3"  # v3: enforced seed authority chain
+PROTOCOL_VERSION = "r4-qwen-calibration-v4"  # v4: deterministic fence unwrapping
 CALL_BUDGET = 11
 ANSWER_TOKENS = 32_768
 MANUAL_TRUNCATION_TOKENS = 49_152

@@ -156,6 +156,24 @@ class ParsingTests(unittest.TestCase):
         parsed = run.extract_final_json(truncated)
         self.assertTrue(parsed is None or run.validate_answer(parsed))
 
+    def test_fenced_final_json_is_unwrapped_deterministically(self) -> None:
+        # Calibration v4: the v3 candidate died on exactly this shape — a fully
+        # valid answer preceded by prose and wrapped in one markdown fence.
+        payload = valid_payload()
+        encoded = json.dumps(payload)
+        fenced = "**Reasoning summary**\n\nprose here\n\n```json\n" + encoded + "\n```"
+        self.assertEqual(run.extract_final_json(fenced), payload)
+        bare = "prose\n```\n" + encoded + "\n```\n\n"
+        self.assertEqual(run.extract_final_json(bare), payload)
+        # Prose after the closing fence still invalidates — no repair.
+        self.assertIsNone(run.extract_final_json(fenced + "\nafterword"))
+        # A truncated object inside a fence never validates.
+        self.assertIsNone(
+            run.extract_final_json("```json\n" + encoded[:-1] + "\n```"))
+        # Unfenced behavior is byte-for-byte the old contract.
+        self.assertEqual(run.extract_final_json("prose " + encoded), payload)
+        self.assertIsNone(run.extract_final_json(encoded + " trailing"))
+
     def test_schema_rejects_leaf_and_probability_errors(self) -> None:
         self.assertTrue(run.validate_answer({"id": 1, "click": None}))
         payload = valid_payload()
