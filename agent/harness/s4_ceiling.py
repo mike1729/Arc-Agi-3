@@ -103,6 +103,8 @@ def main() -> int:
     parser.add_argument("--out", type=Path, default=None)
     parser.add_argument("--attempt", type=int, default=0)
     args = parser.parse_args()
+    import s4_ledgers
+    s4_ledgers.enforce_offline_scientific_run("s4_ceiling", sys.argv[1:])
 
     git = probe.capture_git_state()
     frozen = grade.verify_freeze()
@@ -136,15 +138,22 @@ def main() -> int:
     require(not out_path.exists(), f"output already exists; runs are append-only: {out_path}")
 
     model_decl = spec["model"]
-    certificate = runner.verify_certificate(args.model)
-    frozen_certificate = frozen.get("certificate") or {}
-    require(certificate["certificate_sha256"] == frozen_certificate.get("sha256"),
-            "live PASS certificate bytes differ from the frozen certificate")
-    require(certificate["checkpoint_sha256"] == frozen_certificate.get("checkpoint_sha256"),
-            "live verified checkpoint differs from the frozen checkpoint")
-    require(certificate["checkpoint_sha256"] == model_decl.get("checkpoint_sha256"),
-            f"served checkpoint {certificate['checkpoint_sha256']!r} differs from the "
-            f"frozen ceiling model {model_decl.get('checkpoint_sha256')!r}")
+    if "serving_snapshot" in frozen:  # revision 4 identity path
+        identity = runner.verify_serving_snapshot(args.model, frozen["serving_snapshot"])
+        require(identity["checkpoint_sha256"] == model_decl.get("checkpoint_sha256"),
+                f"served checkpoint {identity['checkpoint_sha256']!r} differs from "
+                f"the frozen ceiling model {model_decl.get('checkpoint_sha256')!r}")
+    else:
+        certificate = runner.verify_certificate(args.model)
+        frozen_certificate = frozen.get("certificate") or {}
+        require(certificate["certificate_sha256"] == frozen_certificate.get("sha256"),
+                "live PASS certificate bytes differ from the frozen certificate")
+        require(certificate["checkpoint_sha256"]
+                == frozen_certificate.get("checkpoint_sha256"),
+                "live verified checkpoint differs from the frozen checkpoint")
+        require(certificate["checkpoint_sha256"] == model_decl.get("checkpoint_sha256"),
+                f"served checkpoint {certificate['checkpoint_sha256']!r} differs from "
+                f"the frozen ceiling model {model_decl.get('checkpoint_sha256')!r}")
     vlm = probe.Vlm(args.model)
 
     started_utc = _dt.datetime.now(_dt.timezone.utc).isoformat()

@@ -188,6 +188,114 @@ def changed_bbox(pre: np.ndarray, post: np.ndarray) -> tuple[int, int, int, int]
     return int(rows.min()), int(cols.min()), int(rows.max()), int(cols.max())
 
 
+# ------------------------------------------------------- precision-action carrier
+
+RULER_GUTTER_PX = 40         # left/top gutters holding the printed indices
+RULER_GRIDLINE_RGB = (90, 90, 90)
+RULER_CROP_PROFILE = "ruler_crop_32px_v1"
+RULER_FRAME_PROFILE = "ruler_frame_16px_v1"
+
+
+def _ruler_view(
+    grid: np.ndarray,
+    bbox: tuple[int, int, int, int],
+    cell_px: int,
+    profile: str,
+    kind: str,
+) -> Plate:
+    """Magnified window with explicit 0-based ABSOLUTE row/column rulers.
+
+    The rulers translate an observed location into the environment's coordinate
+    API; they never name objects, targets, or actions.  Gridlines are 1px and
+    cell interiors keep their exact palette colour, so `decode_ruler_view` can
+    mechanically reconstruct the window from the emitted PNG.
+    """
+    grid = np.asarray(grid, dtype=np.uint8)
+    r0, c0, r1, c1 = bbox
+    if not (0 <= r0 <= r1 < grid.shape[0] and 0 <= c0 <= c1 < grid.shape[1]):
+        raise ValueError(f"ruler bbox {bbox} outside board {grid.shape}")
+    window = grid[r0 : r1 + 1, c0 : c1 + 1]
+    board_rgb = _upscale(_to_rgb(window), cell_px)
+    height = board_rgb.shape[0] + RULER_GUTTER_PX
+    width = board_rgb.shape[1] + RULER_GUTTER_PX
+    canvas = Image.new("RGB", (width, height), PAD_RGB)
+    canvas.paste(Image.fromarray(board_rgb), (RULER_GUTTER_PX, RULER_GUTTER_PX))
+    draw = ImageDraw.Draw(canvas)
+    label_step = 1 if cell_px >= 24 else 2 if cell_px >= 12 else 4
+    for row in range(window.shape[0]):
+        y = RULER_GUTTER_PX + row * cell_px
+        draw.line([(RULER_GUTTER_PX - 6, y), (width, y)], fill=RULER_GRIDLINE_RGB)
+        if row % label_step == 0:
+            draw.text((4, y + max(0, cell_px // 2 - 6)), str(r0 + row), fill=(0, 0, 0))
+    for col in range(window.shape[1]):
+        x = RULER_GUTTER_PX + col * cell_px
+        draw.line([(x, RULER_GUTTER_PX - 6), (x, height)], fill=RULER_GRIDLINE_RGB)
+        if col % label_step == 0:
+            draw.text((x + 2, 4), str(c0 + col), fill=(0, 0, 0))
+    draw.line([(RULER_GUTTER_PX - 6, height - 1), (width, height - 1)],
+              fill=RULER_GRIDLINE_RGB)
+    draw.line([(width - 1, RULER_GUTTER_PX - 6), (width - 1, height)],
+              fill=RULER_GRIDLINE_RGB)
+    rgb, pad = _pad_to_32(np.asarray(canvas))
+    return Plate(
+        Image.fromarray(rgb), kind, cell_px, pad, bbox=(r0, c0, r1, c1),
+        meta={
+            "profile": profile,
+            "gutter_px": RULER_GUTTER_PX,
+            "window_shape": list(window.shape),
+            "indexing": "0-based absolute board coordinates",
+        },
+    )
+
+
+def render_ruler_crop(
+    grid: np.ndarray,
+    bbox: tuple[int, int, int, int],
+    margin: int = 2,
+    cell_px: int = MIN_CROP_CELL_PX,
+) -> Plate:
+    """The certified precision-action view: >=32px/cell window with rulers."""
+    grid = np.asarray(grid, dtype=np.uint8)
+    r0, c0, r1, c1 = bbox
+    r0, c0 = max(0, r0 - margin), max(0, c0 - margin)
+    r1 = min(grid.shape[0] - 1, r1 + margin)
+    c1 = min(grid.shape[1] - 1, c1 + margin)
+    cell_px = max(cell_px, MIN_CROP_CELL_PX)
+    return _ruler_view(grid, (r0, c0, r1, c1), cell_px, RULER_CROP_PROFILE, "ruler_crop")
+
+
+def render_ruler_frame(grid: np.ndarray, cell_px: int = FULL_BOARD_CELL_PX) -> Plate:
+    """Whole board with rulers — the structural precision view (fits retrieval caps)."""
+    grid = np.asarray(grid, dtype=np.uint8)
+    bbox = (0, 0, grid.shape[0] - 1, grid.shape[1] - 1)
+    return _ruler_view(grid, bbox, cell_px, RULER_FRAME_PROFILE, "ruler_frame")
+
+
+def decode_ruler_view(plate: Plate) -> np.ndarray:
+    """Mechanical reconstruction of a ruler view's window from its emitted pixels.
+
+    Samples each cell's interior centre (gridlines are 1px at cell origins), so
+    the decode is exact for every palette cell; GX certification decodes the
+    final PNG with this and never trusts the renderer's intent.
+    """
+    rgb = np.asarray(plate.image)
+    w_pad, h_pad = plate.pad
+    if h_pad:
+        rgb = rgb[:-h_pad]
+    if w_pad:
+        rgb = rgb[:, :-w_pad]
+    rows, cols = plate.meta["window_shape"]
+    lookup = {colour: value for value, colour in ARC_COLOR_MAP.items()}
+    out = np.zeros((rows, cols), dtype=np.uint8)
+    half = plate.cell_px // 2
+    for r in range(rows):
+        for c in range(cols):
+            y = RULER_GUTTER_PX + r * plate.cell_px + half
+            x = RULER_GUTTER_PX + c * plate.cell_px + half
+            out[r, c] = lookup[tuple(rgb[y, x])]
+    return out
+
+
 def exhibit(
     pre: np.ndarray,
     post: np.ndarray,
@@ -333,6 +441,20 @@ def selftest() -> int:
     wide[:, :] = (wide + 1) % 16
     fb = exhibit(grid, wide, "RESET")
     assert fb["pre_crop"].meta.get("fallback", "").startswith("changed span")
+
+    # Precision-action carrier: ruler views must decode exactly from their pixels,
+    # carry absolute 0-based bboxes, and keep the frame profile inside the
+    # retrieval visual-token cap (1088x1088 -> 1,156 tokens < 1,200).
+    rc = render_ruler_crop(grid, (30, 40, 33, 44))
+    assert rc.meta["profile"] == RULER_CROP_PROFILE and rc.bbox == (28, 38, 35, 46)
+    window = grid[28:36, 38:47]
+    assert np.array_equal(decode_ruler_view(rc), window), "ruler crop decode failed"
+    rf = render_ruler_frame(grid)
+    assert rf.meta["profile"] == RULER_FRAME_PROFILE
+    assert np.array_equal(decode_ruler_view(rf), grid), "ruler frame decode failed"
+    assert rf.image.width % 32 == 0 and rf.image.height % 32 == 0
+    frame_tokens = (rf.image.width // 16) * (rf.image.height // 16) // 4
+    assert frame_tokens <= 1_200, f"ruler frame {frame_tokens} tokens exceeds retrieval cap"
 
     print("SELFTEST PASS")
     return 0

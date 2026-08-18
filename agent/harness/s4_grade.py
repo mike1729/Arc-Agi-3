@@ -1823,7 +1823,17 @@ def freeze(preregistration_path: Path | None = None) -> int:
     return 0
 
 
+def frozen_manifest_path() -> Path:
+    """The active freeze: the versioned r4 artifact when it exists, else legacy.
+
+    The legacy v2.2 freeze never ran in production; this dispatch keeps its code
+    and tests inspectable while revision 4 owns the live protocol."""
+    return FROZEN_R4 if FROZEN_R4.exists() else FROZEN
+
+
 def verify_freeze() -> dict[str, Any]:
+    if FROZEN_R4.exists():
+        return verify_freeze_r4()
     frozen = load_object(FROZEN, "sealed freeze")
     require(frozen.get("format_version") == FORMAT_VERSION,
             f"unsupported sealed freeze version: {frozen.get('format_version')!r}")
@@ -2567,7 +2577,7 @@ def build_familiarity_commitment_payload(
     return {
         "format_version": FORMAT_VERSION,
         "artifact_type": "s4_pre_evidence_familiarity_commitment",
-        "frozen_manifest_sha256": sha256_file(FROZEN),
+        "frozen_manifest_sha256": sha256_file(frozen_manifest_path()),
         "preregistration_sha256": frozen["preregistration_sha256"],
         "ceiling_spec_sha256": preregistration["ceiling_spec_sha256"],
         "respondent_id": respondent_id,
@@ -2618,7 +2628,7 @@ def validate_familiarity_commitment(
     spec = preregistration["ceiling_spec"]
     require(spec["kind"] == "blinded_human_cohort",
             "model ceilings cannot supply a closure-eligible familiarity commitment")
-    require(artifact.get("frozen_manifest_sha256") == sha256_file(FROZEN)
+    require(artifact.get("frozen_manifest_sha256") == sha256_file(frozen_manifest_path())
             and artifact.get("preregistration_sha256") == frozen["preregistration_sha256"]
             and artifact.get("ceiling_spec_sha256") == preregistration["ceiling_spec_sha256"],
             "familiarity_commitment is not bound to the frozen Stage-B protocol")
@@ -2718,7 +2728,7 @@ def validate_run_document(
     document: dict[str, Any], frozen: dict[str, Any]
 ) -> tuple[str, set[int], int]:
     preregistration = frozen["preregistration"]
-    require(document.get("frozen_manifest_sha256") == sha256_file(FROZEN),
+    require(document.get("frozen_manifest_sha256") == sha256_file(frozen_manifest_path()),
             "answer document is not bound to this exact FROZEN.json")
     git = document.get("git") or {}
     require(git.get("commit") == frozen["git_commit"] and git.get("dirty") is False,
@@ -2745,13 +2755,25 @@ def validate_run_document(
             "answer document arms are invalid or outside the preregistration")
     require(isinstance(document.get("cells"), list), "answer document cells must be a list")
     if role == "qwen":
-        certificate = document.get("certificate") or {}
-        require(certificate.get("checkpoint_sha256") == frozen["certificate"]["checkpoint_sha256"],
-                "answer document checkpoint does not match the frozen serving certificate")
-        require(certificate.get("certificate_sha256") == frozen["certificate"]["sha256"],
-                "answer document serving certificate bytes do not match the freeze")
-        require(certificate.get("certificate_verified_shards") is True,
-                "answer run did not verify local checkpoint shards")
+        if "serving_snapshot" in frozen:  # revision 4: snapshot-bound identity
+            snapshot = frozen["serving_snapshot"]
+            identity = document.get("serving_identity") or {}
+            require(identity.get("checkpoint_sha256")
+                    == snapshot["checkpoint_fingerprint"]["checkpoint_sha256"],
+                    "answer document checkpoint differs from the frozen serving "
+                    "snapshot")
+            require(identity.get("verified_shards") is True,
+                    "answer run did not verify local checkpoint shards")
+            require(identity.get("snapshot_sha256") == snapshot["snapshot_sha256"],
+                    "answer document serving snapshot digest differs from the freeze")
+        else:
+            certificate = document.get("certificate") or {}
+            require(certificate.get("checkpoint_sha256") == frozen["certificate"]["checkpoint_sha256"],
+                    "answer document checkpoint does not match the frozen serving certificate")
+            require(certificate.get("certificate_sha256") == frozen["certificate"]["sha256"],
+                    "answer document serving certificate bytes do not match the freeze")
+            require(certificate.get("certificate_verified_shards") is True,
+                    "answer run did not verify local checkpoint shards")
     elif role == "ceiling":
         stage_label = f"Stage-{preregistration['stage']}"
         ceiling_spec = preregistration.get("ceiling_spec")
@@ -2784,7 +2806,7 @@ def validate_run_document(
         } and ceiling_artifact.get("format_version") == FORMAT_VERSION
                 and ceiling_artifact.get("artifact_type")
                 == "s4_transcript_matched_ceiling_input"
-                and ceiling_artifact.get("frozen_manifest_sha256") == sha256_file(FROZEN)
+                and ceiling_artifact.get("frozen_manifest_sha256") == sha256_file(frozen_manifest_path())
                 and ceiling_artifact.get("preregistration_sha256")
                 == frozen["preregistration_sha256"]
                 and ceiling_artifact.get("ceiling_spec") == preregistration["ceiling_spec"]
@@ -3131,7 +3153,7 @@ def build_ceiling_input_payload(
     return {
         "format_version": FORMAT_VERSION,
         "artifact_type": "s4_transcript_matched_ceiling_input",
-        "frozen_manifest_sha256": sha256_file(FROZEN),
+        "frozen_manifest_sha256": sha256_file(frozen_manifest_path()),
         "preregistration_sha256": frozen["preregistration_sha256"],
         "ceiling_spec": preregistration["ceiling_spec"],
         "ceiling_spec_sha256": preregistration["ceiling_spec_sha256"],
@@ -3594,7 +3616,7 @@ def _build_blinded_adjudication_bundle(
         skeleton = {
             "format_version": FORMAT_VERSION,
             "artifact_type": "s4_role_blinded_adjudication",
-            "frozen_manifest_sha256": sha256_file(FROZEN),
+            "frozen_manifest_sha256": sha256_file(frozen_manifest_path()),
             "preregistration_sha256": frozen["preregistration_sha256"],
             "opaque_answer_bundle_commitment": _opaque_answer_bundle_commitment(
                 key, adjudicator_id=adjudicator_id,
@@ -3625,7 +3647,7 @@ def _build_blinded_adjudication_bundle(
     return {
         "format_version": FORMAT_VERSION,
         "artifact_type": "s4_role_blinded_adjudication_bundle",
-        "frozen_manifest_sha256": sha256_file(FROZEN),
+        "frozen_manifest_sha256": sha256_file(frozen_manifest_path()),
         "preregistration_sha256": frozen["preregistration_sha256"],
         "answers_bundle_sha256": answers_bundle_sha256,
         "answer_artifact_sha256s": answer_artifacts,
@@ -3655,7 +3677,7 @@ def build_worksheet(
     worksheet = {
         "format_version": FORMAT_VERSION,
         "artifact_type": "s4_adjudication_worksheet",
-        "frozen_manifest_sha256": sha256_file(FROZEN),
+        "frozen_manifest_sha256": sha256_file(frozen_manifest_path()),
         "preregistration_sha256": frozen["preregistration_sha256"],
         "answers": bindings,
         "answers_bundle_sha256": sha256_json(bindings),
@@ -3800,7 +3822,7 @@ def build_adjudication_commitment_receipt(
     preregistration = frozen["preregistration"]
     supplied = prevalidate_signed_blinded_adjudications(
         adjudications, preregistration,
-        frozen_manifest_sha256=sha256_file(FROZEN),
+        frozen_manifest_sha256=sha256_file(frozen_manifest_path()),
         preregistration_sha256=frozen["preregistration_sha256"],
     )
     rows = [
@@ -3821,7 +3843,7 @@ def build_adjudication_commitment_receipt(
     return {
         "format_version": FORMAT_VERSION,
         "artifact_type": ADJUDICATION_RECEIPT_TYPE,
-        "frozen_manifest_sha256": sha256_file(FROZEN),
+        "frozen_manifest_sha256": sha256_file(frozen_manifest_path()),
         "preregistration_sha256": frozen["preregistration_sha256"],
         "adjudication_protocol_sha256": preregistration[
             "adjudication_protocol_sha256"
@@ -4443,7 +4465,7 @@ def grade(
             # signatures and their external opaque commit point both verify.
             prevalidate_signed_blinded_adjudications(
                 adjudication_documents, frozen["preregistration"],
-                frozen_manifest_sha256=sha256_file(FROZEN),
+                frozen_manifest_sha256=sha256_file(frozen_manifest_path()),
                 preregistration_sha256=frozen["preregistration_sha256"],
             )
             require(adjudication_receipt_path is not None
@@ -4554,6 +4576,318 @@ def grade(
     return 0
 
 
+# ==================================================================== revision 4
+#
+# Two-stage sealing (notes/qwen-3.8-slice4-refinement-plan.md): the versioned
+# FROZEN.json is created BEFORE any confirmatory gate or sentinel answer exists
+# and therefore binds ASSETS and thresholds, never results.  CONTINUE.json is
+# created exactly once from the complete confirmatory outputs and says CONTINUE
+# or STOP; it never rewrites the freeze.  The legacy v2.2 single-certificate
+# freeze above is retained, un-runnable in production, as the inspectable record
+# of the failed revision.
+
+PROTOCOL_R4 = "r4"
+SEALED_R4 = SEALED / PROTOCOL_R4
+FROZEN_R4 = SEALED_R4 / "FROZEN.json"
+CONTINUE_R4 = SEALED_R4 / "CONTINUE.json"
+R4_FORMAT_VERSION = 4
+
+R4_SCRIPT_RELATIVE = SCRIPT_RELATIVE + (
+    "agent/harness/s4_delta.py",
+    "agent/harness/s4_gates.py",
+    "agent/harness/s4_sentinels.py",
+    "agent/harness/s4_ledgers.py",
+    "agent/harness/s4_ceiling.py",
+    "agent/harness/e2_probe_vlm.py",
+)
+
+R4_STOPPING_RULES = (
+    "G0 is mechanical and must pass 100%. Every model-dependent claim needs its "
+    "full 6/6 (GX additionally 8/8 exact integer coordinates); no retry, "
+    "majority vote, silent repair, or plus-minus-one conversion. If any claim in "
+    "a SELECTED arm's requirement set fails, or any sentinel threshold fails, or "
+    "the independent adequacy attestation is not 'adequate', CONTINUE.json says "
+    "STOP and the frozen protocol version ends. A redesign is a new version with "
+    "new sealed fixtures — never a rerun. On CONTINUE, all 16 Qwen cells run "
+    "without inspecting outcomes or stopping early; then the four "
+    "transcript-matched P comparator cells; then grading. GD_dense_4px_exact is "
+    "reported as a diagnostic and can block nothing."
+)
+
+
+def serving_snapshot_r4(model: Path, *, full_shards: bool = True) -> dict[str, Any]:
+    """Mechanical serving identity — file hashes, versions, pinned constants.
+
+    No model generation and no gate verdicts: readability claims are certified
+    post-freeze by the claim harness; this snapshot only pins WHAT would serve.
+    """
+    import importlib.metadata as md
+
+    import e2_probe_vlm as probe
+    import s4_packet as spk
+    import s4_run as srun
+
+    auditor = spk.ProcessorAuditor(model)
+    snapshot: dict[str, Any] = {
+        "model_path": str(model),
+        "processor_identity": auditor.identity,
+        "runtime_versions": {
+            package: md.version(package)
+            for package in ("mlx-vlm", "mlx", "mlx-lm", "transformers")
+        },
+        "production_sampler": dict(probe.PRODUCTION_SAMPLER),
+        "reasoning_effort": probe.REASONING_EFFORT,
+        "budgets": {
+            "answer_tokens": srun.MAX_ANSWER_TOKENS,
+            "interaction_rounds": srun.INTERACTION_ROUNDS,
+            "retrievals_per_round": srun.RETRIEVALS_PER_ROUND,
+            "active_probes": srun.ACTIVE_PROBES,
+            "max_images": srun.MAX_IMAGES,
+            "max_visual_tokens": srun.MAX_VISUAL_TOKENS,
+        },
+        "request_prompt_sha256": hashlib.sha256(srun.REQUEST.encode()).hexdigest(),
+    }
+    if full_shards:
+        shards = probe.fingerprint(model)
+        snapshot["checkpoint_fingerprint"] = {
+            "checkpoint_sha256": shards.get("checkpoint_sha256"),
+            "verified_shards": True,
+        }
+    snapshot["snapshot_sha256"] = sha256_json(
+        {key: value for key, value in snapshot.items() if key != "snapshot_sha256"}
+    )
+    return snapshot
+
+
+def _r4_confirm_assets() -> dict[str, Any]:
+    """The sealed confirmation fixtures and sentinel assets FROZEN binds."""
+    import s4_gates as gates
+    import s4_sentinels as sentinels
+
+    fixtures_root = SEALED_R4 / "fixtures"
+    gate_manifests = sorted(fixtures_root.glob("fixture_manifest_*.json"))
+    require(gate_manifests,
+            "freeze-r4 requires sealed confirm gate fixtures "
+            "(s4_gates.py --build-fixtures-only --namespace confirm)")
+    sentinel_manifest = fixtures_root / "sentinels/sentinel_manifest.json"
+    require(sentinel_manifest.is_file(),
+            "freeze-r4 requires sealed sentinel assets "
+            "(s4_sentinels.py --generate --namespace confirm)")
+    gold_dir = fixtures_root / "sentinels/gold"
+    sentinel_gold = {
+        path.name: sha256_file(path) for path in sorted(gold_dir.glob("*.json"))
+    }
+    require(sentinel_gold, "sentinel gold is missing from the sealed fixtures")
+    return {
+        "gate_fixture_manifests": {
+            str(path.relative_to(ROOT)): sha256_file(path) for path in gate_manifests
+        },
+        "sentinel_manifest_sha256": sha256_file(sentinel_manifest),
+        "sentinel_gold_files": sentinel_gold,
+        "arm_requirements": {
+            arm: list(claims) for arm, claims in gates.ARM_REQUIREMENTS.items()
+        },
+        "gate_thresholds": dict(gates.THRESHOLDS),
+        "sentinel_thresholds": {
+            "passive_variants": sentinels.PASSIVE_VARIANTS,
+            "active_variants": sentinels.ACTIVE_VARIANTS,
+            "pass_threshold": sentinels.PASS_THRESHOLD,
+            "total_generations": sentinels.TOTAL_GENERATIONS,
+        },
+        "precision_profile": gates.PRECISION_PROFILE,
+    }
+
+
+def freeze_r4(preregistration_path: Path | None, model: Path) -> int:
+    import s4_ledgers as ledgers
+
+    ledgers.enforce_offline_scientific_run("s4_grade --freeze-r4", [])
+    require(not FROZEN_R4.exists(), f"{FROZEN_R4} already exists — append-only")
+    require(not CONTINUE_R4.exists(),
+            "a continuation certificate exists without its freeze — sealed dir corrupt")
+    for stray in ("claims.json", "sentinel_results.json"):
+        require(not (SEALED_R4 / stray).exists(),
+                f"confirmatory output {stray} predates the freeze — refusing")
+    mapping = read_blind_map()
+    raw = (load_object(preregistration_path, "preregistration")
+           if preregistration_path is not None else {})
+    preregistration = normalize_preregistration(raw, mapping)
+    git = current_git_state()
+    require(not git["dirty"], f"refusing to freeze a dirty worktree: {git['status']}")
+    scripts = {}
+    for relative in R4_SCRIPT_RELATIVE:
+        path = ROOT / relative
+        require(path.is_file(), f"missing protocol script: {path}")
+        scripts[relative] = sha256_file(path)
+    recaptures = {}
+    for game in preregistration["games"]:
+        manifest_path = (ROOT / "logs/s4_observation_log/recapture" / game
+                         / "manifest.json")
+        require(manifest_path.is_file(), f"missing recapture manifest for {game}")
+        recaptures[game] = sha256_file(manifest_path)
+    snapshot = serving_snapshot_r4(model)
+    payload = {
+        "format_version": R4_FORMAT_VERSION,
+        "protocol_version": PROTOCOL_R4,
+        "frozen_utc": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+        "git_commit": git["commit"],
+        "blind_map_sha256": sha256_file(SEALED / "blind_map.json"),
+        "gold_files": snapshot_gold(mapping),
+        "scripts": scripts,
+        "recapture_manifests": recaptures,
+        "serving_snapshot": snapshot,
+        "packets": {
+            mapping[game]: snapshot_packet(game, mapping[game], None)
+            for game in preregistration["games"]
+        },
+        "confirm_assets": _r4_confirm_assets(),
+        "stopping_rules": R4_STOPPING_RULES,
+        "kaggle_eval_budget": ledgers.KAGGLE_EVAL_BUDGET,
+        "submission_guard": (
+            "KAGGLE_EVAL_BUDGET=0 through final grading; every slice-4 command "
+            "path fails closed on submission capability; neither FROZEN nor "
+            "CONTINUE grants submission authority"
+        ),
+        "preregistration": preregistration,
+        "preregistration_sha256": sha256_json(preregistration),
+    }
+    atomic_create(FROZEN_R4, payload, mode=0o444)
+    print(f"FROZEN[r4] {len(payload['gold_files'])} games at {git['commit'][:9]} "
+          f"({sha256_file(FROZEN_R4)[:12]})")
+    return 0
+
+
+def verify_freeze_r4() -> dict[str, Any]:
+    frozen = load_object(FROZEN_R4, "sealed r4 freeze")
+    require(frozen.get("format_version") == R4_FORMAT_VERSION
+            and frozen.get("protocol_version") == PROTOCOL_R4,
+            "unsupported r4 freeze")
+    mapping = read_blind_map()
+    require(sha256_file(SEALED / "blind_map.json") == frozen.get("blind_map_sha256"),
+            "SEALED DRIFT: blind_map.json changed after freeze")
+    require(snapshot_gold(mapping) == frozen.get("gold_files"),
+            "SEALED DRIFT: exact gold set or digest changed after freeze")
+    require(set(frozen.get("scripts") or {}) == set(R4_SCRIPT_RELATIVE),
+            "SEALED DRIFT: r4 protocol script inventory changed")
+    for relative, digest in (frozen.get("scripts") or {}).items():
+        path = ROOT / relative
+        require(path.is_file() and sha256_file(path) == digest,
+                f"PROTOCOL DRIFT: {relative} changed after freeze")
+    preregistration = normalize_preregistration(frozen.get("preregistration"), mapping)
+    require(preregistration == frozen.get("preregistration"),
+            "invalid/non-canonical frozen preregistration")
+    require(frozen.get("preregistration_sha256") == sha256_json(preregistration),
+            "SEALED DRIFT: preregistration digest mismatch")
+    expected_packets = frozen.get("packets")
+    require(isinstance(expected_packets, dict)
+            and set(expected_packets)
+            == {mapping[game] for game in preregistration["games"]},
+            "SEALED DRIFT: packet inventory mismatch")
+    for blind_id, expected in expected_packets.items():
+        game = expected.get("game") if isinstance(expected, dict) else None
+        require(isinstance(game, str) and mapping.get(game) == blind_id,
+                f"invalid frozen packet binding for {blind_id}")
+        require(snapshot_packet(game, blind_id, None) == expected,
+                f"PACKET DRIFT: exact packet bytes changed for {blind_id}")
+    for game, digest in (frozen.get("recapture_manifests") or {}).items():
+        manifest_path = (ROOT / "logs/s4_observation_log/recapture" / game
+                         / "manifest.json")
+        require(manifest_path.is_file() and sha256_file(manifest_path) == digest,
+                f"RECAPTURE DRIFT: {game} manifest changed after freeze")
+    git = current_git_state()
+    require(not git["dirty"], f"refusing to proceed on a dirty worktree: {git['status']}")
+    require(git["commit"] == frozen.get("git_commit"),
+            f"git commit drift: {git['commit']} != {frozen.get('git_commit')}")
+    require(frozen.get("kaggle_eval_budget") == 0,
+            "r4 freeze must pin KAGGLE_EVAL_BUDGET=0")
+    return frozen
+
+
+def continue_r4(claims_path: Path, sentinel_results_path: Path,
+                adequacy_path: Path) -> int:
+    """One-shot continuation: bind the complete confirmatory outputs, aggregate
+    mechanically, and write CONTINUE or STOP.  Never rewrites the freeze."""
+    import s4_gates as gates
+    import s4_sentinels as sentinels
+
+    require(not CONTINUE_R4.exists(), f"{CONTINUE_R4} already exists — one-shot")
+    frozen = verify_freeze_r4()
+    frozen_sha = sha256_file(FROZEN_R4)
+
+    claims_doc = load_object(claims_path, "confirmatory gate claims")
+    require(claims_doc.get("namespace") == "confirm",
+            "continuation requires CONFIRM-namespace gate claims")
+    require(claims_doc.get("frozen_manifest_sha256") == frozen_sha,
+            "gate claims are not bound to this exact FROZEN.json")
+    claim_results = claims_doc.get("results") or {}
+    selected_arms = frozen["preregistration"]["arms"]
+    eligibility = gates.derive_arm_eligibility(claim_results, selected_arms)
+    g0 = (claim_results.get("G0_protocol_serving") or {})
+    require(g0.get("kind") == "mechanical", "G0 claim record is malformed")
+
+    sentinel_doc = load_object(sentinel_results_path, "sentinel results")
+    require(sentinel_doc.get("namespace") == "confirm"
+            and sentinel_doc.get("frozen_manifest_sha256") == frozen_sha,
+            "sentinel results are not bound to this exact FROZEN.json")
+    passive_summary = sentinels.aggregate_passive(sentinel_doc["passive_worksheets"])
+    active_summary = sentinels.aggregate_active(sentinel_doc["active_records"])
+    adequacy = sentinels.validate_adequacy_attestation(
+        load_object(adequacy_path, "independent adequacy attestation")
+    )
+
+    passive_pass = all(
+        summary["pass"] for arm, summary in passive_summary.items()
+        if arm in {"T", "V", "O"} and arm in selected_arms
+    )
+    sentinel_pass = passive_pass and (
+        active_summary["pass"] if "P" in selected_arms else True
+    )
+    verdict = "CONTINUE" if (
+        g0.get("pass") is True
+        and eligibility["all_selected_arms_eligible"]
+        and sentinel_pass
+        and adequacy["verdict"] == "adequate"
+    ) else "STOP"
+    payload = {
+        "format_version": R4_FORMAT_VERSION,
+        "protocol_version": PROTOCOL_R4,
+        "created_utc": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+        "frozen_manifest_sha256": frozen_sha,
+        "gate_claims": {"path": str(claims_path), "sha256": sha256_file(claims_path)},
+        "sentinel_results": {"path": str(sentinel_results_path),
+                             "sha256": sha256_file(sentinel_results_path)},
+        "adequacy_attestation": {"path": str(adequacy_path),
+                                 "sha256": sha256_file(adequacy_path)},
+        "eligibility": eligibility,
+        "sentinel_summary": {"passive": passive_summary, "active": active_summary},
+        "adequacy_verdict": adequacy["verdict"],
+        "verdict": verdict,
+        "rule": ("the pilot runner requires the exact verdict CONTINUE and "
+                 "verifies every bound hash; a STOP ends this frozen version"),
+    }
+    atomic_create(CONTINUE_R4, payload, mode=0o444)
+    print(f"CONTINUE[r4] verdict={verdict} ({sha256_file(CONTINUE_R4)[:12]})")
+    return 0 if verdict == "CONTINUE" else 3
+
+
+def verify_continue_r4(frozen_sha: str) -> dict[str, Any]:
+    """Runner-side verification: exact verdict, exact bindings, live artifacts."""
+    continuation = load_object(CONTINUE_R4, "continuation certificate")
+    require(continuation.get("format_version") == R4_FORMAT_VERSION,
+            "unsupported continuation certificate")
+    require(continuation.get("frozen_manifest_sha256") == frozen_sha,
+            "continuation certificate is bound to a different freeze")
+    for binding_name in ("gate_claims", "sentinel_results", "adequacy_attestation"):
+        binding = continuation.get(binding_name) or {}
+        path = Path(binding.get("path", ""))
+        require(path.is_file() and sha256_file(path) == binding.get("sha256"),
+                f"continuation binding drift: {binding_name}")
+    require(continuation.get("verdict") == "CONTINUE",
+            f"continuation verdict is {continuation.get('verdict')!r}; "
+            "the frozen run has ended")
+    return continuation
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--freeze", action="store_true")
@@ -4588,7 +4922,30 @@ def main() -> int:
     parser.add_argument("--out", type=Path, help="new output path (must not exist)")
     parser.add_argument("--execute-plans", action="store_true")
     parser.add_argument("--tally", action="store_true")
+    parser.add_argument("--freeze-r4", action="store_true",
+                        help="create the versioned r4 FROZEN.json (before any "
+                             "confirmatory gate/sentinel answer exists)")
+    parser.add_argument("--continue-r4", action="store_true",
+                        help="one-shot continuation certificate from confirmatory "
+                             "outputs; writes CONTINUE or STOP")
+    parser.add_argument("--gate-claims", type=Path)
+    parser.add_argument("--sentinel-results", type=Path)
+    parser.add_argument("--adequacy", type=Path)
+    parser.add_argument("--model", type=Path,
+                        default=Path.home() / "models/mlx/Qwen3.8-27B-8bit")
     args = parser.parse_args()
+    import s4_ledgers
+    s4_ledgers.enforce_offline_scientific_run("s4_grade", [])
+    if args.freeze_r4:
+        require(not args.freeze and not args.continue_r4,
+                "--freeze-r4 stands alone")
+        return freeze_r4(args.preregistration, args.model)
+    if args.continue_r4:
+        require(args.gate_claims is not None and args.sentinel_results is not None
+                and args.adequacy is not None,
+                "--continue-r4 requires --gate-claims, --sentinel-results and "
+                "--adequacy")
+        return continue_r4(args.gate_claims, args.sentinel_results, args.adequacy)
     if args.seal_adjudication is not None:
         require(args.out is not None and not args.freeze and args.preregistration is None
                 and args.answers is None and args.adjudications is None

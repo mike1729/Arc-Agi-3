@@ -1,6 +1,31 @@
 # Slice 4 — Autonomous Multimodal Evidence Packet (Qwen3.8, vision-first)
 
-**REV 3, 2026-08-17 — implementation contract, pending operator freeze.** Rev 1 (this
+**REV 4, 2026-08-18 — protocol revision per
+[`qwen-3.8-slice4-refinement-plan.md`](qwen-3.8-slice4-refinement-plan.md), which
+governs REV 4 on any conflict with the prose below.** The corrected claim boundary
+after the night-2 gate runs:
+
+> The pinned model passed serving, packet binding, and event-frame identification,
+> but failed exact singleton-cell localization in the tested dense 4px full-context
+> carrier. Goal inference was not tested.
+
+Consequences implemented in this revision: 4px storyboards and causal pairs remain
+for **structure, sequence, topology, change detection, and frame binding** — never
+cell-exact readout; exact coordinates travel in the semantics-free temporal-delta
+channel, the precision-action channel (component bboxes + representative clicks in
+the ledger; `SHOW_FRAME` returns ruler views, certified by
+`GX_precision_action:ruler_crop_32px_v1`), and the text carrier. The v2.2 universal
+probe verdict is replaced by **arm-scoped claims** (`s4_gates.py`; a failed claim
+never vetoes an arm that does not consume it; the old dense-4px bar survives only as
+the non-blocking diagnostic `GD_dense_4px_exact`). Frozen **goal-inference
+sentinels** (`s4_sentinels.py`) must pass before any real-game cell. Sealing is
+two-stage (`FROZEN.json` before any confirmatory answer; one-shot `CONTINUE.json`),
+and `KAGGLE_EVAL_BUDGET=0` is frozen through final grading with fail-closed
+submission guards (`s4_ledgers.py`). Stage A remains descriptive and cannot close
+the project.
+
+**REV 3, 2026-08-17 — implementation contract (superseded by REV 4 where it
+conflicts).** Rev 1 (this
 file's git history) is superseded where it conflicts; the instrument pre-check and the
 night-1 linkage stand. Review-round-1 requirements are implemented in this revision,
 but no capability run or closure claim is authorized until the sealed gold,

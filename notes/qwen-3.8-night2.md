@@ -1,5 +1,18 @@
 # Night 2 — slice-4 chain (2026-08-17 → 08-18)
 
+> **Post-run forensic correction (2026-08-18):** retain this file as the chronological
+> operator log, but do not use its resolution-ladder causal language as a final finding.
+> The pinned rerun established packet/page/frame binding and a failure of exact
+> singleton-cell localization in the named dense 4px profile; it did not test goal
+> inference. The ladder reused one coordinate with one call per condition, so
+> “multiplicatively,” a general 8px floor, and “16px exact” are unsupported. Gate 4
+> tested left/right/none, not exact coordinates. The 4px storyboard cost 2,088 visual
+> tokens and the complete 16-image Gate-3 call cost 12,295; the 7,364 table entry is not
+> the final call total. The corrected interpretation and continuation protocol are in
+> `notes/qwen-3.8-slice4-refinement-plan.md`. The later “Kaggle LB jump on 3.8 actor
+> swaps” sentence has no matching submission in the audited account history; treat it
+> as an external/unsupported observation, not project evidence or consumed quota.
+
 Operator order (verbatim, 23:00): gold + final preregistration/ceiling → six test suites +
 renderer self-test + probe smokes → commit clean tree → rebuild recaptures and packets →
 gate-night calibration → final fresh v2.2 probe PASS → `--freeze` → 16 Qwen pilot cells →

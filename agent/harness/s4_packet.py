@@ -2061,6 +2061,60 @@ def _build_into(game: str, out_dir: Path, evidence: dict[str, Any], auditor: Any
         for action in item["action_sequence"]:
             ledger_lines.append("  ACTION " + json.dumps(action, sort_keys=True,
                                                          separators=(",", ":")))
+    # Semantics-free exact temporal delta channel (protocol r4): what changed,
+    # never what it means.  Bound to TIDs and grid hashes; auditors re-derive.
+    import s4_delta as sdl
+    delta_records = []
+    for row in causal:
+        if row.get("pre") is None:
+            continue
+        record = sdl.sequence_record(
+            [f"{row['tid']}.pre", f"{row['tid']}.post"],
+            [row["pre"], row["post"]],
+            binding={"tid": row["tid"], "kind": "causal_transition"},
+        )
+        delta_records.append(record)
+    if delta_records:
+        ledger_lines.append(
+            "TEMPORAL-DELTA-CHANNEL per-pair changed-cell count, bbox and palette "
+            "histogram [DERIVED-EXACT]; the exact cells are already lossless in "
+            "the encoded boards above, so cell lists live in the packet manifest"
+        )
+        for record in delta_records:
+            ledger_lines.append(sdl.render_text_block(record, include_cells=False))
+    # Precision-action channel (protocol r4): component bounding boxes plus one
+    # legal representative click each, translating observed locations into the
+    # environment's coordinate API without naming targets or objectives.
+    # Smallest components first: precision clicks target small objects, and the
+    # dominant background fields are recoverable from the encoded boards anyway.
+    precision_components = sorted(
+        (component for component in components if component["cells"] <= 256),
+        key=lambda component: (component["cells"], component["bbox"]),
+    )[:16]
+    if precision_components:
+        ledger_lines.append(
+            "PRECISION-ACTION-CHANNEL component bbox=(r0,c0,r1,c1) 0-based and one "
+            "legal representative click cell (row,col) inside the component "
+            "[DERIVED-EXACT]"
+        )
+        for component in precision_components:
+            r0, c0, r1, c1 = component["bbox"]
+            click = [(r0 + r1) // 2, (c0 + c1) // 2]
+            grid_array = np.asarray(initial, dtype=np.uint8)
+            if int(grid_array[click[0], click[1]]) != component["colour"]:
+                rows_cols = np.argwhere(grid_array == component["colour"])
+                inside = [
+                    (int(r), int(c)) for r, c in rows_cols
+                    if r0 <= r <= r1 and c0 <= c <= c1
+                ]
+                require(bool(inside), f"component {component['component_id']} has no cell")
+                click = list(min(inside))
+            ledger_lines.append(
+                f"  {component['component_id']} colour={component['colour']} "
+                f"cells={component['cells']} bbox=({r0},{c0},{r1},{c1}) "
+                f"representative_click=({click[0]},{click[1]}) "
+                f"static={component['static_over_observed_posts']}"
+            )
     ledger_lines.extend([
         "COVERAGE " + json.dumps(dict(sorted(coverage.items())), separators=(",", ":")),
         "EFFECT_COVERAGE " + json.dumps(effect_coverage, sort_keys=True, separators=(",", ":")),
@@ -2093,6 +2147,16 @@ def _build_into(game: str, out_dir: Path, evidence: dict[str, Any], auditor: Any
         "visual_tokens_total": carrier_totals["raw"]["visual_tokens"],
         "ledger_sha256": sha256_file(ledger_path),
         "ledger_bytes": ledger_path.stat().st_size,
+        "temporal_delta_channel": {
+            "records": len(delta_records),
+            "sparse_delta_limit": sdl.SPARSE_DELTA_LIMIT,
+            "record_sha256s": [record["record_sha256"] for record in delta_records],
+            "full_records": delta_records,
+        },
+        "precision_action_channel": {
+            "components_listed": len(precision_components),
+            "profile": sr.RULER_CROP_PROFILE,
+        },
         "selection": selection,
         "caps": {
             "max_images": MAX_IMAGES, "max_visual_tokens": MAX_VISUAL_TOKENS,

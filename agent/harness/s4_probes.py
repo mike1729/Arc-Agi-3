@@ -5,7 +5,9 @@
 runner exposes to Qwen mid-conversation:
 
 RETRIEVAL (runner-budgeted to one request/round, stored autonomous evidence only):
-  SHOW_FRAME <tid>              one transition's settled post board, full plate
+  SHOW_FRAME <tid> [r0 c0 r1 c1]  settled post board with absolute 0-based rulers;
+                                  with a region: the certified 32px/cell precision
+                                  ruler crop (max 32x32 cells, never rewritten)
   SHOW_TRANSITION <tid>         the five-panel exhibit for one transition
   SHOW_EPISODE <tid> <n>        storyboard of n settled frames starting at tid
   SHOW_ACTION_CONTRAST <action> one effect and one no-effect case for an action
@@ -674,17 +676,45 @@ class ProbeSession:
         self.log.append(log_entry)
         return result
 
-    def _show_frame(self, tid: str) -> dict[str, Any]:
+    def _show_frame(self, tid: str, *region: str) -> dict[str, Any]:
+        """The certified precision view (protocol r4).
+
+        Without a region: the full settled board with absolute 0-based rulers at
+        16px/cell (fits the retrieval token cap natively — the old full plate at
+        1024x1024 could never fit it).  With ``r0 c0 r1 c1``: the certified
+        32px/cell ruler crop of exactly that window (max 32x32 cells).  The
+        request is never rewritten: an oversized or malformed region fails."""
         t = self.by_tid[tid]
-        img = sr.render_board(np.asarray(t["post"])).image
-        audit = self._save_audited(img, f"frame_{tid}", "retrieval_frame", tid=tid)
+        board = np.asarray(t["post"])
+        if region:
+            if len(region) != 4:
+                raise ValueError("SHOW_FRAME region needs exactly: r0 c0 r1 c1")
+            r0, c0, r1, c1 = (int(value) for value in region)
+            if not (0 <= r0 <= r1 < board.shape[0] and 0 <= c0 <= c1 < board.shape[1]):
+                raise ValueError("SHOW_FRAME region outside the board")
+            if (r1 - r0 + 1) > 32 or (c1 - c0 + 1) > 32:
+                raise ValueError(
+                    "SHOW_FRAME region larger than 32x32 cells; request a smaller "
+                    "window (it was not rewritten)"
+                )
+            plate = sr.render_ruler_crop(board, (r0, c0, r1, c1), margin=0, cell_px=32)
+            view = "precision ruler crop, 32px/cell, absolute 0-based rulers"
+        else:
+            plate = sr.render_ruler_frame(board)
+            view = "full frame, absolute 0-based rulers, 16px/cell"
+        suffix = "_" + "_".join(str(v) for v in region) if region else ""
+        audit = self._save_audited(
+            plate.image, f"frame_{tid}{suffix}", "retrieval_frame", tid=tid,
+            precision_profile=plate.meta["profile"], region=list(plate.bbox),
+        )
         click = f" click={t['click']}" if t["click"] is not None else " click=null"
         return {
             "ok": True,
             "images": [audit["path"]],
             "image_audit": [audit],
             "text": (
-                f"settled board after transition {tid}: {t['action']}{click} [OBSERVED]"
+                f"settled board after transition {tid} ({view}): "
+                f"{t['action']}{click} [OBSERVED]"
             ),
         }
 
@@ -1229,6 +1259,24 @@ class ProbeSession:
                 f"(frame ranges {ranges}); frame {len(frames) - 1} is the settled outcome "
                 f"and {outcome_fields} [OBSERVED, live]"
             )
+        # Semantics-free exact record over the full observed response sequence
+        # (protocol r4): pre state, every raw frame, bound to the probe request.
+        delta_record = None
+        if len(frames) >= 2:
+            import s4_delta as sdl
+            try:
+                delta_record = sdl.sequence_record(
+                    [f"probe{self.probes_spent}.f{i}" for i in range(len(frames))],
+                    list(frames),
+                    binding={"kind": "probe_response",
+                             "start_tid": start_tid,
+                             "request_sha256": record["request_sha256"]},
+                )
+                text += "\n" + sdl.render_text_block(delta_record)
+            except (RuntimeError, KeyError, TypeError, ValueError):
+                # The raw frames stay authoritative; a derived record may never
+                # fail an otherwise-successful probe.
+                delta_record = None
         return self._finish_probe(
             record,
             ok=True,
@@ -1246,6 +1294,7 @@ class ProbeSession:
             level_delta=level_delta,
             level_advanced=level_delta > 0,
             terminal_state_observed=terminal_state_observed,
+            temporal_delta_record=delta_record,
             images=images,
             image_audit=image_audit,
             text=text,

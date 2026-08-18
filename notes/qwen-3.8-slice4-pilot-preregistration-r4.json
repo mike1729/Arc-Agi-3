@@ -1,0 +1,73 @@
+{
+  "stage": "A",
+  "games": [
+    "ls20",
+    "ft09",
+    "m0r0",
+    "sp80"
+  ],
+  "arms": [
+    "T",
+    "V",
+    "O",
+    "P"
+  ],
+  "seeds": [
+    2
+  ],
+  "roles": [
+    "qwen",
+    "ceiling"
+  ],
+  "primary_arm": "P",
+  "expected_cells": [
+    {"role": "qwen", "game_blind": "G89e5af", "arm": "T", "seed": 2},
+    {"role": "qwen", "game_blind": "G89e5af", "arm": "V", "seed": 2},
+    {"role": "qwen", "game_blind": "G89e5af", "arm": "O", "seed": 2},
+    {"role": "qwen", "game_blind": "G89e5af", "arm": "P", "seed": 2},
+    {"role": "qwen", "game_blind": "G40feb6", "arm": "T", "seed": 2},
+    {"role": "qwen", "game_blind": "G40feb6", "arm": "V", "seed": 2},
+    {"role": "qwen", "game_blind": "G40feb6", "arm": "O", "seed": 2},
+    {"role": "qwen", "game_blind": "G40feb6", "arm": "P", "seed": 2},
+    {"role": "qwen", "game_blind": "G4c8a25", "arm": "T", "seed": 2},
+    {"role": "qwen", "game_blind": "G4c8a25", "arm": "V", "seed": 2},
+    {"role": "qwen", "game_blind": "G4c8a25", "arm": "O", "seed": 2},
+    {"role": "qwen", "game_blind": "G4c8a25", "arm": "P", "seed": 2},
+    {"role": "qwen", "game_blind": "G7487e6", "arm": "T", "seed": 2},
+    {"role": "qwen", "game_blind": "G7487e6", "arm": "V", "seed": 2},
+    {"role": "qwen", "game_blind": "G7487e6", "arm": "O", "seed": 2},
+    {"role": "qwen", "game_blind": "G7487e6", "arm": "P", "seed": 2},
+    {"role": "ceiling", "game_blind": "G89e5af", "arm": "P", "seed": 2},
+    {"role": "ceiling", "game_blind": "G40feb6", "arm": "P", "seed": 2},
+    {"role": "ceiling", "game_blind": "G4c8a25", "arm": "P", "seed": 2},
+    {"role": "ceiling", "game_blind": "G7487e6", "arm": "P", "seed": 2}
+  ],
+  "ceiling_spec": {
+    "kind": "model",
+    "model": {
+      "provider": "local-mlx-vlm",
+      "model_id": "Qwen3.8-27B-8bit-same-checkpoint-descriptive-comparator",
+      "checkpoint_sha256": "05a10bf65ca618a4eca18c56984efb4906bf96849673ae44b0d62236d403ec61",
+      "serving_config": {
+        "runtime": "mlx-vlm-0.6.8",
+        "enable_thinking": true,
+        "reasoning_effort": "xhigh",
+        "temperature": 1.0,
+        "top_p": 0.95,
+        "top_k": 20,
+        "max_output_tokens_per_call": 20000,
+        "classification": "descriptive_only_no_closure"
+      }
+    },
+    "respondent_count": 1,
+    "aggregation": {
+      "rule": "single_respondent",
+      "tie_rule": "not_applicable"
+    },
+    "familiarity_collection": {
+      "timing": "not_applicable",
+      "scope": "model_training_exposure_unknown",
+      "eligible_declarations": []
+    }
+  }
+}

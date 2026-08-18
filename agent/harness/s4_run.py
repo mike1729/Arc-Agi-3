@@ -123,7 +123,10 @@ underdetermines the objective, say so through the probabilities and design
 "next_probe" to discriminate between your top hypotheses.
 
 Tool argument contract (JSON strings are literal; requests are never repaired):
-- SHOW_FRAME args=["S00000" or "K00000"]
+- SHOW_FRAME args=["S00000" or "K00000"] -> full settled board with absolute
+  0-based row/column rulers; OR args=["S00000", "r0", "c0", "r1", "c1"] -> the
+  certified 32px/cell precision ruler crop of exactly that window (max 32x32
+  cells) — use it before any exact coordinate or A6 click you are unsure of
 - SHOW_TRANSITION args=["S00000" or "K00000"]
 - SHOW_EPISODE args=["S00000" or "K00000", "1".."16"]
 - SHOW_ACTION_CONTRAST args=["A0".."A7"]
@@ -315,8 +318,72 @@ def acquire_run_lock(path: Path):
     return handle
 
 
+def verify_serving_snapshot(model: Path, snapshot: dict[str, Any]) -> dict[str, Any]:
+    """Revision 4: live full-shard identity against the frozen serving snapshot."""
+    live = probe.fingerprint(model)
+    expected = (snapshot.get("checkpoint_fingerprint") or {}).get("checkpoint_sha256")
+    probe.require(live.get("checkpoint_sha256") == expected,
+                  "live verified checkpoint differs from the frozen serving snapshot")
+    import importlib.metadata as md
+    live_versions = {
+        package: md.version(package)
+        for package in ("mlx-vlm", "mlx", "mlx-lm", "transformers")
+    }
+    probe.require(live_versions == snapshot.get("runtime_versions"),
+                  "live runtime versions differ from the frozen serving snapshot")
+    probe.require(dict(probe.PRODUCTION_SAMPLER) == snapshot.get("production_sampler")
+                  and probe.REASONING_EFFORT == snapshot.get("reasoning_effort"),
+                  "live sampler/effort constants differ from the frozen snapshot")
+    return {
+        "checkpoint_sha256": live["checkpoint_sha256"],
+        "verified_shards": True,
+        "snapshot_sha256": snapshot["snapshot_sha256"],
+    }
+
+
+def snapshot_certificate_adapter(snapshot: dict[str, Any]) -> dict[str, Any]:
+    """Adapt the r4 serving snapshot to the packet serving-identity verifier."""
+    return {
+        "checkpoint_identity": {
+            "model_files": snapshot["processor_identity"]["serving_files"],
+            "versions": {
+                "transformers": snapshot["runtime_versions"]["transformers"],
+            },
+        },
+        "checkpoint_sha256": snapshot["checkpoint_fingerprint"]["checkpoint_sha256"],
+    }
+
+
 def verify_frozen_manifest() -> tuple[dict[str, Any], str]:
-    """Verify only public hashes/configuration; never open sealed gold contents."""
+    """Verify only public hashes/configuration; never open sealed gold contents.
+
+    Revision 4 owns the live protocol: when the versioned r4 freeze exists, the
+    runner requires it AND the exact CONTINUE verdict, and refuses the entire
+    declared matrix if any selected arm is ineligible.  The legacy path below
+    remains for the inspectable v2.2 record and its regression tests."""
+    import s4_grade as grade
+
+    if grade.FROZEN_R4.exists():
+        frozen = grade.verify_freeze_r4()
+        frozen_sha = sha256_file(grade.FROZEN_R4)
+        continuation = grade.verify_continue_r4(frozen_sha)
+        eligibility = continuation.get("eligibility") or {}
+        probe.require(
+            eligibility.get("all_selected_arms_eligible") is True,
+            "continuation eligibility does not cover every selected arm; the "
+            "runner refuses the ENTIRE declared matrix — a silent subset would "
+            "change the experiment",
+        )
+        budgets = (frozen.get("preregistration") or {}).get("budgets") or {}
+        probe.require(budgets.get("active_probes") == ACTIVE_PROBES
+                      and budgets.get("interaction_rounds") == INTERACTION_ROUNDS
+                      and budgets.get("retrievals_per_round") == RETRIEVALS_PER_ROUND
+                      and budgets.get("answer_tokens") == MAX_ANSWER_TOKENS
+                      and budgets.get("max_images") == MAX_IMAGES
+                      and budgets.get("max_visual_tokens") == MAX_VISUAL_TOKENS,
+                      "frozen r4 budgets differ from runner constants")
+        return frozen, frozen_sha
+
     probe.require(FROZEN.exists(), "pre-registration is not frozen — run s4_grade.py --freeze first")
     frozen = json.loads(FROZEN.read_text())
     probe.require(frozen.get("format_version") == 2, "unsupported FROZEN format")
@@ -773,8 +840,14 @@ def initial_turn(game: str, arm: str, packet: dict[str, Any]) -> tuple[list[dict
 def ask_chat(
     vlm, messages, images, *, seed, max_tokens, run_dir, tag,
     max_input_text_tokens: int | None = None,
+    payload_validator=None,
 ):
-    """Closure-grade multi-turn serving path with the probe's hard invariants."""
+    """Closure-grade multi-turn serving path with the probe's hard invariants.
+
+    ``payload_validator`` defaults to the pilot answer schema; gate and sentinel
+    calls pass their own claim-specific validator (same signature: payload ->
+    list of schema-error strings) so every caller shares one serving path.
+    """
     import mlx.core as mx
     from PIL import Image as PILImage
     from mlx_vlm import generate
@@ -886,7 +959,8 @@ def ask_chat(
     think = full.split("<think>", 1)[-1].split("</think>", 1)[0]
     answer = full.split("</think>", 1)[-1].strip() if closed else ""
     parsed = extract_final_json(answer) if closed else None
-    schema_errors = validate_answer(parsed) if parsed is not None else []
+    validator = validate_answer if payload_validator is None else payload_validator
+    schema_errors = validator(parsed) if parsed is not None else []
     payload = parsed if parsed is not None and not schema_errors else None
     stats = {k: getattr(out, k, None) for k in (
         "prompt_tokens", "generation_tokens", "prompt_tps", "generation_tps",
@@ -1272,6 +1346,9 @@ def run_cell(vlm, game: str, arm: str, run_dir: Path, seed_base: int,
 
 
 def main() -> int:
+    import s4_ledgers
+
+    s4_ledgers.enforce_offline_scientific_run("s4_run", sys.argv[1:])
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--games", nargs="*", default=None)
     parser.add_argument("--arms", nargs="*", default=None, choices=list(ALL_ARMS))
@@ -1473,22 +1550,34 @@ def main() -> int:
         if not args.dry_run:
             doc["status"] = "verifying_certificate"
             persist()
-            doc["certificate"] = verify_certificate(args.model)
-            frozen_certificate = frozen.get("certificate") or {}
-            probe.require(
-                doc["certificate"]["certificate_sha256"]
-                == frozen_certificate.get("sha256"),
-                "live PASS certificate bytes differ from the frozen certificate",
-            )
-            probe.require(
-                doc["certificate"]["checkpoint_sha256"]
-                == frozen_certificate.get("checkpoint_sha256"),
-                "live verified checkpoint differs from the frozen checkpoint",
-            )
-            doc["packet_serving_bindings"] = [
-                verify_packet_serving_identity(load_packet(game), doc["certificate"])
-                for game in games
-            ]
+            if frozen is not None and "serving_snapshot" in frozen:
+                # revision 4: identity from the frozen serving snapshot; arm
+                # eligibility was already enforced by verify_frozen_manifest
+                snapshot = frozen["serving_snapshot"]
+                doc["serving_identity"] = verify_serving_snapshot(args.model, snapshot)
+                doc["packet_serving_bindings"] = [
+                    verify_packet_serving_identity(
+                        load_packet(game), snapshot_certificate_adapter(snapshot)
+                    )
+                    for game in games
+                ]
+            else:
+                doc["certificate"] = verify_certificate(args.model)
+                frozen_certificate = (frozen or {}).get("certificate") or {}
+                probe.require(
+                    doc["certificate"]["certificate_sha256"]
+                    == frozen_certificate.get("sha256"),
+                    "live PASS certificate bytes differ from the frozen certificate",
+                )
+                probe.require(
+                    doc["certificate"]["checkpoint_sha256"]
+                    == frozen_certificate.get("checkpoint_sha256"),
+                    "live verified checkpoint differs from the frozen checkpoint",
+                )
+                doc["packet_serving_bindings"] = [
+                    verify_packet_serving_identity(load_packet(game), doc["certificate"])
+                    for game in games
+                ]
             doc["runner_identity"] = {
                 "script_sha256": sha256_file(Path(__file__)),
                 "packet_builder_sha256": sha256_file(HARNESS / "s4_packet.py"),
