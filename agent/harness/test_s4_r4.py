@@ -257,6 +257,29 @@ class SentinelTests(unittest.TestCase):
         no_op = by_name["unused_action_probe"]["rows"][0]
         self.assertEqual(no_op["pre"], no_op["post"])
 
+    def test_every_rendered_sentinel_page_clears_serving_minimum(self) -> None:
+        # Regression: the pinned processor rejects images below 65,536 px^2
+        # (s4_run.ask_chat).  The first calibration candidate died on an 8px
+        # 24x24 overlay page (192x192 = 36,864 px^2) at its first model call.
+        from PIL import Image
+
+        with tempfile.TemporaryDirectory() as temporary:
+            work = Path(temporary)
+            passive = sentinels.build_passive_variant("dev", 0, base_seed=4)
+            for carrier in ("raw", "overlay"):
+                sentinels.render_page_carrier(passive, carrier, work / carrier)
+            active = sentinels.build_active_variant("dev", 0, base_seed=4)
+            sentinels.render_active_assets(active, work / "active")
+            pngs = sorted(work.rglob("*.png"))
+            self.assertGreater(len(pngs), 4)
+            for path in pngs:
+                with Image.open(path) as image:
+                    area = image.width * image.height
+                self.assertGreaterEqual(
+                    area, sentinels.MIN_SERVING_IMAGE_AREA,
+                    f"{path.name} below processor minimum ({area} px^2)",
+                )
+
     def test_active_variant_discriminating_probe_is_verified(self) -> None:
         fixture = sentinels.build_active_variant("dev", 0, base_seed=4)
         discriminating = [

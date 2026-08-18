@@ -91,6 +91,12 @@ CONFIRM_RUN_DIR = SEALED_R4 / "sentinel_run"
 GRID = 24                   # sentinel boards are 24x24: small, fully legible
 MOVE = 3                    # mover step (its own size), like the pilot games
 
+# The serving boundary (s4_run.ask_chat) rejects any image below 65,536 px^2,
+# the pinned processor's minimum area.  Real-game boards are 64x64 and clear it
+# at every carrier floor; a 24x24 sentinel board needs at least 12 px/cell.
+SENTINEL_CELL_PX = 16       # 384x384 = 147,456 px^2; matches ruler_frame_16px_v1
+MIN_SERVING_IMAGE_AREA = 65_536
+
 
 def require(condition: Any, message: str) -> None:
     if not condition:
@@ -704,6 +710,14 @@ def _decode_diff(plate: sr.Plate, shape: tuple[int, int]) -> np.ndarray:
     return cells == 255
 
 
+def _save_serving_plate(plate: Any, path: Path) -> Path:
+    """Refuse at generation time any page the serving boundary would reject."""
+    area = plate.image.width * plate.image.height
+    require(area >= MIN_SERVING_IMAGE_AREA,
+            f"sentinel page below processor minimum ({area} px^2): {path.name}")
+    return plate.save(path)
+
+
 def render_page_carrier(fixture: dict[str, Any], carrier: str,
                         work: Path) -> tuple[list[Path], list[str]]:
     """V/O carriers: page images through the real renderer at carrier floors."""
@@ -711,7 +725,7 @@ def render_page_carrier(fixture: dict[str, Any], carrier: str,
     nonce_root = f"{fixture['namespace']}:{fixture['index']}:{fixture['variant_id']}"
     pages: list[tuple[str, Any]] = []
     first_board = np.asarray(fixture["episodes"][0]["rows"][0]["pre"], dtype=np.uint8)
-    opening = sr.render_board(first_board, cell_px=8)
+    opening = sr.render_board(first_board, cell_px=SENTINEL_CELL_PX)
     require(np.array_equal(sr.decode_board(opening), first_board),
             "sentinel opening PNG decode differs from the state machine")
     pages.append(("opening_8px", opening))
@@ -722,7 +736,7 @@ def render_page_carrier(fixture: dict[str, Any], carrier: str,
             np.asarray(row["post"], dtype=np.uint8) for row in episode["rows"]
         ]
         label = _nonce(nonce_root + episode["name"], "E")
-        story = sr.storyboard(frames, cols=min(6, len(frames)), cell_px=8)
+        story = sr.storyboard(frames, cols=min(6, len(frames)), cell_px=SENTINEL_CELL_PX)
         decoded_story = _decode_storyboard(story, first_board.shape)
         require(len(decoded_story) == len(frames)
                 and all(np.array_equal(actual, expected)
@@ -732,14 +746,15 @@ def render_page_carrier(fixture: dict[str, Any], carrier: str,
         if carrier == "overlay":
             pre = frames[-2]
             post = frames[-1]
-            diff = sr.render_diff_mask(pre, post, cell_px=8)
+            diff = sr.render_diff_mask(pre, post, cell_px=SENTINEL_CELL_PX)
             require(np.array_equal(_decode_diff(diff, first_board.shape), pre != post),
                     "sentinel diff PNG decode differs from the state machine")
             pages.append((f"{label}_diff", diff))
     labels = []
     paths = []
     for page_no, (name, plate) in enumerate(pages, start=1):
-        path = plate.save(work / f"{fixture['variant_id']}_{carrier}_p{page_no:02d}.png")
+        path = _save_serving_plate(
+            plate, work / f"{fixture['variant_id']}_{carrier}_p{page_no:02d}.png")
         paths.append(path)
         labels.append(f"Page {page_no} of {len(pages)}: {name}")
     return paths, labels
@@ -799,10 +814,10 @@ def render_active_assets(fixture: dict[str, Any], assets_root: Path) -> dict[str
         candidate = fixture["probes"][start_state_id]
         prefix_name = f"candidate_{candidate_index:02d}_prefix.png"
         prefix_board = np.asarray(candidate["prefix_board"], dtype=np.uint8)
-        prefix_plate = sr.render_board(prefix_board, cell_px=8)
+        prefix_plate = sr.render_board(prefix_board, cell_px=SENTINEL_CELL_PX)
         require(np.array_equal(sr.decode_board(prefix_plate), prefix_board),
                 "active prefix PNG decode differs from replay")
-        prefix_path = prefix_plate.save(variant_root / prefix_name)
+        prefix_path = _save_serving_plate(prefix_plate, variant_root / prefix_name)
         observation = execute_active_probe(
             fixture, start_state_id, candidate["action_schema"],
         )
@@ -813,18 +828,19 @@ def render_active_assets(fixture: dict[str, Any], assets_root: Path) -> dict[str
             np.asarray(observation["pre"], dtype=np.uint8),
             np.asarray(observation["post"], dtype=np.uint8),
         ]
-        storyboard_plate = sr.storyboard(observation_frames, cols=2, cell_px=8)
+        storyboard_plate = sr.storyboard(observation_frames, cols=2, cell_px=SENTINEL_CELL_PX)
         require(all(np.array_equal(actual, expected) for actual, expected in zip(
             _decode_storyboard(storyboard_plate, prefix_board.shape), observation_frames,
         )), "active result PNG decode differs from replay")
-        storyboard_path = storyboard_plate.save(variant_root / storyboard_name)
+        storyboard_path = _save_serving_plate(
+            storyboard_plate, variant_root / storyboard_name)
         diff_plate = sr.render_diff_mask(
-            observation_frames[0], observation_frames[1], cell_px=8,
+            observation_frames[0], observation_frames[1], cell_px=SENTINEL_CELL_PX,
         )
         require(np.array_equal(_decode_diff(diff_plate, prefix_board.shape),
                                observation_frames[0] != observation_frames[1]),
                 "active result diff PNG decode differs from replay")
-        diff_path = diff_plate.save(variant_root / diff_name)
+        diff_path = _save_serving_plate(diff_plate, variant_root / diff_name)
         pool.append({
             "candidate": candidate_index,
             "start_state_id": start_state_id,
