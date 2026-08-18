@@ -22,10 +22,10 @@
    "--packet-max-tokens",
    "16000"
   ],
-  "started_utc": "2026-08-17T21:27:25.560277+00:00",
+  "started_utc": "2026-08-17T22:52:29.462269+00:00",
   "model_path": "/Users/michal/models/mlx/Qwen3.8-27B-8bit",
   "output_path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_38_8bit.json",
-  "run_dir": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z"
+  "run_dir": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z"
  },
  "wiring_sampler": {
   "temperature": 0.0,
@@ -38,7 +38,7 @@
  },
  "reasoning_effort": "xhigh",
  "seed_base": 4,
- "run_dir": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z",
+ "run_dir": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z",
  "status": "done",
  "checkpoint_identity": {
   "model_path": "/Users/michal/models/mlx/Qwen3.8-27B-8bit",
@@ -139,7 +139,7 @@
    "revision": "815b83c0df8ffd1d1b5244cf75fd6ef14fca9ef9",
    "manifest_sha256": "1c4bf06cd235f9e5273bdb2b0b9ef7b662176d62c604f6f5904cee7d5f811b9c"
   },
-  "script_sha": "bc4755d7f8b96d6d99dd51a9254597c9a683cbc6f694012a248ec92bbb0feea4",
+  "script_sha": "35c9ba539cc84f2d43d4832eab675b44a6ae7ff0a7d4b3c4e45bf8f071dde4a0",
   "renderer_sha": "1ebeecaf6a19f5c576653c226e0fdf70289fe9284a5a7d6ec3082a56335ba693",
   "versions": {
    "mlx-vlm": "0.6.8",
@@ -148,12 +148,12 @@
    "transformers": "5.14.1"
   },
   "git": {
-   "commit": "5a0916743e4bd7f9f2037372f9d0310413bae015",
+   "commit": "e3a6ec08b2b4bf8c897044aae5fe0d59e437d290",
    "dirty": false,
    "status": []
   },
   "command": "agent/harness/e2_probe_vlm.py --out logs/e2_probe_vlm_38_8bit.json --force --max-tokens 12000 --packet-max-tokens 16000",
-  "timestamp_utc": "2026-08-17T21:27:35.448781+00:00"
+  "timestamp_utc": "2026-08-17T22:52:39.752973+00:00"
  },
  "serving_compatibility": {
   "checkpoint_sha256": "05a10bf65ca618a4eca18c56984efb4906bf96849673ae44b0d62236d403ec61",
@@ -163,7 +163,7 @@
    "mlx-lm": "0.31.3",
    "transformers": "5.14.1"
   },
-  "script_sha": "bc4755d7f8b96d6d99dd51a9254597c9a683cbc6f694012a248ec92bbb0feea4",
+  "script_sha": "35c9ba539cc84f2d43d4832eab675b44a6ae7ff0a7d4b3c4e45bf8f071dde4a0",
   "renderer_sha": "1ebeecaf6a19f5c576653c226e0fdf70289fe9284a5a7d6ec3082a56335ba693",
   "wiring_sampler": {
    "temperature": 0.0,
@@ -184,7 +184,7 @@
    "max_packet_images": 16,
    "max_visual_tokens": 16384
   },
-  "sha256": "85d83e808aab5f585a4e29f639e342e1b0ae42a6eec065a93653db8d3e2eb18b"
+  "sha256": "36f89ff9c1ddcf5e897c29b62e3825ab76ed1873fb7bbe35e99ae47ae979afe9"
  },
  "gate_statuses": {
   "gate1_palette_production": "PASS",
@@ -226,7 +226,7 @@
    "prompt_sha256": "e2344b55d5b84da34088d69ce4cc751eb283a22b9d19df1f279c2a42f8efee48",
    "images": [
     {
-     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g1_board.png",
+     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g1_board.png",
      "sha256": "d53b605699d03fa184a41c3bb5d9e416ac975db07bd25f79ad0b86d9572766c4",
      "source_size": [
       1024,
@@ -238,7 +238,7 @@
      ]
     },
     {
-     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g1_marker.png",
+     "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g1_marker.png",
      "sha256": "e3a6bb2d2a20ddbfa2bbe0a716ae363be2cdcd009819d454634039816b4f6f83",
      "source_size": [
       1024,
@@ -270,9 +270,9 @@
    "stats": {
     "prompt_tokens": 2270,
     "generation_tokens": 2161,
-    "prompt_tps": 221.0707946928388,
-    "generation_tps": 7.375050346771173,
-    "peak_memory": 34.455450722,
+    "prompt_tps": 238.07395652059378,
+    "generation_tps": 7.388735149557882,
+    "peak_memory": 34.455465058,
     "total_tokens": 4431,
     "cached_tokens": 0,
     "finish_reason": "stop"
@@ -288,7 +288,7 @@
     "marked_cell_colour": "purple",
     "top_row_colour": "yellow"
    },
-   "wall_seconds": 303.4
+   "wall_seconds": 302.1
   },
   "checks": {
    "complete": true,
@@ -348,7 +348,7 @@
     "prompt_sha256": "f10b1eb5b69299f1768fcb0d0b6b8bd5c088eb6652721b8c6eb829f3692ead39",
     "images": [
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g2_board_same_light.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g2_board_same_light.png",
       "sha256": "2d899f44e42c088a4d769cab1ae01b8334bf1b8c8cf69e7e3f0d70b3cb7d0e11",
       "source_size": [
        1024,
@@ -360,7 +360,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g2_a_same_light.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g2_a_same_light.png",
       "sha256": "3da77b2da2345018ac3c68dd7c4ffe6776ca687bf75c22e8b36a575466574298",
       "source_size": [
        1024,
@@ -372,7 +372,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g2_b_same_light.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g2_b_same_light.png",
       "sha256": "360f252ad263a99e6e5fb18e4b52f5060d72e07c1600c87e7a9da077b27ab775",
       "source_size": [
        1024,
@@ -409,8 +409,8 @@
     "stats": {
      "prompt_tokens": 3357,
      "generation_tokens": 1194,
-     "prompt_tps": 241.11223270754093,
-     "generation_tps": 7.2878624625385795,
+     "prompt_tps": 242.04415481657907,
+     "generation_tps": 7.385919741308396,
      "peak_memory": 37.074145024,
      "total_tokens": 4551,
      "cached_tokens": 0,
@@ -425,7 +425,7 @@
      "b_fill_id": 2,
      "same_fill_colour": true
     },
-    "wall_seconds": 177.8
+    "wall_seconds": 175.6
    },
    "truth": {
     "a_fill_id": 2,
@@ -481,7 +481,7 @@
     "prompt_sha256": "f10b1eb5b69299f1768fcb0d0b6b8bd5c088eb6652721b8c6eb829f3692ead39",
     "images": [
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g2_board_same_dark.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g2_board_same_dark.png",
       "sha256": "d6b964a6bbd5aca5e579bae96e667fb3d2237a33ca4e010840ee1c1011f7a67b",
       "source_size": [
        1024,
@@ -493,7 +493,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g2_a_same_dark.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g2_a_same_dark.png",
       "sha256": "cbad0cc28761f07af4bfc52978b83242a137ae30c1cc4bcd40677fda4a1004d8",
       "source_size": [
        1024,
@@ -505,7 +505,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g2_b_same_dark.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g2_b_same_dark.png",
       "sha256": "5fe583fdf15051897f3a26bc6e2c9b008058eedd1ed6fac640f2a286bbfba952",
       "source_size": [
        1024,
@@ -542,8 +542,8 @@
     "stats": {
      "prompt_tokens": 3357,
      "generation_tokens": 593,
-     "prompt_tps": 253.88685707200463,
-     "generation_tps": 7.450870075422274,
+     "prompt_tps": 255.87081936377763,
+     "generation_tps": 7.460865761756255,
      "peak_memory": 37.074145024,
      "total_tokens": 3950,
      "cached_tokens": 0,
@@ -558,7 +558,7 @@
      "b_fill_id": 3,
      "same_fill_colour": true
     },
-    "wall_seconds": 92.9
+    "wall_seconds": 92.7
    },
    "truth": {
     "a_fill_id": 3,
@@ -614,7 +614,7 @@
     "prompt_sha256": "f10b1eb5b69299f1768fcb0d0b6b8bd5c088eb6652721b8c6eb829f3692ead39",
     "images": [
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g2_board_diff_ab.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g2_board_diff_ab.png",
       "sha256": "00a6b07e34ded419f714548ffb77e03a3370d9ce7f2b9d1c48bb7252258a2325",
       "source_size": [
        1024,
@@ -626,7 +626,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g2_a_diff_ab.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g2_a_diff_ab.png",
       "sha256": "81111a65cad1e5c3d058f329ee9256acce9edfd9863a5efdbc6355aefb2edb6b",
       "source_size": [
        1024,
@@ -638,7 +638,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g2_b_diff_ab.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g2_b_diff_ab.png",
       "sha256": "74a6ae58e3134aead680004d180bbf239ff85d4181aea9205dd4eaec130cec7f",
       "source_size": [
        1024,
@@ -675,8 +675,8 @@
     "stats": {
      "prompt_tokens": 3357,
      "generation_tokens": 350,
-     "prompt_tps": 259.92856344356414,
-     "generation_tps": 7.472192203357125,
+     "prompt_tps": 259.10246548287375,
+     "generation_tps": 7.474404302826242,
      "peak_memory": 37.074145024,
      "total_tokens": 3707,
      "cached_tokens": 0,
@@ -747,7 +747,7 @@
     "prompt_sha256": "f10b1eb5b69299f1768fcb0d0b6b8bd5c088eb6652721b8c6eb829f3692ead39",
     "images": [
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g2_board_diff_ba.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g2_board_diff_ba.png",
       "sha256": "5b835c1b0e44501c1d2e31fe1ab346bb3c949bdca889378ce3f2d9411512a8a5",
       "source_size": [
        1024,
@@ -759,7 +759,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g2_a_diff_ba.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g2_a_diff_ba.png",
       "sha256": "2129501e213c99368ff88dc0aeb77bab8343dbef84c5f49826bbddffea07acb2",
       "source_size": [
        1024,
@@ -771,7 +771,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g2_b_diff_ba.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g2_b_diff_ba.png",
       "sha256": "3e4aeb3573cc5fae4345f8ad121edbbbfa79bbcdc92896f0efa6ae831934a7c8",
       "source_size": [
        1024,
@@ -808,8 +808,8 @@
     "stats": {
      "prompt_tokens": 3357,
      "generation_tokens": 520,
-     "prompt_tps": 265.1084924524501,
-     "generation_tps": 7.466671685327257,
+     "prompt_tps": 263.8247424750178,
+     "generation_tps": 7.462291748316857,
      "peak_memory": 37.074145024,
      "total_tokens": 3877,
      "cached_tokens": 0,
@@ -824,7 +824,7 @@
      "b_fill_id": 2,
      "same_fill_colour": false
     },
-    "wall_seconds": 82.4
+    "wall_seconds": 82.5
    },
    "truth": {
     "a_fill_id": 3,
@@ -999,13 +999,13 @@
      },
      {
       "type": "text",
-      "text": "These are distinct outer pages. They include raw full boards, magnified crops, annotated boards with magenta rings, black-and-white changed-cell masks, and multi-frame storyboards. Report OUTER PAGE numbers for every page field; only animation_frame_index uses the index printed inside its storyboard. Think first. Then answer with ONLY a JSON object: {\"animation_storyboard_page\": <int>, \"animation_frame_index\": <int>, \"animation_yellow_row\": <int>, \"animation_yellow_col\": <int>, \"orange_marker_page\": <int>, \"green_board_page\": <int>, \"three_change_diff_page\": <int>, \"purple_crop_page\": <int>}. The requested pages are: the storyboard with exactly 28 indexed frames, plus the internal frame index and 64x64 board row/column of its unique one-cell yellow event; the annotated board whose orange square is ringed; the raw full board whose only non-white object is green; the diff mask with exactly three white changed cells; and the magnified crop of a purple square."
+      "text": "These are distinct outer pages. They include raw full boards, magnified crops, annotated boards with magenta rings, black-and-white changed-cell masks, and multi-frame storyboards. Report OUTER PAGE numbers for every page field; only animation_frame_index uses the index printed inside its storyboard. Think first. Then answer with ONLY a JSON object: {\"animation_storyboard_page\": <int>, \"animation_frame_index\": <int>, \"animation_yellow_row\": <int>, \"animation_yellow_col\": <int>, \"orange_marker_page\": <int>, \"green_board_page\": <int>, \"three_change_diff_page\": <int>, \"purple_crop_page\": <int>}. Rows and columns are 0-indexed from the top-left of the 64x64 board, so each runs 0-63; the frame index is the frame's printed label. The requested pages are: the storyboard with exactly 28 indexed frames, plus the internal frame index and 64x64 board row/column of its unique one-cell yellow event; the annotated board whose orange square is ringed; the raw full board whose only non-white object is green; the diff mask with exactly three white changed cells; and the magnified crop of a purple square."
      }
     ],
-    "prompt_sha256": "1b9737c7f5aae88c766abe8a9fe246f7aec76dcaec556f4c68bed135924d295d",
+    "prompt_sha256": "44619ffc644640b62769079cb4a606a78e08a6fd21fcdd2fea30f64e5e3e2a44",
     "images": [
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p11.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p11.png",
       "sha256": "c9565c5f4406cb4798ebcadb54b8530d8bb136e9d4882eb79d9570adfeb51b6f",
       "source_size": [
        1024,
@@ -1017,7 +1017,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p01.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p01.png",
       "sha256": "ef35fec30a4abb3666b4e1caff363d7c4f028790d61bba95a8844b151514e820",
       "source_size": [
        1024,
@@ -1029,7 +1029,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p15.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p15.png",
       "sha256": "12825f12836669d0cc39618e4b3086536285183a0fc0090769d52520b2efe4bf",
       "source_size": [
        544,
@@ -1041,7 +1041,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p06.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p06.png",
       "sha256": "ebac3798ca6931cef1943f52570a4cfd6a9c9fc7e6d42dbb8f5adf729dfeae5a",
       "source_size": [
        192,
@@ -1053,7 +1053,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p09.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p09.png",
       "sha256": "3645e7c6d340338629101d9c41dbb8214fb4aa9161a2b736247c63240b3f03d7",
       "source_size": [
        1024,
@@ -1065,7 +1065,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p04.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p04.png",
       "sha256": "04d7cc5f60bceb12bcf0bd45181e73390e8b7e68c6578c935d5a629f1e5f75f0",
       "source_size": [
        256,
@@ -1077,7 +1077,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p13.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p13.png",
       "sha256": "f58accdf9589171a91bdd24cb6abc33df326214de7a5648a0563fdfff1ea5e33",
       "source_size": [
        544,
@@ -1089,7 +1089,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p02.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p02.png",
       "sha256": "018cebb4b2ad6d976c82da41846a02bba8dec0900ea273c46c2d22fd8e583f29",
       "source_size": [
        1024,
@@ -1101,7 +1101,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p07.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p07.png",
       "sha256": "89137d24684778ef3cad6a4f28fe0db8dc396b81902b94ecf04f93265d9609ef",
       "source_size": [
        1024,
@@ -1113,7 +1113,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p05.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p05.png",
       "sha256": "05dc46f2ba48c61ac5a0f09b676f7288f36c68f4d97d98131dc380ca79970b75",
       "source_size": [
        288,
@@ -1125,7 +1125,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p14.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p14.png",
       "sha256": "1bb051d2a4a3b34c9a12ad168badde1c39dfe7a9ad62d28396c918a310363676",
       "source_size": [
        800,
@@ -1137,7 +1137,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p03.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p03.png",
       "sha256": "239043d108883f96fdbb57e66c2d5488a3472f9d4abf34e369c67aae695df851",
       "source_size": [
        1024,
@@ -1149,7 +1149,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p10.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p10.png",
       "sha256": "e343cb841d48a2141251675f8a14b2a6360b776ae1a2c3958938808445f7742e",
       "source_size": [
        1024,
@@ -1161,7 +1161,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p08.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p08.png",
       "sha256": "c83b8333f92582c852f8e70e959640bf76b0a5daab2ce29ccaf40c728e45a361",
       "source_size": [
        1024,
@@ -1173,7 +1173,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p12.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p12.png",
       "sha256": "21f34b1ef8367417645beb837afab1d43e61fdccfb173d8be468fece66dc1e8f",
       "source_size": [
        1024,
@@ -1185,7 +1185,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p16.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p16.png",
       "sha256": "a77b3f8fdd99a9053fdc7a592dcbfc8d49c5d222350b45c3c8d4b87dfd2e5a0d",
       "source_size": [
        1856,
@@ -1280,35 +1280,35 @@
      ]
     ],
     "visual_tokens": 12295,
-    "expanded_prompt_tokens": 12729,
-    "generator_prompt_tokens": 12729,
+    "expanded_prompt_tokens": 12770,
+    "generator_prompt_tokens": 12770,
     "prompt_tokens_match": true,
     "token_accounting_match": true,
     "stats": {
-     "prompt_tokens": 12729,
-     "generation_tokens": 4797,
-     "prompt_tps": 260.6843440504511,
-     "generation_tps": 7.2368389089658285,
-     "peak_memory": 39.30513851,
-     "total_tokens": 17526,
+     "prompt_tokens": 12770,
+     "generation_tokens": 4985,
+     "prompt_tps": 260.64672207614626,
+     "generation_tps": 7.229052361727139,
+     "peak_memory": 39.305564494,
+     "total_tokens": 17755,
      "cached_tokens": 0,
      "finish_reason": "stop"
     },
     "completion_contains_close": true,
     "prompt_opened_think": true,
-    "think_chars": 12932,
+    "think_chars": 13345,
     "completeness": "complete",
     "payload": {
      "animation_storyboard_page": 16,
      "animation_frame_index": 23,
-     "animation_yellow_row": 55,
+     "animation_yellow_row": 47,
      "animation_yellow_col": 12,
      "orange_marker_page": 9,
      "green_board_page": 2,
      "three_change_diff_page": 13,
      "purple_crop_page": 6
     },
-    "wall_seconds": 711.9
+    "wall_seconds": 738.8
    },
    "checks": {
     "complete": true,
@@ -1483,13 +1483,13 @@
      },
      {
       "type": "text",
-      "text": "These are distinct outer pages. They include raw full boards, magnified crops, annotated boards with magenta rings, black-and-white changed-cell masks, and multi-frame storyboards. Report OUTER PAGE numbers for every page field; only animation_frame_index uses the index printed inside its storyboard. Think first. Then answer with ONLY a JSON object: {\"animation_storyboard_page\": <int>, \"animation_frame_index\": <int>, \"animation_yellow_row\": <int>, \"animation_yellow_col\": <int>, \"orange_marker_page\": <int>, \"green_board_page\": <int>, \"three_change_diff_page\": <int>, \"purple_crop_page\": <int>}. The requested pages are: the storyboard with exactly 28 indexed frames, plus the internal frame index and 64x64 board row/column of its unique one-cell yellow event; the annotated board whose orange square is ringed; the raw full board whose only non-white object is green; the diff mask with exactly three white changed cells; and the magnified crop of a purple square."
+      "text": "These are distinct outer pages. They include raw full boards, magnified crops, annotated boards with magenta rings, black-and-white changed-cell masks, and multi-frame storyboards. Report OUTER PAGE numbers for every page field; only animation_frame_index uses the index printed inside its storyboard. Think first. Then answer with ONLY a JSON object: {\"animation_storyboard_page\": <int>, \"animation_frame_index\": <int>, \"animation_yellow_row\": <int>, \"animation_yellow_col\": <int>, \"orange_marker_page\": <int>, \"green_board_page\": <int>, \"three_change_diff_page\": <int>, \"purple_crop_page\": <int>}. Rows and columns are 0-indexed from the top-left of the 64x64 board, so each runs 0-63; the frame index is the frame's printed label. The requested pages are: the storyboard with exactly 28 indexed frames, plus the internal frame index and 64x64 board row/column of its unique one-cell yellow event; the annotated board whose orange square is ringed; the raw full board whose only non-white object is green; the diff mask with exactly three white changed cells; and the magnified crop of a purple square."
      }
     ],
-    "prompt_sha256": "1b9737c7f5aae88c766abe8a9fe246f7aec76dcaec556f4c68bed135924d295d",
+    "prompt_sha256": "44619ffc644640b62769079cb4a606a78e08a6fd21fcdd2fea30f64e5e3e2a44",
     "images": [
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p04.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p04.png",
       "sha256": "04d7cc5f60bceb12bcf0bd45181e73390e8b7e68c6578c935d5a629f1e5f75f0",
       "source_size": [
        256,
@@ -1501,7 +1501,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p12.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p12.png",
       "sha256": "21f34b1ef8367417645beb837afab1d43e61fdccfb173d8be468fece66dc1e8f",
       "source_size": [
        1024,
@@ -1513,7 +1513,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p02.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p02.png",
       "sha256": "018cebb4b2ad6d976c82da41846a02bba8dec0900ea273c46c2d22fd8e583f29",
       "source_size": [
        1024,
@@ -1525,7 +1525,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p15.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p15.png",
       "sha256": "12825f12836669d0cc39618e4b3086536285183a0fc0090769d52520b2efe4bf",
       "source_size": [
        544,
@@ -1537,7 +1537,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p16.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p16.png",
       "sha256": "a77b3f8fdd99a9053fdc7a592dcbfc8d49c5d222350b45c3c8d4b87dfd2e5a0d",
       "source_size": [
        1856,
@@ -1549,7 +1549,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p09.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p09.png",
       "sha256": "3645e7c6d340338629101d9c41dbb8214fb4aa9161a2b736247c63240b3f03d7",
       "source_size": [
        1024,
@@ -1561,7 +1561,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p01.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p01.png",
       "sha256": "ef35fec30a4abb3666b4e1caff363d7c4f028790d61bba95a8844b151514e820",
       "source_size": [
        1024,
@@ -1573,7 +1573,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p14.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p14.png",
       "sha256": "1bb051d2a4a3b34c9a12ad168badde1c39dfe7a9ad62d28396c918a310363676",
       "source_size": [
        800,
@@ -1585,7 +1585,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p06.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p06.png",
       "sha256": "ebac3798ca6931cef1943f52570a4cfd6a9c9fc7e6d42dbb8f5adf729dfeae5a",
       "source_size": [
        192,
@@ -1597,7 +1597,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p03.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p03.png",
       "sha256": "239043d108883f96fdbb57e66c2d5488a3472f9d4abf34e369c67aae695df851",
       "source_size": [
        1024,
@@ -1609,7 +1609,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p11.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p11.png",
       "sha256": "c9565c5f4406cb4798ebcadb54b8530d8bb136e9d4882eb79d9570adfeb51b6f",
       "source_size": [
        1024,
@@ -1621,7 +1621,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p07.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p07.png",
       "sha256": "89137d24684778ef3cad6a4f28fe0db8dc396b81902b94ecf04f93265d9609ef",
       "source_size": [
        1024,
@@ -1633,7 +1633,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p08.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p08.png",
       "sha256": "c83b8333f92582c852f8e70e959640bf76b0a5daab2ce29ccaf40c728e45a361",
       "source_size": [
        1024,
@@ -1645,7 +1645,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p05.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p05.png",
       "sha256": "05dc46f2ba48c61ac5a0f09b676f7288f36c68f4d97d98131dc380ca79970b75",
       "source_size": [
        288,
@@ -1657,7 +1657,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p13.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p13.png",
       "sha256": "f58accdf9589171a91bdd24cb6abc33df326214de7a5648a0563fdfff1ea5e33",
       "source_size": [
        544,
@@ -1669,7 +1669,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g3_p10.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g3_p10.png",
       "sha256": "e343cb841d48a2141251675f8a14b2a6360b776ae1a2c3958938808445f7742e",
       "source_size": [
        1024,
@@ -1764,35 +1764,35 @@
      ]
     ],
     "visual_tokens": 12295,
-    "expanded_prompt_tokens": 12729,
-    "generator_prompt_tokens": 12729,
+    "expanded_prompt_tokens": 12770,
+    "generator_prompt_tokens": 12770,
     "prompt_tokens_match": true,
     "token_accounting_match": true,
     "stats": {
-     "prompt_tokens": 12729,
-     "generation_tokens": 8326,
-     "prompt_tps": 285.1993142344631,
-     "generation_tps": 7.2012434691332565,
-     "peak_memory": 39.30513851,
-     "total_tokens": 21055,
+     "prompt_tokens": 12770,
+     "generation_tokens": 5279,
+     "prompt_tps": 284.0919208410115,
+     "generation_tps": 7.227498450210246,
+     "peak_memory": 39.305564494,
+     "total_tokens": 18049,
      "cached_tokens": 0,
      "finish_reason": "stop"
     },
     "completion_contains_close": true,
     "prompt_opened_think": true,
-    "think_chars": 24166,
+    "think_chars": 13374,
     "completeness": "complete",
     "payload": {
      "animation_storyboard_page": 5,
      "animation_frame_index": 23,
-     "animation_yellow_row": 55,
-     "animation_yellow_col": 12,
+     "animation_yellow_row": 22,
+     "animation_yellow_col": 10,
      "orange_marker_page": 12,
      "green_board_page": 7,
      "three_change_diff_page": 16,
      "purple_crop_page": 1
     },
-    "wall_seconds": 1201.0
+    "wall_seconds": 775.5
    },
    "checks": {
     "complete": true,
@@ -1834,7 +1834,7 @@
     "prompt_sha256": "81c6957eafe8e655d6a87e1311708aaadc58653aad9ebe53287a5fb64ec19bc6",
     "images": [
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g4_left.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g4_left.png",
       "sha256": "1e32704a85dae3831099406ec00a1495cf89383b2381968f8cdeae5f3ece40f6",
       "source_size": [
        1024,
@@ -1861,9 +1861,9 @@
     "stats": {
      "prompt_tokens": 1133,
      "generation_tokens": 152,
-     "prompt_tps": 274.88870456940407,
-     "generation_tps": 7.538089295710589,
-     "peak_memory": 39.30513851,
+     "prompt_tps": 274.34287005176344,
+     "generation_tps": 7.545690318377111,
+     "peak_memory": 39.305564494,
      "total_tokens": 1285,
      "cached_tokens": 0,
      "finish_reason": "stop"
@@ -1903,7 +1903,7 @@
     "prompt_sha256": "81c6957eafe8e655d6a87e1311708aaadc58653aad9ebe53287a5fb64ec19bc6",
     "images": [
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g4_right.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g4_right.png",
       "sha256": "26b8043679d58c4262e7cd0b0f83fb5711c6a21a50c8810c3e8418ba96760828",
       "source_size": [
        1024,
@@ -1930,9 +1930,9 @@
     "stats": {
      "prompt_tokens": 1133,
      "generation_tokens": 196,
-     "prompt_tps": 274.30762292508876,
-     "generation_tps": 7.520049228088728,
-     "peak_memory": 39.30513851,
+     "prompt_tps": 274.3389978302643,
+     "generation_tps": 7.5297096506503225,
+     "peak_memory": 39.305564494,
      "total_tokens": 1329,
      "cached_tokens": 0,
      "finish_reason": "stop"
@@ -1972,7 +1972,7 @@
     "prompt_sha256": "81c6957eafe8e655d6a87e1311708aaadc58653aad9ebe53287a5fb64ec19bc6",
     "images": [
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g4_blank.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g4_blank.png",
       "sha256": "2eaf0540caf1ec7eb8fc2fe9cc9fb5bf82bfbc6f3a99aca0c8fcbef2a44b9b63",
       "source_size": [
        1024,
@@ -1999,9 +1999,9 @@
     "stats": {
      "prompt_tokens": 1133,
      "generation_tokens": 139,
-     "prompt_tps": 274.2856451392333,
-     "generation_tps": 7.54342286263053,
-     "peak_memory": 39.30513851,
+     "prompt_tps": 274.10929999204245,
+     "generation_tps": 7.545525831853782,
+     "peak_memory": 39.305564494,
      "total_tokens": 1272,
      "cached_tokens": 0,
      "finish_reason": "stop"
@@ -2055,7 +2055,7 @@
     "prompt_sha256": "e2344b55d5b84da34088d69ce4cc751eb283a22b9d19df1f279c2a42f8efee48",
     "images": [
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g1_board.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g1_board.png",
       "sha256": "d53b605699d03fa184a41c3bb5d9e416ac975db07bd25f79ad0b86d9572766c4",
       "source_size": [
        1024,
@@ -2067,7 +2067,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g1_marker.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g1_marker.png",
       "sha256": "e3a6bb2d2a20ddbfa2bbe0a716ae363be2cdcd009819d454634039816b4f6f83",
       "source_size": [
        1024,
@@ -2099,9 +2099,9 @@
     "stats": {
      "prompt_tokens": 2270,
      "generation_tokens": 7572,
-     "prompt_tps": 291.17715113683187,
-     "generation_tps": 7.377088356311449,
-     "peak_memory": 39.30513851,
+     "prompt_tps": 291.32212979084204,
+     "generation_tps": 7.362536129054629,
+     "peak_memory": 39.305564494,
      "total_tokens": 9842,
      "cached_tokens": 0,
      "finish_reason": "stop"
@@ -2117,7 +2117,7 @@
      "marked_cell_colour": "purple",
      "top_row_colour": "yellow"
     },
-    "wall_seconds": 1034.3
+    "wall_seconds": 1036.3
    },
    "correct": true
   },
@@ -2155,7 +2155,7 @@
     "prompt_sha256": "e2344b55d5b84da34088d69ce4cc751eb283a22b9d19df1f279c2a42f8efee48",
     "images": [
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g1_board.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g1_board.png",
       "sha256": "d53b605699d03fa184a41c3bb5d9e416ac975db07bd25f79ad0b86d9572766c4",
       "source_size": [
        1024,
@@ -2167,7 +2167,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g1_marker.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g1_marker.png",
       "sha256": "e3a6bb2d2a20ddbfa2bbe0a716ae363be2cdcd009819d454634039816b4f6f83",
       "source_size": [
        1024,
@@ -2199,9 +2199,9 @@
     "stats": {
      "prompt_tokens": 2270,
      "generation_tokens": 3281,
-     "prompt_tps": 291.23213271019245,
-     "generation_tps": 7.417939465754164,
-     "peak_memory": 39.30513851,
+     "prompt_tps": 291.8380858555057,
+     "generation_tps": 7.4125483854568275,
+     "peak_memory": 39.305564494,
      "total_tokens": 5551,
      "cached_tokens": 0,
      "finish_reason": "stop"
@@ -2217,7 +2217,7 @@
      "marked_cell_colour": "purple",
      "top_row_colour": "yellow"
     },
-    "wall_seconds": 450.1
+    "wall_seconds": 450.5
    },
    "correct": true
   },
@@ -2255,7 +2255,7 @@
     "prompt_sha256": "e2344b55d5b84da34088d69ce4cc751eb283a22b9d19df1f279c2a42f8efee48",
     "images": [
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g1_board.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g1_board.png",
       "sha256": "d53b605699d03fa184a41c3bb5d9e416ac975db07bd25f79ad0b86d9572766c4",
       "source_size": [
        1024,
@@ -2267,7 +2267,7 @@
       ]
      },
      {
-      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T212725.560049Z/boards/g1_marker.png",
+      "path": "/Users/michal/Workspace/SHiP-JEPA-X/logs/e2_probe_vlm_runs/20260817T225229.462092Z/boards/g1_marker.png",
       "sha256": "e3a6bb2d2a20ddbfa2bbe0a716ae363be2cdcd009819d454634039816b4f6f83",
       "source_size": [
        1024,
@@ -2299,9 +2299,9 @@
     "stats": {
      "prompt_tokens": 2270,
      "generation_tokens": 3025,
-     "prompt_tps": 291.4902066441855,
-     "generation_tps": 7.416744750788621,
-     "peak_memory": 39.30513851,
+     "prompt_tps": 291.36735486654555,
+     "generation_tps": 7.413626119019958,
+     "peak_memory": 39.305564494,
      "total_tokens": 5295,
      "cached_tokens": 0,
      "finish_reason": "stop"
@@ -2317,7 +2317,7 @@
      "marked_cell_colour": "purple",
      "top_row_colour": "yellow"
     },
-    "wall_seconds": 415.7
+    "wall_seconds": 415.9
    },
    "correct": true
   }

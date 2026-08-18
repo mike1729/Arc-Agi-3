@@ -173,3 +173,31 @@ per-board visual tokens (64→256; the 28-frame storyboard 1,792→7,168 tokens 
 Throughput note for morning planning: xhigh generation measured at 7.2 tok/s
 (packet-scale prompt, 39.3 GB peak) — a full 20k-token cell answer is ~46 min of
 generation; the 16-cell estimate revises upward accordingly.
+
+## 03:00 — rerun verdict: clean 4px-readout negative. Chain stops before freeze.
+
+Convention-pinned rerun (`logs/e2_probe_vlm_runs/20260817T225229.462092Z`): gates
+1/2/4/5 PASS again; gate 3 SEMANTIC_FAIL again — but the failure shape changed
+exactly as the defect theory predicted. No more anchor-copying: the two
+counter-permutations now give **scattered** estimates — A (47,12), B (22,10) vs
+truth (37,11). Page bindings 10/10 and frame index 2/2 remain perfect.
+
+Think-trace mechanism (call A): the model now does honest proportional arithmetic on
+a **mis-estimated frame box** — it places the frame at y 1250–1645 and the label at
+"y 1665" on a canvas that is only 1,152px tall (its internal pixel space runs ~1.45×
+off), then computes 0.742·64 = row 47. The distractor marker page ("ACTION2(12,55)",
+a deliberately overlapping trap — nice construction) was correctly ignored this time.
+
+**Certified tonight:** the serving path, palette naming, counterbalanced fill
+discrimination, 16px spatial grounding, production-sampler stability 3/3, packet-scale
+delivery accounting (12.3k visual tokens exact), and page/frame *binding* at 4px.
+**Refuted tonight:** cell-precise coordinate *readout* at 4px/cell under the packet
+regime — scattered ±1 col, ±10–15 rows, with a systematically wrong internal pixel
+scale. No PASS certificate → the freeze is structurally refused → the 16 Qwen cells,
+ceiling, and grading do not run. This is the gate doing its job.
+
+Resolution-floor diagnostic dispatched (3 calls, labelled `diag_resolution_floor`,
+run dir under `logs/e2_probe_vlm_runs/` — NOT a certificate): the same 28-frame
+storyboard at **8px/cell**, plus the event frame **alone** at 4px and at 8px. It
+answers the two questions the redesign hinges on: is 8px above the floor in dense
+tiling, and is 4px dead everywhere or only when tiled.
