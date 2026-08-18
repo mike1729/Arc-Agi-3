@@ -306,6 +306,34 @@ class SentinelTests(unittest.TestCase):
         })
         self.assertFalse(lucky["valid_discriminating_interaction"])
 
+    def test_active_scoring_uses_highest_probability_original_indices(self) -> None:
+        # Calibration v2: an unordered but valid list is scored via the two
+        # highest-probability ORIGINAL indices, never by list position.
+        fixture = sentinels.build_active_variant("dev", 0, base_seed=4)
+        discriminating = [
+            key for key, probe in fixture["probes"].items() if probe["discriminating"]
+        ][0]
+        unordered = {
+            "hypotheses": [{"probability": 0.2}, {"probability": 0.7}],
+            "next_probe": {
+                "start_state_id": discriminating,
+                "action": fixture["probes"][discriminating]["action_schema"],
+                "predictions_by_hypothesis": {"1": "moves", "0": "stays"},
+            },
+        }
+        scored = sentinels.score_active_interaction(fixture, unordered)
+        self.assertEqual(scored["ranked_prediction_indices"], ["1", "0"])
+        self.assertTrue(scored["valid_discriminating_interaction"])
+        # A prediction map missing one of the two ranked original indices must
+        # not be silently reinterpreted; the interaction fails, unrepaired.
+        positional = {
+            "hypotheses": unordered["hypotheses"],
+            "next_probe": {**unordered["next_probe"],
+                           "predictions_by_hypothesis": {"1": "moves"}},
+        }
+        self.assertFalse(sentinels.score_active_interaction(fixture, positional)[
+            "valid_discriminating_interaction"])
+
     def test_aggregates_enforce_two_of_three_and_undecided_blocks(self) -> None:
         def sheet(arm: str, index: int, verdict: bool | None) -> dict:
             return {"variant_id": f"SV{index}", "carrier": arm,

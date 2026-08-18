@@ -162,7 +162,33 @@ class ParsingTests(unittest.TestCase):
         payload["hypotheses"].append({**payload["hypotheses"][0], "probability": 0.8})
         errors = run.validate_answer(payload)
         self.assertTrue(any("sum" in error for error in errors), errors)
-        self.assertTrue(any("ranked" in error for error in errors), errors)
+        # Calibration v2: ordering is a nonfatal diagnostic, never a schema error.
+        self.assertFalse(any("ranked" in error for error in errors), errors)
+        self.assertIs(run.ranking_compliance(payload["hypotheses"]), False)
+
+    def test_ranking_is_nonfatal_diagnostic_with_derived_original_indices(self) -> None:
+        payload = valid_payload()
+        template = payload["hypotheses"][0]
+        payload["hypotheses"] = [
+            {**template, "probability": 0.2},
+            {**template, "probability": 0.7},
+            {**template, "probability": 0.1},
+        ]
+        # Structurally valid though unordered: no schema error, diagnostic False.
+        self.assertEqual(run.validate_answer(payload), [])
+        self.assertIs(run.ranking_compliance(payload["hypotheses"]), False)
+        self.assertEqual(
+            run.ranked_hypothesis_indices(payload["hypotheses"]), [1, 0, 2])
+        # Ties break by original index; compliant lists report True.
+        self.assertEqual(run.ranked_hypothesis_indices(
+            [{"probability": 0.4}, {"probability": 0.4}, {"probability": 0.1}],
+        ), [0, 1, 2])
+        self.assertIs(run.ranking_compliance(
+            [{"probability": 0.7}, {"probability": 0.2}]), True)
+        # Unstatable cases: no repair, no guess.
+        self.assertIsNone(run.ranking_compliance([]))
+        self.assertIsNone(run.ranking_compliance([{"probability": True}]))
+        self.assertEqual(run.ranked_hypothesis_indices([{"probability": None}]), [])
 
     def test_invalid_probe_values_are_missing_not_silently_repaired(self) -> None:
         payload = valid_payload(probe_request=True)

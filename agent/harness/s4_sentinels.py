@@ -81,7 +81,7 @@ PASSIVE_ARMS = ("T", "V", "O")
 PASS_THRESHOLD = 2          # of 3 variants, per arm / per criterion
 TOTAL_GENERATIONS = PASSIVE_VARIANTS * len(PASSIVE_ARMS) + ACTIVE_VARIANTS * 2  # 15
 
-RESULT_FORMAT_VERSION = 3
+RESULT_FORMAT_VERSION = 4  # v2 calibration contract: rank via original indices
 ACTIVE_ARM = "P"
 ACTIVE_STAGES = ("pre", "post")
 CONFIRM_RAW_RESULTS = SEALED_R4 / "sentinel_raw_results.json"
@@ -897,12 +897,18 @@ def score_active_interaction(fixture: dict[str, Any],
             and not isinstance(h.get("probability"), bool)
             and h["probability"] >= 0.1]
     predictions = request.get("predictions_by_hypothesis") or {}
+    # Calibration v2: list order is a nonfatal diagnostic, so the two leading
+    # hypotheses are the two highest-probability ORIGINAL indices, derived via
+    # (-probability, original_index).  The raw answer is never reordered.
+    import s4_run as srun
+    ranked = srun.ranked_hypothesis_indices(hypotheses)
+    top_two = [str(index) for index in ranked[:2]]
     prediction_values = ([
-        predictions.get("0", "").strip().casefold(),
-        predictions.get("1", "").strip().casefold(),
-    ] if isinstance(predictions, dict)
-        and isinstance(predictions.get("0"), str)
-        and isinstance(predictions.get("1"), str) else [])
+        predictions.get(top_two[0], "").strip().casefold(),
+        predictions.get(top_two[1], "").strip().casefold(),
+    ] if len(top_two) == 2 and isinstance(predictions, dict)
+        and isinstance(predictions.get(top_two[0]), str)
+        and isinstance(predictions.get(top_two[1]), str) else [])
     predictions_disagree = (
         len(prediction_values) == 2
         and all(prediction_values)
@@ -913,6 +919,7 @@ def score_active_interaction(fixture: dict[str, Any],
         "requested_action": requested_action,
         "discriminating_start_state_id": discriminating,
         "discriminating_action": expected_action,
+        "ranked_prediction_indices": top_two,
         "kept_ambiguity": len(live) >= 2,
         "predictions_disagree": predictions_disagree,
         "valid_discriminating_interaction": (

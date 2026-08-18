@@ -50,7 +50,7 @@ import s4_sentinels as sentinels  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 FORMAT_VERSION = 1
-PROTOCOL_VERSION = "r4-qwen-calibration-v1"
+PROTOCOL_VERSION = "r4-qwen-calibration-v2"  # v2: ranking_compliance nonfatal
 CALL_BUDGET = 11
 ANSWER_TOKENS = 32_768
 MANUAL_TRUNCATION_TOKENS = 49_152
@@ -600,6 +600,7 @@ def _call_receipt(
         "completeness": record.get("completeness"),
         "payload_present": payload is not None and record.get("payload_present") is True,
         "schema_errors": copy.deepcopy(record.get("schema_errors")),
+        "ranking_compliance": record.get("ranking_compliance"),
         "finish_reason": record.get("finish_reason"),
         "expanded_prompt_tokens": record.get("expanded_prompt_tokens"),
         "output_tokens": record.get("output_tokens"),
@@ -810,6 +811,8 @@ def _trace_receipt_projection(
     parsed = srun.extract_final_json(answer) if closed else None
     schema_errors = srun.validate_answer(parsed) if parsed is not None else []
     payload = parsed if parsed is not None and not schema_errors else None
+    ranking = (srun.ranking_compliance(parsed.get("hypotheses"))
+               if isinstance(parsed, dict) else None)
     stats = trace.get("stats")
     require(isinstance(stats, dict), f"{tag}: generation stats are absent")
     completeness = probe.classify_completion(
@@ -834,6 +837,7 @@ def _trace_receipt_projection(
             and trace.get("think") == think and trace.get("answer") == answer
             and trace.get("parsed_payload") == parsed
             and trace.get("schema_errors") == schema_errors
+            and trace.get("ranking_compliance") == ranking
             and trace.get("payload_present") is (payload is not None)
             and trace.get("completeness") == completeness
             and trace.get("prompt_tokens_match") is prompt_match is True
@@ -857,6 +861,7 @@ def _trace_receipt_projection(
         "completeness": completeness,
         "payload_present": payload is not None,
         "schema_errors": schema_errors,
+        "ranking_compliance": ranking,
         "finish_reason": trace.get("finish_reason"),
         "expanded_prompt_tokens": expanded,
         "output_tokens": trace.get("output_tokens"),

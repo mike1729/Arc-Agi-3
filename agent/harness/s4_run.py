@@ -195,6 +195,42 @@ def _valid_click(value: Any) -> bool:
     )
 
 
+def ranked_hypothesis_indices(hypotheses: Any) -> list[int]:
+    """Original indices ordered by (-probability, original_index).
+
+    The raw answer is never reordered; consumers needing rank order use these
+    indices.  Returns [] when any probability is absent or non-numeric.
+    """
+    if not isinstance(hypotheses, list):
+        return []
+    keyed: list[tuple[float, int]] = []
+    for index, hypothesis in enumerate(hypotheses):
+        probability = (hypothesis.get("probability")
+                       if isinstance(hypothesis, dict) else None)
+        if isinstance(probability, bool) or not isinstance(probability, (int, float)):
+            return []
+        keyed.append((-float(probability), index))
+    return [index for _key, index in sorted(keyed)]
+
+
+def ranking_compliance(hypotheses: Any) -> bool | None:
+    """Nonfatal diagnostic: is the declared list order non-ascending?
+
+    None when the question is unstatable (no list, empty, or invalid
+    probabilities); never mutates or repairs the answer.
+    """
+    if not isinstance(hypotheses, list) or not hypotheses:
+        return None
+    probabilities: list[float] = []
+    for hypothesis in hypotheses:
+        probability = (hypothesis.get("probability")
+                       if isinstance(hypothesis, dict) else None)
+        if isinstance(probability, bool) or not isinstance(probability, (int, float)):
+            return None
+        probabilities.append(float(probability))
+    return all(a >= b for a, b in zip(probabilities, probabilities[1:]))
+
+
 def validate_answer(payload: Any) -> list[str]:
     """Return every schema defect; an invalid object is a missing observation."""
     errors: list[str] = []
@@ -244,8 +280,11 @@ def validate_answer(payload: Any) -> list[str]:
                 errors.append(f"{where}.{key} must be a non-empty string")
     if probabilities and sum(probabilities) > 1.0 + 1e-9:
         errors.append(f"hypothesis probabilities sum to {sum(probabilities):.9f} > 1")
-    if probabilities and any(a < b for a, b in zip(probabilities, probabilities[1:])):
-        errors.append("hypotheses are not ranked by descending probability")
+    # Calibration v2 (operator decision 2026-08-18): non-descending list order is
+    # no longer fatal.  It is recorded as the nonfatal ranking_compliance
+    # diagnostic; consumers that need rank order derive it from the explicit
+    # probabilities via ranked_hypothesis_indices.  The raw answer is never
+    # sorted or modified.
 
     best = payload.get("best_goal")
     if not isinstance(best, dict) or set(best) != {"plain_causal_condition", "structured_factors"}:
@@ -1273,6 +1312,8 @@ def ask_chat(
         "completion_contains_close": closed,
         "payload_present": payload is not None,
         "schema_errors": schema_errors,
+        "ranking_compliance": (ranking_compliance(parsed.get("hypotheses"))
+                               if isinstance(parsed, dict) else None),
         "completeness": completeness,
         "raw_response": text,
         "parsed_payload": parsed,

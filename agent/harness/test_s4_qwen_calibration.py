@@ -161,6 +161,8 @@ class QwenCalibrationTests(unittest.TestCase):
                 "prompt_tokens_match": True, "token_accounting_match": True,
                 "completion_contains_close": True, "think": think, "answer": answer,
                 "parsed_payload": payload, "schema_errors": [],
+                "ranking_compliance": calibration.srun.ranking_compliance(
+                    payload.get("hypotheses")) if isinstance(payload, dict) else None,
                 "payload_present": True, "completeness": "complete",
                 "assistant_history": {
                     "role": "assistant", "content": answer,
@@ -266,6 +268,7 @@ class QwenCalibrationTests(unittest.TestCase):
                 "completeness": "complete",
                 "payload_present": True,
                 "schema_errors": [],
+                "ranking_compliance": True,
             })
         return plan, receipts
 
