@@ -74,6 +74,17 @@ PACKET_MAX_INITIAL_VISUAL_TOKENS = (
     16_384 - PACKET_RESERVED_POST_INITIAL_VISUAL_TOKENS
 )
 PLAN_BUDGET_DEFAULT = 150
+RUN_INITIAL_PROMPT_TEXT_TOKENS = 14_000
+NATIVE_CONTEXT_TOKENS = 262_144
+PRESERVE_THINKING = True
+EXPECTED_PRODUCTION_SAMPLER = {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "repetition_penalty": 1.0,
+}
 SCRIPT_RELATIVE = (
     "agent/harness/s4_run.py",
     "agent/harness/s4_packet.py",
@@ -83,12 +94,17 @@ SCRIPT_RELATIVE = (
     "agent/harness/s4_render.py",
 )
 DEFAULT_BUDGETS = {
-    "answer_tokens": 20_000,
+    "answer_tokens": 32_768,
     "interaction_rounds": 3,
     "retrievals_per_round": 1,
     "active_probes": 3,
     "max_images": 16,
     "max_visual_tokens": 16_384,
+    "native_context_tokens": NATIVE_CONTEXT_TOKENS,
+    # The model advertises 262,144 positions.  Four-turn accumulated prompts
+    # are measured by the real processor and must leave the complete answer
+    # allowance plus a safety margin.
+    "max_context_text_tokens": 212_992,
 }
 RUN_BUDGET_KEYS = tuple(DEFAULT_BUDGETS)
 ALL_ARMS = ("T", "V", "O", "R", "A", "C", "P")
@@ -151,9 +167,7 @@ EXPECTED_GATE_NAMES = frozenset({
 })
 CERTIFICATE_RUNTIME_PACKAGES = ("mlx-vlm", "mlx", "mlx-lm", "transformers")
 CERTIFICATE_WIRING_SAMPLER = {"temperature": 0.0, "top_p": 1.0}
-CERTIFICATE_PRODUCTION_SAMPLER = {
-    "temperature": 1.0, "top_p": 0.95, "top_k": 20,
-}
+CERTIFICATE_PRODUCTION_SAMPLER = dict(EXPECTED_PRODUCTION_SAMPLER)
 CERTIFICATE_REASONING_EFFORT = "xhigh"
 FULL_SHA256 = re.compile(r"[0-9a-f]{64}")
 TID_PATTERN = re.compile(r"(?<![A-Za-z0-9])[SK]\d{5}(?![A-Za-z0-9])", re.I)
@@ -282,6 +296,12 @@ def validate_board(board: Any, label: str) -> None:
 
 def validate_gold(game: str, gold: Any) -> dict[str, Any]:
     require(isinstance(gold, dict), f"gold {game} must be an object")
+    base_keys = {
+        "paraphrase", "constraints", "counterfactuals", "familiarity",
+        "familiarity_status",
+    }
+    require(set(gold) in (base_keys, base_keys | {"axis_rubric"}),
+            f"gold {game} has an incomplete or unknown top-level schema")
     paraphrase = gold.get("paraphrase")
     require(isinstance(paraphrase, str) and paraphrase.strip(),
             f"gold {game}.paraphrase must be non-empty")
@@ -294,24 +314,66 @@ def validate_gold(game: str, gold: Any) -> dict[str, Any]:
     counterfactuals = gold.get("counterfactuals")
     require(isinstance(counterfactuals, list) and counterfactuals,
             f"gold {game}.counterfactuals must be non-empty")
+    board_hashes: set[str] = set()
+    objective_values: set[bool] = set()
     for index, counterfactual in enumerate(counterfactuals):
-        require(isinstance(counterfactual, dict),
-                f"gold {game}.counterfactuals[{index}] must be an object")
-        validate_board(counterfactual.get("board"), f"gold {game}.counterfactuals[{index}].board")
+        require(isinstance(counterfactual, dict)
+                and set(counterfactual) == {"board", "objective_holds", "note"},
+                f"gold {game}.counterfactuals[{index}] has an invalid schema")
+        board = counterfactual.get("board")
+        validate_board(board, f"gold {game}.counterfactuals[{index}].board")
+        require(len(board) == 64 and all(len(row) == 64 for row in board),
+                f"gold {game}.counterfactuals[{index}].board must be exactly 64x64")
+        board_sha = sha256_json(board)
+        require(board_sha not in board_hashes,
+                f"gold {game}.counterfactuals contains duplicate board {index}")
+        board_hashes.add(board_sha)
         require(type(counterfactual.get("objective_holds")) is bool,
                 f"gold {game}.counterfactuals[{index}].objective_holds must be boolean")
-        require(isinstance(counterfactual.get("note"), str),
-                f"gold {game}.counterfactuals[{index}].note must be a string")
+        objective_values.add(counterfactual["objective_holds"])
+        require(isinstance(counterfactual.get("note"), str)
+                and counterfactual["note"].strip(),
+                f"gold {game}.counterfactuals[{index}].note must be non-empty")
+    require(objective_values == {False, True},
+            f"gold {game}.counterfactuals must contain positive and negative examples")
     familiarity = gold.get("familiarity")
     require(isinstance(familiarity, str) and familiarity.strip(),
-            f"gold {game}.familiarity must be a non-empty operator statement")
+            f"gold {game}.familiarity must be a non-empty provenance statement")
+    require(gold.get("familiarity_status")
+            == "repository_reconstruction_not_operator_attestation",
+            f"gold {game} familiarity must remain explicitly non-attested until "
+            "the operator signs a separate pre-evidence commitment")
     if "axis_rubric" in gold:
         require(isinstance(gold["axis_rubric"], dict),
                 f"gold {game}.axis_rubric must be an object")
     return gold
 
 
-def snapshot_gold(mapping: dict[str, str]) -> dict[str, str]:
+def validate_legacy_gold(game: str, gold: Any) -> dict[str, Any]:
+    """Historical v2 schema, retained only to inspect its failed record."""
+    require(isinstance(gold, dict), f"gold {game} must be an object")
+    require(isinstance(gold.get("paraphrase"), str) and gold["paraphrase"].strip(),
+            f"gold {game}.paraphrase must be non-empty")
+    constraints = gold.get("constraints")
+    require(isinstance(constraints, list) and constraints
+            and all(isinstance(item, str) and item.strip() for item in constraints),
+            f"gold {game}.constraints must contain non-empty strings")
+    counterfactuals = gold.get("counterfactuals")
+    require(isinstance(counterfactuals, list) and counterfactuals,
+            f"gold {game}.counterfactuals must be non-empty")
+    for index, counterfactual in enumerate(counterfactuals):
+        require(isinstance(counterfactual, dict),
+                f"gold {game}.counterfactuals[{index}] must be an object")
+        validate_board(counterfactual.get("board"),
+                       f"gold {game}.counterfactuals[{index}].board")
+        require(type(counterfactual.get("objective_holds")) is bool,
+                f"gold {game}.counterfactuals[{index}].objective_holds must be boolean")
+    require(isinstance(gold.get("familiarity"), str) and gold["familiarity"].strip(),
+            f"gold {game}.familiarity must be non-empty")
+    return gold
+
+
+def snapshot_gold(mapping: dict[str, str], *, strict: bool = True) -> dict[str, str]:
     require(GOLD.is_dir(), f"missing gold directory: {GOLD}")
     actual = {path.name for path in GOLD.glob("*.json")}
     expected = {f"{game}.json" for game in mapping}
@@ -319,7 +381,8 @@ def snapshot_gold(mapping: dict[str, str]) -> dict[str, str]:
             f"gold set mismatch: missing={sorted(expected - actual)}, extra={sorted(actual - expected)}")
     result: dict[str, str] = {}
     for name in sorted(actual):
-        validate_gold(Path(name).stem, load_object(GOLD / name, "gold file"))
+        validator = validate_gold if strict else validate_legacy_gold
+        validator(Path(name).stem, load_object(GOLD / name, "gold file"))
         result[name] = sha256_file(GOLD / name)
     return result
 
@@ -1807,7 +1870,7 @@ def freeze(preregistration_path: Path | None = None) -> int:
         "frozen_utc": _dt.datetime.now(_dt.timezone.utc).isoformat(),
         "git_commit": git["commit"],
         "blind_map_sha256": sha256_file(SEALED / "blind_map.json"),
-        "gold_files": snapshot_gold(mapping),
+        "gold_files": snapshot_gold(mapping, strict=False),
         "scripts": scripts,
         "certificate": certificate,
         "packets": {
@@ -1824,23 +1887,26 @@ def freeze(preregistration_path: Path | None = None) -> int:
 
 
 def frozen_manifest_path() -> Path:
-    """The active freeze: the versioned r4 artifact when it exists, else legacy.
-
-    The legacy v2.2 freeze never ran in production; this dispatch keeps its code
-    and tests inspectable while revision 4 owns the live protocol."""
+    """Digest target for artifacts; this helper grants no run authority."""
     return FROZEN_R4 if FROZEN_R4.exists() else FROZEN
 
 
 def verify_freeze() -> dict[str, Any]:
-    if FROZEN_R4.exists():
-        return verify_freeze_r4()
+    """Production API: legacy v2 records cannot authorize new work."""
+    require(FROZEN_R4.exists(),
+            "revision-4 FROZEN.json is required; the legacy freeze is historical only")
+    return verify_freeze_r4()
+
+
+def verify_legacy_freeze() -> dict[str, Any]:
+    """Read-only verification retained solely to inspect the failed revision."""
     frozen = load_object(FROZEN, "sealed freeze")
     require(frozen.get("format_version") == FORMAT_VERSION,
             f"unsupported sealed freeze version: {frozen.get('format_version')!r}")
     mapping = read_blind_map()
     require(sha256_file(SEALED / "blind_map.json") == frozen.get("blind_map_sha256"),
             "SEALED DRIFT: blind_map.json changed after freeze")
-    require(snapshot_gold(mapping) == frozen.get("gold_files"),
+    require(snapshot_gold(mapping, strict=False) == frozen.get("gold_files"),
             "SEALED DRIFT: exact gold set or digest changed after freeze")
     require(set(frozen.get("scripts") or {}) == set(SCRIPT_RELATIVE),
             "SEALED DRIFT: protocol script inventory changed")
@@ -2401,6 +2467,7 @@ def _ceiling_input_cells(artifact: dict[str, Any]) -> dict[str, dict[str, Any]]:
 def validate_model_ceiling_execution_trace(
     document: dict[str, Any], preregistration: dict[str, Any], document_seeds: set[int],
     ceiling_artifact: dict[str, Any], ceiling_input_sha256: str,
+    *, strict_r4: bool = False,
 ) -> None:
     binding = document.get("ceiling_execution_trace")
     require(isinstance(binding, dict) and set(binding) == {"path", "sha256"},
@@ -2412,24 +2479,49 @@ def validate_model_ceiling_execution_trace(
     require(path.is_file() and digest == sha256_file(path),
             "ceiling_execution_trace artifact is missing or its bytes changed")
     artifact = load_object(path, "ceiling execution trace")
-    require(set(artifact) == {
+    expected_artifact_keys = {
         "format_version", "artifact_type", "ceiling_spec_sha256", "cells",
-    } and artifact.get("format_version") == FORMAT_VERSION
+    }
+    if strict_r4:
+        expected_artifact_keys |= {
+            "serving_identity", "reservation_path", "reservation_sha256",
+            "reservation_id",
+        }
+    require(set(artifact) == expected_artifact_keys
+            and artifact.get("format_version") == FORMAT_VERSION
             and artifact.get("artifact_type") == "s4_model_ceiling_execution_trace",
             "ceiling_execution_trace has an invalid schema or artifact type")
     spec_sha = preregistration["ceiling_spec_sha256"]
     require(artifact.get("ceiling_spec_sha256") == spec_sha,
             "ceiling_execution_trace is not bound to the frozen ceiling_spec")
+    if strict_r4:
+        require(artifact.get("serving_identity") == document.get("serving_identity")
+                and artifact.get("reservation_path")
+                == document.get("reservation_path")
+                and artifact.get("reservation_sha256")
+                == document.get("reservation_sha256")
+                and artifact.get("reservation_id")
+                == document.get("reservation_id"),
+                "ceiling_execution_trace serving/reservation binding drift")
     records = artifact.get("cells")
     require(isinstance(records, list), "ceiling_execution_trace.cells must be a list")
     record_by_key: dict[str, dict[str, Any]] = {}
     raw_by_key: dict[str, dict[str, Any]] = {}
     for index, record in enumerate(records):
-        require(isinstance(record, dict) and set(record) == {
+        legacy_record_keys = {
             "ceiling_spec_sha256", "cell_key", "provider", "run_id", "model",
             "ceiling_input_sha256", "evidence_sha256", "prompt_messages_sha256",
             "raw_response_run_metadata", "final_answer_sha256",
-        }, f"ceiling_execution_trace cell {index} has an invalid schema")
+        }
+        strict_record_keys = legacy_record_keys | {
+            "trace_tag", "trace_path", "trace_sha256", "serving_identity",
+            "sampler", "reasoning_effort", "completeness", "input_tokens",
+            "output_tokens",
+        }
+        require(isinstance(record, dict)
+                and set(record) == (strict_record_keys if strict_r4
+                                    else legacy_record_keys),
+                f"ceiling_execution_trace cell {index} has an invalid schema")
         cell_key = _require_canonical_label(
             record.get("cell_key"), f"ceiling_execution_trace cell {index}.cell_key"
         )
@@ -2458,6 +2550,19 @@ def validate_model_ceiling_execution_trace(
             record.get("prompt_messages_sha256"),
             f"ceiling_execution_trace cell {index}.prompt_messages_sha256",
         )
+        if strict_r4:
+            serving_config = (
+                (preregistration.get("ceiling_spec") or {}).get("model") or {}
+            ).get("serving_config") or {}
+            require(record.get("serving_identity") == document.get("serving_identity")
+                    and record.get("sampler") == EXPECTED_PRODUCTION_SAMPLER
+                    and record.get("reasoning_effort")
+                    == serving_config.get("reasoning_effort")
+                    and isinstance(record.get("trace_tag"), str)
+                    and Path(str(record.get("trace_path", ""))).is_file()
+                    and record.get("trace_sha256")
+                    == sha256_file(Path(record["trace_path"])),
+                    f"ceiling_execution_trace cell {index} serving/trace drift")
         raw_binding = record.get("raw_response_run_metadata")
         require(isinstance(raw_binding, dict) and set(raw_binding) == {"path", "sha256"},
                 f"ceiling_execution_trace cell {index} lacks immutable raw response metadata")
@@ -2500,6 +2605,24 @@ def validate_model_ceiling_execution_trace(
         require(record.get("final_answer_sha256")
                 == sha256_json(raw_artifact.get("final_answer")),
                 f"ceiling_execution_trace cell {index} raw parsed answer drift")
+        if strict_r4:
+            metadata = raw_artifact.get("run_metadata") or {}
+            require(metadata.get("trace_tag") == record.get("trace_tag")
+                    and metadata.get("trace_path") == record.get("trace_path")
+                    and metadata.get("trace_sha256") == record.get("trace_sha256")
+                    and metadata.get("serving_identity")
+                    == record.get("serving_identity")
+                    and metadata.get("sampler") == record.get("sampler")
+                    and metadata.get("reasoning_effort")
+                    == record.get("reasoning_effort")
+                    and metadata.get("completeness") == record.get("completeness")
+                    and metadata.get("input_tokens") == record.get("input_tokens")
+                    and metadata.get("output_tokens") == record.get("output_tokens")
+                    and raw_artifact.get("raw_response")
+                    == metadata.get("raw_response")
+                    and raw_artifact.get("final_answer")
+                    == metadata.get("parsed_payload"),
+                    f"ceiling_execution_trace cell {index} immutable trace metadata drift")
         record_by_key[cell_key] = record
         raw_by_key[cell_key] = raw_artifact
 
@@ -2523,6 +2646,13 @@ def validate_model_ceiling_execution_trace(
                 f"{cell_key}")
         require(record["final_answer_sha256"] == sha256_json(cell.get("final_answer")),
                 f"ceiling_execution_trace final_answer drift for {cell_key}")
+        if strict_r4:
+            rounds = cell.get("rounds") or []
+            require(len(rounds) == 1
+                    and rounds[0].get("trace_tag") == record.get("trace_tag")
+                    and rounds[0].get("trace_path") == record.get("trace_path")
+                    and rounds[0].get("trace_sha256") == record.get("trace_sha256"),
+                    f"ceiling_execution_trace cell receipt drift for {cell_key}")
 
 
 def _primary_ceiling_cell_keys(preregistration: dict[str, Any]) -> list[str]:
@@ -2724,8 +2854,410 @@ def validate_human_ceiling_delivery_receipt(
                 f"ceiling_delivery_receipt final_answer drift for {cell_key}")
 
 
+SERVING_ATTEMPT_ROOT = ROOT / "logs/s4_sealed/serving_attempts"
+
+
+def _producer_sha256(value: Any) -> str:
+    """Canonical digest used by the serving producer's reservation IDs."""
+    return hashlib.sha256(
+        json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
+
+def _expected_r4_serving_identity(frozen: dict[str, Any]) -> dict[str, Any]:
+    snapshot = frozen.get("serving_snapshot") or {}
+    checkpoint = snapshot.get("checkpoint_fingerprint") or {}
+    expected = {
+        "checkpoint_sha256": checkpoint.get("checkpoint_sha256"),
+        "verified_shards": True,
+        "snapshot_sha256": snapshot.get("snapshot_sha256"),
+    }
+    require_full_sha256(expected["checkpoint_sha256"],
+                        "frozen serving checkpoint_sha256")
+    require_full_sha256(expected["snapshot_sha256"],
+                        "frozen serving snapshot_sha256")
+    return expected
+
+
+def _require_read_only(path: Path, label: str) -> None:
+    require(path.stat().st_mode & 0o222 == 0,
+            f"{label} is not immutable/read-only: {path}")
+
+
+def _validate_serving_attempt_authority(
+    document: dict[str, Any], frozen: dict[str, Any], *, role: str, attempt: int,
+    document_path: Path | None,
+) -> dict[str, Any]:
+    """Validate the fixed, one-shot role/attempt reservation and receipt."""
+    binding_keys = (
+        "reservation_path", "reservation_sha256", "reservation_id",
+        "receipt_path", "receipt_sha256", "receipt_id",
+    )
+    require(all(isinstance(document.get(key), str) and document[key]
+                for key in binding_keys),
+            "r4 answer document lacks its one-shot reservation/receipt identity")
+    expected_stem = f"{role}_attempt{attempt}"
+    reservation_path = (SERVING_ATTEMPT_ROOT
+                        / f"{expected_stem}.reservation.json").resolve()
+    receipt_path = (SERVING_ATTEMPT_ROOT
+                    / f"{expected_stem}.receipt.json").resolve()
+    require(Path(document["reservation_path"]).expanduser().resolve()
+            == reservation_path
+            and Path(document["receipt_path"]).expanduser().resolve() == receipt_path,
+            "answer document substituted a non-fixed serving attempt identity")
+    require(reservation_path.is_file() and receipt_path.is_file(),
+            "fixed serving reservation/receipt is missing")
+    require(sha256_file(reservation_path) == document["reservation_sha256"]
+            and sha256_file(receipt_path) == document["receipt_sha256"],
+            "serving reservation/receipt bytes changed")
+    _require_read_only(reservation_path, "serving reservation")
+    _require_read_only(receipt_path, "serving receipt")
+
+    reservation = load_object(reservation_path, "serving attempt reservation")
+    reservation_keys = {
+        "format_version", "artifact_type", "role", "attempt",
+        "frozen_manifest_sha256", "run_dir", "output_path",
+        "serving_identity", "sampler", "reasoning_effort",
+        "preserve_thinking", "native_context_tokens", "max_output_tokens",
+        "prior_attempt", "reserved_utc", "reservation_id",
+    }
+    require(set(reservation) == reservation_keys
+            and reservation.get("format_version") == 1
+            and reservation.get("artifact_type")
+            == "s4_serving_attempt_reservation",
+            "serving attempt reservation has an invalid schema/type")
+    reservation_core = {
+        key: value for key, value in reservation.items() if key != "reservation_id"
+    }
+    require(reservation.get("reservation_id") == _producer_sha256(reservation_core)
+            == document["reservation_id"],
+            "serving reservation ID is invalid")
+    frozen_sha = sha256_file(FROZEN_R4)
+    expected_identity = _expected_r4_serving_identity(frozen)
+    snapshot = frozen["serving_snapshot"]
+    budgets = frozen["preregistration"]["budgets"]
+    require(reservation.get("role") == role
+            and reservation.get("attempt") == attempt
+            and reservation.get("frozen_manifest_sha256") == frozen_sha,
+            "serving reservation role/attempt/freeze binding drift")
+    require(reservation.get("serving_identity") == expected_identity
+            and document.get("serving_identity") == expected_identity,
+            "serving attempt identity differs from the frozen checkpoint/runtime")
+    require(reservation.get("sampler") == snapshot.get("production_sampler")
+            == EXPECTED_PRODUCTION_SAMPLER
+            and reservation.get("reasoning_effort")
+            == snapshot.get("reasoning_effort")
+            and reservation.get("preserve_thinking") is True
+            and snapshot.get("preserve_thinking") is True,
+            "serving reservation sampler/effort/thinking drift")
+    require(reservation.get("native_context_tokens")
+            == snapshot.get("native_context_tokens")
+            == budgets["native_context_tokens"] == NATIVE_CONTEXT_TOKENS
+            and reservation.get("max_output_tokens")
+            == budgets["answer_tokens"] == DEFAULT_BUDGETS["answer_tokens"],
+            "serving reservation context/output-token budget drift")
+    require(document.get("run_dir") == reservation.get("run_dir")
+            and document.get("output_path") == reservation.get("output_path"),
+            "answer document run/output path differs from its reservation")
+    effective_document_path = (
+        document_path.expanduser().resolve() if document_path is not None
+        else Path(str(document.get("output_path", ""))).expanduser().resolve()
+    )
+    require(effective_document_path.is_file()
+            and effective_document_path == Path(reservation["output_path"]).resolve(),
+            "graded answer document is not the output path consumed by its reservation")
+
+    prior = reservation.get("prior_attempt")
+    if attempt == 0:
+        require(prior is None and document.get("prior_attempt") is None,
+                "primary serving attempt must not bind a prior attempt")
+    else:
+        expected_prior_reservation = (SERVING_ATTEMPT_ROOT
+                                      / f"{role}_attempt0.reservation.json").resolve()
+        require(isinstance(prior, dict)
+                and set(prior) == {
+                    "path", "sha256", "required_cell_keys", "reservation",
+                }
+                and document.get("prior_attempt") == prior,
+                "attempt 1 lacks its exact prior answer/missing-cell binding")
+        prior_answer_path = Path(str(prior.get("path", ""))).expanduser().resolve()
+        require(prior_answer_path.is_file()
+                and sha256_file(prior_answer_path) == prior.get("sha256"),
+                "attempt-1 prior answer bytes changed")
+        prior_answer = load_object(prior_answer_path, "prior attempt answer document")
+        require(prior_answer.get("role") == role
+                and prior_answer.get("attempt", 0) == 0,
+                "attempt 1 is bound to a different role/attempt answer")
+        prior_reservation = prior.get("reservation")
+        require(isinstance(prior_reservation, dict)
+                and set(prior_reservation) == {
+                    "path", "sha256", "reservation_id",
+                }
+                and Path(str(prior_reservation.get("path", ""))).resolve()
+                == expected_prior_reservation
+                and expected_prior_reservation.is_file()
+                and sha256_file(expected_prior_reservation)
+                == prior_reservation.get("sha256"),
+                "attempt 1 is not bound to the fixed attempt-0 reservation")
+        prior_artifact = load_object(expected_prior_reservation,
+                                     "prior serving attempt reservation")
+        require(prior_artifact.get("reservation_id")
+                == prior_reservation.get("reservation_id")
+                and prior_artifact.get("role") == role
+                and prior_artifact.get("attempt") == 0
+                and prior_artifact.get("frozen_manifest_sha256") == frozen_sha,
+                "attempt-1 prior reservation identity drift")
+        require(prior_answer.get("reservation_path")
+                == str(expected_prior_reservation)
+                and prior_answer.get("reservation_sha256")
+                == prior_reservation.get("sha256")
+                and prior_answer.get("reservation_id")
+                == prior_reservation.get("reservation_id"),
+                "attempt-1 prior answer/reservation binding drift")
+        prior_attempts, _ = collect_attempts([prior_answer_path], frozen)
+        prior_resolved = resolve_attempts(prior_attempts, frozen)
+        expected_missing = sorted(
+            key for key, resolution in prior_resolved.items()
+            if key.startswith(role + "|") and resolution.get("rerun_required") is True
+        )
+        require(prior.get("required_cell_keys") == expected_missing
+                and bool(expected_missing),
+                "attempt-1 required cell keys differ from the exact prior answer")
+
+    receipt = load_object(receipt_path, "serving attempt receipt")
+    receipt_keys = {
+        "format_version", "artifact_type", "role", "attempt",
+        "reservation_path", "reservation_sha256", "reservation_id", "status",
+        "trace_receipts", "cell_outcomes", "finished_utc", "receipt_id",
+    }
+    require(set(receipt) == receipt_keys
+            and receipt.get("format_version") == 1
+            and receipt.get("artifact_type") == "s4_serving_attempt_receipt",
+            "serving attempt receipt has an invalid schema/type")
+    receipt_core = {key: value for key, value in receipt.items() if key != "receipt_id"}
+    require(receipt.get("receipt_id") == _producer_sha256(receipt_core)
+            == document["receipt_id"],
+            "serving receipt ID is invalid")
+    require(receipt.get("role") == role and receipt.get("attempt") == attempt
+            and receipt.get("reservation_path") == str(reservation_path)
+            and receipt.get("reservation_sha256") == document["reservation_sha256"]
+            and receipt.get("reservation_id") == document["reservation_id"],
+            "serving receipt reservation binding drift")
+    require(receipt.get("status") == document.get("status"),
+            "serving receipt terminal status differs from the answer document")
+    reserved_at = _parse_utc(reservation.get("reserved_utc"),
+                             "serving reservation reserved_utc")
+    finished_at = _parse_utc(receipt.get("finished_utc"),
+                             "serving receipt finished_utc")
+    frozen_at = _parse_utc(frozen.get("frozen_utc"), "r4 frozen_utc")
+    require(frozen_at < reserved_at <= finished_at,
+            "serving reservation/receipt chronology is invalid")
+
+    expected_trace_receipts: list[dict[str, Any]] = []
+    expected_outcomes: list[dict[str, Any]] = []
+    for cell in document.get("cells") or []:
+        cell_key = "|".join(str(cell.get(key)) for key in (
+            "role", "game_blind", "arm", "seed",
+        ))
+        for record in cell.get("rounds") or []:
+            expected_trace_receipts.append({
+                "cell_key": cell_key,
+                "round_index": record.get("round_index"),
+                "round_kind": record.get("round_kind"),
+                "trace_tag": record.get("trace_tag"),
+                "trace_path": record.get("trace_path"),
+                "trace_sha256": record.get("trace_sha256"),
+            })
+        expected_outcomes.append({
+            "role": cell.get("role"),
+            "game_blind": cell.get("game_blind"),
+            "arm": cell.get("arm"),
+            "seed": cell.get("seed"),
+            "attempt": cell.get("attempt"),
+            "outcome": cell.get("outcome"),
+        })
+    require(receipt.get("trace_receipts") == expected_trace_receipts,
+            "serving receipt trace inventory differs from the answer document")
+    require(receipt.get("cell_outcomes") == expected_outcomes,
+            "serving receipt cell inventory/outcomes differ from the answer document")
+    observed_keys = {
+        logical_key(role, cell.get("game_blind"), cell.get("arm"), cell.get("seed"))
+        for cell in document.get("cells") or []
+    }
+    expected_role_keys = {
+        logical_key(row["role"], row["game_blind"], row["arm"], row["seed"])
+        for row in frozen["preregistration"]["expected_cells"]
+        if row["role"] == role
+    }
+    if attempt == 0 and receipt.get("status") != "aborted_instrument":
+        require(observed_keys == expected_role_keys,
+                "primary serving receipt does not contain the exact frozen role matrix")
+    if attempt == 1:
+        require(observed_keys == set(prior["required_cell_keys"]),
+                "attempt-1 receipt differs from the exact derived missing-cell set")
+    return {"reservation": reservation, "receipt": receipt}
+
+
+def _validate_immutable_round_trace(
+    record: dict[str, Any], frozen: dict[str, Any], *, expected_tag: str,
+    expected_round: int, expected_kind: str, run_dir: Path,
+) -> dict[str, Any] | None:
+    """Open the exact trace and mechanically rederive its serving receipt."""
+    import e2_probe_vlm as probe
+    import s4_run as srun
+    from PIL import Image
+
+    require(isinstance(record, dict), f"{expected_tag}: round receipt must be an object")
+    trace_path = Path(str(record.get("trace_path", ""))).expanduser().resolve()
+    expected_path = (run_dir / f"{expected_tag}.trace.json").resolve()
+    require(trace_path == expected_path and trace_path.is_file(),
+            f"{expected_tag}: trace is absent or outside the reserved run directory")
+    trace_sha = require_full_sha256(record.get("trace_sha256"),
+                                    f"{expected_tag}.trace_sha256")
+    require(sha256_file(trace_path) == trace_sha,
+            f"{expected_tag}: immutable trace bytes changed")
+    _require_read_only(trace_path, f"{expected_tag} trace")
+    trace = load_object(trace_path, f"{expected_tag} immutable trace")
+    record_payload = {
+        key: value for key, value in record.items()
+        if key not in {"trace_path", "trace_sha256"}
+    }
+    require(set(trace) == set(record_payload) | {"prompt", "raw"}
+            and all(trace.get(key) == value for key, value in record_payload.items()),
+            f"{expected_tag}: answer-document round differs from its immutable trace")
+    require(trace.get("raw") == trace.get("raw_response"),
+            f"{expected_tag}: raw response aliases drifted")
+    require(trace.get("tag") == expected_tag
+            and trace.get("trace_tag") == expected_tag
+            and trace.get("round_index") == expected_round
+            and trace.get("round_kind") == expected_kind,
+            f"{expected_tag}: trace tag/round identity drift")
+
+    messages = trace.get("messages")
+    require(isinstance(messages, list) and messages,
+            f"{expected_tag}: trace lacks exact delivered messages")
+    require(trace.get("messages_sha256") == sha256_json(messages),
+            f"{expected_tag}: delivered-message digest is invalid")
+    prompt = trace.get("prompt")
+    require(isinstance(prompt, str)
+            and trace.get("prompt_sha256")
+            == hashlib.sha256(prompt.encode()).hexdigest(),
+            f"{expected_tag}: serialized prompt digest is invalid")
+    image_items = sum(
+        1 for message in messages if isinstance(message, dict)
+        for item in (message.get("content") if isinstance(message.get("content"), list)
+                     else [])
+        if isinstance(item, dict) and item.get("type") == "image"
+    )
+    images = trace.get("images")
+    grids = trace.get("image_grid_thw")
+    require(isinstance(images, list) and isinstance(grids, list)
+            and len(images) == len(grids) == image_items
+            and len(images) <= frozen["preregistration"]["budgets"]["max_images"],
+            f"{expected_tag}: ordered image inventory is invalid")
+    visual_tokens = 0
+    for index, (image_record, grid) in enumerate(zip(images, grids)):
+        require(isinstance(image_record, dict)
+                and set(image_record) == {
+                    "path", "sha256", "source_size", "processed_size",
+                }, f"{expected_tag}: image[{index}] receipt schema is invalid")
+        image_path = Path(str(image_record.get("path", ""))).expanduser().resolve()
+        require(image_path.is_file()
+                and sha256_file(image_path) == image_record.get("sha256"),
+                f"{expected_tag}: image[{index}] bytes changed")
+        with Image.open(image_path) as opened:
+            actual_size = [opened.width, opened.height]
+        require(actual_size == image_record.get("source_size"),
+                f"{expected_tag}: image[{index}] source dimensions drifted")
+        require(isinstance(grid, list) and len(grid) == 3
+                and all(type(value) is int and value > 0 for value in grid),
+                f"{expected_tag}: image[{index}] processor grid is invalid")
+        grid_t, grid_h, grid_w = grid
+        require(grid_t == 1 and grid_t * grid_h * grid_w % 4 == 0,
+                f"{expected_tag}: image[{index}] visual-token geometry is invalid")
+        require(image_record.get("processed_size") == [grid_w * 16, grid_h * 16]
+                == actual_size,
+                f"{expected_tag}: image[{index}] was resized or misreported")
+        visual_tokens += grid_t * grid_h * grid_w // 4
+    budgets = frozen["preregistration"]["budgets"]
+    require(trace.get("visual_tokens") == visual_tokens
+            and visual_tokens <= budgets["max_visual_tokens"],
+            f"{expected_tag}: visual-token accounting drift")
+
+    expected_identity = _expected_r4_serving_identity(frozen)
+    snapshot = frozen["serving_snapshot"]
+    require(trace.get("serving_identity") == expected_identity
+            and trace.get("sampler") == snapshot.get("production_sampler")
+            == EXPECTED_PRODUCTION_SAMPLER
+            and trace.get("reasoning_effort") == snapshot.get("reasoning_effort")
+            and trace.get("preserve_thinking") is True
+            and snapshot.get("preserve_thinking") is True,
+            f"{expected_tag}: serving identity/sampler/effort drift")
+    require(trace.get("native_context_tokens") == budgets["native_context_tokens"]
+            == snapshot.get("native_context_tokens") == NATIVE_CONTEXT_TOKENS
+            and trace.get("max_tokens") == budgets["answer_tokens"],
+            f"{expected_tag}: native-context/output budget drift")
+    expected_text_cap = (
+        RUN_INITIAL_PROMPT_TEXT_TOKENS if expected_kind == "initial"
+        else budgets["max_context_text_tokens"]
+    )
+    require(trace.get("input_text_token_cap") == expected_text_cap,
+            f"{expected_tag}: input text-token cap drift")
+    expanded = trace.get("expanded_prompt_tokens")
+    derived_text = trace.get("derived_text_tokens")
+    input_tokens = trace.get("input_tokens")
+    output_tokens = trace.get("output_tokens")
+    stats = trace.get("stats")
+    require(type(expanded) is int and type(derived_text) is int
+            and type(input_tokens) is int and type(output_tokens) is int
+            and isinstance(stats, dict),
+            f"{expected_tag}: token receipt is incomplete")
+    require(expanded == derived_text + visual_tokens
+            and derived_text <= expected_text_cap
+            and input_tokens == expanded == trace.get("generator_prompt_tokens")
+            == stats.get("prompt_tokens")
+            and output_tokens == stats.get("generation_tokens")
+            and 0 <= output_tokens <= budgets["answer_tokens"]
+            and stats.get("total_tokens") == input_tokens + output_tokens
+            and trace.get("finish_reason") == stats.get("finish_reason")
+            and trace.get("prompt_tokens_match") is True
+            and trace.get("token_accounting_match") is True,
+            f"{expected_tag}: generator token accounting is invalid")
+    require(input_tokens + budgets["answer_tokens"] <= NATIVE_CONTEXT_TOKENS,
+            f"{expected_tag}: prompt plus reserved answer exceeds native context")
+
+    raw = trace.get("raw_response")
+    require(isinstance(raw, str), f"{expected_tag}: raw response must be text")
+    full = "<think>" + raw
+    closed = "</think>" in full
+    think = full.split("<think>", 1)[-1].split("</think>", 1)[0]
+    answer = full.split("</think>", 1)[-1].strip() if closed else ""
+    parsed = srun.extract_final_json(answer) if closed else None
+    schema_errors = srun.validate_answer(parsed) if parsed is not None else []
+    payload_present = parsed is not None and not schema_errors
+    completeness = probe.classify_completion(
+        stats.get("finish_reason"), stats.get("generation_tokens"),
+        budgets["answer_tokens"], closed, parsed,
+    )
+    if completeness == "complete" and schema_errors:
+        completeness = "malformed_schema"
+    require(trace.get("think") == think and trace.get("answer") == answer
+            and trace.get("parsed_payload") == parsed
+            and trace.get("schema_errors") == schema_errors
+            and trace.get("payload_present") is payload_present
+            and trace.get("completion_contains_close") is closed
+            and trace.get("think_chars") == len(think.strip())
+            and trace.get("completeness") == completeness,
+            f"{expected_tag}: parsed payload/completeness is not derivable from raw response")
+    require(trace.get("assistant_history") == {
+        "role": "assistant", "content": answer, "reasoning_content": think,
+    }, f"{expected_tag}: preserved assistant reasoning history drift")
+    return parsed
+
+
 def validate_run_document(
-    document: dict[str, Any], frozen: dict[str, Any]
+    document: dict[str, Any], frozen: dict[str, Any],
+    document_path: Path | None = None,
 ) -> tuple[str, set[int], int]:
     preregistration = frozen["preregistration"]
     require(document.get("frozen_manifest_sha256") == sha256_file(frozen_manifest_path()),
@@ -2754,6 +3286,11 @@ def validate_run_document(
             and set(arms).issubset(preregistration["arms"]),
             "answer document arms are invalid or outside the preregistration")
     require(isinstance(document.get("cells"), list), "answer document cells must be a list")
+    if "serving_snapshot" in frozen:
+        _validate_serving_attempt_authority(
+            document, frozen, role=role, attempt=attempt,
+            document_path=document_path,
+        )
     if role == "qwen":
         if "serving_snapshot" in frozen:  # revision 4: snapshot-bound identity
             snapshot = frozen["serving_snapshot"]
@@ -2828,7 +3365,8 @@ def validate_run_document(
             require(document.get("familiarity_commitment") is None,
                     "model ceiling cannot self-attest a closure-eligible familiarity commitment")
             validate_model_ceiling_execution_trace(
-                document, preregistration, set(seeds), ceiling_artifact, ceiling_input_sha
+                document, preregistration, set(seeds), ceiling_artifact,
+                ceiling_input_sha, strict_r4="serving_snapshot" in frozen,
             )
         else:
             respondent_id = ceiling_spec["cohort"]["respondent_id"]
@@ -2873,6 +3411,18 @@ def validate_run_document(
                 document, preregistration, set(seeds), ceiling_artifact, ceiling_input_sha,
                 commitment_binding["sha256"],
             )
+    if "serving_snapshot" in frozen:
+        for cell_index, cell in enumerate(document["cells"]):
+            require(isinstance(cell, dict),
+                    f"answer document cell {cell_index} must be an object")
+            cell_seed = cell.get("seed")
+            if cell_seed is None and len(seeds) == 1:
+                cell_seed = seeds[0]
+            require(type(cell_seed) is int and cell_seed in seeds,
+                    f"answer document cell {cell_index} has an invalid seed")
+            validate_cell_provenance(
+                cell, frozen, seed=cell_seed, role=role, document=document,
+            )
     return role, set(seeds), attempt
 
 
@@ -2883,6 +3433,7 @@ def generation_seed(base_seed: int, blind_id: str, round_number: int) -> int:
 
 def validate_cell_provenance(
     cell: dict[str, Any], frozen: dict[str, Any], *, seed: int, role: str,
+    document: dict[str, Any] | None = None,
 ) -> None:
     blind_id, arm = cell.get("game_blind"), cell.get("arm")
     packet = frozen["packets"].get(blind_id)
@@ -2899,6 +3450,9 @@ def validate_cell_provenance(
         require(len(rounds) == expected_rounds,
                 f"answered Qwen cell must contain exactly {expected_rounds} matched "
                 "generation rounds")
+    if role == "ceiling" and cell.get("outcome") == "answered":
+        require(len(rounds) == 1,
+                "answered model-ceiling cell must contain exactly one generation round")
     require(len(rounds) <= expected_rounds,
             f"cell exceeds frozen interaction-round budget: {blind_id}/{arm}/seed={seed}")
     probes_spent = cell.get("probes_spent")
@@ -2906,6 +3460,8 @@ def validate_cell_provenance(
         require(type(probes_spent) is int
                 and 0 <= probes_spent <= frozen["preregistration"]["budgets"]["active_probes"],
                 f"cell exceeds frozen active-probe budget: {blind_id}/{arm}/seed={seed}")
+    parsed_payloads: list[dict[str, Any] | None] = []
+    previous_record: dict[str, Any] | None = None
     for round_number, record in enumerate(rounds):
         require(isinstance(record, dict), "round trace metadata must be an object")
         expected_tag = f"{blind_id}_{arm}_s{seed}_r{round_number}"
@@ -2929,6 +3485,61 @@ def validate_cell_provenance(
             require(isinstance(record["images"], list)
                     and len(record["images"]) <= frozen["preregistration"]["budgets"]["max_images"],
                     f"image-count budget drift in {expected_tag}")
+        if role == "qwen" and "serving_snapshot" in frozen:
+            text_cap = (
+                RUN_INITIAL_PROMPT_TEXT_TOKENS if round_number == 0
+                else frozen["preregistration"]["budgets"]["max_context_text_tokens"]
+            )
+            require(record.get("input_text_token_cap") == text_cap,
+                    f"input text-token cap missing/drifted in {expected_tag}")
+            require(type(record.get("derived_text_tokens")) is int
+                    and record["derived_text_tokens"] <= text_cap,
+                    f"input text-token accounting exceeds the cap in {expected_tag}")
+        elif ("serving_snapshot" in frozen
+              and (frozen["preregistration"].get("ceiling_spec") or {}).get("kind")
+              == "model"):
+            text_cap = frozen["preregistration"]["budgets"]["max_context_text_tokens"]
+            require(record.get("input_text_token_cap") == text_cap,
+                    f"model-ceiling input text-token cap missing/drifted in {expected_tag}")
+            require(type(record.get("derived_text_tokens")) is int
+                    and record["derived_text_tokens"] <= text_cap,
+                    f"model-ceiling input text-token accounting exceeds the cap in {expected_tag}")
+        if "serving_snapshot" in frozen:
+            require(document is not None and isinstance(document.get("run_dir"), str),
+                    f"{expected_tag}: strict trace validation lacks its run document")
+            expected_kind = (
+                "ceiling_initial" if role == "ceiling"
+                else "initial" if round_number == 0
+                else "interaction_update"
+            )
+            parsed_payloads.append(_validate_immutable_round_trace(
+                record, frozen, expected_tag=expected_tag,
+                expected_round=round_number, expected_kind=expected_kind,
+                run_dir=Path(document["run_dir"]).resolve(),
+            ))
+            if previous_record is not None:
+                current_messages = record.get("messages")
+                prior_messages = previous_record.get("messages")
+                require(isinstance(current_messages, list)
+                        and isinstance(prior_messages, list)
+                        and len(current_messages) == len(prior_messages) + 2
+                        and current_messages[:len(prior_messages)] == prior_messages
+                        and current_messages[len(prior_messages)]
+                        == previous_record.get("assistant_history")
+                        and isinstance(current_messages[-1], dict)
+                        and current_messages[-1].get("role") == "user",
+                        f"{expected_tag}: accumulated conversation history drift")
+                prior_images = previous_record.get("images") or []
+                current_images = record.get("images") or []
+                require(current_images[:len(prior_images)] == prior_images,
+                        f"{expected_tag}: accumulated image order drift")
+            previous_record = record
+    if "serving_snapshot" in frozen and parsed_payloads:
+        if role == "qwen":
+            require(cell.get("pre_probe_answer") == parsed_payloads[0],
+                    f"{blind_id}/{arm}/seed={seed}: pre_probe_answer is not round 0")
+        require(cell.get("final_answer") == parsed_payloads[-1],
+                f"{blind_id}/{arm}/seed={seed}: final_answer is not the final trace payload")
 
 
 def collect_attempts(
@@ -2943,7 +3554,9 @@ def collect_attempts(
     bindings: list[dict[str, str]] = []
     for path in answer_paths:
         document = load_object(path, "answer document")
-        role, document_seeds, document_attempt = validate_run_document(document, frozen)
+        role, document_seeds, document_attempt = validate_run_document(
+            document, frozen, document_path=path,
+        )
         bindings.append({"path": str(path), "sha256": sha256_file(path)})
         observed_arms: set[str] = set()
         for cell_index, cell in enumerate(document["cells"]):
@@ -2962,7 +3575,9 @@ def collect_attempts(
             require(type(attempt) is int and 0 <= attempt <= preregistration["missing_reruns"],
                     f"invalid attempt number for {key}: {attempt!r}")
             require(attempt not in attempts[key], f"duplicate cell attempt: {key} attempt {attempt}")
-            validate_cell_provenance(cell, frozen, seed=seed, role=cell_role)
+            validate_cell_provenance(
+                cell, frozen, seed=seed, role=cell_role, document=document,
+            )
             attempts[key][attempt] = {
                 "cell": cell,
                 "source_path": str(path),
@@ -3168,7 +3783,7 @@ def prepare_ceiling_inputs(
     answer_paths: list[Path], output_path: Path | None = None, *,
     familiarity_commitment_path: Path | None = None,
 ) -> Path:
-    frozen = verify_freeze()
+    frozen = verify_authorized_r4()
     attempts, bindings = collect_attempts(answer_paths, frozen)
     del bindings
     resolved = resolve_attempts(attempts, frozen)
@@ -3301,7 +3916,11 @@ def _worksheet_cells(
         require(game is not None, f"unknown blind id in frozen matrix: {expected['game_blind']}")
         gold_path = GOLD / f"{game}.json"
         require(gold_path.is_file(), f"missing sealed gold for {game}")
-        gold = validate_gold(game, load_object(gold_path, "gold file"))
+        gold_validator = (
+            validate_gold if frozen.get("format_version") == R4_FORMAT_VERSION
+            else validate_legacy_gold
+        )
+        gold = gold_validator(game, load_object(gold_path, "gold file"))
         raw_cell = resolution["selected"]["cell"] if resolution["selected"] else {}
         answer = raw_cell.get("final_answer") if resolution["selected"] else None
         pre_answer = raw_cell.get("pre_probe_answer") if resolution["selected"] else None
@@ -4444,7 +5063,7 @@ def grade(
     adjudication_receipt_path: Path | None = None,
     output_path: Path | None = None,
 ) -> int:
-    frozen = verify_freeze()
+    frozen = verify_authorized_r4()
     paths = [answers_paths] if isinstance(answers_paths, Path) else list(answers_paths)
     require(bool(paths), "at least one answers file is required")
 
@@ -4599,6 +5218,7 @@ R4_SCRIPT_RELATIVE = SCRIPT_RELATIVE + (
     "agent/harness/s4_ledgers.py",
     "agent/harness/s4_ceiling.py",
     "agent/harness/e2_probe_vlm.py",
+    "agent/harness/s4_qwen_calibration.py",
 )
 
 R4_STOPPING_RULES = (
@@ -4627,6 +5247,17 @@ def serving_snapshot_r4(model: Path, *, full_shards: bool = True) -> dict[str, A
     import s4_packet as spk
     import s4_run as srun
 
+    require(dict(probe.PRODUCTION_SAMPLER) == EXPECTED_PRODUCTION_SAMPLER,
+            "production sampler differs from the frozen Qwen 3.8 recommendation")
+    require(probe.PRESERVE_THINKING is PRESERVE_THINKING,
+            "serving path must preserve Qwen thinking tokens")
+    require(probe.NATIVE_CONTEXT_TOKENS == NATIVE_CONTEXT_TOKENS
+            and srun.NATIVE_CONTEXT_TOKENS == NATIVE_CONTEXT_TOKENS,
+            "serving path native-context declaration drifted")
+    require(srun.MAX_ANSWER_TOKENS == DEFAULT_BUDGETS["answer_tokens"]
+            and srun.MAX_CONTEXT_TEXT_TOKENS
+            == DEFAULT_BUDGETS["max_context_text_tokens"],
+            "serving path output/context budgets drifted from the grader")
     auditor = spk.ProcessorAuditor(model)
     snapshot: dict[str, Any] = {
         "model_path": str(model),
@@ -4637,6 +5268,8 @@ def serving_snapshot_r4(model: Path, *, full_shards: bool = True) -> dict[str, A
         },
         "production_sampler": dict(probe.PRODUCTION_SAMPLER),
         "reasoning_effort": probe.REASONING_EFFORT,
+        "preserve_thinking": probe.PRESERVE_THINKING,
+        "native_context_tokens": probe.NATIVE_CONTEXT_TOKENS,
         "budgets": {
             "answer_tokens": srun.MAX_ANSWER_TOKENS,
             "interaction_rounds": srun.INTERACTION_ROUNDS,
@@ -4644,6 +5277,8 @@ def serving_snapshot_r4(model: Path, *, full_shards: bool = True) -> dict[str, A
             "active_probes": srun.ACTIVE_PROBES,
             "max_images": srun.MAX_IMAGES,
             "max_visual_tokens": srun.MAX_VISUAL_TOKENS,
+            "native_context_tokens": srun.NATIVE_CONTEXT_TOKENS,
+            "max_context_text_tokens": srun.MAX_CONTEXT_TEXT_TOKENS,
         },
         "request_prompt_sha256": hashlib.sha256(srun.REQUEST.encode()).hexdigest(),
     }
@@ -4653,10 +5288,72 @@ def serving_snapshot_r4(model: Path, *, full_shards: bool = True) -> dict[str, A
             "checkpoint_sha256": shards.get("checkpoint_sha256"),
             "verified_shards": True,
         }
+    require(
+        snapshot["budgets"]["max_context_text_tokens"]
+        + snapshot["budgets"]["max_visual_tokens"]
+        + snapshot["budgets"]["answer_tokens"]
+        <= snapshot["budgets"]["native_context_tokens"],
+        "frozen serving budgets exceed the model's native context window",
+    )
     snapshot["snapshot_sha256"] = sha256_json(
         {key: value for key, value in snapshot.items() if key != "snapshot_sha256"}
     )
     return snapshot
+
+
+def _validate_serving_snapshot_contract(
+    snapshot: Any, preregistration: dict[str, Any],
+) -> None:
+    require(isinstance(snapshot, dict), "r4 serving_snapshot must be an object")
+    require(snapshot.get("snapshot_sha256") == sha256_json({
+        key: value for key, value in snapshot.items() if key != "snapshot_sha256"
+    }), "r4 serving_snapshot digest is invalid")
+    require(snapshot.get("production_sampler") == EXPECTED_PRODUCTION_SAMPLER,
+            "r4 serving_snapshot does not pin the complete Qwen 3.8 sampler")
+    require(snapshot.get("reasoning_effort") == "xhigh"
+            and snapshot.get("preserve_thinking") is True,
+            "r4 serving_snapshot must pin xhigh with preserved thinking")
+    require(snapshot.get("native_context_tokens") == NATIVE_CONTEXT_TOKENS,
+            "r4 serving_snapshot native context drift")
+    budgets = snapshot.get("budgets")
+    require(budgets == preregistration.get("budgets") == DEFAULT_BUDGETS,
+            "r4 serving_snapshot/preregistration/default budget drift")
+    require(budgets["max_context_text_tokens"]
+            + budgets["max_visual_tokens"] + budgets["answer_tokens"]
+            <= budgets["native_context_tokens"] == snapshot["native_context_tokens"],
+            "r4 serving budget envelope exceeds the native context")
+    ceiling_spec = preregistration.get("ceiling_spec") or {}
+    model = ceiling_spec.get("model") or {}
+    require(ceiling_spec.get("kind") == "model"
+            and model.get("checkpoint_sha256")
+            == (snapshot.get("checkpoint_fingerprint") or {}).get(
+                "checkpoint_sha256"
+            ), "r4 model comparator differs from the frozen served checkpoint")
+    expected_config = {
+        "runtime": f"mlx-vlm-{(snapshot.get('runtime_versions') or {}).get('mlx-vlm')}",
+        "enable_thinking": True,
+        "reasoning_effort": "xhigh",
+        "preserve_thinking": True,
+        **EXPECTED_PRODUCTION_SAMPLER,
+        "max_output_tokens_per_call": budgets["answer_tokens"],
+        "native_context_tokens": budgets["native_context_tokens"],
+        "classification": "descriptive_only_no_closure",
+    }
+    require(model.get("serving_config") == expected_config,
+            "r4 model comparator serving_config differs from the frozen runtime")
+
+
+def _r4_file_inventory(root: Path) -> dict[str, dict[str, Any]]:
+    """Exact recursive byte inventory; extra files are drift too."""
+    require(root.is_dir(), f"missing sealed fixture directory: {root}")
+    files = sorted(path for path in root.rglob("*") if path.is_file())
+    require(files, f"sealed fixture directory is empty: {root}")
+    return {
+        str(path.relative_to(root)): {
+            "sha256": sha256_file(path), "bytes": path.stat().st_size,
+        }
+        for path in files
+    }
 
 
 def _r4_confirm_assets() -> dict[str, Any]:
@@ -4666,9 +5363,15 @@ def _r4_confirm_assets() -> dict[str, Any]:
 
     fixtures_root = SEALED_R4 / "fixtures"
     gate_manifests = sorted(fixtures_root.glob("fixture_manifest_*.json"))
-    require(gate_manifests,
-            "freeze-r4 requires sealed confirm gate fixtures "
-            "(s4_gates.py --build-fixtures-only --namespace confirm)")
+    require(len(gate_manifests) == 1,
+            "freeze-r4 requires exactly one sealed confirm gate fixture manifest; "
+            "arbitrary seed variants would change the confirmatory experiment")
+    gate_manifest = load_object(gate_manifests[0], "confirm gate fixture manifest")
+    require(gate_manifest.get("namespace") == "confirm"
+            and gate_manifest.get("base_seed") == 4
+            and gate_manifest.get("generator_sha256")
+            == sha256_file(ROOT / "agent/harness/s4_gates.py"),
+            "confirm gate fixture manifest has the wrong namespace, seed, or generator")
     sentinel_manifest = fixtures_root / "sentinels/sentinel_manifest.json"
     require(sentinel_manifest.is_file(),
             "freeze-r4 requires sealed sentinel assets "
@@ -4678,6 +5381,10 @@ def _r4_confirm_assets() -> dict[str, Any]:
         path.name: sha256_file(path) for path in sorted(gold_dir.glob("*.json"))
     }
     require(sentinel_gold, "sentinel gold is missing from the sealed fixtures")
+    sentinels.verify_manifest(
+        sentinel_manifest, expected_namespace="confirm", expected_base_seed=4,
+        require_live_generator=True,
+    )
     return {
         "gate_fixture_manifests": {
             str(path.relative_to(ROOT)): sha256_file(path) for path in gate_manifests
@@ -4695,23 +5402,246 @@ def _r4_confirm_assets() -> dict[str, Any]:
             "total_generations": sentinels.TOTAL_GENERATIONS,
         },
         "precision_profile": gates.PRECISION_PROFILE,
+        "fixture_files": _r4_file_inventory(fixtures_root),
     }
 
 
-def freeze_r4(preregistration_path: Path | None, model: Path) -> int:
+ADEQUACY_RECEIPT_FORMAT_VERSION = 1
+ADEQUACY_RECEIPT_TYPE = "s4_packet_adequacy_review_receipt"
+
+
+def _validate_packet_adequacy_attestation(
+    path: Path, *, before_utc: str | None = None,
+) -> dict[str, Any]:
+    """Validate the pre-freeze, operator-reviewed packet adequacy record.
+
+    The attestation binds an embedded receipt.  The receipt, in turn, hashes the
+    exact attestation payload with only ``review_receipt`` removed, avoiding a
+    hash cycle while making every substantive review field immutable once the
+    full attestation is bound into FROZEN.
+    """
+    import s4_sentinels as sentinels
+
+    resolved = path.expanduser().resolve()
+    require(resolved.is_file(), f"missing packet adequacy attestation: {resolved}")
+    document = load_object(resolved, "packet adequacy attestation")
+    manifest_path = SEALED_R4 / "fixtures/sentinels/sentinel_manifest.json"
+    require(manifest_path.is_file(),
+            "packet adequacy review requires the sealed sentinel manifest")
+    manifest_sha = sha256_file(manifest_path)
+    manifest = sentinels.verify_manifest(
+        manifest_path, expected_namespace="confirm", expected_base_seed=4,
+        require_live_generator=True,
+    )
+    validated = sentinels.validate_adequacy_attestation(
+        document, manifest=manifest, manifest_sha256=manifest_sha,
+    )
+    require(validated.get("reviewer_kind") == "human",
+            "packet adequacy must be reviewed by the identified operator, not a model")
+    reviewer = validated.get("reviewer")
+    require(isinstance(reviewer, str) and reviewer.strip(),
+            "packet adequacy operator must be identified")
+    require(validated.get("source_blind") is True
+            and validated.get("sentinel_outputs_seen") is False,
+            "packet adequacy review must be source-blind and pre-output")
+
+    receipt = validated.get("review_receipt")
+    receipt_keys = {
+        "format_version", "artifact_type", "created_utc", "reviewer",
+        "reviewer_kind", "sentinel_manifest_sha256",
+        "attestation_payload_sha256", "source_blind",
+        "sentinel_outputs_seen",
+    }
+    require(isinstance(receipt, dict) and set(receipt) == receipt_keys,
+            "packet adequacy review_receipt has an invalid schema")
+    require(receipt.get("format_version") == ADEQUACY_RECEIPT_FORMAT_VERSION
+            and receipt.get("artifact_type") == ADEQUACY_RECEIPT_TYPE,
+            "packet adequacy review_receipt has an unsupported type/version")
+    require(receipt.get("reviewer") == reviewer
+            and receipt.get("reviewer_kind") == "operator",
+            "packet adequacy receipt must identify the same operator")
+    require(receipt.get("source_blind") is True
+            and receipt.get("sentinel_outputs_seen") is False,
+            "packet adequacy receipt must attest source blindness before outputs")
+    require(receipt.get("sentinel_manifest_sha256") == manifest_sha,
+            "packet adequacy receipt is bound to a different sentinel manifest")
+    payload_without_receipt = {
+        key: value for key, value in validated.items() if key != "review_receipt"
+    }
+    require(receipt.get("attestation_payload_sha256")
+            == sha256_json(payload_without_receipt),
+            "packet adequacy receipt payload digest is invalid")
+    attested_at = _parse_utc(validated.get("attested_utc"),
+                             "packet adequacy attested_utc")
+    receipt_at = _parse_utc(receipt.get("created_utc"),
+                            "packet adequacy receipt created_utc")
+    require(receipt_at >= attested_at,
+            "packet adequacy receipt predates its attestation")
+    if before_utc is not None:
+        boundary = _parse_utc(before_utc, "packet adequacy time boundary")
+        require(attested_at < boundary and receipt_at < boundary,
+                "packet adequacy attestation/receipt must strictly predate the freeze")
+    return {
+        "path": str(resolved),
+        "sha256": sha256_file(resolved),
+        "attested_utc": validated["attested_utc"],
+        "receipt_created_utc": receipt["created_utc"],
+        "receipt_sha256": sha256_json(receipt),
+        "sentinel_manifest_sha256": manifest_sha,
+    }
+
+
+def _require_no_confirm_outputs_before_freeze() -> None:
+    import s4_gates as gates
+    import s4_sentinels as sentinels
+
+    candidates = (
+        gates.CONFIRM_RESERVATION,
+        gates.CONFIRM_RUN_DIR,
+        gates.CONFIRM_RESULTS,
+        sentinels.CONFIRM_RUN_DIR,
+        sentinels.CONFIRM_RAW_RESULTS,
+        sentinels.CONFIRM_RESULTS,
+    )
+    existing = [str(path) for path in candidates if path.exists()]
+    require(not existing,
+            "confirmatory gate/sentinel output predates the freeze: "
+            + ", ".join(existing))
+
+
+def _validate_pre_freeze_qwen_calibration(
+    calibration_path: Path, semantic_path: Path, semantic_key_path: Path,
+    model: Path, *,
+    before_utc: str | None = None,
+    require_live_environment: bool = True,
+) -> dict[str, Any]:
+    """Bind the one-shot mechanical and blind-semantic development controls.
+
+    The semantic validator reopens the mechanical result too.  Only the first
+    validation fingerprints all model shards; the second independently checks
+    artifacts/contexts with that already-established live candidate identity.
+    """
+    import s4_qwen_calibration as qcal
+
+    require(semantic_key_path.is_file(),
+            f"missing Qwen semantic blinding key: {semantic_key_path}")
+    require(semantic_key_path.stat().st_mode & 0o222 == 0,
+            "Qwen semantic blinding key must be read-only before freeze")
+    semantic_key = semantic_key_path.read_bytes()
+    mechanical = qcal.validate_calibration_result(
+        calibration_path,
+        model=model if require_live_environment else None,
+        require_live_environment=require_live_environment,
+    )
+    semantic = qcal.validate_semantic_adjudication(
+        semantic_path, calibration_result_path=calibration_path,
+        blinding_key=semantic_key,
+        require_live_environment=False, require_pass=True,
+    )
+    require(mechanical.get("status") == "PASS"
+            and semantic.get("status") == "PASS"
+            and mechanical.get("candidate_id") == semantic.get("candidate_id")
+            and mechanical.get("result_sha256")
+            == semantic.get("calibration_result_sha256"),
+            "mechanical and semantic Qwen calibrations are not the same PASS candidate")
+
+    calibration_doc = load_object(calibration_path, "Qwen calibration result")
+    semantic_doc = load_object(semantic_path, "Qwen semantic calibration result")
+    mechanical_receipt_path = Path(mechanical["receipt_path"])
+    mechanical_receipt = load_object(
+        mechanical_receipt_path, "Qwen calibration terminal receipt",
+    )
+    semantic_receipt_path = (
+        qcal.SEMANTIC_ATTEMPT_ROOT
+        / f"{mechanical['candidate_id']}.receipt.json"
+    ).resolve()
+    semantic_receipt = load_object(
+        semantic_receipt_path, "Qwen semantic calibration terminal receipt",
+    )
+    times = {
+        "mechanical_completed_utc": calibration_doc.get("completed_utc"),
+        "mechanical_receipt_utc": mechanical_receipt.get("finished_utc"),
+        "semantic_adjudicated_utc": (
+            (semantic_doc.get("human_judgments") or {}).get("adjudicated_utc")
+        ),
+        "semantic_completed_utc": semantic_doc.get("created_utc"),
+        "semantic_receipt_utc": semantic_receipt.get("finished_utc"),
+    }
+    parsed_times = {
+        label: _parse_utc(value, f"Qwen calibration {label}")
+        for label, value in times.items()
+    }
+    ordered = list(parsed_times.values())
+    require(all(left <= right for left, right in zip(ordered, ordered[1:])),
+            "Qwen mechanical/semantic calibration chronology is invalid")
+    if before_utc is not None:
+        boundary = _parse_utc(before_utc, "Qwen calibration freeze boundary")
+        require(all(value < boundary for value in parsed_times.values()),
+                "Qwen calibration/adjudication must strictly predate the freeze")
+    return {
+        "candidate_id": mechanical["candidate_id"],
+        "git_commit": mechanical["git_commit"],
+        "checkpoint_sha256": mechanical["checkpoint_sha256"],
+        "mechanical": mechanical,
+        "semantic": semantic,
+        "mechanical_result": {
+            "path": str(calibration_path.resolve()),
+            "sha256": sha256_file(calibration_path),
+        },
+        "semantic_result": {
+            "path": str(semantic_path.resolve()),
+            "sha256": sha256_file(semantic_path),
+        },
+        "semantic_receipt": {
+            "path": str(semantic_receipt_path),
+            "sha256": sha256_file(semantic_receipt_path),
+        },
+        "semantic_blinding_key": {
+            "path": str(semantic_key_path.resolve()),
+            "sha256": sha256_file(semantic_key_path),
+            "commitment_sha256": semantic["blinding_key_commitment_sha256"],
+        },
+        "chronology": times,
+        "status": "PASS",
+        "scope": "pinned local Qwen3.8-27B Q8 MLX conversion only",
+    }
+
+
+def freeze_r4(
+    preregistration_path: Path | None, model: Path,
+    adequacy_path: Path | None = None,
+    qwen_calibration_path: Path | None = None,
+    qwen_semantic_path: Path | None = None,
+    qwen_semantic_key_path: Path | None = None,
+) -> int:
     import s4_ledgers as ledgers
 
     ledgers.enforce_offline_scientific_run("s4_grade --freeze-r4", [])
     require(not FROZEN_R4.exists(), f"{FROZEN_R4} already exists — append-only")
     require(not CONTINUE_R4.exists(),
             "a continuation certificate exists without its freeze — sealed dir corrupt")
-    for stray in ("claims.json", "sentinel_results.json"):
-        require(not (SEALED_R4 / stray).exists(),
-                f"confirmatory output {stray} predates the freeze — refusing")
+    _require_no_confirm_outputs_before_freeze()
+    require(preregistration_path is not None,
+            "--freeze-r4 requires an explicit --preregistration file; unsafe "
+            "all-arm/seed-4 defaults cannot create an append-only freeze")
+    require(adequacy_path is not None,
+            "--freeze-r4 requires the pre-output --adequacy attestation")
+    require(qwen_calibration_path is not None and qwen_semantic_path is not None
+            and qwen_semantic_key_path is not None,
+            "--freeze-r4 requires --qwen-calibration, --qwen-semantic, and "
+            "--qwen-semantic-key PASS artifacts")
     mapping = read_blind_map()
-    raw = (load_object(preregistration_path, "preregistration")
-           if preregistration_path is not None else {})
+    raw = load_object(preregistration_path, "preregistration")
     preregistration = normalize_preregistration(raw, mapping)
+    require(preregistration["stage"] == "A"
+            and preregistration["arms"] == ["T", "V", "O", "P"]
+            and preregistration["seeds"] == [2]
+            and preregistration["roles"] == ["qwen", "ceiling"]
+            and preregistration["primary_arm"] == "P",
+            "r4 Stage-A freeze is preregistered for arms T/V/O/P and seed 2 exactly")
+    ceiling_spec = preregistration.get("ceiling_spec") or {}
+    require(ceiling_spec.get("kind") == "model",
+            "r4 Stage-A requires the selected descriptive model comparator")
     git = current_git_state()
     require(not git["dirty"], f"refusing to freeze a dirty worktree: {git['status']}")
     scripts = {}
@@ -4725,11 +5655,34 @@ def freeze_r4(preregistration_path: Path | None, model: Path) -> int:
                          / "manifest.json")
         require(manifest_path.is_file(), f"missing recapture manifest for {game}")
         recaptures[game] = sha256_file(manifest_path)
-    snapshot = serving_snapshot_r4(model)
+    calibration_binding = _validate_pre_freeze_qwen_calibration(
+        qwen_calibration_path, qwen_semantic_path, qwen_semantic_key_path, model,
+    )
+    require(calibration_binding["git_commit"] == git["commit"],
+            "Qwen calibration was not run from the clean freeze candidate commit")
+    # The calibration validator just rehashed every shard.  Reuse that exact
+    # checkpoint identity instead of spending a second full-shard pass here.
+    snapshot = serving_snapshot_r4(model, full_shards=False)
+    snapshot["checkpoint_fingerprint"] = {
+        "checkpoint_sha256": calibration_binding["checkpoint_sha256"],
+        "verified_shards": True,
+    }
+    snapshot["snapshot_sha256"] = sha256_json({
+        key: value for key, value in snapshot.items() if key != "snapshot_sha256"
+    })
+    _validate_serving_snapshot_contract(snapshot, preregistration)
+    frozen_utc = _dt.datetime.now(_dt.timezone.utc).isoformat()
+    calibration_binding = _validate_pre_freeze_qwen_calibration(
+        qwen_calibration_path, qwen_semantic_path, qwen_semantic_key_path, model,
+        before_utc=frozen_utc, require_live_environment=False,
+    )
+    adequacy_binding = _validate_packet_adequacy_attestation(
+        adequacy_path, before_utc=frozen_utc,
+    )
     payload = {
         "format_version": R4_FORMAT_VERSION,
         "protocol_version": PROTOCOL_R4,
-        "frozen_utc": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+        "frozen_utc": frozen_utc,
         "git_commit": git["commit"],
         "blind_map_sha256": sha256_file(SEALED / "blind_map.json"),
         "gold_files": snapshot_gold(mapping),
@@ -4741,6 +5694,8 @@ def freeze_r4(preregistration_path: Path | None, model: Path) -> int:
             for game in preregistration["games"]
         },
         "confirm_assets": _r4_confirm_assets(),
+        "packet_adequacy_attestation": adequacy_binding,
+        "qwen_parameter_calibration": calibration_binding,
         "stopping_rules": R4_STOPPING_RULES,
         "kaggle_eval_budget": ledgers.KAGGLE_EVAL_BUDGET,
         "submission_guard": (
@@ -4778,6 +5733,7 @@ def verify_freeze_r4() -> dict[str, Any]:
             "invalid/non-canonical frozen preregistration")
     require(frozen.get("preregistration_sha256") == sha256_json(preregistration),
             "SEALED DRIFT: preregistration digest mismatch")
+    _validate_serving_snapshot_contract(frozen.get("serving_snapshot"), preregistration)
     expected_packets = frozen.get("packets")
     require(isinstance(expected_packets, dict)
             and set(expected_packets)
@@ -4800,40 +5756,142 @@ def verify_freeze_r4() -> dict[str, Any]:
             f"git commit drift: {git['commit']} != {frozen.get('git_commit')}")
     require(frozen.get("kaggle_eval_budget") == 0,
             "r4 freeze must pin KAGGLE_EVAL_BUDGET=0")
+    require(_r4_confirm_assets() == frozen.get("confirm_assets"),
+            "SEALED DRIFT: recursive confirm fixture inventory or thresholds changed")
+    adequacy_binding = frozen.get("packet_adequacy_attestation")
+    require(isinstance(adequacy_binding, dict)
+            and isinstance(adequacy_binding.get("path"), str),
+            "r4 freeze lacks its packet adequacy attestation binding")
+    require(
+        _validate_packet_adequacy_attestation(
+            Path(adequacy_binding["path"]), before_utc=frozen.get("frozen_utc"),
+        ) == adequacy_binding,
+        "SEALED DRIFT: packet adequacy attestation or receipt changed",
+    )
+    calibration_binding = frozen.get("qwen_parameter_calibration")
+    require(isinstance(calibration_binding, dict)
+            and isinstance((calibration_binding.get("mechanical_result") or {}).get("path"), str)
+            and isinstance((calibration_binding.get("semantic_result") or {}).get("path"), str)
+            and isinstance((calibration_binding.get("semantic_blinding_key") or {}).get("path"), str),
+            "r4 freeze lacks its Qwen parameter-calibration binding")
+    require(
+        _validate_pre_freeze_qwen_calibration(
+            Path(calibration_binding["mechanical_result"]["path"]),
+            Path(calibration_binding["semantic_result"]["path"]),
+            Path(calibration_binding["semantic_blinding_key"]["path"]),
+            Path(frozen["serving_snapshot"]["model_path"]),
+            before_utc=frozen.get("frozen_utc"),
+        ) == calibration_binding,
+        "SEALED DRIFT: Qwen mechanical/semantic calibration changed",
+    )
     return frozen
 
 
-def continue_r4(claims_path: Path, sentinel_results_path: Path,
-                adequacy_path: Path) -> int:
-    """One-shot continuation: bind the complete confirmatory outputs, aggregate
-    mechanically, and write CONTINUE or STOP.  Never rewrites the freeze."""
+def _derive_continuation_r4(
+    frozen: dict[str, Any], claims_doc: dict[str, Any],
+    sentinel_doc: dict[str, Any], adequacy_doc: dict[str, Any],
+) -> dict[str, Any]:
+    """Recompute every continuation fact from frozen artifacts and raw records."""
     import s4_gates as gates
     import s4_sentinels as sentinels
 
-    require(not CONTINUE_R4.exists(), f"{CONTINUE_R4} already exists — one-shot")
-    frozen = verify_freeze_r4()
     frozen_sha = sha256_file(FROZEN_R4)
-
-    claims_doc = load_object(claims_path, "confirmatory gate claims")
-    require(claims_doc.get("namespace") == "confirm",
-            "continuation requires CONFIRM-namespace gate claims")
+    gate_document_validation = gates.validate_claims_document(
+        claims_doc, frozen, frozen_manifest_sha256=frozen_sha,
+    )
+    require(gate_document_validation.get("valid") is True,
+            "confirmatory gate document failed strict validation: "
+            + "; ".join(gate_document_validation.get("errors") or []))
+    require(claims_doc.get("format_version") == gates.FORMAT_VERSION
+            and claims_doc.get("protocol_version") == gates.PROTOCOL_VERSION
+            and claims_doc.get("namespace") == "confirm"
+            and claims_doc.get("base_seed") == 4,
+            "continuation requires the exact confirm gate protocol and base seed")
     require(claims_doc.get("frozen_manifest_sha256") == frozen_sha,
             "gate claims are not bound to this exact FROZEN.json")
-    claim_results = claims_doc.get("results") or {}
-    selected_arms = frozen["preregistration"]["arms"]
-    eligibility = gates.derive_arm_eligibility(claim_results, selected_arms)
-    g0 = (claim_results.get("G0_protocol_serving") or {})
-    require(g0.get("kind") == "mechanical", "G0 claim record is malformed")
-
-    sentinel_doc = load_object(sentinel_results_path, "sentinel results")
-    require(sentinel_doc.get("namespace") == "confirm"
-            and sentinel_doc.get("frozen_manifest_sha256") == frozen_sha,
-            "sentinel results are not bound to this exact FROZEN.json")
-    passive_summary = sentinels.aggregate_passive(sentinel_doc["passive_worksheets"])
-    active_summary = sentinels.aggregate_active(sentinel_doc["active_records"])
-    adequacy = sentinels.validate_adequacy_attestation(
-        load_object(adequacy_path, "independent adequacy attestation")
+    frozen_gate_manifests = (
+        (frozen.get("confirm_assets") or {}).get("gate_fixture_manifests") or {}
     )
+    require(len(frozen_gate_manifests) == 1,
+            "freeze does not bind exactly one gate fixture manifest")
+    expected_manifest_path, expected_manifest_sha = next(
+        iter(frozen_gate_manifests.items())
+    )
+    require(claims_doc.get("fixture_manifest_path") == expected_manifest_path
+            and claims_doc.get("fixture_manifest_sha256") == expected_manifest_sha,
+            "gate claims use a different fixture manifest from the freeze")
+    claim_results = claims_doc.get("results")
+    require(isinstance(claim_results, dict)
+            and set(claim_results) == set(gates.ALL_CLAIMS),
+            "gate claims must contain the complete frozen claim inventory")
+    claim_validations = gate_document_validation["claim_validations"]
+    selected_arms = frozen["preregistration"]["arms"]
+    eligibility = gate_document_validation["eligibility"]
+
+    sentinel_manifest_path = SEALED_R4 / "fixtures/sentinels/sentinel_manifest.json"
+    sentinel_manifest_sha = sha256_file(sentinel_manifest_path)
+    sentinel_manifest = sentinels.verify_manifest(
+        sentinel_manifest_path, expected_namespace="confirm", expected_base_seed=4,
+        require_live_generator=True,
+    )
+    sentinel_validation = sentinels.validate_sentinel_results_document(
+        sentinel_doc, manifest=sentinel_manifest,
+        manifest_sha256=sentinel_manifest_sha,
+        frozen_manifest_sha256=frozen_sha, require_decided=True,
+    )
+    passive_summary = sentinel_validation["passive"]
+    active_summary = sentinel_validation["active"]
+    adequacy = sentinels.validate_adequacy_attestation(
+        adequacy_doc, manifest=sentinel_manifest,
+        manifest_sha256=sentinel_manifest_sha,
+    )
+    adequacy_binding = frozen.get("packet_adequacy_attestation") or {}
+    adequacy_path = Path(str(adequacy_binding.get("path", "")))
+    require(adequacy_path.is_file()
+            and sha256_file(adequacy_path) == adequacy_binding.get("sha256")
+            and load_object(adequacy_path, "frozen packet adequacy attestation")
+            == adequacy_doc,
+            "continuation must use the exact adequacy attestation bound by FROZEN")
+
+    frozen_at = _parse_utc(frozen.get("frozen_utc"), "r4 frozen_utc")
+    attested_at = _parse_utc(adequacy.get("attested_utc"),
+                             "packet adequacy attested_utc")
+    receipt_at = _parse_utc(
+        (adequacy.get("review_receipt") or {}).get("created_utc"),
+        "packet adequacy receipt created_utc",
+    )
+    gate_reservation = load_object(gates.CONFIRM_RESERVATION,
+                                   "confirm gate one-shot reservation")
+    gate_started_at = _parse_utc(gate_reservation.get("created_utc"),
+                                 "confirm gate reservation created_utc")
+    sentinel_started_path = Path(str(sentinel_doc.get("run_dir", ""))) / "STARTED.json"
+    sentinel_started = load_object(sentinel_started_path,
+                                   "confirm sentinel one-shot start receipt")
+    require(sentinel_started.get("namespace") == "confirm"
+            and sentinel_started.get("base_seed") == 4
+            and sentinel_started.get("frozen_manifest_sha256") == frozen_sha
+            and sentinel_started.get("sentinel_manifest_sha256")
+            == sentinel_manifest_sha,
+            "confirm sentinel start receipt binding drift")
+    sentinel_started_at = _parse_utc(sentinel_started.get("created_utc"),
+                                     "confirm sentinel start created_utc")
+    sentinel_finished_at = _parse_utc(sentinel_doc.get("created_utc"),
+                                      "confirm sentinel result created_utc")
+    require(attested_at <= receipt_at < frozen_at,
+            "packet adequacy receipt was not complete before FROZEN")
+    require(frozen_at < gate_started_at
+            and frozen_at < sentinel_started_at <= sentinel_finished_at,
+            "confirmatory gate/sentinel execution must start strictly after FROZEN")
+    require(receipt_at < gate_started_at and receipt_at < sentinel_started_at,
+            "packet adequacy review must predate every gate/sentinel output")
+    chronology = {
+        "adequacy_attested_utc": adequacy["attested_utc"],
+        "adequacy_receipt_utc": adequacy["review_receipt"]["created_utc"],
+        "frozen_utc": frozen["frozen_utc"],
+        "gate_reserved_utc": gate_reservation["created_utc"],
+        "sentinel_started_utc": sentinel_started["created_utc"],
+        "sentinel_completed_utc": sentinel_doc["created_utc"],
+    }
 
     passive_pass = all(
         summary["pass"] for arm, summary in passive_summary.items()
@@ -4843,11 +5901,42 @@ def continue_r4(claims_path: Path, sentinel_results_path: Path,
         active_summary["pass"] if "P" in selected_arms else True
     )
     verdict = "CONTINUE" if (
-        g0.get("pass") is True
+        claim_validations["G0_protocol_serving"]["pass"] is True
         and eligibility["all_selected_arms_eligible"]
         and sentinel_pass
         and adequacy["verdict"] == "adequate"
     ) else "STOP"
+    return {
+        "gate_validation": claim_validations,
+        "eligibility": eligibility,
+        "sentinel_summary": {"passive": passive_summary, "active": active_summary},
+        "adequacy_verdict": adequacy["verdict"],
+        "chronology": chronology,
+        "verdict": verdict,
+    }
+
+
+def continue_r4(claims_path: Path, sentinel_results_path: Path,
+                adequacy_path: Path) -> int:
+    """One-shot continuation: bind the complete confirmatory outputs, aggregate
+    mechanically, and write CONTINUE or STOP.  Never rewrites the freeze."""
+    require(not CONTINUE_R4.exists(), f"{CONTINUE_R4} already exists — one-shot")
+    frozen = verify_freeze_r4()
+    frozen_sha = sha256_file(FROZEN_R4)
+    claims_path = claims_path.expanduser().resolve()
+    sentinel_results_path = sentinel_results_path.expanduser().resolve()
+    adequacy_path = adequacy_path.expanduser().resolve()
+    frozen_adequacy = frozen.get("packet_adequacy_attestation") or {}
+    require(str(adequacy_path) == frozen_adequacy.get("path")
+            and adequacy_path.is_file()
+            and sha256_file(adequacy_path) == frozen_adequacy.get("sha256"),
+            "--adequacy must be the exact path and SHA-256 bound by FROZEN")
+    claims_doc = load_object(claims_path, "confirmatory gate claims")
+    sentinel_doc = load_object(sentinel_results_path, "sentinel results")
+    adequacy_doc = load_object(adequacy_path, "independent adequacy attestation")
+    derived = _derive_continuation_r4(
+        frozen, claims_doc, sentinel_doc, adequacy_doc,
+    )
     payload = {
         "format_version": R4_FORMAT_VERSION,
         "protocol_version": PROTOCOL_R4,
@@ -4856,41 +5945,71 @@ def continue_r4(claims_path: Path, sentinel_results_path: Path,
         "gate_claims": {"path": str(claims_path), "sha256": sha256_file(claims_path)},
         "sentinel_results": {"path": str(sentinel_results_path),
                              "sha256": sha256_file(sentinel_results_path)},
-        "adequacy_attestation": {"path": str(adequacy_path),
-                                 "sha256": sha256_file(adequacy_path)},
-        "eligibility": eligibility,
-        "sentinel_summary": {"passive": passive_summary, "active": active_summary},
-        "adequacy_verdict": adequacy["verdict"],
-        "verdict": verdict,
+        "adequacy_attestation": {
+            "path": frozen_adequacy["path"],
+            "sha256": frozen_adequacy["sha256"],
+        },
+        **derived,
         "rule": ("the pilot runner requires the exact verdict CONTINUE and "
                  "verifies every bound hash; a STOP ends this frozen version"),
     }
     atomic_create(CONTINUE_R4, payload, mode=0o444)
-    print(f"CONTINUE[r4] verdict={verdict} ({sha256_file(CONTINUE_R4)[:12]})")
-    return 0 if verdict == "CONTINUE" else 3
+    print(f"CONTINUE[r4] verdict={derived['verdict']} "
+          f"({sha256_file(CONTINUE_R4)[:12]})")
+    return 0 if derived["verdict"] == "CONTINUE" else 3
 
 
 def verify_continue_r4(frozen_sha: str) -> dict[str, Any]:
-    """Runner-side verification: exact verdict, exact bindings, live artifacts."""
+    """Re-derive the certificate; stored booleans are never authority."""
+    frozen = verify_freeze_r4()
+    require(sha256_file(FROZEN_R4) == frozen_sha,
+            "caller supplied a stale r4 freeze digest")
     continuation = load_object(CONTINUE_R4, "continuation certificate")
     require(continuation.get("format_version") == R4_FORMAT_VERSION,
             "unsupported continuation certificate")
     require(continuation.get("frozen_manifest_sha256") == frozen_sha,
             "continuation certificate is bound to a different freeze")
-    for binding_name in ("gate_claims", "sentinel_results", "adequacy_attestation"):
+    documents: dict[str, dict[str, Any]] = {}
+    labels = {
+        "gate_claims": "confirmatory gate claims",
+        "sentinel_results": "sentinel results",
+        "adequacy_attestation": "independent adequacy attestation",
+    }
+    for binding_name, label in labels.items():
         binding = continuation.get(binding_name) or {}
         path = Path(binding.get("path", ""))
         require(path.is_file() and sha256_file(path) == binding.get("sha256"),
                 f"continuation binding drift: {binding_name}")
+        documents[binding_name] = load_object(path, label)
+    frozen_adequacy = frozen.get("packet_adequacy_attestation") or {}
+    require(continuation.get("adequacy_attestation") == {
+        "path": frozen_adequacy.get("path"),
+        "sha256": frozen_adequacy.get("sha256"),
+    }, "continuation substituted the adequacy attestation bound by FROZEN")
+    derived = _derive_continuation_r4(
+        frozen, documents["gate_claims"], documents["sentinel_results"],
+        documents["adequacy_attestation"],
+    )
+    for key, value in derived.items():
+        require(continuation.get(key) == value,
+                f"continuation {key} differs from its re-derived value")
     require(continuation.get("verdict") == "CONTINUE",
             f"continuation verdict is {continuation.get('verdict')!r}; "
             "the frozen run has ended")
     return continuation
 
 
+def verify_authorized_r4() -> dict[str, Any]:
+    """Verify the immutable r4 freeze and a fully re-derived CONTINUE verdict."""
+    frozen = verify_freeze_r4()
+    verify_continue_r4(sha256_file(FROZEN_R4))
+    return frozen
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--freeze", action="store_true")
+    parser.add_argument("--freeze", action="store_true",
+                        help="disabled historical v2 freeze flag; use --freeze-r4")
     parser.add_argument("--preregistration", type=Path,
                         help="JSON protocol/config; defaults to the explicit Stage-A pilot")
     parser.add_argument("--answers", type=Path, nargs="+")
@@ -4931,15 +6050,67 @@ def main() -> int:
     parser.add_argument("--gate-claims", type=Path)
     parser.add_argument("--sentinel-results", type=Path)
     parser.add_argument("--adequacy", type=Path)
+    parser.add_argument("--qwen-calibration", type=Path,
+                        help="immutable one-shot Qwen serving-calibration RESULT.json")
+    parser.add_argument("--qwen-semantic", type=Path,
+                        help="immutable blind semantic calibration PASS result")
+    parser.add_argument("--qwen-semantic-key", type=Path,
+                        help="read-only key that independently verifies semantic blinding")
     parser.add_argument("--model", type=Path,
                         default=Path.home() / "models/mlx/Qwen3.8-27B-8bit")
     args = parser.parse_args()
     import s4_ledgers
     s4_ledgers.enforce_offline_scientific_run("s4_grade", [])
     if args.freeze_r4:
-        require(not args.freeze and not args.continue_r4,
-                "--freeze-r4 stands alone")
-        return freeze_r4(args.preregistration, args.model)
+        unrelated = {
+            "--freeze": args.freeze,
+            "--answers": args.answers is not None,
+            "--adjudications": args.adjudications is not None,
+            "--adjudication-key": args.adjudication_key is not None,
+            "--adjudication-receipt": args.adjudication_receipt is not None,
+            "--seal-adjudication": args.seal_adjudication is not None,
+            "--adjudicator-signing-key": (
+                args.adjudicator_signing_key is not None
+            ),
+            "--commit-adjudications": args.commit_adjudications is not None,
+            "--prepare-ceiling": args.prepare_ceiling,
+            "--prepare-familiarity": args.prepare_familiarity is not None,
+            "--familiarity-commitment": (
+                args.familiarity_commitment is not None
+            ),
+            "--derive-stage-b-selection": (
+                args.derive_stage_b_selection is not None
+            ),
+            "--commit-stage-b-inventory": args.commit_stage_b_inventory,
+            "--source-inventory-commitment": (
+                args.source_inventory_commitment is not None
+            ),
+            "--out": args.out is not None,
+            "--execute-plans": args.execute_plans,
+            "--tally": args.tally,
+            "--continue-r4": args.continue_r4,
+            "--gate-claims": args.gate_claims is not None,
+            "--sentinel-results": args.sentinel_results is not None,
+        }
+        rejected = sorted(option for option, present in unrelated.items() if present)
+        require(
+            not rejected,
+            "--freeze-r4 cannot be combined with unrelated workflow option(s): "
+            + ", ".join(rejected),
+        )
+        require(args.adequacy is not None,
+                "--freeze-r4 requires the pre-output --adequacy attestation")
+        require(args.qwen_calibration is not None and args.qwen_semantic is not None
+                and args.qwen_semantic_key is not None,
+                "--freeze-r4 requires --qwen-calibration, --qwen-semantic, and "
+                "--qwen-semantic-key")
+        return freeze_r4(
+            args.preregistration, args.model, args.adequacy,
+            args.qwen_calibration, args.qwen_semantic, args.qwen_semantic_key,
+        )
+    require(args.qwen_calibration is None and args.qwen_semantic is None
+            and args.qwen_semantic_key is None,
+            "Qwen calibration arguments apply only to --freeze-r4")
     if args.continue_r4:
         require(args.gate_claims is not None and args.sentinel_results is not None
                 and args.adequacy is not None,
@@ -5057,17 +6228,10 @@ def main() -> int:
                   f"({sha256_file(args.out)[:12]})")
         return 0
     if args.freeze:
-        require(args.answers is None and args.adjudications is None and not args.prepare_ceiling
-                and args.prepare_familiarity is None and args.familiarity_commitment is None
-                and args.adjudication_key is None
-                and args.adjudication_receipt is None
-                and args.adjudicator_signing_key is None
-                and args.commit_adjudications is None
-                and args.seal_adjudication is None
-                and not args.commit_stage_b_inventory
-                and args.source_inventory_commitment is None,
-                "--freeze cannot be combined with grading inputs")
-        return freeze(args.preregistration)
+        raise RuntimeError(
+            "legacy --freeze is historical and cannot authorize work; use "
+            "--freeze-r4 with an explicit --preregistration"
+        )
     if args.answers:
         require(not args.commit_stage_b_inventory
                 and args.source_inventory_commitment is None

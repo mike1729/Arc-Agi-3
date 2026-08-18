@@ -192,7 +192,7 @@ def changed_bbox(pre: np.ndarray, post: np.ndarray) -> tuple[int, int, int, int]
 
 RULER_GUTTER_PX = 40         # left/top gutters holding the printed indices
 RULER_GRIDLINE_RGB = (90, 90, 90)
-RULER_CROP_PROFILE = "ruler_crop_32px_v1"
+RULER_CROP_PROFILE = "ruler_crop_32px_v2_phase_offset"
 RULER_FRAME_PROFILE = "ruler_frame_16px_v1"
 
 
@@ -202,6 +202,8 @@ def _ruler_view(
     cell_px: int,
     profile: str,
     kind: str,
+    *,
+    phase_offset_px: tuple[int, int] = (0, 0),
 ) -> Plate:
     """Magnified window with explicit 0-based ABSOLUTE row/column rulers.
 
@@ -216,25 +218,30 @@ def _ruler_view(
         raise ValueError(f"ruler bbox {bbox} outside board {grid.shape}")
     window = grid[r0 : r1 + 1, c0 : c1 + 1]
     board_rgb = _upscale(_to_rgb(window), cell_px)
-    height = board_rgb.shape[0] + RULER_GUTTER_PX
-    width = board_rgb.shape[1] + RULER_GUTTER_PX
+    offset_y, offset_x = phase_offset_px
+    if not (0 <= offset_y < 32 and 0 <= offset_x < 32):
+        raise ValueError(f"invalid neutral phase offset {phase_offset_px}")
+    origin_y = RULER_GUTTER_PX + offset_y
+    origin_x = RULER_GUTTER_PX + offset_x
+    height = board_rgb.shape[0] + origin_y
+    width = board_rgb.shape[1] + origin_x
     canvas = Image.new("RGB", (width, height), PAD_RGB)
-    canvas.paste(Image.fromarray(board_rgb), (RULER_GUTTER_PX, RULER_GUTTER_PX))
+    canvas.paste(Image.fromarray(board_rgb), (origin_x, origin_y))
     draw = ImageDraw.Draw(canvas)
     label_step = 1 if cell_px >= 24 else 2 if cell_px >= 12 else 4
     for row in range(window.shape[0]):
-        y = RULER_GUTTER_PX + row * cell_px
-        draw.line([(RULER_GUTTER_PX - 6, y), (width, y)], fill=RULER_GRIDLINE_RGB)
+        y = origin_y + row * cell_px
+        draw.line([(origin_x - 6, y), (width, y)], fill=RULER_GRIDLINE_RGB)
         if row % label_step == 0:
             draw.text((4, y + max(0, cell_px // 2 - 6)), str(r0 + row), fill=(0, 0, 0))
     for col in range(window.shape[1]):
-        x = RULER_GUTTER_PX + col * cell_px
-        draw.line([(x, RULER_GUTTER_PX - 6), (x, height)], fill=RULER_GRIDLINE_RGB)
+        x = origin_x + col * cell_px
+        draw.line([(x, origin_y - 6), (x, height)], fill=RULER_GRIDLINE_RGB)
         if col % label_step == 0:
             draw.text((x + 2, 4), str(c0 + col), fill=(0, 0, 0))
-    draw.line([(RULER_GUTTER_PX - 6, height - 1), (width, height - 1)],
+    draw.line([(origin_x - 6, height - 1), (width, height - 1)],
               fill=RULER_GRIDLINE_RGB)
-    draw.line([(width - 1, RULER_GUTTER_PX - 6), (width - 1, height)],
+    draw.line([(width - 1, origin_y - 6), (width - 1, height)],
               fill=RULER_GRIDLINE_RGB)
     rgb, pad = _pad_to_32(np.asarray(canvas))
     return Plate(
@@ -242,6 +249,8 @@ def _ruler_view(
         meta={
             "profile": profile,
             "gutter_px": RULER_GUTTER_PX,
+            "phase_offset_px": [offset_y, offset_x],
+            "origin_px": [origin_y, origin_x],
             "window_shape": list(window.shape),
             "indexing": "0-based absolute board coordinates",
         },
@@ -261,7 +270,20 @@ def render_ruler_crop(
     r1 = min(grid.shape[0] - 1, r1 + margin)
     c1 = min(grid.shape[1] - 1, c1 + margin)
     cell_px = max(cell_px, MIN_CROP_CELL_PX)
-    return _ruler_view(grid, (r0, c0, r1, c1), cell_px, RULER_CROP_PROFILE, "ruler_crop")
+    # Eight sealed GX fixtures exercise the four relevant origins modulo the
+    # 32px merged-patch grid (and both modulo-16 phases).  The offset is neutral
+    # padding derived solely from the requested absolute window, so it neither
+    # changes board evidence nor gives semantic guidance.  Production SHOW_FRAME
+    # and GX both call this exact function.
+    phase_offset = ((r0 % 4) * 8, (c0 % 4) * 8)
+    return _ruler_view(
+        grid,
+        (r0, c0, r1, c1),
+        cell_px,
+        RULER_CROP_PROFILE,
+        "ruler_crop",
+        phase_offset_px=phase_offset,
+    )
 
 
 def render_ruler_frame(grid: np.ndarray, cell_px: int = FULL_BOARD_CELL_PX) -> Plate:
@@ -290,8 +312,11 @@ def decode_ruler_view(plate: Plate) -> np.ndarray:
     half = plate.cell_px // 2
     for r in range(rows):
         for c in range(cols):
-            y = RULER_GUTTER_PX + r * plate.cell_px + half
-            x = RULER_GUTTER_PX + c * plate.cell_px + half
+            origin_y, origin_x = plate.meta.get(
+                "origin_px", [RULER_GUTTER_PX, RULER_GUTTER_PX]
+            )
+            y = origin_y + r * plate.cell_px + half
+            x = origin_x + c * plate.cell_px + half
             out[r, c] = lookup[tuple(rgb[y, x])]
     return out
 

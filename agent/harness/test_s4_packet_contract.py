@@ -19,6 +19,7 @@ if str(HARNESS) not in sys.path:
     sys.path.insert(0, str(HARNESS))
 
 import s4_packet as packet
+import s4_delta as sdl
 
 
 def board(index: int) -> list[list[int]]:
@@ -68,6 +69,10 @@ def synthetic_evidence(actions: int = 7, animation_frames: int = 5):
             "level": 1, "frames": animation_frames if index == 34 else 1,
             "state": "NOT_FINISHED",
         })
+    # Exercise the legitimate episode-boundary observation path: there is no
+    # recorded predecessor to invent, but the selected TID must still receive a
+    # complete bound temporal observation record.
+    performs[0]["pre"] = None
     steps = []
     for index, row in enumerate(performs):
         frames = [states[row["post"]]]
@@ -196,6 +201,35 @@ class PacketContractTests(unittest.TestCase):
             self.assertEqual(
                 manifest["caps"]["reserved_post_initial_visual_tokens"], 9_936
             )
+            temporal = manifest["temporal_delta_channel"]
+            self.assertEqual(
+                temporal["model_visible_cell_limit"], sdl.MODEL_VISIBLE_CELL_LIMIT
+            )
+            self.assertEqual(
+                temporal["recorded_transition_ids"],
+                temporal["selected_transition_ids"],
+            )
+            boundary = next(
+                record for record in temporal["full_records"]
+                if record["binding"]["tid"] == "S00000"
+            )
+            self.assertFalse(boundary["binding"]["has_recorded_pre"])
+            self.assertGreaterEqual(len(boundary["frames"]), 1)
+            self.assertIn(sdl.render_carrier_collection(temporal["full_records"]),
+                          (out / "ledger.txt").read_text())
+            self.assertEqual(
+                temporal["model_carrier_sha256"],
+                packet.canonical_sha256(
+                    sdl.render_carrier_collection(temporal["full_records"])
+                ),
+            )
+            for record in temporal["full_records"]:
+                for pair in record["pairs"]:
+                    encoded = sdl.encode_exact_pair(pair)
+                    expected = ([tuple(item) for item in pair["sparse"]]
+                                if "sparse" in pair
+                                else sdl.decode_rle_delta(pair["rle"]))
+                    self.assertEqual(sdl.decode_exact_pair(encoded), expected)
             for carrier in ("raw", "overlay"):
                 pages = manifest["carrier_pages"][carrier]
                 self.assertEqual(len(pages), 10)
@@ -236,7 +270,10 @@ class PacketContractTests(unittest.TestCase):
                     for action in item["action_sequence"]
                     if int(str(action["action"]).removeprefix("A")) == action_id
                 }
-                self.assertEqual(classes, {"effect", "no-effect"})
+                expected_classes = {"effect", "no-effect"}
+                if action_id == 0:
+                    expected_classes.add("unclassified-reset-output")
+                self.assertEqual(classes, expected_classes)
             causal = next(item for item in manifest["evidence_items"]
                           if item["kind"] == "causal_episode")
             self.assertTrue(all(action["to_frame"] == action["from_frame"] + 1

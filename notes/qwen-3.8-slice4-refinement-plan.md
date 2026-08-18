@@ -6,9 +6,13 @@ pilot, or supersede an append-only result artifact.
 
 The scientific question remains:
 
-> Can the pinned Qwen3.8 checkpoint infer a game's causal completion objective from
+> Can the pinned local Qwen3.8-27B 8-bit MLX conversion infer a game's causal completion objective from
 > autonomous observations and histories, without receiving human actions, human solved
 > boards, human L1→L2 transitions, source truth, or human-derived goal feedback?
+
+Every capability conclusion in this revision is scoped to that exact Q8 conversion and
+runtime. It is not a result about the upstream BF16 checkpoint, an FP8/vLLM deployment,
+other Qwen3.8 sizes, or the model family as a whole.
 
 An L1→L2 transition earned by the autonomous agent remains admissible evidence and must
 be reported as a separate `autonomous_completion_exposed` stratum. The stricter stratum
@@ -115,8 +119,11 @@ only from the observed arrays:
   frozen limit.
 
 These records state what changed, not what any object means or what the goal is. They
-must be generated inside the source-blind packet/probe boundary and replace redundant
-ledger text rather than silently exceeding the tokenizer cap.
+must be generated inside the source-blind packet/probe boundary. Every changed cell
+must be recoverable from the model-visible sparse or bbox-anchored row/flat-RLE carrier;
+a full record kept only in audit metadata does not satisfy this requirement. The exact
+channel replaces redundant ledger text rather than silently exceeding the tokenizer
+cap.
 
 ### Precision-action channel
 
@@ -159,6 +166,16 @@ or permutation wiring but cannot authorize an inferential arm. All model-depende
 readability decisions must be confirmed with the exact production sampler, reasoning
 effort, prompt schema, image history, and token envelope.
 
+The frozen Qwen3.8 thinking sampler is the checkpoint's official
+`temperature=1.0`, `top_p=0.95`,
+`top_k=20` configuration, with behaviorally neutral `min_p=0`,
+`presence_penalty=0`, and `repetition_penalty=1` made explicit. Multi-turn calls must
+retain each prior assistant turn as separate `reasoning_content` and final `content`,
+and must set and trace `preserve_thinking=true`; an empty historical `<think></think>`
+is a serving defect. The per-call output ceiling is 32,768. Every call must also prove
+`expanded_prompt_tokens + max_tokens <= 262,144`; the worst-case cumulative text cap is
+therefore 212,992 after reserving 16,384 visual tokens.
+
 For each final model-dependent claim, use two counter-permutations over three fresh
 source-blind fixtures and require 6/6 complete call-level passes. This is an operational
 stability bar, not a claim of 90% reliability: six successes only reject a `p<=0.5`
@@ -189,6 +206,42 @@ This adaptive discovery set may choose a precision profile but may never certify
 Certification uses the fresh holdouts above. Because the primary experiment no longer
 depends on dense 4px exact localization, this factorial is optional and must not delay
 the goal-inference pilot unless an attribution claim will be published.
+
+### Bounded pre-freeze parameter calibration
+
+Do not grid-search temperature or top-p on real-game outcomes. Before freezing, use
+fresh procedural development sentinels for eleven local calls: three active pre-probe
+calls, one same-process same-seed duplicate, one different-seed call on that same
+high-entropy structured prompt, and paired stripped-history versus preserved-reasoning
+post-probe calls for those three fixtures. A separate condition-blind worksheet must
+score goal constraints and executable plans from the six post-probe answers, then
+rejoin the hidden stripped/preserved labels only after the judgments are fixed. The
+calibration passes only if same-seed raw output
+repeats, different seeds do not produce identical raw bytes, preserved reasoning causes
+no schema/completeness regression, no call is truncated at 32,768, and preserved
+history is componentwise non-worse than stripped history on goal, constraints, and
+machine-replayed plan validity for all three variants. With only three pairs this is an
+operational no-regression check, not a statistical non-inferiority claim. A genuinely
+truncated call may be rerun once at 49,152 under this
+predeclared rule; any resulting budget change loops through code, tests, packet rebuild,
+and calibration. This costs zero Kaggle compute and zero competition submissions.
+`agent/harness/s4_qwen_calibration.py --plan` prints the immutable no-model inventory;
+`--run --model <pinned-MLX-checkpoint>` consumes the clean commit's single fixed
+development attempt and creates a read-only trace/result directory. It never performs
+the manual escalation itself. `--prepare-semantic`, `--finalize-semantic`, and
+`--validate-semantic` then bind the keyed blind worksheet, the operator's complete
+blind judgments, the condition-blind machine plan replays, and the final PASS/FAIL.
+The key file must be retained read-only through freeze so the HMAC identities and
+permutations can be independently regenerated.
+
+This calibration verifies the serving choice; it does not establish that the sampler
+is globally optimal. The official sampler and template-default `xhigh` effort remain
+the baseline because the primary task values correctness over throughput. If a later
+experiment compares `medium` with `xhigh`, or compares entropy settings, it must use a
+new preregistered development/validation split of procedural fixtures, common seeds,
+condition-blind scoring, and no Stage-A outcomes. Temperature 0 remains a deterministic
+wiring diagnostic and cannot win an inferential arm. No parameter search in this
+revision consumes Kaggle compute or a competition submission.
 
 ## Frozen goal-inference sentinels
 
@@ -268,7 +321,7 @@ Three different resources must be counted separately:
 
 | Resource | Slice-4 revision-4 budget | Accounting unit |
 |---|---:|---|
-| Local model work | Gates, 15 sentinels, 64 Qwen pilot generations, four comparator generations; optional 64-call attribution study separate | Calls, generated tokens, wall/GPU hours |
+| Local model work | 11 development calibration calls, gates, 15 sentinels, 64 Qwen pilot generations, four comparator generations; optional 64-call attribution study separate | Calls, generated tokens, wall/GPU hours |
 | Kaggle notebook/accelerator work | Zero by default; a non-submitting hardware-profile run needs separate remote-ops approval | Kernel runs and accelerator hours |
 | Kaggle competition evaluation | **0** | Kaggle-accepted hidden-test submissions |
 
@@ -294,7 +347,7 @@ encoding — about 96% of that nine-hour planning envelope.
 This is a capacity warning, not a hidden-score forecast. The private games can have a
 different runtime distribution, and Qwen3.8 VLM on Kaggle FP8/vLLM will not have the
 same throughput as the local 8-bit mlx-vlm run. It nevertheless rules out treating the
-four-call, up-to-20k-output-token P protocol as additive deployment work. The local
+four-call, up-to-32,768-output-token P protocol as additive deployment work. The local
 protocol is a capability upper bound.
 
 The only repository-confirmed platform request ceiling is 600 requests/minute. It is
@@ -443,19 +496,25 @@ accounting, 10→16-image interaction growth, and no-silent-repair behavior.
 1. Preserve and hash the v2.2 failure artifact, both convention-pinned call traces, and
    resolution diagnostics. Mark their claims; do not relabel them PASS.
 2. Approve this protocol revision and implement work packages A–F.
-3. If desired, run the optional 64-call attribution study on development fixtures only.
-4. Run all six no-model suites, renderer self-test, probe/runner smokes, schema checks,
+3. Skip the optional 64-call attribution study for this run; execute the bounded
+   eleven-call sampler/reasoning calibration on development sentinels only.
+4. Run all seven no-model suites, renderer self-test, probe/runner smokes, schema checks,
    and `git diff --check`.
 5. Commit a clean candidate. Revalidate the existing 9,055-step recapture lineage;
    recapture again only if the replay/capture/source lineage changed. Rebuild packets
    whenever renderer, packet, ledger, selector, or probe-result carriers changed.
-6. Run development calibration on fixtures disjoint from confirmation. Any change loops
-   back through tests, clean commit, packet rebuild, and development calibration.
+6. Run the one-shot development calibration on fixtures disjoint from confirmation;
+   validate its mechanical PASS, prepare one HMAC-blinded semantic worksheet, obtain
+   the identified operator's single-pass judgments without access to the result/key,
+   finalize, and validate strict operational no-regression using the retained key. Any
+   change loops back through tests, clean commit, packet rebuild, and a new candidate.
 7. Generate and seal final confirmation fixtures, sentinel assets/gold, independent
    adequacy record, real-game gold hashes, and the revised preregistration.
-8. Create `FROZEN.json`, including `KAGGLE_EVAL_BUDGET=0` and the submission-command
-   guard. No prompt, threshold, carrier, budget, fixture, sampler, or code change is
-   allowed after this point within the version.
+8. Create `FROZEN.json`, requiring and binding the mechanical calibration result,
+   semantic result, read-only blinding key, independent adequacy receipt,
+   `KAGGLE_EVAL_BUDGET=0`, and the submission-command guard. No prompt, threshold,
+   carrier, budget, fixture, sampler, or code change is allowed after this point within
+   the version.
 9. Run the final arm-scoped gates and frozen sentinels once. Write `CONTINUE.json` with
    `CONTINUE` only if every common/selected-arm gate, adequacy check, and sentinel
    threshold passes. Otherwise write `STOP` and end the version.
@@ -491,13 +550,13 @@ on these four games under this autonomous-evidence interface.
 
 ## Approval checklist before implementation becomes a run
 
-- [ ] Accept the hybrid carrier and the non-blocking status of `GD_dense_4px_exact`.
-- [ ] Accept the 6/6 arm-readability and 2/3 goal-sentinel thresholds.
-- [ ] Decide whether the optional 64-call attribution factorial is worth its compute.
+- [x] Accept the hybrid carrier and the non-blocking status of `GD_dense_4px_exact`.
+- [x] Accept the 6/6 arm-readability and 2/3 goal-sentinel thresholds.
+- [x] Skip the optional 64-call attribution factorial for this run.
 - [ ] Review the sentinel generator, independent adequacy record, sealed real-game gold,
       and familiarity/exposure records without exposing them to the model.
-- [ ] Confirm that T/V/O/P, seed 2, and the same-checkpoint model comparator remain the
+- [x] Confirm that T/V/O/P, seed 2, and the same-checkpoint model comparator remain the
       intended descriptive Stage-A matrix.
-- [ ] Confirm that no project-closure action is attached to Stage A.
-- [ ] Confirm `KAGGLE_EVAL_BUDGET=0`, reserve all competition submissions, and
+- [x] Confirm that no project-closure action is attached to Stage A.
+- [x] Confirm `KAGGLE_EVAL_BUDGET=0`, reserve all competition submissions, and
       acknowledge that neither `FROZEN` nor `CONTINUE` grants submission authority.

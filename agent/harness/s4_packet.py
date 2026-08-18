@@ -1127,6 +1127,10 @@ def _component_records(initial: Any, boards: Sequence[Any]) -> list[dict[str, An
             components.append({
                 "component_id": f"C{len(components):03d}", "colour": colour,
                 "cells": len(cells), "bbox": [min(rows), min(cols), max(rows), max(cols)],
+                # Keep one cell from the actual flood-filled component.  A bbox
+                # centre (or merely a same-colour cell inside the bbox) can belong
+                # to a disconnected island enclosed by a non-rectangular component.
+                "representative_click": list(min(cells)),
                 "static_over_observed_posts": stable,
             })
     # A dominant field is still recorded, but overlays focus on bounded components.
@@ -1398,12 +1402,11 @@ def _text_carrier_payload(ledger: str, items: Sequence[dict[str, Any]]) -> str:
         text_carrier = (item.get("carriers") or {}).get("text") or {}
         block = [
             f"== EVIDENCE {item.get('evidence_id')} ==",
-            f"kind={item.get('kind')} provenance={item.get('provenance')}",
             str(item.get("text") or ""),
         ]
-        actions = text_carrier.get("actions") or item.get("action_sequence") or []
-        if actions:
-            block.append("actions=" + json.dumps(actions, sort_keys=True, separators=(",", ":")))
+        # The exact ledger already carries every action record once, keyed by
+        # page/EID/TID.  Repeating the same JSON in each T-arm evidence block
+        # wastes the finite tokenizer budget without adding information.
         for board in text_carrier.get("boards") or []:
             block.append(
                 f"board {board.get('frame_id')} {board.get('label', '')}\n{board.get('hex', '')}"
@@ -2045,13 +2048,10 @@ def _build_into(game: str, out_dir: Path, evidence: dict[str, Any], auditor: Any
 
     ledger_lines = [
         f"GAME {bid}",
-        "PROVENANCE OBSERVED = recorded engine/environment output; DERIVED-EXACT = "
-        "deterministic counts, diffs, connected components, or source-blind selection.",
-        f"PACKET pages_per_carrier={page_count} target={TARGET_INITIAL_PAGES} "
-        f"post_initial_image_headroom={headroom} seed={game_seed}",
-        "TEXT_GRID_CODEC lossless 64x64: rle64 uses hex-colour*cell-run and "
-        "^repeated-row; ref64 names an earlier frame; delta64 names an earlier base then "
-        "base36 colour@row,col,height,width patches applied in listed order.",
+        "PROVENANCE OBS=recorded engine output; DX=deterministic source-blind derivation.",
+        f"PACKET pages={page_count}; result_image_slots={headroom}",
+        "GRID64 exact: rle64 hex-colour*run (^N repeats row); ref64 prior frame; "
+        "delta64 base then base36 colour@row,col,height,width.",
     ]
     for page, item in enumerate(items, 1):
         ledger_lines.append(
@@ -2065,23 +2065,57 @@ def _build_into(game: str, out_dir: Path, evidence: dict[str, Any], auditor: Any
     # never what it means.  Bound to TIDs and grid hashes; auditors re-derive.
     import s4_delta as sdl
     delta_records = []
-    for row in causal:
-        if row.get("pre") is None:
-            continue
-        record = sdl.sequence_record(
-            [f"{row['tid']}.pre", f"{row['tid']}.post"],
-            [row["pre"], row["post"]],
-            binding={"tid": row["tid"], "kind": "causal_transition"},
+    transition_by_tid = {row["tid"]: row for row in transitions}
+    selected_tids = list(dict.fromkeys(
+        tid for item in items for tid in item["transition_refs"]
+        if tid in transition_by_tid
+    ))
+    for tid in selected_tids:
+        row = transition_by_tid[tid]
+        # Episode-boundary/reset observations legitimately have no recorded
+        # predecessor.  Keep them in the complete selected-TID inventory as a
+        # one-or-more-frame bound observation instead of inventing a pre-board.
+        # Non-boundary transitions still start with their exact recorded pre.
+        frame_ids = []
+        grids = []
+        if row.get("pre") is not None:
+            frame_ids.append(f"{tid}.pre")
+            grids.append(row["pre"])
+        recapture = (
+            recapture_by_store_index.get(int(row["store_index"]))
+            if row.get("source") == "store" and row.get("store_index") is not None
+            else None
         )
+        response_frames = list((recapture or {}).get("frames") or [])
+        if response_frames:
+            frame_ids.extend(f"{tid}.frame:{index}" for index in range(len(response_frames)))
+            grids.extend(response_frames)
+            require(
+                canonical_sha256(response_frames[-1]) == canonical_sha256(row["post"]),
+                f"{tid}: recapture settled frame differs from selected transition post",
+            )
+        else:
+            frame_ids.append(f"{tid}.post")
+            grids.append(row["post"])
+        record = sdl.sequence_record(
+            frame_ids,
+            grids,
+            binding={
+                "tid": tid,
+                "kind": "selected_transition",
+                "source": row["source"],
+                "has_recorded_pre": row.get("pre") is not None,
+                "evidence_ids": [
+                    item["evidence_id"] for item in items if tid in item["transition_refs"]
+                ],
+            },
+        )
+        # The exact record is a model-visible carrier, not merely audit metadata.
+        # Re-derive it now so a bad binding cannot survive packet construction.
+        sdl.verify_sequence_record(record, grids)
         delta_records.append(record)
     if delta_records:
-        ledger_lines.append(
-            "TEMPORAL-DELTA-CHANNEL per-pair changed-cell count, bbox and palette "
-            "histogram [DERIVED-EXACT]; the exact cells are already lossless in "
-            "the encoded boards above, so cell lists live in the packet manifest"
-        )
-        for record in delta_records:
-            ledger_lines.append(sdl.render_text_block(record, include_cells=False))
+        ledger_lines.append(sdl.render_carrier_collection(delta_records))
     # Precision-action channel (protocol r4): component bounding boxes plus one
     # legal representative click each, translating observed locations into the
     # environment's coordinate API without naming targets or objectives.
@@ -2093,37 +2127,54 @@ def _build_into(game: str, out_dir: Path, evidence: dict[str, Any], auditor: Any
     )[:16]
     if precision_components:
         ledger_lines.append(
-            "PRECISION-ACTION-CHANNEL component bbox=(r0,c0,r1,c1) 0-based and one "
-            "legal representative click cell (row,col) inside the component "
-            "[DERIVED-EXACT]"
+            "PRECISION-ACTION [DERIVED-EXACT] rows: ID c=colour n=cells "
+            "b=r0,c0,r1,c1 k=legal representative row,col; all coordinates 0-based"
         )
         for component in precision_components:
             r0, c0, r1, c1 = component["bbox"]
-            click = [(r0 + r1) // 2, (c0 + c1) // 2]
+            click = component["representative_click"]
             grid_array = np.asarray(initial, dtype=np.uint8)
-            if int(grid_array[click[0], click[1]]) != component["colour"]:
-                rows_cols = np.argwhere(grid_array == component["colour"])
-                inside = [
-                    (int(r), int(c)) for r, c in rows_cols
-                    if r0 <= r <= r1 and c0 <= c <= c1
-                ]
-                require(bool(inside), f"component {component['component_id']} has no cell")
-                click = list(min(inside))
-            ledger_lines.append(
-                f"  {component['component_id']} colour={component['colour']} "
-                f"cells={component['cells']} bbox=({r0},{c0},{r1},{c1}) "
-                f"representative_click=({click[0]},{click[1]}) "
-                f"static={component['static_over_observed_posts']}"
+            require(
+                int(grid_array[click[0], click[1]]) == component["colour"],
+                f"component {component['component_id']} representative is not its colour",
             )
+            ledger_lines.append(
+                f"  {component['component_id']} c={component['colour']} "
+                f"n={component['cells']} b={r0},{c0},{r1},{c1} "
+                f"k={click[0]},{click[1]} "
+                f"s={int(component['static_over_observed_posts'])}"
+            )
+    # Keep selection/accounting facts available to the model, but do not repeat
+    # the verbose audit objects already retained losslessly in the manifest.
+    # E/N/P? mean observed effect, observed no-effect, and missing recorded pre.
+    action_coverage = []
+    for action, total in sorted(coverage.items()):
+        classes = effect_coverage[action]
+        action_coverage.append(
+            f"{action}:{total}/{classes['effect']}/{classes['no_effect']}"
+            f"/{classes['without_pre']}"
+        )
+    episode_counts = {
+        source: len({row["episode_index"] for row in transitions
+                     if row["source"] == source})
+        for source in ("store", "kaggle")
+    }
+    history_conflicts = next(
+        (entry["count"] for entry in exclusions
+         if entry.get("kind") == "history-conflict"), 0,
+    )
+    nonvisual_rows = next(
+        (entry["count"] for entry in exclusions
+         if entry.get("kind") == "nonvisual-zero-frame-store-rows"), 0,
+    )
     ledger_lines.extend([
-        "COVERAGE " + json.dumps(dict(sorted(coverage.items())), separators=(",", ":")),
-        "EFFECT_COVERAGE " + json.dumps(effect_coverage, sort_keys=True, separators=(",", ":")),
-        "EPISODES " + json.dumps({
-            source: sorted({row["episode_index"] for row in transitions if row["source"] == source})
-            for source in ("store", "kaggle")
-        }, separators=(",", ":")),
-        "TRIMS " + json.dumps(trim_log, sort_keys=True, separators=(",", ":")),
-        "EXCLUSIONS " + json.dumps(exclusions, sort_keys=True, separators=(",", ":")),
+        "ACTIONS total/effect/no-effect/missing-pre "
+        + " ".join(action_coverage),
+        "EPISODE-COUNTS "
+        + " ".join(f"{source}={count}"
+                   for source, count in episode_counts.items()),
+        f"ABSENT history_conflicts={history_conflicts} nonvisual_rows={nonvisual_rows}; "
+        "full selection/exclusions in manifest",
     ])
     ledger_text = "\n".join(ledger_lines) + "\n"
     ledger_path = out_dir / "ledger.txt"
@@ -2149,13 +2200,33 @@ def _build_into(game: str, out_dir: Path, evidence: dict[str, Any], auditor: Any
         "ledger_bytes": ledger_path.stat().st_size,
         "temporal_delta_channel": {
             "records": len(delta_records),
+            "selected_transition_ids": selected_tids,
+            "recorded_transition_ids": [record["binding"]["tid"] for record in delta_records],
             "sparse_delta_limit": sdl.SPARSE_DELTA_LIMIT,
+            "model_visible_cell_limit": sdl.MODEL_VISIBLE_CELL_LIMIT,
+            "model_rendering": (
+                "dictionary-compressed exact bbox-anchored row/flat RLE; all changed "
+                "cells model-visible; full audited record"
+            ),
+            "model_carrier_sha256": canonical_sha256(
+                sdl.render_carrier_collection(delta_records)
+            ),
             "record_sha256s": [record["record_sha256"] for record in delta_records],
             "full_records": delta_records,
         },
         "precision_action_channel": {
             "components_listed": len(precision_components),
             "profile": sr.RULER_CROP_PROFILE,
+            "components": [
+                {
+                    "component_id": component["component_id"],
+                    "colour": component["colour"],
+                    "cells": component["cells"],
+                    "bbox": component["bbox"],
+                    "representative_click": component["representative_click"],
+                }
+                for component in precision_components
+            ],
         },
         "selection": selection,
         "caps": {

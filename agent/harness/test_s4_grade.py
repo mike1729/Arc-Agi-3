@@ -989,7 +989,7 @@ class BlindedAdjudicationTests(unittest.TestCase):
             frozen_path = Path(temporary) / "FROZEN.json"
             frozen_path.write_text("{}")
             with mock.patch.object(grade, "FROZEN", frozen_path), \
-                    mock.patch.object(grade, "verify_freeze", return_value=frozen), \
+                    mock.patch.object(grade, "verify_authorized_r4", return_value=frozen), \
                     mock.patch.object(
                         grade, "load_object",
                         side_effect=lambda path, _label: supplied[path],
@@ -1790,7 +1790,7 @@ class FreezeAndWorkflowTests(unittest.TestCase):
             preregistration = protocol.create()
             with protocol.patched():
                 self.assertEqual(grade.freeze(preregistration), 0)
-                frozen = grade.verify_freeze()
+                frozen = grade.verify_legacy_freeze()
                 self.assertEqual(frozen["format_version"], 2)
                 self.assertEqual(set(frozen["scripts"]), set(protocol.scripts))
                 self.assertIn(
@@ -1803,7 +1803,7 @@ class FreezeAndWorkflowTests(unittest.TestCase):
                     (protocol.gold / "g1.json").read_text()
                 )
                 with self.assertRaisesRegex(RuntimeError, "gold set mismatch"):
-                    grade.verify_freeze()
+                    grade.verify_legacy_freeze()
 
     def test_packet_or_blind_map_drift_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1815,7 +1815,7 @@ class FreezeAndWorkflowTests(unittest.TestCase):
                     b"changed"
                 )
                 with self.assertRaisesRegex(RuntimeError, "digest disagrees with bytes"):
-                    grade.verify_freeze()
+                    grade.verify_legacy_freeze()
 
     def test_blind_map_and_script_drift_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1827,7 +1827,7 @@ class FreezeAndWorkflowTests(unittest.TestCase):
                     json.dumps({"g1": "G000002"})
                 )
                 with self.assertRaisesRegex(RuntimeError, "blind_map.json changed"):
-                    grade.verify_freeze()
+                    grade.verify_legacy_freeze()
 
         with tempfile.TemporaryDirectory() as temporary:
             protocol = TemporaryProtocol(Path(temporary))
@@ -1836,7 +1836,7 @@ class FreezeAndWorkflowTests(unittest.TestCase):
                 grade.freeze(preregistration)
                 (protocol.root / protocol.scripts[0]).write_text("drift")
                 with self.assertRaisesRegex(RuntimeError, "PROTOCOL DRIFT"):
-                    grade.verify_freeze()
+                    grade.verify_legacy_freeze()
 
     def test_filled_worksheet_scores_primary_and_terminal_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1844,7 +1844,7 @@ class FreezeAndWorkflowTests(unittest.TestCase):
             preregistration = protocol.create()
             with protocol.patched():
                 grade.freeze(preregistration)
-                frozen = grade.verify_freeze()
+                frozen = grade.verify_legacy_freeze()
                 answers = protocol.root / "answers.json"
                 answers.write_text(json.dumps({
                     "frozen_manifest_sha256": grade.sha256_file(protocol.frozen),
@@ -1852,9 +1852,7 @@ class FreezeAndWorkflowTests(unittest.TestCase):
                     "role": "qwen",
                     "seeds": [4],
                     "arms": ["P"],
-                    "budgets": {"answer_tokens": 20_000, "interaction_rounds": 3,
-                                "retrievals_per_round": 1, "active_probes": 3,
-                                "max_images": 16, "max_visual_tokens": 16_384},
+                    "budgets": dict(grade.DEFAULT_BUDGETS),
                     "certificate": {"checkpoint_sha256": "a" * 64,
                                     "certificate_sha256": frozen["certificate"]["sha256"],
                                     "certificate_verified_shards": True},
@@ -1868,7 +1866,7 @@ class FreezeAndWorkflowTests(unittest.TestCase):
                             "seed": grade.generation_seed(
                                 4, "G000001", round_number
                             ),
-                            "max_tokens": 20_000,
+                            "max_tokens": grade.DEFAULT_BUDGETS["answer_tokens"],
                             "completeness": "complete",
                         } for round_number in range(4)],
                         "pre_probe_answer": valid_answer(goal="wrong guess"),
@@ -1912,15 +1910,13 @@ class FreezeAndWorkflowTests(unittest.TestCase):
             preregistration = protocol.create()
             with protocol.patched():
                 grade.freeze(preregistration)
-                frozen = grade.verify_freeze()
+                frozen = grade.verify_legacy_freeze()
                 answers = protocol.root / "partial.json"
                 answers.write_text(json.dumps({
                     "frozen_manifest_sha256": grade.sha256_file(protocol.frozen),
                     "git": {"commit": "f" * 40, "dirty": False, "status": []},
                     "role": "qwen", "seeds": [4], "arms": ["P"],
-                    "budgets": {"answer_tokens": 20_000, "interaction_rounds": 3,
-                                "retrievals_per_round": 1, "active_probes": 3,
-                                "max_images": 16, "max_visual_tokens": 16_384},
+                    "budgets": dict(grade.DEFAULT_BUDGETS),
                     "certificate": {"checkpoint_sha256": "a" * 64,
                                     "certificate_sha256": frozen["certificate"]["sha256"],
                                     "certificate_verified_shards": True},

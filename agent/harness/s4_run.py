@@ -26,6 +26,7 @@ Dry run (no model, no GPU):
 from __future__ import annotations
 
 import argparse
+import copy
 import datetime as _dt
 import fcntl
 import hashlib
@@ -58,13 +59,19 @@ CERTIFICATE = ROOT / "logs/e2_probe_vlm_38_8bit.json"
 FROZEN = ROOT / "logs/s4_sealed/FROZEN.json"
 RUNS = ROOT / "logs/s4_runs"
 PILOT_GAMES = ("ls20", "ft09", "m0r0", "sp80")
-MAX_ANSWER_TOKENS = 20_000       # (w) fleet-calibrated at the gate night before use
+# Frozen empirical closure ceiling; calibration rejects any truncated call.
+MAX_ANSWER_TOKENS = 32_768
 MAX_INITIAL_PROMPT_TEXT_TOKENS = 14_000  # 12k evidence + request/template envelope
+MAX_IMAGES = probe.MAX_PACKET_IMAGES
+MAX_VISUAL_TOKENS = probe.MAX_VISUAL_TOKENS
+# Qwen3.8 advertises a native 262,144-token context.  The cumulative text cap
+# reserves the complete visual envelope and one complete answer; ask_chat also
+# enforces the exact processor-expanded prompt plus output bound on every call.
+NATIVE_CONTEXT_TOKENS = 262_144
+MAX_CONTEXT_TEXT_TOKENS = NATIVE_CONTEXT_TOKENS - MAX_VISUAL_TOKENS - MAX_ANSWER_TOKENS
 INTERACTION_ROUNDS = 3           # fixed update calls after r0, for every arm
 RETRIEVALS_PER_ROUND = 1         # one bounded visual result can be delivered each round
 ACTIVE_PROBES = 3
-MAX_IMAGES = probe.MAX_PACKET_IMAGES
-MAX_VISUAL_TOKENS = probe.MAX_VISUAL_TOKENS
 PROBE_PAGE_VISUAL_RESERVE = PROBE_RESULT_PAGE_MAX_VISUAL_TOKENS
 ALL_ARMS = ("T", "V", "O", "R", "A", "C", "P")
 INTERACTIVE_ARMS = frozenset({"R", "A", "C", "P"})
@@ -82,6 +89,7 @@ UPDATE_REQUEST = (
     "on the last line."
 )
 LOCK_PATH = ROOT / "logs/.s4_run.lock"
+ONE_SHOT_ROOT = ROOT / "logs/s4_sealed/serving_attempts"
 EXPECTED_GATE_NAMES = frozenset({
     "gate1_palette_production",
     "gate2_grey_fill_colour",
@@ -260,6 +268,15 @@ def validate_answer(payload: Any) -> list[str]:
         if action is not None:
             if not isinstance(action, dict) or set(action) != {"id", "click"}:
                 errors.append("next_probe.action has the wrong object schema")
+            else:
+                action_id = action.get("id")
+                click = action.get("click")
+                if type(action_id) is not int or not 0 <= action_id <= 7:
+                    errors.append("next_probe.action.id is invalid")
+                if not _valid_click(click):
+                    errors.append("next_probe.action.click is invalid")
+                elif type(action_id) is int and ((action_id == 6) != (click is not None)):
+                    errors.append("next_probe A6 requires click; every other action requires null")
         if (start is None) != (action is None):
             errors.append("next_probe start_state_id and action must both be null or both present")
         predictions = next_probe.get("predictions_by_hypothesis")
@@ -296,6 +313,11 @@ def validate_answer(payload: Any) -> list[str]:
                 errors.append(f"goal_directed_plan[{index}].action.id is invalid")
             if not _valid_click(action.get("click")):
                 errors.append(f"goal_directed_plan[{index}].action.click is invalid")
+            elif type(action.get("id")) is int \
+                    and ((action["id"] == 6) != (action.get("click") is not None)):
+                errors.append(
+                    f"goal_directed_plan[{index}] A6 requires click; other actions require null"
+                )
     return errors
 
 
@@ -318,6 +340,153 @@ def acquire_run_lock(path: Path):
     return handle
 
 
+def _atomic_create_json(path: Path, payload: dict[str, Any]) -> None:
+    """Create a canonical, read-only JSON artifact without replacement."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    encoded = (json.dumps(payload, sort_keys=True, indent=2) + "\n").encode("utf-8")
+    try:
+        descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o444)
+    except FileExistsError as exc:
+        raise RuntimeError(f"one-shot artifact already exists; rerun refused: {path}") from exc
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(encoded)
+            stream.flush()
+            os.fsync(stream.fileno())
+    except BaseException:
+        # Do not remove a partially created one-shot marker.  Its existence is a
+        # conservative record that authorization may already have been consumed.
+        raise
+
+
+def prior_reservation_binding(prior_document: dict[str, Any]) -> dict[str, str]:
+    """Verify and return the immutable reservation bound by an attempt-0 document."""
+    required = ("reservation_path", "reservation_sha256", "reservation_id")
+    probe.require(all(isinstance(prior_document.get(key), str) and prior_document[key]
+                      for key in required),
+                  "prior attempt lacks its immutable serving reservation")
+    path = Path(prior_document["reservation_path"]).expanduser().resolve()
+    probe.require(path.is_file(), f"prior attempt reservation is missing: {path}")
+    probe.require(sha256_file(path) == prior_document["reservation_sha256"],
+                  "prior attempt reservation bytes drifted")
+    reservation = json.loads(path.read_text())
+    probe.require(reservation.get("reservation_id") == prior_document["reservation_id"],
+                  "prior attempt reservation ID mismatch")
+    reservation_core = {key: value for key, value in reservation.items()
+                        if key != "reservation_id"}
+    probe.require(canonical_sha256(reservation_core) == reservation["reservation_id"],
+                  "prior attempt reservation content digest is invalid")
+    return {
+        "path": str(path),
+        "sha256": prior_document["reservation_sha256"],
+        "reservation_id": prior_document["reservation_id"],
+    }
+
+
+def reserve_serving_attempt(
+    *, role: str, attempt: int, frozen_manifest_sha256: str, run_dir: Path,
+    output_path: Path, serving_identity: dict[str, Any],
+    prior_attempt: dict[str, Any] | None,
+    root: Path | None = None,
+) -> dict[str, str]:
+    """Consume the fixed pilot/comparator attempt exactly once.
+
+    The filename is role/attempt fixed, rather than timestamp-derived.  Thus a
+    crash, a new output directory, or a cherry-picked subset cannot silently
+    obtain another primary serving attempt.  Missing-output attempt 1 is also
+    one-shot and commits to the exact prior document and its reservation.
+    """
+    probe.require(role in {"qwen", "ceiling"}, f"unsupported serving role {role!r}")
+    probe.require(attempt in (0, 1), f"unsupported serving attempt {attempt!r}")
+    probe.require((attempt == 1) == (prior_attempt is not None),
+                  "attempt 1 must bind exactly one prior attempt")
+    destination = (root or ONE_SHOT_ROOT).resolve()
+    stem = f"{role}_attempt{attempt}"
+    path = destination / f"{stem}.reservation.json"
+    core = {
+        "format_version": 1,
+        "artifact_type": "s4_serving_attempt_reservation",
+        "role": role,
+        "attempt": attempt,
+        "frozen_manifest_sha256": frozen_manifest_sha256,
+        "run_dir": str(run_dir.resolve()),
+        "output_path": str(output_path.resolve()),
+        "serving_identity": copy.deepcopy(serving_identity),
+        "sampler": copy.deepcopy(probe.PRODUCTION_SAMPLER),
+        "reasoning_effort": probe.REASONING_EFFORT,
+        "preserve_thinking": probe.PRESERVE_THINKING,
+        "native_context_tokens": NATIVE_CONTEXT_TOKENS,
+        "max_output_tokens": MAX_ANSWER_TOKENS,
+        "prior_attempt": copy.deepcopy(prior_attempt),
+        "reserved_utc": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+    }
+    reservation_id = canonical_sha256(core)
+    artifact = {**core, "reservation_id": reservation_id}
+    _atomic_create_json(path, artifact)
+    return {
+        "reservation_path": str(path),
+        "reservation_sha256": sha256_file(path),
+        "reservation_id": reservation_id,
+    }
+
+
+def finalize_serving_receipt(
+    reservation_binding: dict[str, str], *, status: str,
+    trace_receipts: list[dict[str, Any]], cell_outcomes: list[dict[str, Any]],
+) -> dict[str, str]:
+    """Write the fixed immutable terminal receipt for a consumed attempt."""
+    reservation_path = Path(reservation_binding["reservation_path"])
+    probe.require(sha256_file(reservation_path) == reservation_binding["reservation_sha256"],
+                  "serving reservation drifted before terminal receipt")
+    reservation = json.loads(reservation_path.read_text())
+    probe.require(reservation.get("reservation_id") == reservation_binding["reservation_id"],
+                  "serving reservation ID drifted before terminal receipt")
+    receipt_path = reservation_path.with_name(
+        reservation_path.name.replace(".reservation.json", ".receipt.json")
+    )
+    core = {
+        "format_version": 1,
+        "artifact_type": "s4_serving_attempt_receipt",
+        "role": reservation["role"],
+        "attempt": reservation["attempt"],
+        "reservation_path": str(reservation_path),
+        "reservation_sha256": reservation_binding["reservation_sha256"],
+        "reservation_id": reservation_binding["reservation_id"],
+        "status": status,
+        "trace_receipts": copy.deepcopy(trace_receipts),
+        "cell_outcomes": copy.deepcopy(cell_outcomes),
+        "finished_utc": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+    }
+    receipt_id = canonical_sha256(core)
+    _atomic_create_json(receipt_path, {**core, "receipt_id": receipt_id})
+    return {
+        "receipt_path": str(receipt_path),
+        "receipt_sha256": sha256_file(receipt_path),
+        "receipt_id": receipt_id,
+    }
+
+
+def trace_receipts_from_cells(cells: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Project exact immutable trace bindings from produced cell records."""
+    receipts: list[dict[str, Any]] = []
+    for cell in cells:
+        cell_key = "|".join(str(cell.get(key)) for key in (
+            "role", "game_blind", "arm", "seed",
+        ))
+        for record in cell.get("rounds") or []:
+            if not isinstance(record, dict) or not record.get("trace_path"):
+                continue
+            receipts.append({
+                "cell_key": cell_key,
+                "round_index": record.get("round_index"),
+                "round_kind": record.get("round_kind"),
+                "trace_tag": record.get("trace_tag"),
+                "trace_path": record.get("trace_path"),
+                "trace_sha256": record.get("trace_sha256"),
+            })
+    return receipts
+
+
 def verify_serving_snapshot(model: Path, snapshot: dict[str, Any]) -> dict[str, Any]:
     """Revision 4: live full-shard identity against the frozen serving snapshot."""
     live = probe.fingerprint(model)
@@ -332,8 +501,11 @@ def verify_serving_snapshot(model: Path, snapshot: dict[str, Any]) -> dict[str, 
     probe.require(live_versions == snapshot.get("runtime_versions"),
                   "live runtime versions differ from the frozen serving snapshot")
     probe.require(dict(probe.PRODUCTION_SAMPLER) == snapshot.get("production_sampler")
-                  and probe.REASONING_EFFORT == snapshot.get("reasoning_effort"),
-                  "live sampler/effort constants differ from the frozen snapshot")
+                  and probe.REASONING_EFFORT == snapshot.get("reasoning_effort")
+                  and probe.PRESERVE_THINKING is snapshot.get("preserve_thinking")
+                  and probe.NATIVE_CONTEXT_TOKENS == snapshot.get("native_context_tokens")
+                  == NATIVE_CONTEXT_TOKENS,
+                  "live sampler/effort/thinking/context constants differ from the frozen snapshot")
     return {
         "checkpoint_sha256": live["checkpoint_sha256"],
         "verified_shards": True,
@@ -357,72 +529,39 @@ def snapshot_certificate_adapter(snapshot: dict[str, Any]) -> dict[str, Any]:
 def verify_frozen_manifest() -> tuple[dict[str, Any], str]:
     """Verify only public hashes/configuration; never open sealed gold contents.
 
-    Revision 4 owns the live protocol: when the versioned r4 freeze exists, the
-    runner requires it AND the exact CONTINUE verdict, and refuses the entire
-    declared matrix if any selected arm is ineligible.  The legacy path below
-    remains for the inspectable v2.2 record and its regression tests."""
+    Revision 4 owns the live protocol.  The runner requires the r4 freeze AND
+    the exact CONTINUE verdict, and refuses the entire declared matrix if any
+    selected arm is ineligible.  A legacy freeze is evidence, not authority to
+    start a new run.
+    """
     import s4_grade as grade
 
-    if grade.FROZEN_R4.exists():
-        frozen = grade.verify_freeze_r4()
-        frozen_sha = sha256_file(grade.FROZEN_R4)
-        continuation = grade.verify_continue_r4(frozen_sha)
-        eligibility = continuation.get("eligibility") or {}
-        probe.require(
-            eligibility.get("all_selected_arms_eligible") is True,
-            "continuation eligibility does not cover every selected arm; the "
-            "runner refuses the ENTIRE declared matrix — a silent subset would "
-            "change the experiment",
-        )
-        budgets = (frozen.get("preregistration") or {}).get("budgets") or {}
-        probe.require(budgets.get("active_probes") == ACTIVE_PROBES
-                      and budgets.get("interaction_rounds") == INTERACTION_ROUNDS
-                      and budgets.get("retrievals_per_round") == RETRIEVALS_PER_ROUND
-                      and budgets.get("answer_tokens") == MAX_ANSWER_TOKENS
-                      and budgets.get("max_images") == MAX_IMAGES
-                      and budgets.get("max_visual_tokens") == MAX_VISUAL_TOKENS,
-                      "frozen r4 budgets differ from runner constants")
-        return frozen, frozen_sha
-
-    probe.require(FROZEN.exists(), "pre-registration is not frozen — run s4_grade.py --freeze first")
-    frozen = json.loads(FROZEN.read_text())
-    probe.require(frozen.get("format_version") == 2, "unsupported FROZEN format")
-    blind_map = ROOT / "logs/s4_sealed/blind_map.json"
-    probe.require(blind_map.is_file(), "sealed blind map is missing")
-    probe.require(sha256_file(blind_map) == frozen.get("blind_map_sha256"),
-                  "sealed blind-map drift")
-    scripts = frozen.get("scripts") or {}
-    probe.require(set(scripts) == EXPECTED_FROZEN_SCRIPTS,
-                  "frozen protocol-script inventory is incomplete or unknown")
-    for relative, digest in scripts.items():
-        path = ROOT / relative
-        probe.require(path.is_file() and sha256_file(path) == digest,
-                      f"frozen script drift: {relative}")
-    git = probe.capture_git_state()
-    probe.require(git.get("dirty") is False and git.get("commit") == frozen.get("git_commit"),
-                  "live git state differs from the clean frozen protocol commit")
-    prereg = frozen.get("preregistration") or {}
-    expected_digest = frozen.get("preregistration_sha256")
-    probe.require(expected_digest == canonical_sha256(prereg),
-                  "frozen preregistration digest mismatch")
-    budgets = prereg.get("budgets") or {}
-    probe.require(set(budgets) == {
-        "answer_tokens", "interaction_rounds", "retrievals_per_round",
-        "active_probes", "max_images", "max_visual_tokens",
-    }, "frozen budget inventory is incomplete or unknown")
-    probe.require(budgets.get("active_probes") == ACTIVE_PROBES,
-                  "frozen active-probe budget differs from runner")
-    probe.require(budgets.get("interaction_rounds") == INTERACTION_ROUNDS,
-                  "frozen interaction-round budget differs from runner")
-    probe.require(budgets.get("retrievals_per_round") == RETRIEVALS_PER_ROUND,
-                  "frozen retrieval budget differs from runner")
-    probe.require(budgets.get("answer_tokens") == MAX_ANSWER_TOKENS,
-                  "frozen answer-token budget differs from runner")
-    probe.require(budgets.get("max_images") == MAX_IMAGES,
-                  "frozen image-count budget differs from runner")
-    probe.require(budgets.get("max_visual_tokens") == MAX_VISUAL_TOKENS,
-                  "frozen visual-token budget differs from runner")
-    return frozen, sha256_file(FROZEN)
+    probe.require(
+        grade.FROZEN_R4.exists(),
+        "revision-4 pre-registration is not frozen — run s4_grade.py --freeze-r4 "
+        "with an explicit preregistration",
+    )
+    frozen = grade.verify_freeze_r4()
+    frozen_sha = sha256_file(grade.FROZEN_R4)
+    continuation = grade.verify_continue_r4(frozen_sha)
+    eligibility = continuation.get("eligibility") or {}
+    probe.require(
+        eligibility.get("all_selected_arms_eligible") is True,
+        "continuation eligibility does not cover every selected arm; the "
+        "runner refuses the ENTIRE declared matrix — a silent subset would "
+        "change the experiment",
+    )
+    budgets = (frozen.get("preregistration") or {}).get("budgets") or {}
+    probe.require(budgets.get("active_probes") == ACTIVE_PROBES
+                  and budgets.get("interaction_rounds") == INTERACTION_ROUNDS
+                  and budgets.get("retrievals_per_round") == RETRIEVALS_PER_ROUND
+                  and budgets.get("answer_tokens") == MAX_ANSWER_TOKENS
+                  and budgets.get("max_images") == MAX_IMAGES
+                  and budgets.get("max_visual_tokens") == MAX_VISUAL_TOKENS
+                  and budgets.get("native_context_tokens") == NATIVE_CONTEXT_TOKENS
+                  and budgets.get("max_context_text_tokens") == MAX_CONTEXT_TEXT_TOKENS,
+                  "frozen r4 budgets differ from runner constants")
+    return frozen, frozen_sha
 
 
 def verify_packet_frozen(packet: dict[str, Any], frozen: dict[str, Any]) -> None:
@@ -726,6 +865,86 @@ def load_packet(game: str) -> dict[str, Any]:
                   and codec_stats.get("lossless_decode_hash_checks") == board_records,
                   f"packet {bid} text-grid codec accounting is inconsistent")
 
+    # Every transition actually selected into any carrier must have one exact,
+    # model-visible delta record, including all recaptured response frames.
+    import s4_delta as sdl
+    selected_tids = list(dict.fromkeys(
+        tid for item in items for tid in (item.get("transition_refs") or [])
+    ))
+    temporal = manifest.get("temporal_delta_channel") or {}
+    delta_records = temporal.get("full_records")
+    probe.require(isinstance(delta_records, list)
+                  and temporal.get("records") == len(delta_records)
+                  and temporal.get("selected_transition_ids") == selected_tids
+                  and temporal.get("recorded_transition_ids") == selected_tids
+                  and temporal.get("sparse_delta_limit") == sdl.SPARSE_DELTA_LIMIT,
+                  f"packet {bid} temporal delta inventory is incomplete")
+    probe.require(
+        temporal.get("model_visible_cell_limit") == sdl.MODEL_VISIBLE_CELL_LIMIT
+        and temporal.get("model_rendering")
+        == ("dictionary-compressed exact bbox-anchored row/flat RLE; all changed "
+            "cells model-visible; full audited record"),
+        f"packet {bid} temporal delta presentation contract drift",
+    )
+    record_tids: list[str] = []
+    record_hashes: list[str] = []
+    for record in delta_records:
+        sdl.validate_sequence_record_structure(record)
+        binding = record.get("binding") or {}
+        tid = binding.get("tid")
+        probe.require(isinstance(tid, str) and tid in selected_tids,
+                      f"packet {bid} delta record has an unselected TID")
+        expected_eids = [
+            item["evidence_id"] for item in items
+            if tid in (item.get("transition_refs") or [])
+        ]
+        probe.require(binding.get("kind") == "selected_transition"
+                      and binding.get("evidence_ids") == expected_eids,
+                      f"packet {bid} delta record {tid} evidence binding drift")
+        record_tids.append(tid)
+        record_hashes.append(record["record_sha256"])
+    probe.require(record_tids == selected_tids
+                  and temporal.get("record_sha256s") == record_hashes,
+                  f"packet {bid} temporal delta order/hash binding drift")
+    model_carrier = sdl.render_carrier_collection(delta_records)
+    probe.require(
+        temporal.get("model_carrier_sha256") == canonical_sha256(model_carrier),
+        f"packet {bid} exact temporal carrier digest drift",
+    )
+    probe.require(model_carrier in ledger,
+                  f"packet {bid} exact temporal carrier is absent or has drifted")
+
+    # Recompute the precision list from the exact opening board.  In particular,
+    # the click is the actual flood-filled component's lexicographic cell, not a
+    # same-colour cell that merely happens to lie in its bounding box.
+    opening_items = [item for item in items if item.get("kind") == "opening_components"]
+    probe.require(len(opening_items) == 1,
+                  f"packet {bid} needs exactly one opening-components item")
+    opening_boards = ((opening_items[0].get("carriers") or {}).get("text") or {}).get(
+        "boards"
+    ) or []
+    probe.require(len(opening_boards) == 1
+                  and opening_boards[0].get("frame_id") in decoded,
+                  f"packet {bid} opening board is not losslessly decoded")
+    opening_grid = decoded[opening_boards[0]["frame_id"]]
+    recomputed = sorted(
+        (component for component in spk._component_records(opening_grid, [opening_grid])
+         if component["cells"] <= 256),
+        key=lambda component: (component["cells"], component["bbox"]),
+    )[:16]
+    expected_precision = [{
+        "component_id": component["component_id"],
+        "colour": component["colour"],
+        "cells": component["cells"],
+        "bbox": component["bbox"],
+        "representative_click": component["representative_click"],
+    } for component in recomputed]
+    precision = manifest.get("precision_action_channel") or {}
+    probe.require(precision.get("profile") == spk.sr.RULER_CROP_PROFILE
+                  and precision.get("components_listed") == len(expected_precision)
+                  and precision.get("components") == expected_precision,
+                  f"packet {bid} precision-action component/click binding drift")
+
     result = {
         "blind_id": bid, "dir": pdir, "manifest": manifest, "ledger": ledger,
         "manifest_path": manifest_path, "manifest_sha256": sha256_file(manifest_path),
@@ -789,12 +1008,11 @@ def _text_evidence(packet: dict[str, Any]) -> str:
         text_carrier = (item.get("carriers") or {}).get("text") or {}
         block = [
             f"== EVIDENCE {eid} ==",
-            f"kind={item.get('kind')} provenance={item.get('provenance')}",
             str(item.get("text") or ""),
         ]
-        actions = text_carrier.get("actions") or item.get("action_sequence") or []
-        if actions:
-            block.append("actions=" + json.dumps(actions, sort_keys=True, separators=(",", ":")))
+        # Exact actions are already present once in the ledger above.  Keep the
+        # serving payload byte-identical to s4_packet._text_carrier_payload and
+        # do not duplicate them inside every evidence section.
         for board in text_carrier.get("boards") or []:
             block.append(
                 f"board {board.get('frame_id')} {board.get('label', '')}\n{board.get('hex', '')}"
@@ -841,6 +1059,11 @@ def ask_chat(
     vlm, messages, images, *, seed, max_tokens, run_dir, tag,
     max_input_text_tokens: int | None = None,
     payload_validator=None,
+    ledger_module: str = "s4_run",
+    ledger_purpose: str = "pilot_generation",
+    serving_identity: dict[str, Any] | None = None,
+    round_index: int | None = None,
+    round_kind: str | None = None,
 ):
     """Closure-grade multi-turn serving path with the probe's hard invariants.
 
@@ -852,11 +1075,17 @@ def ask_chat(
     from PIL import Image as PILImage
     from mlx_vlm import generate
 
+    # Call-time snapshots are essential: callers append later turns to their
+    # working list, but an earlier trace must remain an exact receipt for what
+    # the model actually saw at that call.
+    messages_snapshot = copy.deepcopy(messages)
+    images_snapshot = [Path(path).resolve() for path in list(images)]
     probe.require(type(seed) is int and 0 <= seed < 2 ** 64, f"invalid seed {seed!r}")
     probe.require(type(max_tokens) is int and max_tokens > 0, "invalid output-token budget")
     prompt = vlm.processor.apply_chat_template(
-        messages, tokenize=False, add_generation_prompt=True,
+        messages_snapshot, tokenize=False, add_generation_prompt=True,
         enable_thinking=True, reasoning_effort=probe.REASONING_EFFORT,
+        preserve_thinking=probe.PRESERVE_THINKING,
     )
     marker = prompt.rfind("<|im_start|>assistant")
     probe.require(marker != -1, "assistant marker missing")
@@ -865,17 +1094,18 @@ def ask_chat(
                   "pre-filled think in generation region")
 
     flattened: list[dict[str, str]] = []
-    for message in messages:
+    for message in messages_snapshot:
         content = message.get("content")
         if isinstance(content, list):
             flattened.extend(content)
     image_items = [item for item in flattened if item.get("type") == "image"]
-    probe.require(len(image_items) == len(images),
-                  f"image items {len(image_items)} != supplied images {len(images)}")
-    probe.require(len(images) <= MAX_IMAGES, f"image count {len(images)} exceeds {MAX_IMAGES}")
+    probe.require(len(image_items) == len(images_snapshot),
+                  f"image items {len(image_items)} != supplied images {len(images_snapshot)}")
+    probe.require(len(images_snapshot) <= MAX_IMAGES,
+                  f"image count {len(images_snapshot)} exceeds {MAX_IMAGES}")
     pads = list(re.finditer(rf"(?:{re.escape(probe.VISION_PAD)})+", prompt))
-    probe.require(len(pads) == len(images),
-                  f"serialized image pads {len(pads)} != images {len(images)}")
+    probe.require(len(pads) == len(images_snapshot),
+                  f"serialized image pads {len(pads)} != images {len(images_snapshot)}")
     # Verify every list-content text/image item remains serialized in original order.
     cursor = 0
     pad_index = 0
@@ -897,7 +1127,7 @@ def ask_chat(
 
     pil = []
     image_meta = []
-    for path in images:
+    for path in images_snapshot:
         with PILImage.open(path) as opened:
             image = opened.convert("RGB").copy()
         probe.require(image.width % 32 == 0 and image.height % 32 == 0,
@@ -913,11 +1143,11 @@ def ask_chat(
     grid_thw = inputs.get("image_grid_thw")
     visual_tokens = 0
     grid_list: list[list[int]] = []
-    if images:
+    if images_snapshot:
         probe.require(grid_thw is not None, "processor omitted image_grid_thw")
         grid = np.asarray(grid_thw)
-        probe.require(grid.shape == (len(images), 3),
-                      f"image_grid_thw shape {grid.shape} != {(len(images), 3)}")
+        probe.require(grid.shape == (len(images_snapshot), 3),
+                      f"image_grid_thw shape {grid.shape} != {(len(images_snapshot), 3)}")
         image_processor = vlm.processor.image_processor
         patch_size = int(getattr(image_processor, "patch_size", 0))
         merge_size = int(getattr(image_processor, "merge_size", 0))
@@ -945,14 +1175,39 @@ def ask_chat(
     if max_input_text_tokens is not None:
         probe.require(
             text_tokens <= max_input_text_tokens,
-            f"initial prompt text-token count {text_tokens} exceeds "
+            f"input text-token count {text_tokens} exceeds "
             f"{max_input_text_tokens}",
         )
+    probe.require(
+        expanded + max_tokens <= NATIVE_CONTEXT_TOKENS,
+        f"expanded prompt {expanded} + output budget {max_tokens} exceeds "
+        f"native context {NATIVE_CONTEXT_TOKENS}",
+    )
     mx.random.seed(seed)
     started = time.monotonic()
-    out = generate(vlm.model, vlm.processor, prompt,
-                   image=[str(p) for p in images] or None,
-                   max_tokens=max_tokens, verbose=False, **probe.PRODUCTION_SAMPLER)
+    model_label = str(
+        getattr(vlm, "path", None)
+        or getattr(vlm, "model_path", None)
+        or type(vlm.model).__name__
+    )
+    try:
+        out = generate(vlm.model, vlm.processor, prompt,
+                       image=[str(p) for p in images_snapshot] or None,
+                       max_tokens=max_tokens, verbose=False, **probe.PRODUCTION_SAMPLER)
+    except BaseException as exc:
+        import s4_ledgers
+        s4_ledgers.append("local_generations", {
+            "module": ledger_module,
+            "tag": tag,
+            "purpose": ledger_purpose,
+            "model": model_label,
+            "seed": seed,
+            "max_tokens": max_tokens,
+            "wall_seconds": round(time.monotonic() - started, 1),
+            "outcome": f"exception:{type(exc).__name__}",
+            "run_dir": str(run_dir),
+        })
+        raise
     text = out.text if hasattr(out, "text") else str(out)
     full = "<think>" + text
     closed = "</think>" in full
@@ -978,21 +1233,40 @@ def ask_chat(
         if type(stats.get("prompt_tokens")) is int and type(stats.get("generation_tokens")) is int
         else False
     )
+    assistant_history = {
+        "role": "assistant",
+        "content": answer,
+        "reasoning_content": think,
+    }
+    message_sha256 = hashlib.sha256(
+        json.dumps(messages_snapshot, sort_keys=True, separators=(",", ":"),
+                   ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
     record = {
         "tag": tag,
+        "trace_tag": tag,
+        "round_index": round_index,
+        "round_kind": round_kind,
         "seed": seed,
-        "sampler": probe.PRODUCTION_SAMPLER,
+        "sampler": copy.deepcopy(probe.PRODUCTION_SAMPLER),
         "reasoning_effort": probe.REASONING_EFFORT,
+        "preserve_thinking": probe.PRESERVE_THINKING,
+        "serving_identity": copy.deepcopy(serving_identity),
         "max_tokens": max_tokens,
-        "messages": messages,
+        "native_context_tokens": NATIVE_CONTEXT_TOKENS,
+        "messages": messages_snapshot,
+        "messages_sha256": message_sha256,
         "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
         "images": image_meta,
         "image_grid_thw": grid_list,
         "visual_tokens": visual_tokens,
         "expanded_prompt_tokens": expanded,
         "derived_text_tokens": text_tokens,
-        "initial_text_token_cap": max_input_text_tokens,
+        "input_text_token_cap": max_input_text_tokens,
         "generator_prompt_tokens": stats.get("prompt_tokens"),
+        "input_tokens": stats.get("prompt_tokens"),
+        "output_tokens": stats.get("generation_tokens"),
+        "finish_reason": stats.get("finish_reason"),
         "prompt_tokens_match": prompt_tokens_match,
         "token_accounting_match": token_accounting_match,
         "think_chars": len(think.strip()),
@@ -1000,12 +1274,34 @@ def ask_chat(
         "payload_present": payload is not None,
         "schema_errors": schema_errors,
         "completeness": completeness,
+        "raw_response": text,
+        "parsed_payload": parsed,
+        "think": think,
+        "answer": answer,
+        "assistant_history": assistant_history,
         "stats": stats,
         "wall_seconds": round(time.monotonic() - started, 1),
     }
-    probe.atomic_write(run_dir / f"{tag}.trace.json",
-                       {**record, "prompt": prompt, "raw": text, "think": think,
-                        "answer": answer, "parsed_payload": parsed})
+    trace_path = (run_dir / f"{tag}.trace.json").resolve()
+    probe.atomic_write(trace_path, {**record, "prompt": prompt, "raw": text})
+    os.chmod(trace_path, 0o444)
+    record["trace_path"] = str(trace_path)
+    record["trace_sha256"] = sha256_file(trace_path)
+    import s4_ledgers
+    ledger_record = {
+        "module": ledger_module,
+        "tag": tag,
+        "purpose": ledger_purpose,
+        "model": model_label,
+        "seed": seed,
+        "max_tokens": max_tokens,
+        "wall_seconds": record["wall_seconds"],
+        "outcome": completeness,
+        "run_dir": str(run_dir),
+    }
+    if type(stats.get("generation_tokens")) is int:
+        ledger_record["generation_tokens"] = stats["generation_tokens"]
+    s4_ledgers.append("local_generations", ledger_record)
     probe.require(completeness != "instrument_error",
                   f"invalid generation termination metadata: {stats}")
     probe.require(prompt_tokens_match,
@@ -1101,6 +1397,14 @@ def _require_observation_result(
     checkpoint,
 ) -> None:
     if result.get("instrument_error") is not True:
+        if result.get("kind") == "probe" and result.get("ok") is True:
+            import s4_delta as sdl
+            record = result.get("temporal_delta_record")
+            sdl.validate_sequence_record_structure(record)
+            probe.require(
+                sdl.render_carrier_block(record) in (result.get("text") or ""),
+                "successful live probe omitted its exact model-visible delta record",
+            )
         return
     cell["probe_log"] = session.log
     cell["probes_spent"] = session.probes_spent
@@ -1124,7 +1428,8 @@ def _outcome_for(record: dict[str, Any]) -> str | None:
 
 def run_cell(vlm, game: str, arm: str, run_dir: Path, seed_base: int,
              dry_run: bool, max_tokens: int = MAX_ANSWER_TOKENS,
-             checkpoint=lambda _cell: None) -> dict[str, Any]:
+             checkpoint=lambda _cell: None,
+             serving_identity: dict[str, Any] | None = None) -> dict[str, Any]:
     packet = load_packet(game)
     bid = packet["blind_id"]
     tag = f"{bid}_{arm}_s{seed_base}"
@@ -1157,8 +1462,9 @@ def run_cell(vlm, game: str, arm: str, run_dir: Path, seed_base: int,
         vlm, messages, images, seed=probe.seed_for(seed_base, f"{bid}_r0"),
         max_tokens=max_tokens, run_dir=run_dir, tag=tag + "_r0",
         max_input_text_tokens=MAX_INITIAL_PROMPT_TEXT_TOKENS,
+        serving_identity=serving_identity, round_index=0, round_kind="initial",
     )
-    cell["pre_probe_answer"] = payload
+    cell["pre_probe_answer"] = record.get("parsed_payload", payload)
     cell["rounds"] = [record]
     cell["update_log"] = []
     checkpoint(cell)
@@ -1316,13 +1622,26 @@ def run_cell(vlm, game: str, arm: str, run_dir: Path, seed_base: int,
             update_audit["input_kind"] = "environment_evidence"
         feedback_items.append({"type": "text", "text": UPDATE_REQUEST})
         cell["update_log"].append(update_audit)
-        messages.append({"role": "assistant", "content": answer})
+        assistant_history = record.get("assistant_history") or {
+            "role": "assistant", "content": answer,
+            "reasoning_content": record.get("think", ""),
+        }
+        probe.require(
+            assistant_history.get("role") == "assistant"
+            and assistant_history.get("content") == answer
+            and isinstance(assistant_history.get("reasoning_content"), str),
+            "serving receipt omitted the exact assistant reasoning history",
+        )
+        messages.append(copy.deepcopy(assistant_history))
         messages.append({"role": "user", "content": feedback_items})
         images = images + feedback_images
         record, payload, answer = ask_chat(
             vlm, messages, images,
             seed=probe.seed_for(seed_base, f"{bid}_r{round_no}"),
             max_tokens=max_tokens, run_dir=run_dir, tag=f"{tag}_r{round_no}",
+            max_input_text_tokens=MAX_CONTEXT_TEXT_TOKENS,
+            serving_identity=serving_identity, round_index=round_no,
+            round_kind="interaction_update",
         )
         cell["rounds"].append(record)
         if session is not None:
@@ -1339,7 +1658,9 @@ def run_cell(vlm, game: str, arm: str, run_dir: Path, seed_base: int,
         cell["probe_log"] = session.log
         cell["probes_spent"] = session.probes_spent
 
-    cell["final_answer"] = payload if pending_outcome is None else None
+    # Answers are projections of the canonical trace, never separately parsed
+    # or conditionally rewritten by the cell producer.
+    cell["final_answer"] = record.get("parsed_payload", payload)
     cell["outcome"] = pending_outcome or "answered"
     checkpoint(cell)
     return cell
@@ -1357,6 +1678,11 @@ def main() -> int:
                         help="deprecated single-seed alias for --seeds")
     parser.add_argument("--attempt", type=int, default=0,
                         help="0 for the frozen primary run; 1 for a permitted missing-cell rerun")
+    parser.add_argument(
+        "--prior-attempt", type=Path, default=None,
+        help="attempt-0 answer document; required for attempt 1 and used to derive "
+             "the exact missing-cell set",
+    )
     parser.add_argument("--role", choices=["qwen"], default="qwen")
     parser.add_argument("--model", type=Path, default=probe.MODEL)
     parser.add_argument("--out", type=Path, default=None)
@@ -1367,6 +1693,8 @@ def main() -> int:
         parser.error("pass --seed or --seeds, not both")
     if args.attempt not in (0, 1):
         parser.error("--attempt must be 0 or 1")
+    if (args.attempt == 1) != (args.prior_attempt is not None):
+        parser.error("--prior-attempt is required exactly when --attempt 1")
     args.model = args.model.expanduser().resolve()
     if not args.dry_run and not args.model.is_dir():
         parser.error(f"--model is not a directory: {args.model}")
@@ -1377,6 +1705,9 @@ def main() -> int:
         games = args.games or list(PILOT_GAMES)
         arms = args.arms or list(ALL_ARMS)
         seeds = args.seeds or ([args.seed] if args.seed is not None else [4])
+        selected_cells = {
+            (game, arm, seed) for game in games for arm in arms for seed in seeds
+        }
         max_tokens = MAX_ANSWER_TOKENS
     else:
         frozen, frozen_sha = verify_frozen_manifest()
@@ -1400,12 +1731,59 @@ def main() -> int:
         }
         blind_map = json.loads((ROOT / "logs/s4_sealed/blind_map.json").read_text())
         selected = {(blind_map[game], arm, seed) for game in games for arm in arms for seed in seeds}
+        prior_attempt_binding = None
         if args.attempt == 0:
             probe.require(selected == expected,
                           "primary run must execute the exact frozen role/game/arm/seed matrix")
+            selected_cells = {
+                (game, arm, seed) for game in games for arm in arms for seed in seeds
+            }
         else:
-            probe.require(selected <= expected and selected,
-                          "rerun cells must be a non-empty subset of the frozen matrix")
+            import s4_grade as grade
+            probe.require(
+                args.games is None and args.arms is None and args.seeds is None
+                and args.seed is None,
+                "attempt 1 derives its exact sparse cell set from --prior-attempt; "
+                "do not pass game/arm/seed selectors",
+            )
+            prior_path = args.prior_attempt.expanduser().resolve()
+            probe.require(prior_path.is_file(), f"prior attempt does not exist: {prior_path}")
+            prior_doc = json.loads(prior_path.read_text())
+            probe.require(prior_doc.get("attempt", 0) == 0,
+                          "--prior-attempt must bind an attempt-0 answer document")
+            prior_reservation = prior_reservation_binding(prior_doc)
+            attempts, _ = grade.collect_attempts([prior_path], frozen)
+            resolved = grade.resolve_attempts(attempts, frozen)
+            required_keys = {
+                key for key, resolution in resolved.items()
+                if key.startswith(f"{args.role}|")
+                and resolution.get("rerun_required") is True
+            }
+            required_rows = {
+                (row["game_blind"], row["arm"], int(row["seed"]))
+                for row in prereg.get("expected_cells") or []
+                if grade.logical_key(
+                    row["role"], row["game_blind"], row["arm"], int(row["seed"])
+                ) in required_keys
+            }
+            probe.require(required_rows,
+                          "attempt 0 has no cells eligible for the missing-output remedy")
+            game_by_blind = {blind: game for game, blind in blind_map.items()}
+            selected_cells = {
+                (game_by_blind[blind], arm, seed)
+                for blind, arm, seed in required_rows
+            }
+            games = [game for game in frozen_games
+                     if any(row[0] == game for row in selected_cells)]
+            arms = [arm for arm in frozen_arms
+                    if any(row[1] == arm for row in selected_cells)]
+            seeds = [seed for seed in frozen_seeds
+                     if any(row[2] == seed for row in selected_cells)]
+            prior_attempt_binding = {
+                "path": str(prior_path), "sha256": sha256_file(prior_path),
+                "required_cell_keys": sorted(required_keys),
+                "reservation": prior_reservation,
+            }
         budgets = prereg.get("budgets") or {}
         max_tokens = budgets.get("answer_tokens")
         probe.require(type(max_tokens) is int and max_tokens > 0,
@@ -1446,12 +1824,15 @@ def main() -> int:
         "run_dir": str(run_dir),
         "output_path": str(out_path),
         "frozen_manifest_sha256": frozen_sha,
+        "prior_attempt": prior_attempt_binding if not args.dry_run else None,
         "budgets": {"answer_tokens": max_tokens,
                     "interaction_rounds": INTERACTION_ROUNDS,
                     "retrievals_per_round": RETRIEVALS_PER_ROUND,
                     "active_probes": ACTIVE_PROBES,
                     "max_images": MAX_IMAGES,
-                    "max_visual_tokens": MAX_VISUAL_TOKENS},
+                    "max_visual_tokens": MAX_VISUAL_TOKENS,
+                    "native_context_tokens": NATIVE_CONTEXT_TOKENS,
+                    "max_context_text_tokens": MAX_CONTEXT_TEXT_TOKENS},
         "interaction_preflight": [],
         "cells": [],
     }
@@ -1460,6 +1841,7 @@ def main() -> int:
         probe.atomic_write(out_path, doc)
         probe.atomic_write(manifest_path, doc)
 
+    reservation_binding: dict[str, str] | None = None
     persist()
     try:
         # Packet integrity is checked before loading the model.
@@ -1467,7 +1849,11 @@ def main() -> int:
             packet = load_packet(game)
             if frozen is not None:
                 verify_packet_frozen(packet, frozen)
-            for arm in arms:
+            selected_game_arms = [
+                arm for arm in arms
+                if any(g == game and a == arm for g, a, _ in selected_cells)
+            ]
+            for arm in selected_game_arms:
                 _, initial_images = initial_turn(game, arm, packet)
                 probe.require(len(initial_images) <= MAX_IMAGES,
                               f"{game}/{arm}: initial image count exceeds cap")
@@ -1500,7 +1886,7 @@ def main() -> int:
                     f"{game}/{arm}: packet lacks {reserved_visual_tokens} interactive "
                     "visual-token headroom",
                 )
-            if set(arms) & INTERACTIVE_ARMS:
+            if set(selected_game_arms) & INTERACTIVE_ARMS:
                 live_evidence = load_packet_bound_evidence(game, packet)
                 preflight_session = ProbeSession(
                     game,
@@ -1517,7 +1903,7 @@ def main() -> int:
                 replayable = preflight_session.replayable_tids()
                 probe.require(replayable, f"{game}: no recapture-verified probe start states")
                 capacity = preflight_session.control_capacity()
-                if set(arms) & (MODEL_PROBE_ARMS | CONTROL_PROBE_ARMS):
+                if set(selected_game_arms) & (MODEL_PROBE_ARMS | CONTROL_PROBE_ARMS):
                     probe.require(
                         capacity >= ACTIVE_PROBES,
                         f"{game}: only {capacity} distinct verified probe controls; "
@@ -1527,8 +1913,13 @@ def main() -> int:
                 else:
                     live_engine_identity = None
                 controls = []
-                if set(arms) & CONTROL_PROBE_ARMS:
-                    control_seed = probe.seed_for(seeds[0], f"{packet['blind_id']}_control")
+                if set(selected_game_arms) & CONTROL_PROBE_ARMS:
+                    game_seeds = sorted(
+                        seed for g, _, seed in selected_cells if g == game
+                    )
+                    control_seed = probe.seed_for(
+                        game_seeds[0], f"{packet['blind_id']}_control"
+                    )
                     controls = [
                         preflight_session.control_request(round_no, control_seed)
                         for round_no in range(ACTIVE_PROBES)
@@ -1588,12 +1979,26 @@ def main() -> int:
             persist()
             print(f"certificate and freeze verified; loading {args.model.name} ...", flush=True)
             vlm = probe.Vlm(args.model)
+            # Model initialization is not a serving call.  Consume the fixed
+            # one-shot marker only after load succeeds, but before generation.
+            reservation_binding = reserve_serving_attempt(
+                role=args.role,
+                attempt=args.attempt,
+                frozen_manifest_sha256=frozen_sha,
+                run_dir=run_dir,
+                output_path=out_path,
+                serving_identity=doc["serving_identity"],
+                prior_attempt=prior_attempt_binding,
+            )
+            doc.update(reservation_binding)
 
         doc["status"] = "running"
         persist()
         for seed in seeds:
             for game in games:
                 for arm in arms:
+                    if (game, arm, seed) not in selected_cells:
+                        continue
                     base = {
                         "role": args.role,
                         "game_blind": spk.blind_id(game),
@@ -1617,6 +2022,7 @@ def main() -> int:
                         cell = run_cell(
                             vlm, game, arm, run_dir, seed, args.dry_run,
                             max_tokens=max_tokens, checkpoint=save_partial,
+                            serving_identity=doc.get("serving_identity"),
                         )
                         save_partial(cell)
                         if args.dry_run:
@@ -1644,9 +2050,46 @@ def main() -> int:
         missing = [cell for cell in doc["cells"] if cell.get("outcome") not in (None, "answered")]
         doc["status"] = "dry_run_done" if args.dry_run else ("done_with_missing" if missing else "done")
         doc["completed_utc"] = _dt.datetime.now(_dt.timezone.utc).isoformat()
+        if reservation_binding is not None:
+            doc.update(finalize_serving_receipt(
+                reservation_binding,
+                status=doc["status"],
+                trace_receipts=trace_receipts_from_cells(doc["cells"]),
+                cell_outcomes=[{
+                    "role": cell.get("role"),
+                    "game_blind": cell.get("game_blind"),
+                    "arm": cell.get("arm"),
+                    "seed": cell.get("seed"),
+                    "attempt": cell.get("attempt"),
+                    "outcome": cell.get("outcome"),
+                } for cell in doc["cells"]],
+            ))
         persist()
         print(f"wrote {out_path}")
         return 0 if args.dry_run or not missing else 3
+    except BaseException:
+        if reservation_binding is not None and "receipt_path" not in doc:
+            try:
+                doc["status"] = "aborted_instrument"
+                doc.update(finalize_serving_receipt(
+                    reservation_binding,
+                    status="aborted_instrument",
+                    trace_receipts=trace_receipts_from_cells(doc.get("cells") or []),
+                    cell_outcomes=[{
+                        "role": cell.get("role"),
+                        "game_blind": cell.get("game_blind"),
+                        "arm": cell.get("arm"),
+                        "seed": cell.get("seed"),
+                        "attempt": cell.get("attempt"),
+                        "outcome": cell.get("outcome"),
+                    } for cell in doc.get("cells") or []],
+                ))
+                doc["completed_utc"] = _dt.datetime.now(_dt.timezone.utc).isoformat()
+                persist()
+            except BaseException as receipt_error:
+                print(f"WARNING: failed to write terminal serving receipt: {receipt_error}",
+                      file=sys.stderr)
+        raise
     finally:
         run_lock.close()
 

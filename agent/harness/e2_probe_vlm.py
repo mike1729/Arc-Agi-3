@@ -60,8 +60,19 @@ ROOT = Path(__file__).resolve().parents[2]
 MODEL = Path.home() / "models/mlx/Qwen3.8-27B-8bit"
 
 WIRING_SAMPLER = {"temperature": 0.0, "top_p": 1.0}          # deterministic gates
-PRODUCTION_SAMPLER = {"temperature": 1.0, "top_p": 0.95, "top_k": 20}
+# Qwen3.8's official thinking-mode sampler.  No-op penalty/min-p fields are
+# explicit so an MLX default change cannot silently alter the experiment.
+PRODUCTION_SAMPLER = {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "repetition_penalty": 1.0,
+}
 REASONING_EFFORT = "xhigh"
+PRESERVE_THINKING = True
+NATIVE_CONTEXT_TOKENS = 262_144
 VISION_PAD = "<|image_pad|>"
 MAX_PACKET_IMAGES = 16
 MAX_VISUAL_TOKENS = 16_384
@@ -419,6 +430,7 @@ class Vlm:
             add_generation_prompt=True,
             enable_thinking=True,
             reasoning_effort=REASONING_EFFORT,
+            preserve_thinking=PRESERVE_THINKING,
         )
         # --- invariants (review probe-finding 3) ---
         marker = prompt.rfind("<|im_start|>assistant")
@@ -545,6 +557,7 @@ class Vlm:
             "seed": seed,
             "sampler": sampler,
             "reasoning_effort": REASONING_EFFORT,
+            "preserve_thinking": PRESERVE_THINKING,
             "max_tokens": max_tokens,
             "items": items,
             "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
@@ -1085,6 +1098,7 @@ def main() -> int:
         "packet_max_tokens": args.packet_max_tokens,
         "max_packet_images": MAX_PACKET_IMAGES,
         "max_visual_tokens": MAX_VISUAL_TOKENS,
+        "native_context_tokens": NATIVE_CONTEXT_TOKENS,
     }
     resolved_config = {
         "model": str(args.model),
@@ -1104,6 +1118,7 @@ def main() -> int:
         "wiring_sampler": WIRING_SAMPLER,
         "production_sampler": PRODUCTION_SAMPLER,
         "reasoning_effort": REASONING_EFFORT,
+        "preserve_thinking": PRESERVE_THINKING,
         "seed_base": args.seed,
         "run_dir": str(run_dir),
         "status": "fingerprinting",
@@ -1128,6 +1143,8 @@ def main() -> int:
             "wiring_sampler": WIRING_SAMPLER,
             "production_sampler": PRODUCTION_SAMPLER,
             "reasoning_effort": REASONING_EFFORT,
+            "preserve_thinking": PRESERVE_THINKING,
+            "native_context_tokens": NATIVE_CONTEXT_TOKENS,
             "experiment_config": experiment_config,
         }
         doc["checkpoint_identity"] = checkpoint

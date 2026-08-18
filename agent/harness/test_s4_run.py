@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import sys
 import tempfile
+import types
 import unittest
 from copy import deepcopy
 from pathlib import Path
@@ -83,6 +84,71 @@ class ParsingTests(unittest.TestCase):
         self.assertEqual(parsed, expected)
         self.assertEqual(run.validate_answer(parsed), [])
 
+    def test_ask_chat_trace_is_an_immutable_complete_serving_receipt(self) -> None:
+        class Processor:
+            template_kwargs: dict | None = None
+
+            def apply_chat_template(self, messages, **kwargs):
+                self.template_kwargs = kwargs
+                return "<|im_start|>user\nrequest<|im_start|>assistant\n<think>"
+
+            def __call__(self, **kwargs):
+                del kwargs
+                import numpy as np
+                return {"input_ids": np.zeros((1, 10), dtype=np.int64),
+                        "image_grid_thw": None}
+
+        class Vlm:
+            def __init__(self):
+                self.processor = Processor()
+                self.model = object()
+                self.path = "fake-qwen"
+
+        class Output:
+            text = "causal reasoning</think>" + json.dumps(valid_payload())
+            prompt_tokens = 10
+            generation_tokens = 20
+            total_tokens = 30
+            cached_tokens = 0
+            finish_reason = "stop"
+            prompt_tps = 1.0
+            generation_tps = 1.0
+            peak_memory = 0
+
+        with tempfile.TemporaryDirectory() as temporary:
+            messages = [{"role": "user", "content": [{"type": "text", "text": "request"}]}]
+            fake_mlx = types.ModuleType("mlx")
+            fake_core = types.ModuleType("mlx.core")
+            fake_core.random = types.SimpleNamespace(seed=lambda _seed: None)
+            fake_mlx.core = fake_core
+            fake_mlx_vlm = types.ModuleType("mlx_vlm")
+            fake_mlx_vlm.generate = lambda *args, **kwargs: Output()
+            with (
+                mock.patch("s4_ledgers.append"),
+                mock.patch.dict(sys.modules, {
+                    "mlx": fake_mlx,
+                    "mlx.core": fake_core,
+                    "mlx_vlm": fake_mlx_vlm,
+                }),
+            ):
+                record, payload, answer = run.ask_chat(
+                    Vlm(), messages, [], seed=1, max_tokens=100,
+                    run_dir=Path(temporary), tag="receipt_r0",
+                    max_input_text_tokens=100,
+                    serving_identity={"checkpoint_sha256": "c" * 64},
+                    round_index=0, round_kind="initial",
+                )
+            messages.append({"role": "user", "content": "later mutation"})
+            self.assertEqual(len(record["messages"]), 1)
+            self.assertTrue(record["preserve_thinking"])
+            self.assertTrue(record["assistant_history"]["reasoning_content"])
+            self.assertEqual(record["assistant_history"]["content"], answer)
+            self.assertEqual(record["parsed_payload"], payload)
+            self.assertEqual(record["input_tokens"], 10)
+            self.assertEqual(record["output_tokens"], 20)
+            self.assertEqual(run.sha256_file(Path(record["trace_path"])),
+                             record["trace_sha256"])
+
     def test_trailing_text_and_truncated_outer_object_never_validate(self) -> None:
         encoded = json.dumps(valid_payload())
         self.assertIsNone(run.extract_final_json(encoded + " trailing"))
@@ -98,12 +164,13 @@ class ParsingTests(unittest.TestCase):
         self.assertTrue(any("sum" in error for error in errors), errors)
         self.assertTrue(any("ranked" in error for error in errors), errors)
 
-    def test_invalid_probe_values_remain_executable_request_errors(self) -> None:
+    def test_invalid_probe_values_are_missing_not_silently_repaired(self) -> None:
         payload = valid_payload(probe_request=True)
         payload["next_probe"]["action"] = {"id": 99, "click": [False, 80]}
-        # The primary answer remains gradeable.  The executor consumes and reports
-        # this malformed request instead of silently changing it.
-        self.assertEqual(run.validate_answer(payload), [])
+        errors = run.validate_answer(payload)
+        self.assertTrue(any("action.id" in error for error in errors), errors)
+        self.assertTrue(any("action.click" in error for error in errors), errors)
+        # The low-level decoder itself still performs no coercion.
         self.assertEqual(run._probe_click([False, 80]), (False, 80))
 
 
@@ -189,7 +256,9 @@ class DeliveryTests(unittest.TestCase):
             ):
                 cell = run.run_cell(object(), "game", "A", root, 7, False)
             self.assertEqual(cell["outcome"], "indeterminate_visual_budget")
-            self.assertIsNone(cell["final_answer"])
+            # The scoring outcome remains indeterminate, while the producer-side
+            # projection must still equal the final trace's parsed payload.
+            self.assertEqual(cell["final_answer"], valid_payload(probe_request=True))
             self.assertEqual(len(calls), 4)
             self.assertEqual(cell["delivery_log"][0]["delivered_images"], [])
             self.assertTrue(all(
@@ -289,11 +358,14 @@ class CellTests(unittest.TestCase):
                 ["neutral_no_new_observation"] * 3,
             )
             for call in calls[arm][1:]:
+                self.assertEqual(call["messages"][-2]["role"], "assistant")
+                self.assertIn("reasoning_content", call["messages"][-2])
                 feedback = call["messages"][-1]["content"]
                 self.assertEqual(feedback[0]["text"], run.NO_NEW_OBSERVATION)
                 self.assertLessEqual(
                     len(feedback[0]["text"]), run.NO_NEW_OBSERVATION_MAX_CHARS
                 )
+
 
     def test_invalid_probe_and_unavailable_retrieval_get_neutral_placeholders(self) -> None:
         evidence = packet()
@@ -419,6 +491,36 @@ class CellTests(unittest.TestCase):
             self.assertIn("probe evidence", visible)
             self.assertIn("retrieval evidence", visible)
             self.assertNotIn(run.NO_NEW_OBSERVATION, visible)
+
+
+class OneShotReceiptTests(unittest.TestCase):
+    def test_fixed_reservation_refuses_a_fresh_timestamp_rerun(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            first = run.reserve_serving_attempt(
+                role="qwen", attempt=0, frozen_manifest_sha256="f" * 64,
+                run_dir=root / "run-1", output_path=root / "run-1" / "cells.json",
+                serving_identity={"checkpoint_sha256": "c" * 64},
+                prior_attempt=None, root=root / "sealed",
+            )
+            self.assertEqual(
+                run.sha256_file(Path(first["reservation_path"])),
+                first["reservation_sha256"],
+            )
+            with self.assertRaisesRegex(RuntimeError, "rerun refused"):
+                run.reserve_serving_attempt(
+                    role="qwen", attempt=0, frozen_manifest_sha256="f" * 64,
+                    run_dir=root / "run-2", output_path=root / "run-2" / "cells.json",
+                    serving_identity={"checkpoint_sha256": "c" * 64},
+                    prior_attempt=None, root=root / "sealed",
+                )
+            receipt = run.finalize_serving_receipt(
+                first, status="done", trace_receipts=[], cell_outcomes=[]
+            )
+            self.assertEqual(
+                run.sha256_file(Path(receipt["receipt_path"])),
+                receipt["receipt_sha256"],
+            )
 
 
 class CertificateTests(unittest.TestCase):

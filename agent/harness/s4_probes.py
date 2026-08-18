@@ -1259,24 +1259,41 @@ class ProbeSession:
                 f"(frame ranges {ranges}); frame {len(frames) - 1} is the settled outcome "
                 f"and {outcome_fields} [OBSERVED, live]"
             )
-        # Semantics-free exact record over the full observed response sequence
-        # (protocol r4): pre state, every raw frame, bound to the probe request.
-        delta_record = None
-        if len(frames) >= 2:
-            import s4_delta as sdl
-            try:
-                delta_record = sdl.sequence_record(
-                    [f"probe{self.probes_spent}.f{i}" for i in range(len(frames))],
-                    list(frames),
-                    binding={"kind": "probe_response",
-                             "start_tid": start_tid,
-                             "request_sha256": record["request_sha256"]},
-                )
-                text += "\n" + sdl.render_text_block(delta_record)
-            except (RuntimeError, KeyError, TypeError, ValueError):
-                # The raw frames stay authoritative; a derived record may never
-                # fail an otherwise-successful probe.
-                delta_record = None
+        # Semantics-free exact record over the replayed-prefix settled state and
+        # every raw response frame.  It is mandatory even for a one-frame or
+        # zero-frame response: omitting it would make the real probe carrier
+        # weaker than the frozen packet/sentinel carrier.
+        import s4_delta as sdl
+        pre_board = self.by_tid[start_tid]["post"]
+        delta_grids = [pre_board, *list(frames)]
+        delta_frame_ids = [
+            f"{start_tid}.settled_pre",
+            *(f"probe{self.probes_spent}.f{i}" for i in range(len(frames))),
+        ]
+        try:
+            delta_record = sdl.sequence_record(
+                delta_frame_ids,
+                delta_grids,
+                binding={
+                    "kind": "probe_response",
+                    "start_tid": start_tid,
+                    "action_id": action_id,
+                    "click": list(normalised_click) if normalised_click is not None else None,
+                    "request_sha256": record["request_sha256"],
+                },
+            )
+            sdl.verify_sequence_record(delta_record, delta_grids)
+        except (RuntimeError, KeyError, TypeError, ValueError) as exc:
+            return self._finish_probe(
+                record,
+                ok=False,
+                failure_stage="probe_delta",
+                prefix_steps=prefix_audit,
+                raw_frame_sha256=frame_sha256,
+                settled_sha256=settled_sha256,
+                error=f"mandatory temporal delta construction failed: {type(exc).__name__}: {exc}",
+            )
+        text += "\n" + sdl.render_carrier_block(delta_record)
         return self._finish_probe(
             record,
             ok=True,

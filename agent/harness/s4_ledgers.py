@@ -20,6 +20,7 @@ edits break the chain; appends are the only legal operation.
 from __future__ import annotations
 
 import datetime as _dt
+import fcntl
 import hashlib
 import json
 import os
@@ -40,7 +41,12 @@ KAGGLE_EVAL_BUDGET = 0
 COMPETITION_DAILY_LIMIT = 1
 COMPETITION_FINAL_SELECTIONS = 2
 
-_SUBMISSION_ENV_FLAGS = ("TRUE_SUBMISSION", "KAGGLE_SUBMIT", "SUBMIT_TO_KAGGLE")
+_SUBMISSION_ENV_FLAGS = (
+    "TRUE_SUBMISSION",
+    "KAGGLE_RUN_AS_SUBMISSION",
+    "KAGGLE_SUBMIT",
+    "SUBMIT_TO_KAGGLE",
+)
 _SUBMISSION_ARGV_TOKENS = (
     "--submit", "--submission", "--true-submission", "competitions", "submissions",
 )
@@ -119,18 +125,24 @@ def append(name: str, record: dict[str, Any]) -> dict[str, Any]:
     if name == "competition_evaluations":
         require(record["status"] in _COMPETITION_STATUSES,
                 f"invalid competition status {record['status']!r}")
-    existing = read_ledger(name)
-    entry = {
-        "format_version": FORMAT_VERSION,
-        "utc": _dt.datetime.now(_dt.timezone.utc).isoformat(),
-        **record,
-        "prev_sha256": existing[-1]["record_sha256"] if existing else None,
-    }
-    entry["record_sha256"] = _canonical_sha256(entry)
     path = ledger_path(name)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(entry, sort_keys=True) + "\n")
+    lock_path = path.with_suffix(path.suffix + ".lock")
+    with lock_path.open("a+", encoding="utf-8") as lock:
+        fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+        existing = read_ledger(name)
+        entry = {
+            "format_version": FORMAT_VERSION,
+            "utc": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+            **record,
+            "prev_sha256": existing[-1]["record_sha256"] if existing else None,
+        }
+        entry["record_sha256"] = _canonical_sha256(entry)
+        with path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(entry, sort_keys=True) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
     return entry
 
 
@@ -226,7 +238,7 @@ def deployment_budget_report() -> dict[str, Any]:
         "share_of_internal_envelope": round(projected / envelope, 3),
         "aggregate_actions_per_second": round(aggregate_actions_per_second, 3),
         "reading": (
-            "The four-call, up-to-20k-output-token P protocol is NOT additive "
+            "The four-call, up-to-32,768-output-token P protocol is NOT additive "
             "deployment work; a deployment candidate must replace analyzer work and "
             "action waste, pass the per-game cap, and project <= 459 minutes "
             "end-to-end (15% envelope reserve). Failure of the deployment screen "

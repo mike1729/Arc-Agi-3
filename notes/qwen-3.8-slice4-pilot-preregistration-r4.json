@@ -52,10 +52,15 @@
         "runtime": "mlx-vlm-0.6.8",
         "enable_thinking": true,
         "reasoning_effort": "xhigh",
+        "preserve_thinking": true,
         "temperature": 1.0,
         "top_p": 0.95,
         "top_k": 20,
-        "max_output_tokens_per_call": 20000,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repetition_penalty": 1.0,
+        "max_output_tokens_per_call": 32768,
+        "native_context_tokens": 262144,
         "classification": "descriptive_only_no_closure"
       }
     },
