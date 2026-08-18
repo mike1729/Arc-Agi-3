@@ -324,6 +324,28 @@ class SentinelTests(unittest.TestCase):
         scored = sentinels.score_active_interaction(fixture, unordered)
         self.assertEqual(scored["ranked_prediction_indices"], ["1", "0"])
         self.assertTrue(scored["valid_discriminating_interaction"])
+        # Three hypotheses whose top-two ORIGINAL indices {1, 2} differ from the
+        # positional subset {0, 1}: the old fixed-index rule would silently read
+        # the wrong pair here, not merely the same pair in a different order.
+        three = {
+            "hypotheses": [{"probability": 0.05}, {"probability": 0.6},
+                           {"probability": 0.3}],
+            "next_probe": {
+                "start_state_id": discriminating,
+                "action": fixture["probes"][discriminating]["action_schema"],
+                "predictions_by_hypothesis": {"1": "moves", "2": "stays"},
+            },
+        }
+        scored_three = sentinels.score_active_interaction(fixture, three)
+        self.assertEqual(scored_three["ranked_prediction_indices"], ["1", "2"])
+        self.assertTrue(scored_three["valid_discriminating_interaction"])
+        positional_three = {
+            "hypotheses": three["hypotheses"],
+            "next_probe": {**three["next_probe"],
+                           "predictions_by_hypothesis": {"0": "moves", "1": "stays"}},
+        }
+        self.assertFalse(sentinels.score_active_interaction(fixture, positional_three)[
+            "valid_discriminating_interaction"])
         # A prediction map missing one of the two ranked original indices must
         # not be silently reinterpreted; the interaction fails, unrepaired.
         positional = {
@@ -657,6 +679,38 @@ class R4AuthorityReceiptTests(unittest.TestCase):
             },
         }
 
+    def test_runner_and_grader_parity_on_unordered_hypotheses(self) -> None:
+        # P1 regression: the v1 false failure existed because the runner and
+        # the production grader disagreed about ordering.  Both must accept a
+        # structurally valid unordered answer, both must reject the same fatal
+        # defects, and both must see the identical ranking diagnostic.
+        answer = self._answer()
+        template = answer["hypotheses"][0]
+        answer["hypotheses"] = [
+            {**template, "probability": 0.15},
+            {**template, "probability": 0.5},
+            {**template, "probability": 0.2},
+        ]
+        self.assertEqual(runner.validate_answer(answer), [])
+        self.assertIsNone(grade.answer_validation_error(answer))
+        self.assertIs(runner.ranking_compliance(answer["hypotheses"]), False)
+        self.assertEqual(
+            runner.ranked_hypothesis_indices(answer["hypotheses"]), [1, 2, 0])
+        ordered = self._answer()
+        self.assertEqual(runner.validate_answer(ordered), [])
+        self.assertIsNone(grade.answer_validation_error(ordered))
+        self.assertIs(runner.ranking_compliance(ordered["hypotheses"]), True)
+        fatal = self._answer()
+        fatal["hypotheses"][0]["probability"] = 1.5
+        self.assertTrue(runner.validate_answer(fatal))
+        self.assertIsNotNone(grade.answer_validation_error(fatal))
+        oversum = self._answer()
+        oversum["hypotheses"] = [
+            {**template, "probability": 0.8}, {**template, "probability": 0.7},
+        ]
+        self.assertTrue(runner.validate_answer(oversum))
+        self.assertIsNotNone(grade.answer_validation_error(oversum))
+
     def test_round_trace_is_reparsed_and_hash_checked(self) -> None:
         frozen = self._frozen()
         answer = self._answer()
@@ -691,7 +745,10 @@ class R4AuthorityReceiptTests(unittest.TestCase):
             "finish_reason": "stop", "prompt_tokens_match": True,
             "token_accounting_match": True, "think_chars": len(think),
             "completion_contains_close": True, "payload_present": True,
-            "schema_errors": [], "completeness": "complete",
+            "schema_errors": [],
+            "ranking_compliance": runner.ranking_compliance(
+                answer.get("hypotheses")),
+            "completeness": "complete",
             "raw_response": raw, "parsed_payload": answer, "think": think,
             "answer": answer_text,
             "assistant_history": {

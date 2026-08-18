@@ -1991,8 +1991,9 @@ def validate_answer(answer: Any) -> dict[str, Any]:
                 and hypothesis["predicted_counterexample"].strip(),
                 f"hypotheses[{index}].predicted_counterexample must be non-empty")
     require(sum(probabilities) <= 1.0 + 1e-9, "hypothesis probabilities sum above 1")
-    require(all(left >= right for left, right in zip(probabilities, probabilities[1:])),
-            "hypotheses are not ranked by non-increasing probability")
+    # Calibration v3 parity with the runner: non-descending list order is the
+    # nonfatal ranking_compliance diagnostic, never a validity failure.  Rank
+    # order, where needed, is derived via s4_run.ranked_hypothesis_indices.
     best_goal = answer.get("best_goal")
     require(isinstance(best_goal, dict)
             and set(best_goal) == {"plain_causal_condition", "structured_factors"},
@@ -3235,6 +3236,8 @@ def _validate_immutable_round_trace(
     parsed = srun.extract_final_json(answer) if closed else None
     schema_errors = srun.validate_answer(parsed) if parsed is not None else []
     payload_present = parsed is not None and not schema_errors
+    ranking = (srun.ranking_compliance(parsed.get("hypotheses"))
+               if isinstance(parsed, dict) else None)
     completeness = probe.classify_completion(
         stats.get("finish_reason"), stats.get("generation_tokens"),
         budgets["answer_tokens"], closed, parsed,
@@ -3244,6 +3247,7 @@ def _validate_immutable_round_trace(
     require(trace.get("think") == think and trace.get("answer") == answer
             and trace.get("parsed_payload") == parsed
             and trace.get("schema_errors") == schema_errors
+            and trace.get("ranking_compliance") == ranking
             and trace.get("payload_present") is payload_present
             and trace.get("completion_contains_close") is closed
             and trace.get("think_chars") == len(think.strip())

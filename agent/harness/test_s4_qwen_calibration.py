@@ -20,6 +20,11 @@ import s4_qwen_calibration as calibration  # noqa: E402
 import s4_sentinels as sentinels  # noqa: E402
 
 
+def _fixed_dev_root(path):
+    """Patch value for sentinels.dev_fixture_root: every seed maps to `path`."""
+    return lambda _seed, _path=path: _path
+
+
 class QwenCalibrationTests(unittest.TestCase):
     @staticmethod
     def _valid_payload() -> dict:
@@ -65,6 +70,7 @@ class QwenCalibrationTests(unittest.TestCase):
             "format_version": calibration.FORMAT_VERSION,
             "artifact_type": "s4_qwen_calibration_candidate",
             "protocol_version": calibration.PROTOCOL_VERSION,
+            "seed_authority": calibration.required_next_seed(root / "attempts"),
             "git": git,
             "critical_scripts": {
                 relative: calibration.sha256_file(calibration.ROOT / relative)
@@ -277,8 +283,8 @@ class QwenCalibrationTests(unittest.TestCase):
         key = b"semantic-test-key-material-32-bytes-minimum"
         semantic_output = root / "semantic-runs"
         semantic_attempts = root / "semantic-attempts"
-        with mock.patch.object(calibration.sentinels, "DEV_ROOT",
-                               tree["fixture_root"]), \
+        with mock.patch.object(calibration.sentinels, "dev_fixture_root",
+                               _fixed_dev_root(tree["fixture_root"])), \
                 mock.patch.object(
                     calibration, "verify_development_assets",
                     return_value=(tree["manifest"], tree["manifest_path"]),
@@ -329,8 +335,8 @@ class QwenCalibrationTests(unittest.TestCase):
     def _finalize_semantic(self, tree: dict, judgments: dict) -> tuple[dict, Path]:
         source = Path(tree["worksheet_path"]).parent.parent / "human-input.json"
         source.write_text(json.dumps(judgments, indent=1, sort_keys=True) + "\n")
-        with mock.patch.object(calibration.sentinels, "DEV_ROOT",
-                               tree["fixture_root"]), \
+        with mock.patch.object(calibration.sentinels, "dev_fixture_root",
+                               _fixed_dev_root(tree["fixture_root"])), \
                 mock.patch.object(
                     calibration, "verify_development_assets",
                     return_value=(tree["manifest"], tree["manifest_path"]),
@@ -467,7 +473,8 @@ class QwenCalibrationTests(unittest.TestCase):
             "generator_sha256": "g" * 64, "asset_files": {"assets/x": "a" * 64},
         }
         with tempfile.TemporaryDirectory() as temporary, \
-                mock.patch.object(calibration.sentinels, "DEV_ROOT", Path(temporary)), \
+                mock.patch.object(calibration.sentinels, "dev_fixture_root",
+                                  _fixed_dev_root(Path(temporary))), \
                 mock.patch.object(calibration, "verify_development_assets",
                                   return_value=(fake_manifest,
                                                 Path(temporary) / "sentinel_manifest.json")), \
@@ -477,16 +484,89 @@ class QwenCalibrationTests(unittest.TestCase):
                 mock.patch.object(calibration.probe, "fingerprint") as fingerprint:
             with self.assertRaisesRegex(RuntimeError, "clean committed worktree"):
                 calibration.build_candidate_contract(
-                    model=Path(temporary) / "model", base_seed=4,
+                    model=Path(temporary) / "model",
                     fixture_root=Path(temporary),
+                    attempt_root=Path(temporary) / "attempts",
                 )
             fingerprint.assert_not_called()
+
+    def test_seed_authority_chain_is_mechanical_and_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            attempts = Path(temporary) / "attempts"
+            genesis = calibration.required_next_seed(attempts)
+            self.assertEqual(genesis["base_seed"], calibration.INITIAL_BASE_SEED)
+            self.assertIsNone(genesis["predecessor_candidate_id"])
+            attempts.mkdir()
+            result_path = Path(temporary) / "RESULT.json"
+            result_path.write_text('{"sealed": true}\n')
+            receipt = {
+                "candidate_id": "x" * 64,
+                "result": {"path": str(result_path),
+                           "sha256": calibration.sha256_file(result_path)},
+                "finished_utc": "2026-08-18T10:00:00+00:00",
+            }
+            (attempts / ("x" * 64 + ".receipt.json")).write_text(json.dumps(receipt))
+            successor = calibration.required_next_seed(attempts)
+            expected_seed = int.from_bytes(hashlib.sha256(
+                result_path.read_bytes()).digest()[:8], "big") % (2 ** 63)
+            self.assertEqual(successor, {
+                "base_seed": expected_seed,
+                "predecessor_candidate_id": "x" * 64,
+                "source": "terminal_result",
+                "source_sha256": hashlib.sha256(
+                    result_path.read_bytes()).hexdigest(),
+                "derivation": calibration.SEED_DERIVATION,
+            })
+            # Excluding the only terminal candidate falls back to genesis.
+            self.assertEqual(calibration.required_next_seed(
+                attempts, exclude_candidate_id="x" * 64)["base_seed"],
+                calibration.INITIAL_BASE_SEED)
+            # A crash receipt without a bound result derives from receipt bytes.
+            crash_path = attempts / ("y" * 64 + ".receipt.json")
+            crash_path.write_text(json.dumps({
+                "candidate_id": "y" * 64, "result": None,
+                "finished_utc": "2026-08-18T11:00:00+00:00",
+            }))
+            after_crash = calibration.required_next_seed(attempts)
+            self.assertEqual(after_crash["predecessor_candidate_id"], "y" * 64)
+            self.assertEqual(after_crash["source"], "terminal_receipt")
+            self.assertEqual(after_crash["base_seed"], int.from_bytes(
+                hashlib.sha256(crash_path.read_bytes()).digest()[:8],
+                "big") % (2 ** 63))
+            # Tampering with a bound terminal result fails the whole chain.
+            result_path.write_text('{"sealed": "tampered"}\n')
+            with self.assertRaisesRegex(RuntimeError, "stale"):
+                calibration.required_next_seed(attempts)
+
+    def test_validation_refuses_superseded_or_shopped_candidates(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            tree = self._valid_authority_tree(Path(temporary))
+            # A later terminal attempt supersedes the tree's candidate: the
+            # anti-shopping rule must refuse validating the earlier one.
+            (tree["attempts"] / ("f" * 64 + ".receipt.json")).write_text(
+                json.dumps({
+                    "candidate_id": "f" * 64, "result": None,
+                    "finished_utc": "2030-01-01T00:00:00+00:00",
+                }))
+            with mock.patch.object(calibration.sentinels, "dev_fixture_root",
+                                   _fixed_dev_root(tree["fixture_root"])), \
+                    mock.patch.object(
+                        calibration, "verify_development_assets",
+                        return_value=(tree["manifest"], tree["manifest_path"]),
+                    ), mock.patch.object(calibration, "_validate_exact_call_contexts"):
+                with self.assertRaisesRegex(RuntimeError,
+                                            "latest terminal calibration attempt"):
+                    calibration.validate_calibration_result(
+                        tree["result_path"], fixture_root=tree["fixture_root"],
+                        attempt_root=tree["attempts"],
+                        require_live_environment=False,
+                    )
 
     def test_strict_result_validator_rederives_complete_authority(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             tree = self._valid_authority_tree(Path(temporary))
-            with mock.patch.object(calibration.sentinels, "DEV_ROOT",
-                                   tree["fixture_root"]), \
+            with mock.patch.object(calibration.sentinels, "dev_fixture_root",
+                                   _fixed_dev_root(tree["fixture_root"])), \
                     mock.patch.object(
                         calibration, "verify_development_assets",
                         return_value=(tree["manifest"], tree["manifest_path"]),
@@ -508,8 +588,8 @@ class QwenCalibrationTests(unittest.TestCase):
             trace_path.chmod(0o644)
             trace_path.write_text(trace_path.read_text() + " ")
             trace_path.chmod(0o444)
-            with mock.patch.object(calibration.sentinels, "DEV_ROOT",
-                                   tree["fixture_root"]), \
+            with mock.patch.object(calibration.sentinels, "dev_fixture_root",
+                                   _fixed_dev_root(tree["fixture_root"])), \
                     mock.patch.object(
                         calibration, "verify_development_assets",
                         return_value=(tree["manifest"], tree["manifest_path"]),
@@ -524,8 +604,8 @@ class QwenCalibrationTests(unittest.TestCase):
             tree = self._valid_authority_tree(Path(temporary))
             wrong = copy.deepcopy(tree["candidate"]["checkpoint_identity"])
             wrong["checkpoint_sha256"] = "d" * 64
-            with mock.patch.object(calibration.sentinels, "DEV_ROOT",
-                                   tree["fixture_root"]), \
+            with mock.patch.object(calibration.sentinels, "dev_fixture_root",
+                                   _fixed_dev_root(tree["fixture_root"])), \
                     mock.patch.object(
                         calibration, "verify_development_assets",
                         return_value=(tree["manifest"], tree["manifest_path"]),
@@ -576,8 +656,8 @@ class QwenCalibrationTests(unittest.TestCase):
             self.assertTrue(result["operational_non_inferiority"]["pass"])
             self.assertFalse(result["operational_non_inferiority"]["definition"]
                              ["statistical_non_inferiority_claim"])
-            with mock.patch.object(calibration.sentinels, "DEV_ROOT",
-                                   tree["fixture_root"]), \
+            with mock.patch.object(calibration.sentinels, "dev_fixture_root",
+                                   _fixed_dev_root(tree["fixture_root"])), \
                     mock.patch.object(
                         calibration, "verify_development_assets",
                         return_value=(tree["manifest"], tree["manifest_path"]),
@@ -597,8 +677,8 @@ class QwenCalibrationTests(unittest.TestCase):
                 hashlib.sha256(tree["key"]).hexdigest(),
             )
             self.assertEqual(Path(result_path).parent.stat().st_mode & 0o222, 0)
-            with mock.patch.object(calibration.sentinels, "DEV_ROOT",
-                                   tree["fixture_root"]), \
+            with mock.patch.object(calibration.sentinels, "dev_fixture_root",
+                                   _fixed_dev_root(tree["fixture_root"])), \
                     mock.patch.object(
                         calibration, "verify_development_assets",
                         return_value=(tree["manifest"], tree["manifest_path"]),
@@ -616,8 +696,8 @@ class QwenCalibrationTests(unittest.TestCase):
     def test_semantic_creation_cannot_retry_with_another_key_or_output_path(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             tree = self._semantic_tree(Path(temporary))
-            with mock.patch.object(calibration.sentinels, "DEV_ROOT",
-                                   tree["fixture_root"]), \
+            with mock.patch.object(calibration.sentinels, "dev_fixture_root",
+                                   _fixed_dev_root(tree["fixture_root"])), \
                     mock.patch.object(
                         calibration, "verify_development_assets",
                         return_value=(tree["manifest"], tree["manifest_path"]),
@@ -639,8 +719,8 @@ class QwenCalibrationTests(unittest.TestCase):
             malformed = root / "malformed-human-input.json"
             malformed_bytes = b'{"adjudicator": "first-but-malformed"'
             malformed.write_bytes(malformed_bytes)
-            with mock.patch.object(calibration.sentinels, "DEV_ROOT",
-                                   tree["fixture_root"]), \
+            with mock.patch.object(calibration.sentinels, "dev_fixture_root",
+                                   _fixed_dev_root(tree["fixture_root"])), \
                     mock.patch.object(
                         calibration, "verify_development_assets",
                         return_value=(tree["manifest"], tree["manifest_path"]),
@@ -669,8 +749,8 @@ class QwenCalibrationTests(unittest.TestCase):
                 tree["worksheet"], tree["worksheet_path"], plan_verdict=False,
             )))
             original_receipt_sha = calibration.sha256_file(receipt_path)
-            with mock.patch.object(calibration.sentinels, "DEV_ROOT",
-                                   tree["fixture_root"]), \
+            with mock.patch.object(calibration.sentinels, "dev_fixture_root",
+                                   _fixed_dev_root(tree["fixture_root"])), \
                     mock.patch.object(
                         calibration, "verify_development_assets",
                         return_value=(tree["manifest"], tree["manifest_path"]),
@@ -695,8 +775,8 @@ class QwenCalibrationTests(unittest.TestCase):
             )
             source = root / "human-input.json"
             source.write_text(json.dumps(judgments, sort_keys=True) + "\n")
-            with mock.patch.object(calibration.sentinels, "DEV_ROOT",
-                                   tree["fixture_root"]), \
+            with mock.patch.object(calibration.sentinels, "dev_fixture_root",
+                                   _fixed_dev_root(tree["fixture_root"])), \
                     mock.patch.object(
                         calibration, "verify_development_assets",
                         return_value=(tree["manifest"], tree["manifest_path"]),
@@ -723,8 +803,8 @@ class QwenCalibrationTests(unittest.TestCase):
 
             alternate = root / "other-adjudicator.json"
             alternate.write_text(json.dumps({**judgments, "adjudicator": "other"}))
-            with mock.patch.object(calibration.sentinels, "DEV_ROOT",
-                                   tree["fixture_root"]), \
+            with mock.patch.object(calibration.sentinels, "dev_fixture_root",
+                                   _fixed_dev_root(tree["fixture_root"])), \
                     mock.patch.object(
                         calibration, "verify_development_assets",
                         return_value=(tree["manifest"], tree["manifest_path"]),
@@ -759,8 +839,8 @@ class QwenCalibrationTests(unittest.TestCase):
             ] = False
             result, result_path = self._finalize_semantic(tree, judgments)
             self.assertFalse(result["operational_non_inferiority"]["pass"])
-            with mock.patch.object(calibration.sentinels, "DEV_ROOT",
-                                   tree["fixture_root"]), \
+            with mock.patch.object(calibration.sentinels, "dev_fixture_root",
+                                   _fixed_dev_root(tree["fixture_root"])), \
                     mock.patch.object(
                         calibration, "verify_development_assets",
                         return_value=(tree["manifest"], tree["manifest_path"]),

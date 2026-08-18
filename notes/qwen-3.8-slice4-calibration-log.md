@@ -61,3 +61,51 @@ Fresh development fixture seed, derived mechanically with zero discretion:
 first 8 bytes of the sealed v1 `RESULT.json` sha256, big-endian, mod 2^63 →
 **base_seed 8014062316348813028**. Dev sentinels regenerate under this seed and
 all eleven calls rerun as a new candidate.
+
+## v2 run + review → protocol v3, 2026-08-18
+
+Operator review of the v2 implementation requested changes before any freeze
+authority; the v2 run (candidate `9e584efe…`, seed 8014062316348813028)
+continues to termination as immutable diagnostic evidence only. Findings and
+fixes, all under `r4-qwen-calibration-v3`:
+
+1. **[P1] Runner/grader parity.** The production grader still rejected
+   non-descending hypothesis order and classified such answers malformed —
+   recreating the v1 false failure at pilot/ceiling grading. Fixed: the
+   grader's `validate_answer` accepts unordered lists; its raw-trace reparse
+   rederives `ranking_compliance` and requires trace equality. Parity is now
+   regression-tested (identical acceptance and diagnostics on unordered,
+   ordered, out-of-range, and over-sum payloads).
+2. **[P1] Seed authority enforced, not documented.** New mechanical chain:
+   `required_next_seed` = genesis 4 with no terminal predecessor, else
+   sha256(latest sealed terminal artifact — bound RESULT.json, or the receipt
+   after a crash)[:8] mod 2^63. `--run` derives the seed and refuses
+   `--base-seed`; the candidate embeds its `seed_authority` record; hard
+   validation recomputes it, requires the candidate to be the **latest**
+   terminal attempt (superseded/shopped candidates refused), and pins the
+   fixture root to the seed-addressed path. The chain reproduces the v2 seed
+   from v1's sealed result exactly.
+3. **[P1] Synthetic action mapping declared.** Every sentinel prompt now
+   carries `ACTION_MAPPING_NOTE`: "id k denotes ledger action A(k+1); id 0 =
+   A1 … id 4 = A5; click is always null here." (This changes model-visible
+   carrier bytes; fixtures regenerate under the new seed regardless.)
+4. **[P2] `ranking_compliance` sealed end-to-end.** Sentinel call receipts
+   (`_call_binding`), sentinel trace-equality and raw-projection checks, and
+   the grader's round-trace reparse all record/require the diagnostic
+   (sentinel result format v5).
+5. **[P2] Integration tests.** Added: top-two-original-indices selection where
+   the subset {1,2} differs from positional {0,1}; runner/grader parity; seed
+   chain genesis/successor/crash/tamper; superseded-candidate refusal.
+6. **[P2] Immutable fixture roots.** Development fixtures now generate into
+   seed-addressed append-only roots `logs/s4_sentinel_fixtures/dev-<seed>/`,
+   never moved. Archive map for the legacy path era: candidate `608c9bd0`
+   (crash) ran against the 8px fixtures now at
+   `logs/s4_sentinel_dev.stale-20260818`; v1 `9ccb5418` against the 16px
+   seed-4 fixtures now at `logs/s4_sentinel_dev.v1-seed4-20260818`; v2
+   `9e584efe` against `logs/s4_sentinel_dev`, which stays in place at its
+   manifest-bound path.
+
+v3 seed: derived from the sealed v2 terminal artifact once it exists, via the
+enforced chain — no manual choice remains anywhere in the path. Sampler,
+xhigh, preserved thinking, budgets, KAGGLE_EVAL_BUDGET=0 all unchanged; no
+per-call salvage.

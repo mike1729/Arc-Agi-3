@@ -50,12 +50,14 @@ import s4_sentinels as sentinels  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 FORMAT_VERSION = 1
-PROTOCOL_VERSION = "r4-qwen-calibration-v2"  # v2: ranking_compliance nonfatal
+PROTOCOL_VERSION = "r4-qwen-calibration-v3"  # v3: enforced seed authority chain
 CALL_BUDGET = 11
 ANSWER_TOKENS = 32_768
 MANUAL_TRUNCATION_TOKENS = 49_152
 OUTPUT_ROOT = ROOT / "logs/s4_qwen_calibration_runs"
 ATTEMPT_ROOT = ROOT / "logs/s4_qwen_calibration_attempts"
+INITIAL_BASE_SEED = 4  # historical genesis seed; used only with no terminal predecessor
+SEED_DERIVATION = "sha256(seed_source)[:8] big-endian mod 2**63"
 SEMANTIC_FORMAT_VERSION = 1
 SEMANTIC_PROTOCOL_VERSION = "r4-qwen-calibration-semantic-v1"
 SEMANTIC_OUTPUT_ROOT = ROOT / "logs/s4_qwen_calibration_semantic"
@@ -192,6 +194,72 @@ def _different_seed(base_seed: int, variant_id: str) -> int:
         "dev", variant_id, sentinels.ACTIVE_ARM, "pre", base_seed,
     )
     return candidate if candidate != ordinary else candidate ^ 1
+
+
+def _derive_seed(payload: bytes) -> int:
+    return int.from_bytes(hashlib.sha256(payload).digest()[:8], "big") % (2 ** 63)
+
+
+def _terminal_candidates(attempt_root: Path) -> list[dict[str, Any]]:
+    """Every sealed terminal attempt, oldest first, with its seed-source bytes."""
+    rows: list[dict[str, Any]] = []
+    for receipt_path in sorted(attempt_root.glob("*.receipt.json")):
+        receipt = _load_json(receipt_path, "terminal calibration receipt")
+        candidate_id = receipt.get("candidate_id")
+        require(isinstance(candidate_id, str) and candidate_id,
+                f"terminal receipt lacks a candidate id: {receipt_path}")
+        result = receipt.get("result")
+        if isinstance(result, dict):
+            source_kind = "terminal_result"
+            source_path = Path(str(result.get("path", "")))
+            require(source_path.is_file()
+                    and sha256_file(source_path) == result.get("sha256"),
+                    f"terminal result binding is stale for {candidate_id}")
+            source_bytes = source_path.read_bytes()
+        else:
+            source_kind = "terminal_receipt"
+            source_bytes = receipt_path.read_bytes()
+        rows.append({
+            "candidate_id": candidate_id,
+            "finished": _parse_utc(receipt.get("finished_utc"),
+                                   "terminal receipt finish time"),
+            "source_kind": source_kind,
+            "source_sha256": hashlib.sha256(source_bytes).hexdigest(),
+            "derived_seed": _derive_seed(source_bytes),
+        })
+    rows.sort(key=lambda row: (row["finished"], row["candidate_id"]))
+    return rows
+
+
+def required_next_seed(
+    attempt_root: Path = ATTEMPT_ROOT, *, exclude_candidate_id: str | None = None,
+) -> dict[str, Any]:
+    """The only permissible development seed for the next calibration candidate.
+
+    Mechanical and fail-closed: with no terminal predecessor the genesis seed
+    applies; otherwise the seed derives from the latest sealed terminal
+    artifact (the bound RESULT.json, or the receipt itself after a crash).
+    Arbitrary seeds would mint fresh candidates at will (seed shopping), so
+    run and validation both refuse anything but this derivation.
+    """
+    rows = [row for row in _terminal_candidates(attempt_root)
+            if row["candidate_id"] != exclude_candidate_id]
+    if not rows:
+        return {
+            "base_seed": INITIAL_BASE_SEED,
+            "predecessor_candidate_id": None,
+            "source": "initial",
+            "source_sha256": None,
+            "derivation": "initial development seed (no terminal predecessor)",
+        }
+    last = rows[-1]
+    return {
+        "base_seed": last["derived_seed"],
+        "predecessor_candidate_id": last["candidate_id"],
+        "source": last["source_kind"],
+        "source_sha256": last["source_sha256"],
+        "derivation": SEED_DERIVATION,
+    }
 
 
 def development_variants(base_seed: int) -> list[dict[str, Any]]:
@@ -406,11 +474,15 @@ def _stable_checkpoint_identity(fingerprint: dict[str, Any]) -> dict[str, Any]:
 
 
 def build_candidate_contract(
-    *, model: Path, base_seed: int, fixture_root: Path,
+    *, model: Path, fixture_root: Path, attempt_root: Path = ATTEMPT_ROOT,
 ) -> tuple[dict[str, Any], dict[str, Any], Path, dict[str, Any]]:
     """Bind one clean candidate before any generation or output-path choice."""
-    require(fixture_root.resolve() == sentinels.DEV_ROOT.resolve(),
-            "hard calibration accepts only the canonical development fixture root")
+    authority = required_next_seed(attempt_root)
+    base_seed = authority["base_seed"]
+    require(fixture_root.resolve()
+            == sentinels.dev_fixture_root(base_seed).resolve(),
+            "hard calibration accepts only the seed-addressed development "
+            "fixture root of the mechanically required seed")
     manifest, manifest_path = verify_development_assets(
         fixture_root, base_seed=base_seed,
     )
@@ -427,6 +499,7 @@ def build_candidate_contract(
         "format_version": FORMAT_VERSION,
         "artifact_type": "s4_qwen_calibration_candidate",
         "protocol_version": PROTOCOL_VERSION,
+        "seed_authority": copy.deepcopy(authority),
         "git": git,
         "critical_scripts": scripts,
         "checkpoint_identity": stable_checkpoint,
@@ -941,7 +1014,7 @@ def _validate_exact_call_contexts(
 
 def validate_calibration_result(
     result_path: Path, *, model: Path | None = None,
-    fixture_root: Path = sentinels.DEV_ROOT,
+    fixture_root: Path | None = None,
     attempt_root: Path = ATTEMPT_ROOT,
     require_live_environment: bool = True,
 ) -> dict[str, Any]:
@@ -962,8 +1035,8 @@ def validate_calibration_result(
     candidate = result.get("candidate")
     require(isinstance(candidate, dict), "calibration result lacks candidate binding")
     require(set(candidate) == {
-        "format_version", "artifact_type", "protocol_version", "git",
-        "critical_scripts", "checkpoint_identity", "development_manifest",
+        "format_version", "artifact_type", "protocol_version", "seed_authority",
+        "git", "critical_scripts", "checkpoint_identity", "development_manifest",
         "plan_sha256", "request_prompt_sha256", "sampler", "reasoning_effort",
         "preserve_thinking", "answer_tokens", "native_context_tokens",
         "kaggle_submissions",
@@ -974,6 +1047,16 @@ def validate_calibration_result(
     candidate_id = canonical_sha256(candidate)
     require(result.get("candidate_id") == candidate_id,
             "calibration candidate digest is invalid")
+    history = _terminal_candidates(attempt_root)
+    require(bool(history) and history[-1]["candidate_id"] == candidate_id,
+            "candidate is not the latest terminal calibration attempt; "
+            "superseded candidates and seed shopping are refused")
+    authority = required_next_seed(attempt_root, exclude_candidate_id=candidate_id)
+    require(candidate.get("seed_authority") == authority,
+            "candidate seed authority is not the mechanical successor derivation")
+    require((candidate.get("development_manifest") or {}).get("base_seed")
+            == authority["base_seed"],
+            "candidate development seed differs from its enforced seed authority")
     reservation_path = (attempt_root / f"{candidate_id}.reservation.json").resolve()
     receipt_path = (attempt_root / f"{candidate_id}.receipt.json").resolve()
     require(Path(str(result.get("reservation_path", ""))).resolve() == reservation_path
@@ -1008,6 +1091,8 @@ def validate_calibration_result(
             "calibration result/run directory differs from its reservation")
 
     plan = plan_document(candidate["development_manifest"]["base_seed"])
+    if fixture_root is None:
+        fixture_root = sentinels.dev_fixture_root(plan["base_seed"])
     require(set(result) == set(plan) | {
         "artifact_type", "created_utc", "candidate_id", "candidate",
         "reservation_path", "reservation_sha256", "reservation_id",
@@ -1035,7 +1120,8 @@ def validate_calibration_result(
         fixture_root, base_seed=plan["base_seed"],
     )
     manifest_binding = candidate.get("development_manifest") or {}
-    require(fixture_root.resolve() == sentinels.DEV_ROOT.resolve()
+    require(fixture_root.resolve()
+            == sentinels.dev_fixture_root(plan["base_seed"]).resolve()
             and manifest_path.resolve()
             == Path(str(manifest_binding.get("path", ""))).resolve()
             and sha256_file(manifest_path) == manifest_binding.get("sha256")
@@ -1483,7 +1569,7 @@ def reserve_semantic_attempt(
 
 def create_blind_semantic_worksheet(
     calibration_result_path: Path, *, blinding_key: bytes,
-    model: Path | None = None, fixture_root: Path = sentinels.DEV_ROOT,
+    model: Path | None = None, fixture_root: Path | None = None,
     calibration_attempt_root: Path = ATTEMPT_ROOT,
     output_root: Path = SEMANTIC_OUTPUT_ROOT,
     semantic_attempt_root: Path = SEMANTIC_ATTEMPT_ROOT,
@@ -1906,7 +1992,7 @@ def _seal_semantic_run_dir(run_dir: Path) -> None:
 def finalize_blind_semantic_adjudication(
     calibration_result_path: Path, worksheet_path: Path, judgments_source: Path,
     *, blinding_key: bytes, model: Path | None = None,
-    fixture_root: Path = sentinels.DEV_ROOT,
+    fixture_root: Path | None = None,
     calibration_attempt_root: Path = ATTEMPT_ROOT,
     semantic_attempt_root: Path = SEMANTIC_ATTEMPT_ROOT,
     require_live_environment: bool = True,
@@ -2040,7 +2126,7 @@ def finalize_blind_semantic_adjudication(
 def validate_semantic_adjudication(
     semantic_result_path: Path, *, calibration_result_path: Path,
     blinding_key: bytes, model: Path | None = None,
-    fixture_root: Path = sentinels.DEV_ROOT,
+    fixture_root: Path | None = None,
     calibration_attempt_root: Path = ATTEMPT_ROOT,
     semantic_attempt_root: Path = SEMANTIC_ATTEMPT_ROOT,
     require_live_environment: bool = True, require_pass: bool = True,
@@ -2181,17 +2267,26 @@ def _round_kind(role: str) -> tuple[int, str, int]:
 
 
 def run_calibration(
-    *, model: Path, base_seed: int, fixture_root: Path, output_root: Path,
+    *, model: Path, output_root: Path, fixture_root: Path | None = None,
+    attempt_root: Path = ATTEMPT_ROOT,
 ) -> tuple[dict[str, Any], Path]:
+    ledgers.enforce_offline_scientific_run("s4_qwen_calibration --run", [])
+    authority = required_next_seed(attempt_root)
+    base_seed = authority["base_seed"]
+    if fixture_root is None:
+        fixture_root = sentinels.dev_fixture_root(base_seed)
     plan = plan_document(base_seed)
     assert_development_paths(fixture_root, output_root)
-    ledgers.enforce_offline_scientific_run("s4_qwen_calibration --run", [])
     candidate, manifest, manifest_path, serving_identity = build_candidate_contract(
-        model=model, base_seed=base_seed, fixture_root=fixture_root,
+        model=model, fixture_root=fixture_root, attempt_root=attempt_root,
     )
+    require(candidate["seed_authority"] == authority,
+            "seed authority changed between derivation and candidate binding")
     manifest_sha = sha256_file(manifest_path)
     output_root.mkdir(parents=True, exist_ok=True)
-    reservation = reserve_candidate_attempt(candidate, output_root=output_root)
+    reservation = reserve_candidate_attempt(
+        candidate, output_root=output_root, attempt_root=attempt_root,
+    )
     run_dir = Path(reservation["run_dir"])
     result_path = Path(reservation["output_path"])
     receipts: list[dict[str, Any]] = []
@@ -2331,7 +2426,10 @@ def _parser() -> argparse.ArgumentParser:
     mode.add_argument("--plan", action="store_true",
                       help="print the exact eleven-call plan; no model/assets/GPU")
     mode.add_argument("--run", action="store_true",
-                      help="execute one new development-only calibration run")
+                      help="execute one new development-only calibration run "
+                           "(the seed and fixture root are derived, never chosen)")
+    mode.add_argument("--required-seed", action="store_true",
+                      help="print the mechanically enforced next development seed")
     mode.add_argument("--validate-result", type=Path,
                       help="hard-validate an immutable PASS result for pre-freeze use")
     mode.add_argument(
@@ -2349,7 +2447,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--model", type=Path,
                         help="pinned local Qwen3.8 MLX checkpoint")
     parser.add_argument("--base-seed", type=int, default=4)
-    parser.add_argument("--fixture-root", type=Path, default=sentinels.DEV_ROOT)
+    parser.add_argument("--fixture-root", type=Path, default=None)
     parser.add_argument("--output-root", type=Path, default=OUTPUT_ROOT)
     parser.add_argument("--calibration-result", type=Path,
                         help="mechanical calibration result used by --validate-semantic")
@@ -2374,10 +2472,10 @@ def _validate_cli_mode_options(args: argparse.Namespace,
     }
     if args.plan:
         mode, allowed = "--plan", {"--base-seed"}
+    elif args.required_seed:
+        mode, allowed = "--required-seed", set()
     elif args.run:
-        mode, allowed = "--run", {
-            "--model", "--base-seed", "--fixture-root", "--output-root",
-        }
+        mode, allowed = "--run", {"--model", "--output-root"}
     elif args.validate_result is not None:
         mode, allowed = "--validate-result", {"--model", "--fixture-root"}
     elif args.prepare_semantic is not None:
@@ -2411,6 +2509,9 @@ def main(argv: list[str] | None = None) -> int:
     _validate_cli_mode_options(args, raw_argv)
     if args.plan:
         print(json.dumps(plan_document(args.base_seed), indent=1, sort_keys=True))
+        return 0
+    if args.required_seed:
+        print(json.dumps(required_next_seed(), indent=1, sort_keys=True))
         return 0
     if args.validate_result is not None:
         require(args.model is not None, "--model is required with --validate-result")
@@ -2474,8 +2575,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     require(args.model is not None, "--model is required with --run")
     result, path = run_calibration(
-        model=args.model, base_seed=args.base_seed,
-        fixture_root=args.fixture_root, output_root=args.output_root,
+        model=args.model, output_root=args.output_root,
     )
     print(json.dumps({
         "result": str(path), "status": result["evaluation"]["status"],

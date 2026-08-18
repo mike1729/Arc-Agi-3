@@ -73,7 +73,20 @@ FORMAT_VERSION = 1
 SEALED_R4 = ROOT / "logs/s4_sealed" / PROTOCOL_VERSION
 SENTINEL_ASSETS = SEALED_R4 / "fixtures/sentinels/assets"     # model-visible
 SENTINEL_GOLD = SEALED_R4 / "fixtures/sentinels/gold"         # sealed separately
-DEV_ROOT = ROOT / "logs/s4_sentinel_dev"
+DEV_ROOT = ROOT / "logs/s4_sentinel_dev"  # legacy pre-v3 location (archived)
+DEV_FIXTURES = ROOT / "logs/s4_sentinel_fixtures"
+
+
+def dev_fixture_root(base_seed: int) -> Path:
+    """Immutable seed-addressed development fixture root (calibration v3).
+
+    One root per seed, created exactly once by generate_all and never moved,
+    so every sealed result remains independently revalidatable at the path
+    its manifest binding names.
+    """
+    require(type(base_seed) is int and 0 <= base_seed < 2 ** 63,
+            "base_seed must be a non-negative JSON integer")
+    return DEV_FIXTURES / f"dev-{base_seed:d}"
 
 PASSIVE_VARIANTS = 3
 ACTIVE_VARIANTS = 3
@@ -81,7 +94,7 @@ PASSIVE_ARMS = ("T", "V", "O")
 PASS_THRESHOLD = 2          # of 3 variants, per arm / per criterion
 TOTAL_GENERATIONS = PASSIVE_VARIANTS * len(PASSIVE_ARMS) + ACTIVE_VARIANTS * 2  # 15
 
-RESULT_FORMAT_VERSION = 4  # v2 calibration contract: rank via original indices
+RESULT_FORMAT_VERSION = 5  # v3: ranking_compliance sealed in receipts/traces
 ACTIVE_ARM = "P"
 ACTIVE_STAGES = ("pre", "post")
 CONFIRM_RAW_RESULTS = SEALED_R4 / "sentinel_raw_results.json"
@@ -868,11 +881,19 @@ def render_active_assets(fixture: dict[str, Any], assets_root: Path) -> dict[str
     return visible
 
 
+ACTION_MAPPING_NOTE = (
+    "Synthetic-environment action mapping: in every JSON action object here, "
+    "id k denotes ledger action A(k+1) — id 0 = A1, id 1 = A2, id 2 = A3, "
+    "id 3 = A4, id 4 = A5. No other ids exist and click is always null in "
+    "this environment."
+)
+
+
 def sentinel_request(fixture: dict[str, Any], *, outcome_note: str) -> str:
     """The pilot's exact answer contract, with completed flags as the outcomes."""
     import s4_run as srun
 
-    return srun.REQUEST + "\n\n" + outcome_note
+    return srun.REQUEST + "\n\n" + ACTION_MAPPING_NOTE + "\n\n" + outcome_note
 
 
 # ----------------------------------------------------------------- scoring
@@ -1452,6 +1473,7 @@ def _call_binding(run_dir: Path, tag: str, record: dict[str, Any],
         "completion_contains_close": record["completion_contains_close"],
         "payload_present": record["payload_present"],
         "schema_errors": record["schema_errors"],
+        "ranking_compliance": record["ranking_compliance"],
         "messages_sha256": record["messages_sha256"],
         "prompt_sha256": record["prompt_sha256"],
         "visual_tokens": record["visual_tokens"],
@@ -1731,7 +1753,8 @@ def validate_sentinel_results_document(
             "expanded_prompt_tokens", "derived_text_tokens",
             "input_text_token_cap", "finish_reason", "prompt_tokens_match",
             "token_accounting_match", "completion_contains_close",
-            "payload_present", "schema_errors", "completeness", "stats",
+            "payload_present", "schema_errors", "ranking_compliance",
+            "completeness", "stats",
         )
         require(all(trace_doc.get(field) == call.get(field)
                     for field in exact_trace_fields),
@@ -1779,6 +1802,9 @@ def validate_sentinel_results_document(
                 and trace_doc.get("answer") == answer
                 and trace_doc.get("parsed_payload") == parsed
                 and trace_doc.get("schema_errors") == schema_errors
+                and trace_doc.get("ranking_compliance")
+                == (srun.ranking_compliance(parsed.get("hypotheses"))
+                    if isinstance(parsed, dict) else None)
                 and trace_doc.get("payload_present") is (trace_payload is not None)
                 and trace_doc.get("completeness") == expected_completeness
                 and trace_doc.get("assistant_history") == {
@@ -1790,7 +1816,8 @@ def validate_sentinel_results_document(
     require(actual == _expected_call_inventory(manifest),
             "sentinel call inventory differs from the frozen 9-passive/6-active design")
     manifest_root = (SEALED_R4 / "fixtures/sentinels"
-                     if document["namespace"] == "confirm" else DEV_ROOT)
+                     if document["namespace"] == "confirm"
+                     else dev_fixture_root(document["base_seed"]))
     for index, manifest_record in enumerate(manifest["passive"]):
         fixture = build_passive_variant(
             document["namespace"], index, document["base_seed"],
@@ -1920,7 +1947,7 @@ def run_sentinels(*, namespace: str, base_seed: int, model: Path,
 
     sl.enforce_offline_scientific_run("s4_sentinels --run", [])
     manifest_root = (SEALED_R4 / "fixtures/sentinels" if namespace == "confirm"
-                     else DEV_ROOT)
+                     else dev_fixture_root(base_seed))
     manifest_path = manifest_root / "sentinel_manifest.json"
     manifest = verify_manifest(
         manifest_path, expected_namespace=namespace, expected_base_seed=base_seed,
@@ -2118,7 +2145,8 @@ def finalize_results(raw_path: Path, judgments_path: Path, out_path: Path) -> di
     raw = _load_json(raw_path, "raw sentinel results")
     manifest_path = ((SEALED_R4 / "fixtures/sentinels/sentinel_manifest.json")
                      if raw.get("namespace") == "confirm"
-                     else DEV_ROOT / "sentinel_manifest.json")
+                     else dev_fixture_root(raw.get("base_seed"))
+                     / "sentinel_manifest.json")
     manifest = verify_manifest(
         manifest_path, expected_namespace=raw.get("namespace"),
         expected_base_seed=raw.get("base_seed"), require_live_generator=True,
@@ -2212,7 +2240,7 @@ def main() -> int:
     args = parser.parse_args()
     sl.enforce_offline_scientific_run("s4_sentinels", sys.argv[1:])
     if args.generate:
-        out_root = (DEV_ROOT if args.namespace == "dev"
+        out_root = (dev_fixture_root(args.base_seed) if args.namespace == "dev"
                     else SEALED_R4 / "fixtures/sentinels")
         if args.namespace == "confirm":
             require(not (SEALED_R4 / "FROZEN.json").exists(),
